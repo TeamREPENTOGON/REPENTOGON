@@ -139,16 +139,16 @@ local getters = {
         return ffichecks.copyvector(ffi.getprivate(self, "DungeonReturnPos"))
     end,
     DungeonReturnRoomIndex = function(self)
-        return ffi.getprivate(self, "DungeonReturnRoomIndexValue")
+        local result = ffi.getprivate(self, "DungeonReturnRoomIndexValue") return result
     end,
     EnterDoor = function(self)
-        return ffi.getprivate(self, "EnterDoorValue")
+        local result = ffi.getprivate(self, "EnterDoorValue") return result
     end,
     GreedModeWave = function(self)
-        return ffi.getprivate(self, "GreedModeWaveValue")
+        local result = ffi.getprivate(self, "GreedModeWaveValue") return result
     end,
     LeaveDoor = function(self)
-        return ffi.getprivate(self, "LeaveDoorValue")
+        local result = ffi.getprivate(self, "LeaveDoorValue") return result
     end,
 }
 
@@ -219,7 +219,7 @@ LevelMT = {
     end,
     CanOpenChallengeRoom = function(self, roomIndex)
         roomIndex = ffichecks.checkinteger(1, roomIndex)
-        return repentogon.L_Level_CanOpenChallengeRoom(self, roomIndex)
+        local result = repentogon.L_Level_CanOpenChallengeRoom(self, roomIndex) return result
     end,
     CanPlaceRoom = function(self, arg1, arg2, arg3, arg4, arg5, arg6, arg7)
         local args = { arg1, arg2, arg3, arg4, arg5, arg6, arg7 }
@@ -231,8 +231,9 @@ LevelMT = {
             return false
         end
         local dimension = CheckDimension(index + 1, args[index + 1])
-        return repentogon.L_Level_CanPlaceRoom(roomShape, doorMask, gridIndex, dimension,
+        local result = repentogon.L_Level_CanPlaceRoom(roomShape, doorMask, gridIndex, dimension,
             ffichecks.optboolean(args[index + 2], true), ffichecks.optboolean(args[index + 3], false), ffichecks.optboolean(args[index + 4], false))
+        return result
     end,
     CanPlaceRoomAtDoor = function(self, arg1, arg2, arg3, arg4, arg5, arg6)
         local args = { arg1, arg2, arg3, arg4, arg5, arg6 }
@@ -241,20 +242,21 @@ LevelMT = {
         ffichecks.checkcdata(index, descriptor, "RoomDescriptor")
         local doorSlot = args[index + 1]
         doorSlot = ffichecks.checkinteger(index + 1, doorSlot)
-        return repentogon.L_Level_CanPlaceRoomAtDoor(roomShape, doorMask, descriptor, doorSlot,
+        local result = repentogon.L_Level_CanPlaceRoomAtDoor(roomShape, doorMask, descriptor, doorSlot,
             ffichecks.optboolean(args[index + 2], true), ffichecks.optboolean(args[index + 3], false))
+        return result
     end,
     CanSpawnDevilRoom = function(self)
-        return repentogon.L_Level_CanSpawnDevilRoom(self)
+        local result = repentogon.L_Level_CanSpawnDevilRoom(self) return result
     end,
     CanSpawnDoorOutline = function(self, roomIndex, doorSlot)
         roomIndex = ffichecks.checkinteger(1, roomIndex)
         doorSlot = ffichecks.checkinteger(2, doorSlot)
-        return repentogon.L_Level_CanSpawnDoorOutline(self, roomIndex, doorSlot)
+        local result = repentogon.L_Level_CanSpawnDoorOutline(self, roomIndex, doorSlot) return result
     end,
     CanStageHaveCurseOfLabyrinth = function(self, stage)
         stage = ffichecks.checkinteger(1, stage)
-        return repentogon.L_Level_CanStageHaveCurseOfLabyrinth(self, stage)
+        local result = repentogon.L_Level_CanStageHaveCurseOfLabyrinth(self, stage) return result
     end,
     ChangeRoom = function(self, roomIndex, dimension)
         roomIndex = ffichecks.checkinteger(1, roomIndex)
@@ -285,40 +287,40 @@ LevelMT = {
     end,
     ForceHorsemanBoss = function(self, seed)
         seed = ffichecks.checkinteger(1, seed)
-        return repentogon.L_Level_ForceHorsemanBoss(self, seed)
+        local result = repentogon.L_Level_ForceHorsemanBoss(self, seed) return result
     end,
     GetAbsoluteStage = function(self)
-        return repentogon.L_Level_GetAbsoluteStage(self)
+        local result = repentogon.L_Level_GetAbsoluteStage(self) return result
     end,
     GetAngelRoomChance = function(self)
-        return ffi.getprivate(self, "AngelRoomChance")
+        local result = ffi.getprivate(self, "AngelRoomChance") return result
     end,
     GetCanSeeEverything = function(self)
-        return ffi.getprivate(self, "CanSeeEverything")
+        local result = ffi.getprivate(self, "CanSeeEverything") return result
     end,
     GetCurrentRoom = function(self)
-        return ffi.getprivate(self, "CurrentRoom")
+        local result = ffi.getprivate(self, "CurrentRoom") return result
     end,
     GetCurrentRoomDesc = function(self)
-        return repentogon.L_Level_GetCurrentRoomDesc(self)
+        local result = repentogon.L_Level_GetCurrentRoomDesc(self) return result
     end,
     GetCurrentRoomIndex = function(self)
-        return ffi.getprivate(self, "CurrentRoomIndex")
+        local result = ffi.getprivate(self, "CurrentRoomIndex") return result
     end,
     GetCurseName = function(self)
-        return ffi.string(repentogon.L_Level_GetCurseName(self))
+        local result = ffi.string(repentogon.L_Level_GetCurseName(self)) return result
     end,
     GetCurses = function(self)
-        return repentogon.L_Level_GetCurses(self)
+        local result = repentogon.L_Level_GetCurses(self) return result
     end,
     GetDevilAngelRoomRNG = function(self)
-        return ffi.getprivate(self, "DevilAngelRoomRNG")
+        local result = ffi.getprivate(self, "DevilAngelRoomRNG") return result
     end,
     GetDimension = function(self)
-        return ffi.getprivate(self, "CurrentDimension")
+        local result = ffi.getprivate(self, "CurrentDimension") return result
     end,
     GetDungeonPlacementSeed = function(self)
-        return ffi.getprivate(self, "DungeonPlacementSeed")
+        local result = ffi.getprivate(self, "DungeonPlacementSeed") return result
     end,
     GetEnterPosition = function(self)
         local position = Vector(0, 0)
@@ -326,28 +328,28 @@ LevelMT = {
         return position
     end,
     GetForceSpecialQuest = function(self)
-        return repentogon.L_Level_GetForceSpecialQuest()
+        local result = repentogon.L_Level_GetForceSpecialQuest() return result
     end,
     GetGenerationRNG = function(self)
-        return ffi.getprivate(self, "GenerationRNG")
+        local result = ffi.getprivate(self, "GenerationRNG") return result
     end,
     GetGreedWavesClearedWithoutRedHeartDamage = function(self)
-        return ffi.getprivate(self, "GreedWavesClearedWithoutRedHeartDamage")
+        local result = ffi.getprivate(self, "GreedWavesClearedWithoutRedHeartDamage") return result
     end,
     GetHeartPicked = function(self)
-        return ffi.getprivate(self, "HeartPicked")
+        local result = ffi.getprivate(self, "HeartPicked") return result
     end,
     GetLastBossRoomListIndex = function(self)
-        return ffi.getprivate(self, "LastBossRoomListIndex")
+        local result = ffi.getprivate(self, "LastBossRoomListIndex") return result
     end,
     GetLastRoomDesc = function(self)
-        return repentogon.L_Level_GetLastRoomDesc(self)
+        local result = repentogon.L_Level_GetLastRoomDesc(self) return result
     end,
     GetMyosotisPickups = function(self)
-        return ffi.getprivate(self, "MyosotisPickups")
+        local result = ffi.getprivate(self, "MyosotisPickups") return result
     end,
     GetName = function(self)
-        return ffi.string(repentogon.L_Level_GetName(self))
+        local result = ffi.string(repentogon.L_Level_GetName(self)) return result
     end,
     GetNeighboringRooms = function(self, gridIndex, roomShape, dimension)
         gridIndex = ffichecks.checkinteger(1, gridIndex)
@@ -367,26 +369,26 @@ LevelMT = {
         return result
     end,
     GetNonCompleteRoomIndex = function(self)
-        return repentogon.L_Level_GetNonCompleteRoomIndex(self)
+        local result = repentogon.L_Level_GetNonCompleteRoomIndex(self) return result
     end,
     GetPlanetariumChance = function(self)
-        return repentogon.L_Level_GetPlanetariumChance(self)
+        local result = repentogon.L_Level_GetPlanetariumChance(self) return result
     end,
     GetPreviousRoomIndex = function(self)
-        return ffi.getprivate(self, "PreviousRoomIndex")
+        local result = ffi.getprivate(self, "PreviousRoomIndex") return result
     end,
     GetRandomRoomIndex = function(self, iAmErrorRoom, seed)
         seed = ffichecks.checkinteger(2, seed)
-        return repentogon.L_Level_GetRandomRoomIndex(self, ffichecks.optboolean(iAmErrorRoom, false), seed)
+        local result = repentogon.L_Level_GetRandomRoomIndex(self, ffichecks.optboolean(iAmErrorRoom, false), seed) return result
     end,
     GetRoomByIdx = function(self, index, dimension)
         index = ffichecks.checkinteger(1, index)
         dimension = ffichecks.optnumber(dimension, -1)
         dimension = ffichecks.checkinteger(2, dimension)
-        return repentogon.L_Level_GetRoomByIdx(self, index, dimension)
+        local result = repentogon.L_Level_GetRoomByIdx(self, index, dimension) return result
     end,
     GetRoomCount = function(self)
-        return ffi.getprivate(self, "RoomCount")
+        local result = ffi.getprivate(self, "RoomCount") return result
     end,
     GetRooms = function(self)
         local list = RoomDescriptorListT()
@@ -395,29 +397,29 @@ LevelMT = {
         return list
     end,
     GetStage = function(self)
-        return ffi.getprivate(self, "Stage")
+        local result = ffi.getprivate(self, "Stage") return result
     end,
     GetStageType = function(self)
-        return ffi.getprivate(self, "StageType")
+        local result = ffi.getprivate(self, "StageType") return result
     end,
     GetStartingRoomIndex = function(self)
-        return ffi.getprivate(self, "StartingRoomIndex")
+        local result = ffi.getprivate(self, "StartingRoomIndex") return result
     end,
     GetStateFlag = function(self, flag)
         flag = ffichecks.checkinteger(1, flag)
-        return repentogon.L_Level_GetStateFlag(self, flag)
+        local result = repentogon.L_Level_GetStateFlag(self, flag) return result
     end,
     HasAbandonedMineshaft = function(self)
-        return repentogon.L_Level_HasAbandonedMineshaft(self)
+        local result = repentogon.L_Level_HasAbandonedMineshaft(self) return result
     end,
     HasBossChallenge = function(self)
-        return ffi.getprivate(self, "BossChallenge")
+        local result = ffi.getprivate(self, "BossChallenge") return result
     end,
     HasMirrorDimension = function(self)
-        return repentogon.L_Level_HasMirrorDimension(self)
+        local result = repentogon.L_Level_HasMirrorDimension(self) return result
     end,
     HasPhotoDoor = function(self)
-        return repentogon.L_Level_HasPhotoDoor(self)
+        local result = repentogon.L_Level_HasPhotoDoor(self) return result
     end,
     InitializeDevilAngelRoom = function(self, forceAngel, forceDevil)
         repentogon.L_Level_InitializeDevilAngelRoom(self, ffichecks.optboolean(forceAngel, false), ffichecks.optboolean(forceDevil, false))
@@ -426,37 +428,37 @@ LevelMT = {
         return ffi.getprivate(self, "StageType") ~= 0
     end,
     IsAscent = function(self)
-        return repentogon.L_Level_IsAscent(self)
+        local result = repentogon.L_Level_IsAscent(self) return result
     end,
     IsDevilRoomDisabled = function(self)
-        return ffi.getprivate(self, "DevilRoomDisabled")
+        local result = ffi.getprivate(self, "DevilRoomDisabled") return result
     end,
     IsNextStageAvailable = function(self)
-        return repentogon.L_Level_IsNextStageAvailable(self)
+        local result = repentogon.L_Level_IsNextStageAvailable(self) return result
     end,
     IsPreAscent = function(self)
-        return repentogon.L_Level_IsPreAscent(self)
+        local result = repentogon.L_Level_IsPreAscent(self) return result
     end,
     IsStageAvailable = function(self, stage, stageType)
         stage = ffichecks.checkinteger(1, stage)
         stageType = ffichecks.checkinteger(2, stageType)
-        return repentogon.L_Level_IsStageAvailable(stage, stageType)
+        local result = repentogon.L_Level_IsStageAvailable(stage, stageType) return result
     end,
     MakeRedRoomDoor = function(self, roomIndex, doorSlot)
         roomIndex = ffichecks.checkinteger(1, roomIndex)
         doorSlot = ffichecks.checkinteger(2, doorSlot)
-        return repentogon.L_Level_MakeRedRoomDoor(self, roomIndex, doorSlot)
+        local result = repentogon.L_Level_MakeRedRoomDoor(self, roomIndex, doorSlot) return result
     end,
     PlaceRoom = function(self, entry, roomConfig, seed)
         ffichecks.checkcdata(1, entry, "LevelGeneratorEntry")
         ffichecks.checkcdata(2, roomConfig, "RoomConfigRoom")
         seed = ffichecks.checkinteger(3, seed)
-        return repentogon.L_Level_PlaceRoom(self, entry, roomConfig, seed)
+        local result = repentogon.L_Level_PlaceRoom(self, entry, roomConfig, seed) return result
     end,
     QueryRoomTypeIndex = function(self, roomType, visited, rng, ignoreGroup)
         roomType = ffichecks.checkinteger(1, roomType)
         ffichecks.checkcdata(3, rng, "RNG")
-        return repentogon.L_Level_QueryRoomTypeIndex(self, roomType, ffichecks.optboolean(visited, false), rng, ffichecks.optboolean(ignoreGroup, false))
+        local result = repentogon.L_Level_QueryRoomTypeIndex(self, roomType, ffichecks.optboolean(visited, false), rng, ffichecks.optboolean(ignoreGroup, false)) return result
     end,
     RemoveCompassEffect = function(self)
         repentogon.L_Level_RemoveCompassEffect(self)
@@ -512,8 +514,9 @@ LevelMT = {
         end
         dimension = CheckDimension(3, dimension)
         seed = CheckPlacementSeed(4, seed)
-        return repentogon.L_Level_TryPlaceRoom(roomConfig, gridIndex, dimension, seed,
+        local result = repentogon.L_Level_TryPlaceRoom(roomConfig, gridIndex, dimension, seed,
             ffichecks.optboolean(allowMultipleDoors, true), ffichecks.optboolean(allowSpecialNeighbors, false), ffichecks.optboolean(allowNoNeighbors, false))
+        return result
     end,
     TryPlaceRoomAtDoor = function(self, roomConfig, descriptor, doorSlot, seed, allowMultipleDoors, allowSpecialNeighbors)
         ffichecks.checkcdata(1, roomConfig, "RoomConfigRoom")

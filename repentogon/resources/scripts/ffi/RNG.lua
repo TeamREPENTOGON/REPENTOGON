@@ -57,7 +57,7 @@ local function DoRandomInt(self, max)
         return 0
     end
 
-    return tonumber(newSeed % max)
+    local result = tonumber(newSeed % max) return result
 end
 
 local function ReverseShrXor(result, shift)
@@ -116,7 +116,7 @@ local RngMT = {
         -- before performing a MULSS instruction. Probably overkill but RNG parity between vanilla
         -- mods and REPENTOGON is a must.
         local seed32 = tonumber(ffi.cast("float", newSeed))
-        return tonumber(ffi.cast("float", seed32 * INT_TO_RAND_FLOAT))
+        local result = tonumber(ffi.cast("float", seed32 * INT_TO_RAND_FLOAT)) return result
     end,
 
     PhantomFloat = function(self)
@@ -291,5 +291,5 @@ RNG = setmetatable({}, {
 })
 
 Random = function()
-    return repentogon.L_Random()
+    local result = repentogon.L_Random() return result
 end

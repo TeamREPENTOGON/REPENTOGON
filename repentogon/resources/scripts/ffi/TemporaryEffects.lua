@@ -54,7 +54,7 @@ function EffectListMT:Get(idx)
     idx = ffichecks.checknumber(2, idx)
     local n = el_size(self)
     if idx < 0 or idx >= n then return nil end
-    return ffi.cast("ConstTemporaryEffect*", ffi.getprivate(self, "_begin") + idx)
+    local result = ffi.cast("ConstTemporaryEffect*", ffi.getprivate(self, "_begin") + idx) return result
 end
 
 ffi.metatype("struct EffectList", EffectListMT)
@@ -97,9 +97,9 @@ TemporaryEffectsMT = {
     end,
     GetCollectibleEffectNum = function(self, CollectibleType)
         CollectibleType = ffichecks.checkinteger(1, CollectibleType)
-        return repentogon.L_TemporaryEffects_GetCollectibleEffectNum(self, CollectibleType)
+        local result = repentogon.L_TemporaryEffects_GetCollectibleEffectNum(self, CollectibleType) return result
     end,
-    GetEffectsList = function(self) return ffi.getprivate(self, "Effects") end,
+    GetEffectsList = function(self) local result = ffi.getprivate(self, "Effects") return result end,
     GetNullEffect = function(self, NullId)
         NullId = ffichecks.checkinteger(1, NullId)
         local effect = repentogon.L_TemporaryEffects_GetNullEffect(self, NullId)
@@ -108,7 +108,7 @@ TemporaryEffectsMT = {
     end,
     GetNullEffectNum = function(self, NullId)
         NullId = ffichecks.checkinteger(1, NullId)
-        return repentogon.L_TemporaryEffects_GetNullEffectNum(self, NullId)
+        local result = repentogon.L_TemporaryEffects_GetNullEffectNum(self, NullId) return result
     end,
     GetTrinketEffect = function(self, TrinketType)
         TrinketType = ffichecks.checkinteger(1, TrinketType)
@@ -118,34 +118,34 @@ TemporaryEffectsMT = {
     end,
     GetTrinketEffectNum = function(self, TrinketType)
         TrinketType = ffichecks.checkinteger(1, TrinketType)
-        return repentogon.L_TemporaryEffects_GetTrinketEffectNum(self, TrinketType)
+        local result = repentogon.L_TemporaryEffects_GetTrinketEffectNum(self, TrinketType) return result
     end,
     HasCollectibleEffect = function(self, CollectibleType)
         CollectibleType = ffichecks.checkinteger(1, CollectibleType)
-        return repentogon.L_TemporaryEffects_HasCollectibleEffect(self, CollectibleType)
+        local result = repentogon.L_TemporaryEffects_HasCollectibleEffect(self, CollectibleType) return result
     end,
     HasNullEffect = function(self, NullId)
         NullId = ffichecks.checkinteger(1, NullId)
-        return repentogon.L_TemporaryEffects_HasNullEffect(self, NullId)
+        local result = repentogon.L_TemporaryEffects_HasNullEffect(self, NullId) return result
     end,
     HasTrinketEffect = function(self, TrinketType)
         TrinketType = ffichecks.checkinteger(1, TrinketType)
-        return repentogon.L_TemporaryEffects_HasTrinketEffect(self, TrinketType)
+        local result = repentogon.L_TemporaryEffects_HasTrinketEffect(self, TrinketType) return result
     end,
     RemoveCollectibleEffect = function(self, CollectibleType, Count)
         CollectibleType = ffichecks.checkinteger(1, CollectibleType)
         Count = ffichecks.optnumber(Count, 1)
-        return repentogon.L_TemporaryEffects_RemoveCollectibleEffect(self, CollectibleType, Count)
+        repentogon.L_TemporaryEffects_RemoveCollectibleEffect(self, CollectibleType, Count) return
     end,
     RemoveNullEffect = function(self, NullId, Count)
         NullId = ffichecks.checkinteger(1, NullId)
         Count = ffichecks.optnumber(Count, 1)
-        return repentogon.L_TemporaryEffects_RemoveNullEffect(self, NullId, Count)
+        repentogon.L_TemporaryEffects_RemoveNullEffect(self, NullId, Count) return
     end,
     RemoveTrinketEffect = function(self, TrinketType, Count)
         TrinketType = ffichecks.checkinteger(1, TrinketType)
         Count = ffichecks.optnumber(Count, 1)
-        return repentogon.L_TemporaryEffects_RemoveTrinketEffect(self, TrinketType, Count)
+        repentogon.L_TemporaryEffects_RemoveTrinketEffect(self, TrinketType, Count) return
     end,
 }
 

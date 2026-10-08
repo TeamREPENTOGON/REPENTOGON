@@ -123,7 +123,7 @@ SpriteMT = {
         return ret
     end,
     GetAnimation = function(self)
-        return ffi.string(repentogon.L_Sprite_GetAnimation(self))
+        local result = ffi.string(repentogon.L_Sprite_GetAnimation(self)) return result
     end,
     GetAnimationData = function(self, animationName)
         animationName = ffichecks.checkstring(1, animationName)
@@ -165,7 +165,7 @@ SpriteMT = {
         if ffichecks.isnullptr(state.AnimData) then
             return -1
         end
-        return math.floor(state.AnimFrame)
+        local result = math.floor(state.AnimFrame) return result
     end,
     GetLayer = function(self, param)
         local layerState = nil
@@ -178,7 +178,7 @@ SpriteMT = {
         return layerState
     end,
     GetLayerCount = function(self)
-        return ffi.getprivate(self, "LayerCount")
+        local result = ffi.getprivate(self, "LayerCount") return result
     end,
     GetLayerFrameData = function(self, layerId)
         layerId = ffichecks.checkinteger(1, layerId)
@@ -208,7 +208,7 @@ SpriteMT = {
         return GetLayerFrameDataInternal(ffi.getprivate(self, "OverlayAnimState"), layerId)
     end,
     GetRenderFlags = function(self)
-        return ffi.getprivate(self, "RenderFlags")
+        local result = ffi.getprivate(self, "RenderFlags") return result
     end,
     GetSpritesheet = function(self, layer)
         layer = ffichecks.checkinteger(1, layer)
@@ -232,16 +232,16 @@ SpriteMT = {
     HasCustomShader = function(self, path)
         path = ffichecks.optstring(path, "")
         if path == "" then
-            return repentogon.L_Sprite_HasCustomShader(self, false)
+            local result = repentogon.L_Sprite_HasCustomShader(self, false) return result
         end
-        return repentogon.L_Sprite_HasCustomShaderWithPath(self, path, false)
+        local result = repentogon.L_Sprite_HasCustomShaderWithPath(self, path, false) return result
     end,
     HasCustomChampionShader = function(self, path)
         path = ffichecks.optstring(path, "")
         if path == "" then
-            return repentogon.L_Sprite_HasCustomShader(self, true)
+            local result = repentogon.L_Sprite_HasCustomShader(self, true) return result
         end
-        return repentogon.L_Sprite_HasCustomShaderWithPath(self, path, true)
+        local result = repentogon.L_Sprite_HasCustomShaderWithPath(self, path, true) return result
     end,
     IsEventTriggered = function(self, name)
         name = ffichecks.checkstring(1, name)
@@ -249,10 +249,10 @@ SpriteMT = {
     end,
     IsFinished = function(self, name) 
         name = ffichecks.optstring(name, "")
-        return repentogon.L_Sprite_IsFinished(self, name)
+        local result = repentogon.L_Sprite_IsFinished(self, name) return result
     end,
     IsLoaded = function(self) 
-        return ffi.getprivate(self, "Loaded")
+        local result = ffi.getprivate(self, "Loaded") return result
     end,
     IsOverlayEventTriggered = function(self, name)
         name = ffichecks.checkstring(1, name)
@@ -260,7 +260,7 @@ SpriteMT = {
     end,
     IsOverlayFinished = function(self, name) 
         name = ffichecks.optstring(name, "")
-        return repentogon.L_Sprite_IsOverlayFinished(self, name)
+        local result = repentogon.L_Sprite_IsOverlayFinished(self, name) return result
     end,
     IsOverlayPlaying = function(self, name)
         name = ffichecks.optstring(name, "")
@@ -338,7 +338,7 @@ SpriteMT = {
     SetAnimation = function(self, name, reset)
         name = ffichecks.checkstring(1, name)
         reset = ffichecks.optboolean(reset, true)
-        return repentogon.L_Sprite_SetAnimation(self, name, reset)
+        local result = repentogon.L_Sprite_SetAnimation(self, name, reset) return result
     end,
     SetCustomChampionShader = function(self, path)
         path = ffichecks.checkstring(1, path)
@@ -376,7 +376,7 @@ SpriteMT = {
     SetOverlayAnimation = function(self, name, reset)
         name = ffichecks.checkstring(1, name)
         reset = ffichecks.optboolean(reset, true)
-        return repentogon.L_Sprite_SetOverlayAnimation(self, name, reset);
+        local result = repentogon.L_Sprite_SetOverlayAnimation(self, name, reset) return result
     end,
     SetOverlayFrame = function(self, param, param2)
         if ffichecks.isstring(param) then

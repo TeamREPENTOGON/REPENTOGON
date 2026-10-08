@@ -71,7 +71,7 @@ RoomConfig = {
         if mode < -1 or mode > 1 then
             ffichecks.argerror(12, string.format("invalid mode %d", mode))
         end
-        return repentogon.L_RoomConfig_GetRandomRoom(seed, reduceWeight, stage, roomType, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode)
+        local result = repentogon.L_RoomConfig_GetRandomRoom(seed, reduceWeight, stage, roomType, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode) return result
     end,
     GetRoomByStageTypeAndVariant = function(...)
         local n = select("#", ...)
@@ -92,14 +92,14 @@ RoomConfig = {
         if mode < -2 or mode > 1 then
             mode = -1
         end
-        return repentogon.L_RoomConfig_GetRoomByStageTypeAndVariant(stage, roomType, variant, mode)
+        local result = repentogon.L_RoomConfig_GetRoomByStageTypeAndVariant(stage, roomType, variant, mode) return result
     end,
     GetStage = function(stage)
         stage = ffichecks.checkinteger(1, stage)
         if stage < 0 or stage > 36 then
             ffichecks.argerror(1, string.format("StageID must be between 0 and 36 (both inclusive), got %d", stage))
         end
-        return repentogon.L_RoomConfig_GetStage(stage)
+        local result = repentogon.L_RoomConfig_GetStage(stage) return result
     end,
     LoadStb = function(stage, mode, filename)
         stage, mode = CheckStageAndMode(stage, mode)

@@ -148,7 +148,7 @@ local methods = {
     GetNumChainedLasers = Getter("ChainedLasersValue"),
     GetOneHit = Getter("OneHitValue"),
     GetRenderZ = function(self)
-        return repentogon.L_EntityLaser_GetRenderZ(self)
+        local result = repentogon.L_EntityLaser_GetRenderZ(self) return result
     end,
     GetSamples = Getter("SamplesValue"),
     GetScale = Getter("ScaleValue"),
@@ -160,7 +160,7 @@ local methods = {
         return (self.TearFlags & flags) ~= TearFlags.TEAR_NORMAL
     end,
     InHitList = function(self, entity)
-        return repentogon.L_EntityLaser_InHitList(self, ffichecks.checkentity(1, entity))
+        local result = repentogon.L_EntityLaser_InHitList(self, ffichecks.checkentity(1, entity)) return result
     end,
     IsCircleLaser = function(self)
         local subType = self.SubType
@@ -238,7 +238,7 @@ EntityLaser = setmetatable({
         angleDegrees = ffichecks.checknumber(3, angleDegrees)
         timeout = ffichecks.checkinteger(4, timeout)
         ffichecks.checkcdata(5, positionOffset, "Vector")
-        return repentogon.L_EntityLaser_ShootAngle(variant, sourcePosition, angleDegrees, timeout, positionOffset, EntityToPointer(source))
+        local result = repentogon.L_EntityLaser_ShootAngle(variant, sourcePosition, angleDegrees, timeout, positionOffset, EntityToPointer(source)) return result
     end,
     CalculateEndPoint = function(start, direction, positionOffset, parent, margin)
         ffichecks.checkcdata(1, start, "Vector")

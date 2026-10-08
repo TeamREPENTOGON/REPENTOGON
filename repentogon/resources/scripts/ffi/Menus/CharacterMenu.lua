@@ -41,15 +41,15 @@ local repentogon = ffidll
 CharacterMenu = {
     GetActiveStatus = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetActiveStatus()
+        local result = repentogon.L_CharacterMenu_GetActiveStatus() return result
     end,
     GetBigCharPageSprite = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetBigCharPageSprite()
+        local result = repentogon.L_CharacterMenu_GetBigCharPageSprite() return result
     end,
     GetBGSprite = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetBGSprite()
+        local result = repentogon.L_CharacterMenu_GetBGSprite() return result
     end,
     GetCharacterMenuIDFromPlayerType = function(character)
         ffichecks.checkmainmenu("CharacterMenu")
@@ -62,51 +62,51 @@ CharacterMenu = {
     end,
     GetCharacterPortraitSprite = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetCharacterPortraitSprite()
+        local result = repentogon.L_CharacterMenu_GetCharacterPortraitSprite() return result
     end,
     GetCharacterWheelDepth = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetCharacterWheelDepth()
+        local result = repentogon.L_CharacterMenu_GetCharacterWheelDepth() return result
     end,
     GetCharacterWheelWidth = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetCharacterWheelWidth()
+        local result = repentogon.L_CharacterMenu_GetCharacterWheelWidth() return result
     end,
     GetCompletionMarksSprite = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetCompletionMarksSprite()
+        local result = repentogon.L_CharacterMenu_GetCompletionMarksSprite() return result
     end,
     GetDifficulty = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetDifficulty()
+        local result = repentogon.L_CharacterMenu_GetDifficulty() return result
     end,
     GetDifficultyPageSprite = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetDifficultyPageSprite()
+        local result = repentogon.L_CharacterMenu_GetDifficultyPageSprite() return result
     end,
     GetDifficultyOverlaySprite = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetDifficultyOverlaySprite()
+        local result = repentogon.L_CharacterMenu_GetDifficultyOverlaySprite() return result
     end,
     GetEasterEggPageSprite = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetEasterEggPageSprite()
+        local result = repentogon.L_CharacterMenu_GetEasterEggPageSprite() return result
     end,
     GetIsCharacterUnlocked = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetIsCharacterUnlocked()
+        local result = repentogon.L_CharacterMenu_GetIsCharacterUnlocked() return result
     end,
     GetGreedDecoSprite = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetGreedDecoSprite()
+        local result = repentogon.L_CharacterMenu_GetGreedDecoSprite() return result
     end,
     GetNumCharacters = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetNumCharacters()
+        local result = repentogon.L_CharacterMenu_GetNumCharacters() return result
     end,
     GetPageSwapWidgetSprite = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetPageSwapWidgetSprite()
+        local result = repentogon.L_CharacterMenu_GetPageSwapWidgetSprite() return result
     end,
     GetPlayerTypeFromCharacterMenuID = function(characterMenuID, tainted)
         ffichecks.checkmainmenu("CharacterMenu")
@@ -120,27 +120,27 @@ CharacterMenu = {
     end,
     GetScrollSpeed = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetScrollSpeed()
+        local result = repentogon.L_CharacterMenu_GetScrollSpeed() return result
     end,
     GetSeedEntrySprite = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetSeedEntrySprite()
+        local result = repentogon.L_CharacterMenu_GetSeedEntrySprite() return result
     end,
     GetSeedPageSprite = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetSeedPageSprite()
+        local result = repentogon.L_CharacterMenu_GetSeedPageSprite() return result
     end,
     GetSeedUnlockPageSprite = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetSeedUnlockPageSprite()
+        local result = repentogon.L_CharacterMenu_GetSeedUnlockPageSprite() return result
     end,
     GetSelectedCharacterMenu = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetSelectedCharacterMenu()
+        local result = repentogon.L_CharacterMenu_GetSelectedCharacterMenu() return result
     end,
     GetSelectedCharacterID = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetSelectedCharacterID()
+        local result = repentogon.L_CharacterMenu_GetSelectedCharacterID() return result
     end,
     GetSelectedCharacterPlayerType = function()
         ffichecks.checkmainmenu("CharacterMenu")
@@ -152,11 +152,11 @@ CharacterMenu = {
     end,
     GetTaintedBGDecoSprite = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetTaintedBGDecoSprite()
+        local result = repentogon.L_CharacterMenu_GetTaintedBGDecoSprite() return result
     end,
     GetWinStreakPageSprite = function()
         ffichecks.checkmainmenu("CharacterMenu")
-        return repentogon.L_CharacterMenu_GetWinStreakPageSprite()
+        local result = repentogon.L_CharacterMenu_GetWinStreakPageSprite() return result
     end,
     SetActiveStatus = function(status)
         ffichecks.checkmainmenu("CharacterMenu")

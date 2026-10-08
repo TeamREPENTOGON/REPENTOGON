@@ -13,7 +13,7 @@ local EntityListMT
 EntityListMT = {
     __type = "EntityList",
     __len = function(self)
-        return ffi.getprivate(self, "SizeValue")
+        local result = ffi.getprivate(self, "SizeValue") return result
     end,
     Get = function(self, index)
         index = ffichecks.checkinteger(1, index)
@@ -30,7 +30,7 @@ EntityListMT = {
 
 EntityListMT.__index = function(self, key)
     if key == "Size" then
-        return ffi.getprivate(self, "SizeValue")
+        local result = ffi.getprivate(self, "SizeValue") return result
     end
     return EntityListMT[key]
 end

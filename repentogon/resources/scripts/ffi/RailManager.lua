@@ -11,7 +11,7 @@ local RailManagerMT
 RailManagerMT = {
     __type = "RailManager",
     GetRailsSprite = function(self)
-        return ffi.getprivate(self, "RailsSprite")
+        local result = ffi.getprivate(self, "RailsSprite") return result
     end,
 }
 

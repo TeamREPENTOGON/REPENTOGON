@@ -43,7 +43,7 @@ local methods = {
     GetDonationValue = Getter("DonationValueValue"),
     GetPrizeCollectible = Getter("PrizeCollectibleValue"),
     GetPrizeSprite = function(self)
-        return repentogon.L_EntitySlot_GetPrizeSprite(self)
+        local result = repentogon.L_EntitySlot_GetPrizeSprite(self) return result
     end,
     GetPrizeType = Getter("PrizeTypeValue"),
     GetShellGameAnimationIndex = Getter("ShellGameAnimationIndexValue"),

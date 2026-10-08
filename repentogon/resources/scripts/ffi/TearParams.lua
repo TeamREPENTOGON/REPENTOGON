@@ -24,7 +24,7 @@ TearParamsMT = {
 
 TearParamsMT.__index = function(self, key)
     if key == "TearDisplacement" then
-        return ffi.getprivate(self, "_TearDisplacement")
+        local result = ffi.getprivate(self, "_TearDisplacement") return result
     end
 
     return TearParamsMT[key]

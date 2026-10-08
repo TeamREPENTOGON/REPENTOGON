@@ -20,16 +20,16 @@ local LevelGeneratorRoomMT
 LevelGeneratorRoomMT = {
     __type = "LevelGeneratorRoom",
     Column = function(self)
-        return ffi.getprivate(self, "ColIdx")
+        local result = ffi.getprivate(self, "ColIdx") return result
     end,
     DoorMask = function(self)
-        return ffi.getprivate(self, "Doors")
+        local result = ffi.getprivate(self, "Doors") return result
     end,
     GenerationIndex = function(self)
-        return ffi.getprivate(self, "GenIndex")
+        local result = ffi.getprivate(self, "GenIndex") return result
     end,
     IsDeadEnd = function(self)
-        return ffi.getprivate(self, "DeadEnd")
+        local result = ffi.getprivate(self, "DeadEnd") return result
     end,
     Neighbors = function(self)
         local count = repentogon.L_LevelGeneratorRoom_GetNeighborCount(self)
@@ -44,10 +44,10 @@ LevelGeneratorRoomMT = {
         return neighbors
     end,
     Row = function(self)
-        return ffi.getprivate(self, "LineIdx")
+        local result = ffi.getprivate(self, "LineIdx") return result
     end,
     Shape = function(self)
-        return ffi.getprivate(self, "RoomShape")
+        local result = ffi.getprivate(self, "RoomShape") return result
     end,
 }
 

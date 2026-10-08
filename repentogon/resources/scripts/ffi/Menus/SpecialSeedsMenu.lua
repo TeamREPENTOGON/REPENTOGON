@@ -9,11 +9,11 @@ local repentogon = ffidll
 SpecialSeedsMenu = {
     GetSprite = function()
         ffichecks.checkmainmenu("SpecialSeedsMenu")
-        return repentogon.L_SpecialSeedsMenu_GetSprite()
+        local result = repentogon.L_SpecialSeedsMenu_GetSprite() return result
     end,
     GetSelectedElement = function()
         ffichecks.checkmainmenu("SpecialSeedsMenu")
-        return repentogon.L_SpecialSeedsMenu_GetSelectedElement()
+        local result = repentogon.L_SpecialSeedsMenu_GetSelectedElement() return result
     end,
     SetSelectedElement = function(element)
         ffichecks.checkmainmenu("SpecialSeedsMenu")

@@ -394,7 +394,7 @@ ImGui = {
         end
     end,
     ElementExists = function(id)
-        return repentogon.L_ImGui_ElementExists(ffichecks.checkstring(1, id))
+        local result = repentogon.L_ImGui_ElementExists(ffichecks.checkstring(1, id)) return result
     end,
     GetGameWindowRect = function()
         local position = Vector(0, 0)
@@ -412,7 +412,7 @@ ImGui = {
         if not repentogon.L_ImGui_ElementExists(id) then
             ElementNotFound(id)
         end
-        return repentogon.L_ImGui_GetVisible(id)
+        local result = repentogon.L_ImGui_GetVisible(id) return result
     end,
     GetWindowChildFlags = function(id)
         id = ffichecks.checkstring(1, id)
@@ -442,7 +442,7 @@ ImGui = {
         repentogon.L_ImGui_Hide()
     end,
     IsVisible = function()
-        return repentogon.L_ImGui_IsVisible()
+        local result = repentogon.L_ImGui_IsVisible() return result
     end,
     LinkWindowToElement = function(windowId, elementId)
         windowId = ffichecks.checkstring(1, windowId)

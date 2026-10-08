@@ -31,21 +31,21 @@ ItemConfigMT = {
             id = self
         end
         id = ffichecks.checkinteger(1, id)
-        return repentogon.L_ItemConfig_CanRerollCollectible(id)
+        local result = repentogon.L_ItemConfig_CanRerollCollectible(id) return result
     end,
     GetCard = function(self, id)
         id = ffichecks.checkinteger(1, id)
-        return repentogon.L_ItemConfig_GetCard(self, id)
+        local result = repentogon.L_ItemConfig_GetCard(self, id) return result
     end,
     GetCards = function(self)
-        return ffi.getprivate(self, "CardList")
+        local result = ffi.getprivate(self, "CardList") return result
     end,
     GetCollectible = function(self, id)
         id = ffichecks.checkinteger(1, id)
-        return repentogon.L_ItemConfig_GetCollectible(self, id)
+        local result = repentogon.L_ItemConfig_GetCollectible(self, id) return result
     end,
     GetCollectibles = function(self)
-        return ffi.getprivate(self, "CollectibleList")
+        local result = ffi.getprivate(self, "CollectibleList") return result
     end,
     GetItemsWithCustomTag = function(self, tag)
         tag = ffichecks.checkstring(1, tag)
@@ -62,17 +62,17 @@ ItemConfigMT = {
     end,
     GetNullItem = function(self, id)
         id = ffichecks.checkinteger(1, id)
-        return repentogon.L_ItemConfig_GetNullItem(self, id)
+        local result = repentogon.L_ItemConfig_GetNullItem(self, id) return result
     end,
     GetNullItems = function(self)
-        return ffi.getprivate(self, "NullItemList")
+        local result = ffi.getprivate(self, "NullItemList") return result
     end,
     GetPillEffect = function(self, id)
         id = ffichecks.checkinteger(1, id)
-        return repentogon.L_ItemConfig_GetPillEffect(self, id)
+        local result = repentogon.L_ItemConfig_GetPillEffect(self, id) return result
     end,
     GetPillEffects = function(self)
-        return ffi.getprivate(self, "PillEffectList")
+        local result = ffi.getprivate(self, "PillEffectList") return result
     end,
     GetTaggedItems = function(self, tags)
         tags = ffichecks.checknumber(1, tags)
@@ -81,10 +81,10 @@ ItemConfigMT = {
     end,
     GetTrinket = function(self, id)
         id = ffichecks.checkinteger(1, id)
-        return repentogon.L_ItemConfig_GetTrinket(self, id)
+        local result = repentogon.L_ItemConfig_GetTrinket(self, id) return result
     end,
     GetTrinkets = function(self)
-        return ffi.getprivate(self, "TrinketList")
+        local result = ffi.getprivate(self, "TrinketList") return result
     end,
 }
 
@@ -96,7 +96,7 @@ ffi.metatype("struct ItemConfig", ItemConfigMT)
 ItemConfigConfig = setmetatable({}, {__class = ItemConfigMT})
 
 rawset(Isaac, "GetItemConfig", function()
-    return repentogon.L_ItemConfig_Get()
+    local result = repentogon.L_ItemConfig_Get() return result
 end)
 
 ItemConfig = {
@@ -111,15 +111,15 @@ local REMOVED_COLLECTIBLES = { [43] = true, [61] = true, [235] = true }
 
 rawset(ItemConfigConfig, "GetCollectible", function(id)
     id = ffichecks.checkinteger(1, id)
-    return repentogon.L_ItemConfig_GetCollectible(repentogon.L_ItemConfig_Get(), id)
+    local result = repentogon.L_ItemConfig_GetCollectible(repentogon.L_ItemConfig_Get(), id) return result
 end)
 rawset(ItemConfigConfig, "GetNullItem", function(id)
     id = ffichecks.checkinteger(1, id)
-    return repentogon.L_ItemConfig_GetNullItem(repentogon.L_ItemConfig_Get(), id)
+    local result = repentogon.L_ItemConfig_GetNullItem(repentogon.L_ItemConfig_Get(), id) return result
 end)
 rawset(ItemConfigConfig, "GetTrinket", function(id)
     id = ffichecks.checkinteger(1, id)
-    return repentogon.L_ItemConfig_GetTrinket(repentogon.L_ItemConfig_Get(), id)
+    local result = repentogon.L_ItemConfig_GetTrinket(repentogon.L_ItemConfig_Get(), id) return result
 end)
 rawset(ItemConfigConfig, "IsValidCollectible", function(id)
     id = ffichecks.checkinteger(1, id)

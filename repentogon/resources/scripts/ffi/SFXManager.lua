@@ -34,11 +34,11 @@ SFXManagerMT = {
     end,    
     GetAmbientSoundVolume = function(self, id)
         id = ffichecks.checkinteger(1, id)
-        return repentogon.L_SFXManager_GetAmbientSoundVolume(id)
+        local result = repentogon.L_SFXManager_GetAmbientSoundVolume(id) return result
     end,
     IsPlaying = function(self, id)
         id = ffichecks.checkinteger(1, id)
-        return repentogon.L_SFXManager_IsPlaying(id)
+        local result = repentogon.L_SFXManager_IsPlaying(id) return result
     end,
     Play = function(self, id, volume, frameDelay, loop, pitch, pan)
         id = ffichecks.checkinteger(1, id)

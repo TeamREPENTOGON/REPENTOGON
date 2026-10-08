@@ -16,35 +16,35 @@ local repentogon = ffidll
 SaveMenu = {
     GetSaveSelectMenuSprite = function()
         ffichecks.checkmainmenu("SaveMenu")
-        return repentogon.L_SaveMenu_GetSaveSelectMenuSprite()
+        local result = repentogon.L_SaveMenu_GetSaveSelectMenuSprite() return result
     end,
     GetDeleteButtonSprite = function()
         ffichecks.checkmainmenu("SaveMenu")
-        return repentogon.L_SaveMenu_GetDeleteButtonSprite()
+        local result = repentogon.L_SaveMenu_GetDeleteButtonSprite() return result
     end,
     GetDeletePopupSprite = function()
         ffichecks.checkmainmenu("SaveMenu")
-        return repentogon.L_SaveMenu_GetDeletePopupSprite()
+        local result = repentogon.L_SaveMenu_GetDeletePopupSprite() return result
     end,
     GetSave1DrawingSprite = function()
         ffichecks.checkmainmenu("SaveMenu")
-        return repentogon.L_SaveMenu_GetSave1DrawingSprite()
+        local result = repentogon.L_SaveMenu_GetSave1DrawingSprite() return result
     end,
     GetSave2DrawingSprite = function()
         ffichecks.checkmainmenu("SaveMenu")
-        return repentogon.L_SaveMenu_GetSave2DrawingSprite()
+        local result = repentogon.L_SaveMenu_GetSave2DrawingSprite() return result
     end,
     GetSave3DrawingSprite = function()
         ffichecks.checkmainmenu("SaveMenu")
-        return repentogon.L_SaveMenu_GetSave3DrawingSprite()
+        local result = repentogon.L_SaveMenu_GetSave3DrawingSprite() return result
     end,
     GetSelectedElement = function()
         ffichecks.checkmainmenu("SaveMenu")
-        return repentogon.L_SaveMenu_GetSelectedElement()
+        local result = repentogon.L_SaveMenu_GetSelectedElement() return result
     end,
     IsDeleteActive = function()
         ffichecks.checkmainmenu("SaveMenu")
-        return repentogon.L_SaveMenu_IsDeleteActive()
+        local result = repentogon.L_SaveMenu_IsDeleteActive() return result
     end,
     SetSlotSpritesheet = function(slot, spritesheet)
         ffichecks.checkmainmenu("SaveMenu")

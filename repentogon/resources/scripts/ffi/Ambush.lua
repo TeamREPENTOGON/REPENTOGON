@@ -19,16 +19,16 @@ local room = nil
 
 Ambush = {
     GetCurrentWave = function()
-        return repentogon.L_Ambush_GetCurrentWave()
+        local result = repentogon.L_Ambush_GetCurrentWave() return result
     end,
     GetMaxBossChallengeWaves = function()
-        return repentogon.L_Ambush_GetMaxBossChallengeWaves()
+        local result = repentogon.L_Ambush_GetMaxBossChallengeWaves() return result
     end,
     GetMaxBossrushWaves = function()
-        return repentogon.L_Ambush_GetMaxBossrushWaves()
+        local result = repentogon.L_Ambush_GetMaxBossrushWaves() return result
     end,
     GetMaxChallengeWaves = function()
-        return repentogon.L_Ambush_GetMaxChallengeWaves()
+        local result = repentogon.L_Ambush_GetMaxChallengeWaves() return result
     end,
     GetNextWave = function()
         if not room then
@@ -37,7 +37,7 @@ Ambush = {
         if ffi.getprivate(room, "RoomDescriptor").Data.Type ~= 11 then
             error("Cannot get Ambush wave information outside of a (boss) challenge room", 2)
         end
-        return repentogon.L_Ambush_GetNextWave();
+        local result = repentogon.L_Ambush_GetNextWave() return result
     end,
     GetNextWaves = function()
         if not room then

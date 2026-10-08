@@ -15,19 +15,19 @@ local LootListEntryMT
 LootListEntryMT = {
     __type = "LootListEntry",
     GetRNG = function(self)
-        return ffi.getprivate(self, "RNG")
+        local result = ffi.getprivate(self, "RNG") return result
     end,
     GetSeed = function(self)
-        return ffi.getprivate(self, "Seed")
+        local result = ffi.getprivate(self, "Seed") return result
     end,
     GetSubType = function(self)
-        return ffi.getprivate(self, "SubType")
+        local result = ffi.getprivate(self, "SubType") return result
     end,
     GetType = function(self)
-        return ffi.getprivate(self, "Type")
+        local result = ffi.getprivate(self, "Type") return result
     end,
     GetVariant = function(self)
-        return ffi.getprivate(self, "Variant")
+        local result = ffi.getprivate(self, "Variant") return result
     end
 }
 

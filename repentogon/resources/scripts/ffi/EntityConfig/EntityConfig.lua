@@ -11,11 +11,11 @@ local repentogon = ffidll
 EntityConfig = {
     GetBaby = function(id)
         id = ffichecks.checkinteger(1, id)
-        return repentogon.L_EntityConfig_GetBaby(id)
+        local result = repentogon.L_EntityConfig_GetBaby(id) return result
     end,
     GetEntity = function(type, variant, subType)
         type = ffichecks.checkinteger(1, type)
-        return repentogon.L_EntityConfig_GetEntity(type, ffichecks.optnumber(variant, -1), ffichecks.optnumber(subType, -1))
+        local result = repentogon.L_EntityConfig_GetEntity(type, ffichecks.optnumber(variant, -1), ffichecks.optnumber(subType, -1)) return result
     end,
     GetMaxBabyID = function()
         return repentogon.L_EntityConfig_GetBabyCount() - 1
@@ -25,6 +25,6 @@ EntityConfig = {
     end,
     GetPlayer = function(playerType)
         playerType = ffichecks.checkinteger(1, playerType)
-        return repentogon.L_EntityConfig_GetPlayer(playerType)
+        local result = repentogon.L_EntityConfig_GetPlayer(playerType) return result
     end,
 }

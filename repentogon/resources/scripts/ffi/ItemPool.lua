@@ -255,7 +255,7 @@ ItemPoolMT = {
     end,
     ForceAddPillEffect = function(self, pillEffect)
         pillEffect = ffichecks.checkinteger(1, pillEffect)
-        return repentogon.L_ItemPool_ForceAddPillEffect(self, pillEffect)
+        local result = repentogon.L_ItemPool_ForceAddPillEffect(self, pillEffect) return result
     end,
     GetBibleUpgrades = function(self, poolType)
         poolType = ffichecks.checkinteger(1, poolType)
@@ -266,7 +266,7 @@ ItemPoolMT = {
     end,
     GetCard = function(self, seed, includePlayingCards, includeRunes, onlyRunes)
         seed = ffichecks.checkinteger(1, seed)
-        return repentogon.L_ItemPool_GetCard(self, seed, ffichecks.optboolean(includePlayingCards, false), ffichecks.optboolean(includeRunes, false), ffichecks.optboolean(onlyRunes, false))
+        local result = repentogon.L_ItemPool_GetCard(self, seed, ffichecks.optboolean(includePlayingCards, false), ffichecks.optboolean(includeRunes, false), ffichecks.optboolean(onlyRunes, false)) return result
     end,
     GetCardEx = function(self, seed, specialChance, runeChance, suitChance, allowNonCards)
         seed = ffichecks.checkinteger(1, seed)
@@ -274,7 +274,7 @@ ItemPoolMT = {
         runeChance = ffichecks.checkinteger(3, runeChance)
         suitChance = ffichecks.checkinteger(4, suitChance)
         allowNonCards = ffichecks.checkboolean(5, allowNonCards)
-        return repentogon.L_ItemPool_GetCardEx(self, seed, specialChance, runeChance, suitChance, allowNonCards)
+        local result = repentogon.L_ItemPool_GetCardEx(self, seed, specialChance, runeChance, suitChance, allowNonCards) return result
     end,
     GetCollectible = function(self, poolType, decrease, seed, defaultItem, flags)
         poolType = ffichecks.checkinteger(1, poolType)
@@ -320,7 +320,7 @@ ItemPoolMT = {
         else
             seed = ffichecks.checkinteger(2, seed)
         end
-        return repentogon.L_ItemPool_GetCollectibleFromList(self, array, length, seed, defaultItem, ffichecks.optboolean(addToBlacklist, true), ffichecks.optboolean(excludeActiveItems, false))
+        local result = repentogon.L_ItemPool_GetCollectibleFromList(self, array, length, seed, defaultItem, ffichecks.optboolean(addToBlacklist, true), ffichecks.optboolean(excludeActiveItems, false)) return result
     end,
     GetCollectiblesFromPool = function(self, poolType)
         poolType = ffichecks.checkinteger(1, poolType)
@@ -337,36 +337,36 @@ ItemPoolMT = {
         return result
     end,
     GetLastPool = function(self)
-        return ffi.getprivate(self, "LastPool")
+        local result = ffi.getprivate(self, "LastPool") return result
     end,
     GetNumAvailableTrinkets = function(self)
-        return ffi.getprivate(self, "NumAvailableTrinkets")
+        local result = ffi.getprivate(self, "NumAvailableTrinkets") return result
     end,
     GetNumItemPools = function(self)
-        return repentogon.L_ItemPool_GetNumItemPools()
+        local result = repentogon.L_ItemPool_GetNumItemPools() return result
     end,
     GetPill = function(self, seed)
         seed = ffichecks.checkinteger(1, seed)
-        return repentogon.L_ItemPool_GetPill(self, seed)
+        local result = repentogon.L_ItemPool_GetPill(self, seed) return result
     end,
     GetPillColor = function(self, pillEffect)
         pillEffect = ffichecks.checkinteger(1, pillEffect)
-        return repentogon.L_ItemPool_GetPillColor(self, pillEffect)
+        local result = repentogon.L_ItemPool_GetPillColor(self, pillEffect) return result
     end,
     GetPillEffect = function(self, pillColor, player)
         pillColor = ffichecks.checkinteger(1, pillColor)
         ffichecks.checkcdata(2, player, "EntityPlayer", true)
-        return repentogon.L_ItemPool_GetPillEffect(self, pillColor, player)
+        local result = repentogon.L_ItemPool_GetPillEffect(self, pillColor, player) return result
     end,
     GetPoolForRoom = function(self, roomType, seed)
         roomType = ffichecks.checkinteger(1, roomType)
         seed = ffichecks.checkinteger(2, seed)
-        return repentogon.L_ItemPool_GetPoolForRoom(self, roomType, seed)
+        local result = repentogon.L_ItemPool_GetPoolForRoom(self, roomType, seed) return result
     end,
     GetRandomPool = function(self, rng, advancedSearch, filter, isWhitelist)
         ffichecks.checkcdata(1, rng, "RNG")
         if not ffichecks.optboolean(advancedSearch, false) then
-            return repentogon.L_ItemPool_GetRandomPool(self, rng, false, nil, 0, false)
+            local result = repentogon.L_ItemPool_GetRandomPool(self, rng, false, nil, 0, false) return result
         end
 
         if not (filter == nil or type(filter) == "table") then
@@ -375,7 +375,7 @@ ItemPoolMT = {
         isWhitelist = ffichecks.optboolean(isWhitelist, false)
 
         local count = filter and #filter or 0
-        return repentogon.L_ItemPool_GetRandomPool(self, rng, true, IntArray(filter or {}, count), count, isWhitelist)
+        local result = repentogon.L_ItemPool_GetRandomPool(self, rng, true, IntArray(filter or {}, count), count, isWhitelist) return result
     end,
     GetRemovedCollectibles = function(self)
         return BitsToTable(self, false)
@@ -387,15 +387,15 @@ ItemPoolMT = {
         if dontAdvanceRNG ~= nil then
             dontAdvanceRNG = ffichecks.checkboolean(1, dontAdvanceRNG)
         end
-        return repentogon.L_ItemPool_GetTrinket(self, dontAdvanceRNG or false)
+        local result = repentogon.L_ItemPool_GetTrinket(self, dontAdvanceRNG or false) return result
     end,
     HasCollectible = function(self, collectible)
         collectible = ffichecks.checkinteger(1, collectible)
-        return repentogon.L_ItemPool_HasCollectible(self, collectible)
+        local result = repentogon.L_ItemPool_HasCollectible(self, collectible) return result
     end,
     HasTrinket = function(self, trinket)
         trinket = ffichecks.checkinteger(1, trinket)
-        return repentogon.L_ItemPool_HasTrinket(self, trinket)
+        local result = repentogon.L_ItemPool_HasTrinket(self, trinket) return result
     end,
     IdentifyPill = function(self, pillColor)
         pillColor = ffichecks.checkinteger(1, pillColor)
@@ -403,7 +403,7 @@ ItemPoolMT = {
     end,
     IsPillIdentified = function(self, pillColor)
         pillColor = ffichecks.checkinteger(1, pillColor)
-        return repentogon.L_ItemPool_IsPillIdentified(self, pillColor)
+        local result = repentogon.L_ItemPool_IsPillIdentified(self, pillColor) return result
     end,
     PickCollectible = function(self, poolType, decrease, rng, flags)
         poolType = ffichecks.checkinteger(1, poolType)
@@ -426,7 +426,7 @@ ItemPoolMT = {
     end,
     RemoveCollectible = function(self, collectible, param2, param3)
         collectible = ffichecks.checkinteger(1, collectible)
-        return repentogon.L_ItemPool_RemoveCollectible(self, collectible, ffichecks.optboolean(param2, false), ffichecks.optboolean(param3, false))
+        local result = repentogon.L_ItemPool_RemoveCollectible(self, collectible, ffichecks.optboolean(param2, false), ffichecks.optboolean(param3, false)) return result
     end,
     RemoveTemporaryCollectible = function(self, poolType, items)
         poolType = ffichecks.checkinteger(1, poolType)
@@ -444,7 +444,7 @@ ItemPoolMT = {
     end,
     RemoveTrinket = function(self, trinket)
         trinket = ffichecks.checkinteger(1, trinket)
-        return repentogon.L_ItemPool_RemoveTrinket(self, trinket)
+        local result = repentogon.L_ItemPool_RemoveTrinket(self, trinket) return result
     end,
     ResetCollectible = function(self, collectible)
         collectible = ffichecks.checkinteger(1, collectible)

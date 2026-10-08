@@ -56,17 +56,17 @@ Renderer = {
         return normal
     end,
     GetClipPaneThreshold = function()
-        return repentogon.L_Renderer_GetClipPaneThreshold()
+        local result = repentogon.L_Renderer_GetClipPaneThreshold() return result
     end,
     GetPixelationAmount = function()
-        return repentogon.L_Renderer_GetPixelationAmount()
+        local result = repentogon.L_Renderer_GetPixelationAmount() return result
     end,
     GetShaderByType = function(shaderType)
         shaderType = ffichecks.checkinteger(1, shaderType)
         if shaderType < 0 or shaderType >= SHADER_MAX then
             ffichecks.argerror(1, "invalid shader type")
         end
-        return repentogon.L_Renderer_GetShaderByType(shaderType)
+        local result = repentogon.L_Renderer_GetShaderByType(shaderType) return result
     end,
     LoadImage = function(path)
         path = ffichecks.checkstring(1, path)

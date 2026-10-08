@@ -36,5 +36,5 @@ LevelGeneratorEntry = setmetatable({}, {
 })
 
 rawset(Isaac, "LevelGeneratorEntry", function()
-    return LevelGeneratorEntryT()
+    local result = LevelGeneratorEntryT() return result
 end)

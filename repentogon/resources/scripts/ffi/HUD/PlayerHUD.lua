@@ -28,23 +28,23 @@ local PlayerHUDMT
 PlayerHUDMT = {
     __type = "PlayerHUD",
     GetFlashGoldHearts = function(self)
-        return ffi.getprivate(self, "GoldHeartFlashCountdown")
+        local result = ffi.getprivate(self, "GoldHeartFlashCountdown") return result
     end,
     GetFlashRedHearts = function(self)
-        return ffi.getprivate(self, "RedHeartFlashCountdown")
+        local result = ffi.getprivate(self, "RedHeartFlashCountdown") return result
     end,
     GetFlashSoulHearts = function(self)
-        return ffi.getprivate(self, "SoulHeartFlashCountdown")
+        local result = ffi.getprivate(self, "SoulHeartFlashCountdown") return result
     end,
     GetHUD = function(self)
-        return ffi.getprivate(self, "HUD")
+        local result = ffi.getprivate(self, "HUD") return result
     end,
     GetHeartByIndex = function(self, index)
         index = ffichecks.checkinteger(1, index)
         if index < 0 or index > 23 then
             ffichecks.argerror(1, string.format("invalid index: %d", index))
         end
-        return PlayerHUDHeartT(ffi.getprivate(self, "Hearts")[index])
+        local result = PlayerHUDHeartT(ffi.getprivate(self, "Hearts")[index]) return result
     end,
     GetHearts = function(self)
         local hearts = ffi.getprivate(self, "Hearts")
@@ -55,13 +55,13 @@ PlayerHUDMT = {
         return result
     end,
     GetIndex = function(self)
-        return ffi.getprivate(self, "Index")
+        local result = ffi.getprivate(self, "Index") return result
     end,
     GetLayout = function(self)
-        return repentogon.L_PlayerHUD_GetLayout(self)
+        local result = repentogon.L_PlayerHUD_GetLayout(self) return result
     end,
     GetPlayer = function(self)
-        return ffi.getprivate(self, "Player")
+        local result = ffi.getprivate(self, "Player") return result
     end,
     RenderActiveItem = function(self, activeSlot, position, alpha, size)
         activeSlot = ffichecks.checkinteger(1, activeSlot)

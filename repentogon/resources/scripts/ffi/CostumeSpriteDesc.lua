@@ -19,49 +19,49 @@ ffi.cdef [[
 local ffi = ffi
 
 local function GetDefaultSkinColor(self)
-    return ffi.getprivate(self, "DefaultSkinColor")
+    local result = ffi.getprivate(self, "DefaultSkinColor") return result
 end
 
 local function GetSkinColor(self)
-    return ffi.getprivate(self, "SkinColor")
+    local result = ffi.getprivate(self, "SkinColor") return result
 end
 
 local CostumeSpriteDescMT
 CostumeSpriteDescMT = {
     __type = "CostumeSpriteDesc",
     CanOverwriteColor = function(self)
-        return ffi.getprivate(self, "OverwriteColor")
+        local result = ffi.getprivate(self, "OverwriteColor") return result
     end,
     GetBodyColor = GetSkinColor,
     GetDefaultSkinColor = GetDefaultSkinColor,
     GetHeadColor = GetDefaultSkinColor,
     GetItemConfig = function(self)
-        return ffi.getprivate(self, "Item")
+        local result = ffi.getprivate(self, "Item") return result
     end,
     GetPlayerType = function(self)
-        return ffi.getprivate(self, "PlayerType")
+        local result = ffi.getprivate(self, "PlayerType") return result
     end,
     GetPriority = function(self)
-        return ffi.getprivate(self, "Priority")
+        local result = ffi.getprivate(self, "Priority") return result
     end,
     GetSkinColor = GetSkinColor,
     GetSprite = function(self)
-        return ffi.getprivate(self, "Sprite")
+        local result = ffi.getprivate(self, "Sprite") return result
     end,
     HasOverlay = function(self)
-        return ffi.getprivate(self, "Overlay")
+        local result = ffi.getprivate(self, "Overlay") return result
     end,
     HasSkinAlt = function(self)
-        return ffi.getprivate(self, "SkinAlt")
+        local result = ffi.getprivate(self, "SkinAlt") return result
     end,
     IsFlying = function(self)
-        return ffi.getprivate(self, "Flying")
+        local result = ffi.getprivate(self, "Flying") return result
     end,
     IsItemAnimPlaying = function(self)
-        return ffi.getprivate(self, "ItemAnimPlay")
+        local result = ffi.getprivate(self, "ItemAnimPlay") return result
     end,
     IsItemStateOnly = function(self)
-        return ffi.getprivate(self, "ItemStateOnly")
+        local result = ffi.getprivate(self, "ItemStateOnly") return result
     end,
 }
 

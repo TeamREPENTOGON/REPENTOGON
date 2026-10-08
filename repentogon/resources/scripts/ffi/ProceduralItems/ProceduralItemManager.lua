@@ -20,7 +20,7 @@ ProceduralItemManager = {
     CreateProceduralItem = function(seed, unk)
         seed = ffichecks.checkinteger(1, seed)
         unk = ffichecks.checkinteger(2, unk)
-        return repentogon.L_ProceduralItemManager_CreateProceduralItem(seed, unk)
+        local result = repentogon.L_ProceduralItemManager_CreateProceduralItem(seed, unk) return result
     end,
     GetProceduralItem = function(index)
         index = ffichecks.checkinteger(1, index)

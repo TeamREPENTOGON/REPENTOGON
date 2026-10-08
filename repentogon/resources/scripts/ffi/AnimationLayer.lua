@@ -45,10 +45,10 @@ AnimationLayerMT = {
         return animationFrame
     end,
     GetLayerID = function(self)
-        return ffi.getprivate(self, "LayerID")
+        local result = ffi.getprivate(self, "LayerID") return result
     end,
     IsVisible = function(self)
-        return ffi.getprivate(self, "Visible")
+        local result = ffi.getprivate(self, "Visible") return result
     end,
 }
 

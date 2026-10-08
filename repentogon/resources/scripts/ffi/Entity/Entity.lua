@@ -172,7 +172,7 @@ local MAX_EXACT = 9007199254740992LL
 local function Flags64(value)
     local signed = ffi.cast("int64_t", value)
     if signed >= -MAX_EXACT and signed <= MAX_EXACT then
-        return tonumber(signed)
+        local result = tonumber(signed) return result
     end
     return signed
 end
@@ -185,7 +185,7 @@ end
 
 local function Getter(field)
     return function(self)
-        return ffi.getprivate(self, field)
+        local result = ffi.getprivate(self, field) return result
     end
 end
 
@@ -198,7 +198,7 @@ end
 
 local function VectorReferenceGetter(field)
     return function(self)
-        return ffi.getprivate(self, field)
+        local result = ffi.getprivate(self, field) return result
     end
 end
 
@@ -232,7 +232,7 @@ end
 
 local function EntityGetter(field)
     return function(self)
-        return ffi.getprivate(self, field)
+        local result = ffi.getprivate(self, field) return result
     end
 end
 
@@ -244,7 +244,7 @@ local getters = {
     InitSeed = Getter("InitSeedValue"),
     DropSeed = Getter("DropSeedValue"),
     FrameCount = function(self)
-        return repentogon.L_Entity_GetFrameCount(self)
+        local result = repentogon.L_Entity_GetFrameCount(self) return result
     end,
     Position = VectorGetter("PositionValue"),
     Velocity = VectorGetter("VelocityValue"),
@@ -420,14 +420,14 @@ local function ToClass(self, wantedType)
     if ffi.getprivate(self, "TypeValue") ~= wantedType then
         return nil
     end
-    return ffi.cast(classTypes[wantedType], self)
+    local result = ffi.cast(classTypes[wantedType], self) return result
 end
 
 local function EffectResult(pointer)
     if pointer == nil then
         return nil
     end
-    return ffi.cast(classTypes[TYPE_EFFECT], pointer)
+    local result = ffi.cast(classTypes[TYPE_EFFECT], pointer) return result
 end
 
 local function Methods(table)
@@ -494,7 +494,7 @@ Methods {
     ComputeStatusEffectDuration = function(self, initial, source)
         initial = ffichecks.checkinteger(1, initial)
         ffichecks.checkcdata(2, source, "EntityRef")
-        return repentogon.L_Entity_ComputeStatusEffectDuration(self, initial, source)
+        local result = repentogon.L_Entity_ComputeStatusEffectDuration(self, initial, source) return result
     end,
     CopyStatusEffects = function(self, other, overwrite)
         repentogon.L_Entity_CopyStatusEffects(self, EntityToPointer(other), ffichecks.optboolean(overwrite, false))
@@ -505,10 +505,10 @@ Methods {
     Exists = Getter("ExistsValue"),
     ForceCollide = function(self, collider, low)
         low = ffichecks.checkboolean(2, low)
-        return repentogon.L_Entity_ForceCollide(self, EntityToPointer(collider), low)
+        local result = repentogon.L_Entity_ForceCollide(self, EntityToPointer(collider), low) return result
     end,
     GetBossID = function(self)
-        return repentogon.L_Entity_GetBossID(self)
+        local result = repentogon.L_Entity_GetBossID(self) return result
     end,
     GetCollisionCapsule = function(self, offset)
         ffichecks.checkcdata(1, offset, "Vector", true)
@@ -532,19 +532,19 @@ Methods {
     end,
     GetDebugShape = function(self, unk)
         unk = ffichecks.checkboolean(1, unk)
-        return repentogon.L_Entity_GetDebugShape(self, unk)
+        local result = repentogon.L_Entity_GetDebugShape(self, unk) return result
     end,
     GetDropRNG = function(self)
-        return repentogon.L_Entity_GetDropRNG(self)
+        local result = repentogon.L_Entity_GetDropRNG(self) return result
     end,
     GetEntityConfigEntity = function(self)
-        return repentogon.L_Entity_GetEntityConfigEntity(self)
+        local result = repentogon.L_Entity_GetEntityConfigEntity(self) return result
     end,
     GetEntityFlags = function(self)
         return Flags64(ffi.getprivate(self, "EntityFlagsValue"))
     end,
     GetHitListIndex = function(self)
-        return repentogon.L_Entity_GetHitListIndex(self)
+        local result = repentogon.L_Entity_GetHitListIndex(self) return result
     end,
     GetLastChild = function(self)
         local entity = self
@@ -596,11 +596,11 @@ Methods {
         return Vector(direction.X, direction.Y)
     end,
     GetSprite = function(self)
-        return repentogon.L_Entity_GetSprite(self)
+        local result = repentogon.L_Entity_GetSprite(self) return result
     end,
     GetType = Getter("TypeValue"),
     GetWaterClipFlags = function(self)
-        return repentogon.L_Entity_GetWaterClipFlags(self)
+        local result = repentogon.L_Entity_GetWaterClipFlags(self) return result
     end,
     GiveMinecart = function(self, ...)
         local count = select("#", ...)
@@ -613,7 +613,7 @@ Methods {
         return ffichecks.pointertonpc(repentogon.L_Entity_GiveMinecart(self, position, velocity))
     end,
     HasCommonParentWithEntity = function(self, other)
-        return repentogon.L_Entity_HasCommonParentWithEntity(self, EntityToPointer(other))
+        local result = repentogon.L_Entity_HasCommonParentWithEntity(self, EntityToPointer(other)) return result
     end,
     HasEntityFlags = function(self, flags)
         flags = ffichecks.checkinteger64(1, flags)
@@ -627,10 +627,10 @@ Methods {
     end,
     IgnoreEffectFromFriendly = function(self, source)
         ffichecks.checkcdata(1, source, "EntityRef")
-        return repentogon.L_Entity_IgnoreEffectFromFriendly(self, source)
+        local result = repentogon.L_Entity_IgnoreEffectFromFriendly(self, source) return result
     end,
     IsActiveEnemy = function(self, includeDead)
-        return repentogon.L_Entity_IsActiveEnemy(self, ffichecks.optboolean(includeDead, false))
+        local result = repentogon.L_Entity_IsActiveEnemy(self, ffichecks.optboolean(includeDead, false)) return result
     end,
     IsBoss = BoolMethod(repentogon.L_Entity_IsBoss),
     IsDead = Getter("DeadValue"),
@@ -639,12 +639,12 @@ Methods {
     IsFrame = function(self, frame, offset)
         frame = ffichecks.checkinteger(1, frame)
         offset = ffichecks.checkinteger(2, offset)
-        return repentogon.L_Entity_IsFrame(self, frame, offset)
+        local result = repentogon.L_Entity_IsFrame(self, frame, offset) return result
     end,
     IsInvincible = Getter("InvincibleValue"),
     IsVisible = Getter("VisibleValue"),
     IsVulnerableEnemy = function(self, source)
-        return repentogon.L_Entity_IsVulnerableEnemy(self, EntityToPointer(source))
+        local result = repentogon.L_Entity_IsVulnerableEnemy(self, EntityToPointer(source)) return result
     end,
     Kill = VoidMethod(repentogon.L_Entity_Kill),
     KillWithSource = function(self, source)
@@ -674,7 +674,7 @@ Methods {
     end,
     RenderShadowLayer = function(self, offset)
         ffichecks.checkcdata(1, offset, "Vector")
-        return repentogon.L_Entity_RenderShadowLayer(self, offset)
+        local result = repentogon.L_Entity_RenderShadowLayer(self, offset) return result
     end,
     ResetWaterClipFlags = VoidMethod(repentogon.L_Entity_ResetWaterClipFlags),
     SetColor = function(self, color, duration, priority, fadeout, share)
@@ -751,7 +751,7 @@ Methods {
         flags = ffichecks.checkinteger64(2, flags)
         ffichecks.checkcdata(3, source, "EntityRef", true)
         damageCountdown = ffichecks.checkinteger(4, damageCountdown)
-        return repentogon.L_Entity_TakeDamage(self, damage, flags, source, damageCountdown)
+        local result = repentogon.L_Entity_TakeDamage(self, damage, flags, source, damageCountdown) return result
     end,
     TeleportToRandomPosition = VoidMethod(repentogon.L_Entity_TeleportToRandomPosition),
     ToBomb = function(self)
@@ -795,7 +795,7 @@ Methods {
         if projectile == nil then
             return nil
         end
-        return ffi.cast(projectileType, projectile)
+        local result = ffi.cast(projectileType, projectile) return result
     end,
     ToSlot = function(self)
         return ToClass(self, TYPE_SLOT)
@@ -807,7 +807,7 @@ Methods {
         ffichecks.checkcdata(1, source, "EntityRef")
         ffichecks.checkcdata(2, direction, "Vector")
         force = ffichecks.checknumber(3, force)
-        return repentogon.L_Entity_TryThrow(self, source, direction, force)
+        local result = repentogon.L_Entity_TryThrow(self, source, direction, force) return result
     end,
     Update = VoidMethod(repentogon.L_Entity_Update),
 }
@@ -847,7 +847,7 @@ local function FireSplitTear(self, position, velocity, damageMultiplier, sizeMul
     if tear == nil then
         return nil
     end
-    return ffi.cast(classTypes[TYPE_TEAR], tear)
+    local result = ffi.cast(classTypes[TYPE_TEAR], tear) return result
 end
 
 Entity.Helpers = {
@@ -901,7 +901,7 @@ ffichecks.pointertoentity = function(pointer)
     if pointer == nil then
         return nil
     end
-    return ffi.cast(entityType, pointer)
+    local result = ffi.cast(entityType, pointer) return result
 end
 
 Entity.Class = setmetatable({}, { __class = EntityMT })

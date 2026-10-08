@@ -96,13 +96,13 @@ ffi.metatype("struct EntityDelirium", DeliriumMT)
 Entity.Methods.ToDelirium = function(self)
     local entityType = ffi.getprivate(self, "TypeValue")
     if entityType == TYPE_DELIRIUM then
-        return ffi.cast(deliriumType, self)
+        local result = ffi.cast(deliriumType, self) return result
     end
 
     local npc = self:ToNPC()
     if npc ~= nil and ffi.getprivate(npc, "DeliriumBossTypeValue") == entityType
         and ffi.getprivate(npc, "DeliriumBossVariantValue") == ffi.getprivate(npc, "VariantValue") then
-        return ffi.cast(deliriumType, npc)
+        local result = ffi.cast(deliriumType, npc) return result
     end
     return nil
 end

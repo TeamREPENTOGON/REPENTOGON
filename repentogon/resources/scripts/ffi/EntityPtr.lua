@@ -24,7 +24,7 @@ EntityPtrMT = {
 
 EntityPtrMT.__index = function(self, key)
     if key == "Ref" then
-        return ffi.getprivate(self, "RefValue")
+        local result = ffi.getprivate(self, "RefValue") return result
     end
     return EntityPtrMT[key]
 end

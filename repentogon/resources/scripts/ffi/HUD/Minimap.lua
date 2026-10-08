@@ -26,7 +26,7 @@ MinimapMT.__index = MinimapMT
 local MinimapT = ffi.metatype("struct Minimap", MinimapMT)
 
 local function GetMinimap()
-    return repentogon.L_Minimap_Get()
+    local result = repentogon.L_Minimap_Get() return result
 end
 
 Minimap = {

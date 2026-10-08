@@ -20,7 +20,7 @@ BitSet128MT = {
     __type = "BitSet128",
 
     __tostring = function(self) 
-        return string.format("BitSet128: %016x%016x", tonumber(self.H), tonumber(self.L))
+        local result = string.format("BitSet128: %016x%016x", tonumber(self.H), tonumber(self.L)) return result
     end,
     __bnot = function(self)
         local a = ~self.L
@@ -114,7 +114,7 @@ local BitSet128T = ffi.metatype("struct BitSet128", BitSet128MT)
 
 BitSet128 = setmetatable({}, {
     __call = function(_, L, H)
-        return BitSet128T(L or 0, H or 0)
+        local result = BitSet128T(L or 0, H or 0) return result
     end,
     __class = BitSet128MT,
 })

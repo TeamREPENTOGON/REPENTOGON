@@ -21,7 +21,7 @@ local repentogon = ffidll
 local ffi = ffi
 
 rawset(Isaac, "GetPersistentGameData", function()
-    return repentogon.L_PersistentGameData_Get()
+    local result = repentogon.L_PersistentGameData_Get() return result
 end)
 
 local function CheckBossID(arg, id)
@@ -42,7 +42,7 @@ PersistentGameDataMT = {
     AddBestiaryKill = function(self, entType, variant)
         entType = ffichecks.checkinteger(1, entType)
         variant = ffichecks.optnumber(variant, 0)
-        return repentogon.L_PersistentGameData_AddBestiaryKill(self, entType, variant)
+        local result = repentogon.L_PersistentGameData_AddBestiaryKill(self, entType, variant) return result
     end,
     AddBossKilled = function(self, boss)
         boss = ffichecks.checkinteger(1, boss)
@@ -52,22 +52,22 @@ PersistentGameDataMT = {
     GetBestiaryDeathCount = function(self, entType, variant)
         entType = ffichecks.checkinteger(1, entType)
         variant = ffichecks.checkinteger(2, variant)
-        return repentogon.L_PersistentGameData_GetBestiaryDeathCount(self, entType, variant)
+        local result = repentogon.L_PersistentGameData_GetBestiaryDeathCount(self, entType, variant) return result
     end,
     GetBestiaryEncounterCount = function(self, entType, variant)
         entType = ffichecks.checkinteger(1, entType)
         variant = ffichecks.checkinteger(2, variant)
-        return repentogon.L_PersistentGameData_GetBestiaryEncounterCount(self, entType, variant)
+        local result = repentogon.L_PersistentGameData_GetBestiaryEncounterCount(self, entType, variant) return result
     end,
     GetBestiaryKillCount = function(self, entType, variant)
         entType = ffichecks.checkinteger(1, entType)
         variant = ffichecks.checkinteger(2, variant)
-        return repentogon.L_PersistentGameData_GetBestiaryKillCount(self, entType, variant)
+        local result = repentogon.L_PersistentGameData_GetBestiaryKillCount(self, entType, variant) return result
     end,
     GetEventCounter = function(self, counter)
         counter = ffichecks.checkinteger(1, counter)
         CheckEventCounter(1, counter)
-        return repentogon.L_PersistentGameData_GetEventCounter(self, counter)
+        local result = repentogon.L_PersistentGameData_GetEventCounter(self, counter) return result
     end,
     IncreaseEventCounter = function(self, counter, count)
         counter = ffichecks.checkinteger(1, counter)
@@ -82,7 +82,7 @@ PersistentGameDataMT = {
     end,
     IsChallengeCompleted = function(self, challenge)
         challenge = ffichecks.checkinteger(1, challenge)
-        return repentogon.L_PersistentGameData_IsChallengeCompleted(self, challenge)
+        local result = repentogon.L_PersistentGameData_IsChallengeCompleted(self, challenge) return result
     end,
     IsItemInCollection = function(self, item)
         item = ffichecks.checkinteger(1, item)
@@ -94,16 +94,16 @@ PersistentGameDataMT = {
     TryUnlock = function(self, unlock, blockPaperPopup)
         unlock = ffichecks.checkinteger(1, unlock)
         blockPaperPopup = ffichecks.optboolean(blockPaperPopup, false)
-        return repentogon.L_PersistentGameData_TryUnlock(self, unlock, blockPaperPopup)
+        local result = repentogon.L_PersistentGameData_TryUnlock(self, unlock, blockPaperPopup) return result
     end,
     Unlock = function(self, unlock, blockPaperPopup)
         unlock = ffichecks.checkinteger(1, unlock)
         blockPaperPopup = ffichecks.optboolean(blockPaperPopup, false)
-        return repentogon.L_PersistentGameData_Unlock(self, unlock, blockPaperPopup)
+        local result = repentogon.L_PersistentGameData_Unlock(self, unlock, blockPaperPopup) return result
     end,
     Unlocked = function(self, unlock)
         unlock = ffichecks.checkinteger(1, unlock)
-        return repentogon.L_PersistentGameData_Unlocked(self, unlock)
+        local result = repentogon.L_PersistentGameData_Unlocked(self, unlock) return result
     end,
 }
 

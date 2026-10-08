@@ -33,11 +33,11 @@ InputGlobalMT.__index = InputGlobalMT
 
 Input = setmetatable({
     GetActionValue = function(action, controllerId)
-        return repentogon.L_Input_GetActionValue(action, controllerId)
+        local result = repentogon.L_Input_GetActionValue(action, controllerId) return result
     end,
 
     GetButtonValue = function(button, controllerId)
-        return repentogon.L_Input_GetButtonValue(button, controllerId)
+        local result = repentogon.L_Input_GetButtonValue(button, controllerId) return result
     end,
 
     GetDeviceNameByIdx = function(controllerId)
@@ -47,7 +47,7 @@ Input = setmetatable({
             return
         end
         
-        return ffi.string(deviceName)
+        local result = ffi.string(deviceName) return result
     end,
 
     GetMousePosition = function(gameCoords)
@@ -63,22 +63,22 @@ Input = setmetatable({
     end,
 
     IsActionPressed = function(action, controllerId)
-        return repentogon.L_Input_IsActionPressed(action, controllerId)
+        local result = repentogon.L_Input_IsActionPressed(action, controllerId) return result
     end,
 
     IsActionTriggered = function(action, controllerId)
-        return repentogon.L_Input_IsActionTriggered(action, controllerId)
+        local result = repentogon.L_Input_IsActionTriggered(action, controllerId) return result
     end,
 
     IsButtonPressed = function(button, controllerId)
-        return repentogon.L_Input_IsButtonPressed(button, controllerId)
+        local result = repentogon.L_Input_IsButtonPressed(button, controllerId) return result
     end,
 
     IsButtonTriggered = function(button, controllerId)
-        return repentogon.L_Input_IsButtonTriggered(button, controllerId)
+        local result = repentogon.L_Input_IsButtonTriggered(button, controllerId) return result
     end,
 
     IsMouseBtnPressed = function(button)
-        return repentogon.L_Input_IsMouseBtnPressed(button)
+        local result = repentogon.L_Input_IsMouseBtnPressed(button) return result
     end,
 }, InputGlobalMT)

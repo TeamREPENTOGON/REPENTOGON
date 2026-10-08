@@ -10,16 +10,16 @@ local repentogon = ffidll
 RoomTransition = {
     GetPlayerExtraPortraitSprite = function(playerIndex)
         playerIndex = ffichecks.optnumber(playerIndex, 0)
-        return repentogon.L_RoomTransition_GetPlayerExtraPortraitSprite(playerIndex)
+        local result = repentogon.L_RoomTransition_GetPlayerExtraPortraitSprite(playerIndex) return result
     end,
     GetTransitionMode = function()
-        return repentogon.L_RoomTransition_GetTransitionMode()
+        local result = repentogon.L_RoomTransition_GetTransitionMode() return result
     end,
     GetVersusScreenSprite = function()
-        return repentogon.L_RoomTransition_GetVersusScreenSprite()
+        local result = repentogon.L_RoomTransition_GetVersusScreenSprite() return result
     end,
     IsRenderingBossIntro = function()
-        return repentogon.L_RoomTransition_IsRenderingBossIntro()
+        local result = repentogon.L_RoomTransition_IsRenderingBossIntro() return result
     end,
     StartBossIntro = function(BossID1, BossID2)
         BossID1 = ffichecks.checkinteger(1, BossID1)

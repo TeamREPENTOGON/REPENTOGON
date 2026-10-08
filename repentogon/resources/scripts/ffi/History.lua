@@ -27,25 +27,25 @@ local HistoryItemMT
 HistoryItemMT = {
     __type = "HistoryItem",
     GetItemID = function(self)
-        return ffi.getprivate(self, "ItemID")
+        local result = ffi.getprivate(self, "ItemID") return result
     end,
     GetItemPoolType = function(self)
-        return ffi.getprivate(self, "ItemPoolType")
+        local result = ffi.getprivate(self, "ItemPoolType") return result
     end,
     GetLevelStage = function(self)
-        return ffi.getprivate(self, "LevelStage")
+        local result = ffi.getprivate(self, "LevelStage") return result
     end,
     GetRoomType = function(self)
-        return ffi.getprivate(self, "RoomType")
+        local result = ffi.getprivate(self, "RoomType") return result
     end,
     GetStageType = function(self)
-        return ffi.getprivate(self, "StageType")
+        local result = ffi.getprivate(self, "StageType") return result
     end,
     GetTime = function(self)
-        return ffi.getprivate(self, "Time")
+        local result = ffi.getprivate(self, "Time") return result
     end,
     IsTrinket = function(self)
-        return ffi.getprivate(self, "Trinket")
+        local result = ffi.getprivate(self, "Trinket") return result
     end,
 }
 
@@ -109,7 +109,7 @@ HistoryMT = {
     end,
     RemoveHistoryItemByIndex = function(self, index)
         index = ffichecks.checkinteger(1, index)
-        return repentogon.L_History_RemoveHistoryItemByIndex(self, index)
+        local result = repentogon.L_History_RemoveHistoryItemByIndex(self, index) return result
     end,
     SearchCollectibles = function(self, ids)
         return SearchHistory(self, false, ids)

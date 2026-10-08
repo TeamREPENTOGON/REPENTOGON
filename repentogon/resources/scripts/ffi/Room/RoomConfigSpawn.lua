@@ -21,7 +21,7 @@ local repentogon = ffidll
 local RoomConfigSpawnsMT; RoomConfigSpawnsMT = { __type = "RoomConfigSpawns" }
 
 local function el_size(self)
-    return ffi.getprivate(self, "_size")
+    local result = ffi.getprivate(self, "_size") return result
 end
 
 RoomConfigSpawnsMT.__len = function(self) return el_size(self) end

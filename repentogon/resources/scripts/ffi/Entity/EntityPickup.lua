@@ -122,16 +122,16 @@ local methods = {
         repentogon.L_EntityPickup_AppearFast(self)
     end,
     CanJeraDuplicate = function(self)
-        return repentogon.L_EntityPickup_CanJeraDuplicate(self)
+        local result = repentogon.L_EntityPickup_CanJeraDuplicate(self) return result
     end,
     CanReroll = function(self)
-        return repentogon.L_EntityPickup_CanReroll(self)
+        local result = repentogon.L_EntityPickup_CanReroll(self) return result
     end,
     ClearCanRerollOverride = function(self)
         repentogon.L_EntityPickup_ClearCanRerollOverride(self)
     end,
     GetAlternatePedestal = function(self)
-        return repentogon.L_EntityPickup_GetAlternatePedestal(self)
+        local result = repentogon.L_EntityPickup_GetAlternatePedestal(self) return result
     end,
     GetCanRerollOverride = function(self)
         local override = repentogon.L_EntityPickup_GetCanRerollOverride(self)
@@ -141,7 +141,7 @@ local methods = {
         return override == 1
     end,
     GetCoinValue = function(self)
-        return repentogon.L_EntityPickup_GetCoinValue(self)
+        local result = repentogon.L_EntityPickup_GetCoinValue(self) return result
     end,
     GetCollectibleCycle = function(self)
         local list = ffi.getprivate(self, "CycleCollectibleListValue")
@@ -154,7 +154,7 @@ local methods = {
     GetDropDelay = Getter("DropDelayValue"),
     GetFlipCollectible = function(self)
         if repentogon.L_EntityPickup_HasFlipData(self) then
-            return repentogon.L_EntityPickup_GetFlipCollectible(self)
+            local result = repentogon.L_EntityPickup_GetFlipCollectible(self) return result
         end
         return nil
     end,
@@ -178,14 +178,14 @@ local methods = {
     GetMegaChestRightCollectible = Getter("MegaChestRightValue"),
     GetPickupGhost = Getter("PickupGhostValue"),
     GetPriceSprite = function(self)
-        return repentogon.L_EntityPickup_GetPriceSprite(self)
+        local result = repentogon.L_EntityPickup_GetPriceSprite(self) return result
     end,
     GetRandomPickupVelocity = function(self, ...)
         return GetRandomPickupVelocity(...)
     end,
     GetVarData = Getter("VarDataValue"),
     HasFlipData = function(self)
-        return repentogon.L_EntityPickup_HasFlipData(self)
+        local result = repentogon.L_EntityPickup_HasFlipData(self) return result
     end,
     InitFlipState = function(self, collectibleId, setupCollectibleGraphics)
         if collectibleId == nil then
@@ -196,7 +196,7 @@ local methods = {
         repentogon.L_EntityPickup_InitFlipState(self, collectibleId, ffichecks.optboolean(setupCollectibleGraphics, true))
     end,
     IsBlind = function(self, checkForcedBlindOnly)
-        return repentogon.L_EntityPickup_IsBlind(self, ffichecks.optboolean(checkForcedBlindOnly, true))
+        local result = repentogon.L_EntityPickup_IsBlind(self, ffichecks.optboolean(checkForcedBlindOnly, true)) return result
     end,
     IsShopItem = function(self)
         return ffi.getprivate(self, "PriceValue") ~= 0
@@ -242,24 +242,24 @@ local methods = {
         repentogon.L_EntityPickup_SetForceBlind(self, blind)
     end,
     SetNewOptionsPickupIndex = function(self)
-        return repentogon.L_EntityPickup_SetNewOptionsPickupIndex(self)
+        local result = repentogon.L_EntityPickup_SetNewOptionsPickupIndex(self) return result
     end,
     SetVarData = IntegerSetter("VarDataValue"),
     TriggerTheresOptionsPickup = function(self)
         repentogon.L_EntityPickup_TriggerTheresOptionsPickup(self)
     end,
     TryFlip = function(self)
-        return repentogon.L_EntityPickup_TryFlip(self)
+        local result = repentogon.L_EntityPickup_TryFlip(self) return result
     end,
     TryInitOptionCycle = function(self, numCycle)
         numCycle = ffichecks.checkinteger(1, numCycle)
-        return repentogon.L_EntityPickup_TryInitOptionCycle(self, numCycle)
+        local result = repentogon.L_EntityPickup_TryInitOptionCycle(self, numCycle) return result
     end,
     TryOpenChest = function(self, player)
-        return repentogon.L_EntityPickup_TryOpenChest(self, EntityToPointer(player))
+        local result = repentogon.L_EntityPickup_TryOpenChest(self, EntityToPointer(player)) return result
     end,
     TryRemoveCollectible = function(self)
-        return repentogon.L_EntityPickup_TryRemoveCollectible(self)
+        local result = repentogon.L_EntityPickup_TryRemoveCollectible(self) return result
     end,
     UpdatePickupGhosts = function(self)
         repentogon.L_EntityPickup_UpdatePickupGhosts(self)
@@ -287,6 +287,6 @@ EntityPickup = setmetatable({
         end
     end,
     ShouldIgnoreModifiers = function()
-        return repentogon.L_EntityPickup_ShouldIgnoreModifiers()
+        local result = repentogon.L_EntityPickup_ShouldIgnoreModifiers() return result
     end,
 }, { __class = PickupMT })

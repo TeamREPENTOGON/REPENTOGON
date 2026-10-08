@@ -126,7 +126,7 @@ end
 local function ReadString(tbl, fieldName, context, optional)
     local value = tbl[fieldName]
     if type(value) == "number" then
-        return tostring(value)
+        local result = tostring(value) return result
     elseif type(value) ~= "string" then
         if not optional or value ~= nil then
             LogInvalidArg(context, TypeMessage(value, "string"), fieldName)
@@ -360,7 +360,7 @@ RoomConfigSetMT = {
 
         local setId = ffi.getprivate(self, "SetID")
         if index < repentogon.L_RoomConfigSet_GetVirtualSize(setId) then
-            return repentogon.L_RoomConfigSet_GetVirtualRoom(setId, index)
+            local result = repentogon.L_RoomConfigSet_GetVirtualRoom(setId, index) return result
         end
         return nil
     end,

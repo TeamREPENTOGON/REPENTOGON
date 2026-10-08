@@ -39,19 +39,19 @@ local DestinationQuadMT
 DestinationQuadMT = {
     __type = "DestinationQuad",
     Copy = function(self) 
-        return DestinationQuadT(self)
+        local result = DestinationQuadT(self) return result
     end,
     GetTopLeft = function(self) 
-        return ffi.getprivate(self, "TopLeft");
+        local result = ffi.getprivate(self, "TopLeft") return result
     end,
     GetTopRight = function(self) 
-        return ffi.getprivate(self, "TopRight");
+        local result = ffi.getprivate(self, "TopRight") return result
     end,
     GetBottomLeft = function(self) 
-        return ffi.getprivate(self, "BottomLeft");
+        local result = ffi.getprivate(self, "BottomLeft") return result
     end,
     GetBottomRight = function(self) 
-        return ffi.getprivate(self, "BottomRight");
+        local result = ffi.getprivate(self, "BottomRight") return result
     end,
     SetTopLeft = function(self, v) 
         ffichecks.checkcdata(1, v, "Vector")

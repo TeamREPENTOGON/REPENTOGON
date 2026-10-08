@@ -55,19 +55,19 @@ local EntityConfigEntityMT
 EntityConfigEntityMT = {
     __type = "EntityConfigEntity",
     CanBeChampion = function(self)
-        return ffi.getprivate(self, "Champion")
+        local result = ffi.getprivate(self, "Champion") return result
     end,
     CanBeRerolledInto = function(self)
-        return ffi.getprivate(self, "Reroll")
+        local result = ffi.getprivate(self, "Reroll") return result
     end,
     CanShutDoors = function(self)
-        return ffi.getprivate(self, "ShutDoors")
+        local result = ffi.getprivate(self, "ShutDoors") return result
     end,
     GetAnm2Path = function(self)
         return ffichecks.stdstring(ffi.getprivate(self, "Anm2Path"))
     end,
     GetBaseHP = function(self)
-        return ffi.getprivate(self, "BaseHP")
+        local result = ffi.getprivate(self, "BaseHP") return result
     end,
     GetBestiaryAnimation = function(self)
         return ffichecks.stdstring(ffi.getprivate(self, "BestiaryAnim"))
@@ -85,19 +85,19 @@ EntityConfigEntityMT = {
         return ffichecks.stdstring(ffi.getprivate(self, "BestiaryOverlay"))
     end,
     GetBestiaryScale = function(self)
-        return ffi.getprivate(self, "BestiaryScale")
+        local result = ffi.getprivate(self, "BestiaryScale") return result
     end,
     GetBossID = function(self)
-        return ffi.getprivate(self, "BossID")
+        local result = ffi.getprivate(self, "BossID") return result
     end,
     GetCollisionDamage = function(self)
-        return ffi.getprivate(self, "CollisionDamage")
+        local result = ffi.getprivate(self, "CollisionDamage") return result
     end,
     GetCollisionInterval = function(self)
-        return ffi.getprivate(self, "CollisionInterval")
+        local result = ffi.getprivate(self, "CollisionInterval") return result
     end,
     GetCollisionRadius = function(self)
-        return ffi.getprivate(self, "CollisionRadius")
+        local result = ffi.getprivate(self, "CollisionRadius") return result
     end,
     GetCollisionRadiusMultiplier = function(self)
         return ffichecks.copyvector(ffi.getprivate(self, "CollisionRadiusMulti"))
@@ -115,74 +115,74 @@ EntityConfigEntityMT = {
         return result
     end,
     GetDevolvedEntity = function(self)
-        return repentogon.L_EntityConfigEntity_GetDevolvedEntity(self)
+        local result = repentogon.L_EntityConfigEntity_GetDevolvedEntity(self) return result
     end,
     GetEntityTags = function(self)
-        return ffi.getprivate(self, "Tags")
+        local result = ffi.getprivate(self, "Tags") return result
     end,
     GetFriction = function(self)
-        return ffi.getprivate(self, "Friction")
+        local result = ffi.getprivate(self, "Friction") return result
     end,
     GetGibFlags = function(self)
-        return ffi.getprivate(self, "GibFlags")
+        local result = ffi.getprivate(self, "GibFlags") return result
     end,
     GetGibsAmount = function(self)
-        return ffi.getprivate(self, "GibsAmount")
+        local result = ffi.getprivate(self, "GibsAmount") return result
     end,
     GetGridCollisionPoints = function(self)
-        return ffi.getprivate(self, "GridCollisionPoints")
+        local result = ffi.getprivate(self, "GridCollisionPoints") return result
     end,
     GetMass = function(self)
-        return ffi.getprivate(self, "Mass")
+        local result = ffi.getprivate(self, "Mass") return result
     end,
     GetModName = function(self)
         local name = repentogon.L_EntityConfigEntity_GetModName(self)
         if name == nil then
             return nil
         end
-        return ffi.string(name)
+        local result = ffi.string(name) return result
     end,
     GetName = function(self)
         return ffichecks.stdstring(ffi.getprivate(self, "Name"))
     end,
     GetPortraitID = function(self)
-        return ffi.getprivate(self, "Portrait")
+        local result = ffi.getprivate(self, "Portrait") return result
     end,
     GetShadowSize = function(self)
-        return ffi.getprivate(self, "ShadowSize")
+        local result = ffi.getprivate(self, "ShadowSize") return result
     end,
     GetShieldStrength = function(self)
-        return ffi.getprivate(self, "ShieldStrength")
+        local result = ffi.getprivate(self, "ShieldStrength") return result
     end,
     GetStageHP = function(self)
-        return ffi.getprivate(self, "StageHP")
+        local result = ffi.getprivate(self, "StageHP") return result
     end,
     GetSubType = function(self)
-        return ffi.getprivate(self, "SubType")
+        local result = ffi.getprivate(self, "SubType") return result
     end,
     GetType = function(self)
-        return ffi.getprivate(self, "Type")
+        local result = ffi.getprivate(self, "Type") return result
     end,
     GetVariant = function(self)
-        return ffi.getprivate(self, "Variant")
+        local result = ffi.getprivate(self, "Variant") return result
     end,
     HasCustomTag = function(self, tag)
         tag = ffichecks.checkstring(1, tag)
-        return repentogon.L_EntityConfigEntity_HasCustomTag(self, tag)
+        local result = repentogon.L_EntityConfigEntity_HasCustomTag(self, tag) return result
     end,
     HasEntityTags = function(self, tags)
         tags = ffichecks.checkinteger(1, tags)
         return HasFlags(ffi.getprivate(self, "Tags"), tags)
     end,
     HasFloorAlts = function(self)
-        return ffi.getprivate(self, "FloorAlts")
+        local result = ffi.getprivate(self, "FloorAlts") return result
     end,
     HasGibFlags = function(self, flags)
         flags = ffichecks.checkinteger(1, flags)
         return HasFlags(ffi.getprivate(self, "GibFlags"), flags)
     end,
     IsBoss = function(self)
-        return ffi.getprivate(self, "Boss")
+        local result = ffi.getprivate(self, "Boss") return result
     end,
 }
 

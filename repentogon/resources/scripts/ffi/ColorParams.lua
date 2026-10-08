@@ -17,22 +17,22 @@ local ColorParamsMT
 ColorParamsMT = {
     __type = "ColorParams",
     GetColor = function(self)
-        return ffi.new("struct Color", ffi.getprivate(self, "Color"))
+        local result = ffi.new("struct Color", ffi.getprivate(self, "Color")) return result
     end,
     GetDuration = function(self)
-        return ffi.getprivate(self, "Duration")
+        local result = ffi.getprivate(self, "Duration") return result
     end,
     GetFadeout = function(self)
-        return ffi.getprivate(self, "Fadeout")
+        local result = ffi.getprivate(self, "Fadeout") return result
     end,
     GetLifespan = function(self)
-        return ffi.getprivate(self, "Lifespan")
+        local result = ffi.getprivate(self, "Lifespan") return result
     end,
     GetPriority = function(self)
-        return ffi.getprivate(self, "Priority")
+        local result = ffi.getprivate(self, "Priority") return result
     end,
     GetShared = function(self)
-        return ffi.getprivate(self, "Shared")
+        local result = ffi.getprivate(self, "Shared") return result
     end,
     SetColor = function(self, color)
         ffichecks.checkcdata(1, color, "Color")

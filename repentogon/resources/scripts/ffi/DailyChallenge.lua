@@ -6,6 +6,6 @@ local repentogon = ffidll
 
 DailyChallenge = {
     GetChallengeParams = function()
-        return repentogon.L_DailyChallenge_GetChallengeParams()
+        local result = repentogon.L_DailyChallenge_GetChallengeParams() return result
     end,
 }

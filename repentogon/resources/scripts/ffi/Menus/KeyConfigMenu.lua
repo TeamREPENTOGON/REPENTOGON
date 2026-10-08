@@ -12,19 +12,19 @@ local repentogon = ffidll
 KeyConfigMenu = {
     GetSprite = function()
         ffichecks.checkmainmenu("KeyConfigMenu")
-        return repentogon.L_KeyConfigMenu_GetSprite()
+        local result = repentogon.L_KeyConfigMenu_GetSprite() return result
     end,
     GetSelectedColumn = function()
         ffichecks.checkmainmenu("KeyConfigMenu")
-        return repentogon.L_KeyConfigMenu_GetSelectedColumn()
+        local result = repentogon.L_KeyConfigMenu_GetSelectedColumn() return result
     end,
     GetSelectedElement = function()
         ffichecks.checkmainmenu("KeyConfigMenu")
-        return repentogon.L_KeyConfigMenu_GetSelectedElement()
+        local result = repentogon.L_KeyConfigMenu_GetSelectedElement() return result
     end,
     IsEditActive = function()
         ffichecks.checkmainmenu("KeyConfigMenu")
-        return repentogon.L_KeyConfigMenu_IsEditActive()
+        local result = repentogon.L_KeyConfigMenu_IsEditActive() return result
     end,
     SetSelectedColumn = function(element)
         ffichecks.checkmainmenu("KeyConfigMenu")

@@ -124,7 +124,7 @@ end
 
 local getters = {
     CanShutDoors = function(self)
-        return repentogon.L_Entity_CanShutDoors(self)
+        local result = repentogon.L_Entity_CanShutDoors(self) return result
     end,
     ChildNPC = function(self)
         local child = self.Child
@@ -188,10 +188,10 @@ local methods = {
     end,
     CanBeDamagedFromVelocity = function(self, velocity)
         ffichecks.checkcdata(1, velocity, "Vector")
-        return repentogon.L_EntityNPC_CanBeDamagedFromVelocity(self, velocity)
+        local result = repentogon.L_EntityNPC_CanBeDamagedFromVelocity(self, velocity) return result
     end,
     CanReroll = function(self)
-        return repentogon.L_EntityNPC_CanReroll(self)
+        local result = repentogon.L_EntityNPC_CanReroll(self) return result
     end,
     ClearFlyingOverride = function(self)
         repentogon.L_EntityNPC_ClearFlyingOverride(self)
@@ -204,7 +204,7 @@ local methods = {
         ffichecks.checkcdata(2, targetPosition, "Vector")
         trajectoryModifier = ffichecks.checknumber(3, trajectoryModifier)
         ffichecks.checkcdata(4, params, "ProjectileParams")
-        return repentogon.L_EntityNPC_FireBossProjectiles(self, numProjectiles, targetPosition, trajectoryModifier, params)
+        local result = repentogon.L_EntityNPC_FireBossProjectiles(self, numProjectiles, targetPosition, trajectoryModifier, params) return result
     end,
     FireBossProjectilesEx = function(self, numProjectiles, targetPosition, trajectoryModifier, params)
         numProjectiles = ffichecks.checkinteger(1, numProjectiles)
@@ -225,7 +225,7 @@ local methods = {
         else
             backdrop = ffichecks.checkinteger(4, backdrop)
         end
-        return repentogon.L_EntityNPC_FireGridEntity(self, sprite, desc, velocity, math.min(backdrop, 1))
+        local result = repentogon.L_EntityNPC_FireGridEntity(self, sprite, desc, velocity, math.min(backdrop, 1)) return result
     end,
     FireProjectiles = function(self, position, velocity, mode, params)
         ffichecks.checkcdata(1, position, "Vector")
@@ -248,7 +248,7 @@ local methods = {
         return ProjectileResults(repentogon.L_EntityNPC_FireProjectilesEx(self, position, velocity, mode, params))
     end,
     GetAliveEnemyCount = function(self)
-        return repentogon.L_EntityNPC_GetAliveEnemyCount(self)
+        local result = repentogon.L_EntityNPC_GetAliveEnemyCount(self) return result
     end,
     GetBossColorIdx = Getter("BossColorIdxValue"),
     GetChampionColorIdx = Getter("ChampionColorIdxValue"),
@@ -283,7 +283,7 @@ local methods = {
     end,
     GetPathfinder = Getter("PathfinderValue"),
     GetPlayerTarget = function(self)
-        return repentogon.L_EntityNPC_GetPlayerTarget(self)
+        local result = repentogon.L_EntityNPC_GetPlayerTarget(self) return result
     end,
     GetShieldStrength = Getter("ShieldStrengthValue"),
     GetShopkeeperLoot = function(self, shouldAdvance)
@@ -298,7 +298,7 @@ local methods = {
         return nil
     end,
     IsBossColor = function(self)
-        return repentogon.L_EntityNPC_IsBossColor(self)
+        local result = repentogon.L_EntityNPC_IsBossColor(self) return result
     end,
     IsChampion = Getter("IsChampionValue"),
     KillUnique = function(self)
@@ -315,7 +315,7 @@ local methods = {
     end,
     MakeSplat = function(self, scale)
         scale = ffichecks.checknumber(1, scale)
-        return repentogon.L_EntityNPC_MakeSplat(self, scale)
+        local result = repentogon.L_EntityNPC_MakeSplat(self, scale) return result
     end,
     Morph = function(self, entityType, variant, subType, championColorIdx)
         entityType = ffichecks.checkinteger(1, entityType)
@@ -346,7 +346,7 @@ local methods = {
     ReplaceSpritesheet = function(self, layerId, spritesheet, loadGraphics)
         layerId = ffichecks.checkinteger(1, layerId)
         spritesheet = ffichecks.checkstring(2, spritesheet)
-        return repentogon.L_EntityNPC_ReplaceSpritesheet(self, layerId, spritesheet, ffichecks.optboolean(loadGraphics, false))
+        local result = repentogon.L_EntityNPC_ReplaceSpritesheet(self, layerId, spritesheet, ffichecks.optboolean(loadGraphics, false)) return result
     end,
     ResetPathFinderTarget = function(self)
         repentogon.L_EntityNPC_ResetPathFinderTarget(self)
@@ -366,7 +366,7 @@ local methods = {
     SpawnBloodCloud = function(self, position, color)
         ffichecks.checkcdata(1, position, "Vector", true)
         ffichecks.checkcdata(2, color, "Color", true)
-        return repentogon.L_EntityNPC_MakeBloodCloud(self, position, color)
+        local result = repentogon.L_EntityNPC_MakeBloodCloud(self, position, color) return result
     end,
     SpawnBloodSplash = function(self)
         repentogon.L_EntityNPC_MakeBloodSplash(self)
@@ -377,12 +377,12 @@ local methods = {
             ffichecks.argerror(1, "Entity expected, got " .. ffichecks.gettype(target), 3)
         end
         duration = ffichecks.checkinteger(2, duration)
-        return repentogon.L_EntityNPC_TryForceTarget(self, pointer, duration)
+        local result = repentogon.L_EntityNPC_TryForceTarget(self, pointer, duration) return result
     end,
     TrySplit = function(self, defaultDamage, source, doScreenEffects)
         defaultDamage = ffichecks.checknumber(1, defaultDamage)
         ffichecks.checkcdata(2, source, "EntityRef")
-        return repentogon.L_EntityNPC_TrySplit(self, defaultDamage, source, ffichecks.optboolean(doScreenEffects, true))
+        local result = repentogon.L_EntityNPC_TrySplit(self, defaultDamage, source, ffichecks.optboolean(doScreenEffects, true)) return result
     end,
     UpdateDirtColor = function(self, lerp)
         lerp = ffichecks.checkboolean(1, lerp)
@@ -403,46 +403,46 @@ ffichecks.pointertonpc = function(pointer)
     if pointer == nil then
         return nil
     end
-    return ffi.cast(npcType, pointer)
+    local result = ffi.cast(npcType, pointer) return result
 end
 
 EntityNPC = setmetatable({
     ShootMaggotProjectile = function(origin, target, velocity, yOffset)
         ffichecks.checkcdata(1, origin, "Vector")
         ffichecks.checkcdata(2, target, "Vector")
-        return repentogon.L_EntityNPC_ShootMaggotProjectile(origin, target, ffichecks.optnumber(velocity, -8), ffichecks.optnumber(yOffset, -24))
+        local result = repentogon.L_EntityNPC_ShootMaggotProjectile(origin, target, ffichecks.optnumber(velocity, -8), ffichecks.optnumber(yOffset, -24)) return result
     end,
     ThrowLeech = function(origin, spawner, target, yPosOffset, big)
         ffichecks.checkcdata(1, origin, "Vector")
         ffichecks.checkcdata(3, target, "Vector")
-        return repentogon.L_EntityNPC_ThrowLeech(origin, EntityToPointer(spawner), target, ffichecks.optnumber(yPosOffset, -10), ffichecks.optboolean(big, false))
+        local result = repentogon.L_EntityNPC_ThrowLeech(origin, EntityToPointer(spawner), target, ffichecks.optnumber(yPosOffset, -10), ffichecks.optboolean(big, false)) return result
     end,
     ThrowMaggot = function(origin, target, yOffset, fallSpeed)
         ffichecks.checkcdata(1, origin, "Vector")
         ffichecks.checkcdata(2, target, "Vector")
-        return repentogon.L_EntityNPC_ThrowMaggot(origin, target, ffichecks.optnumber(yOffset, -10), ffichecks.optnumber(fallSpeed, -8))
+        local result = repentogon.L_EntityNPC_ThrowMaggot(origin, target, ffichecks.optnumber(yOffset, -10), ffichecks.optnumber(fallSpeed, -8)) return result
     end,
     ThrowMaggotAtPos = function(origin, target, yOffset)
         ffichecks.checkcdata(1, origin, "Vector")
         ffichecks.checkcdata(2, target, "Vector")
-        return repentogon.L_EntityNPC_ThrowMaggotAtPos(origin, target, ffichecks.optnumber(yOffset, -8))
+        local result = repentogon.L_EntityNPC_ThrowMaggotAtPos(origin, target, ffichecks.optnumber(yOffset, -8)) return result
     end,
     ThrowRockSpider = function(origin, spawner, target, variant, yPosOffset)
         ffichecks.checkcdata(1, origin, "Vector")
         ffichecks.checkcdata(3, target, "Vector")
-        return repentogon.L_EntityNPC_ThrowRockSpider(origin, EntityToPointer(spawner), target, ffichecks.optnumber(variant, 0), ffichecks.optnumber(yPosOffset, -10))
+        local result = repentogon.L_EntityNPC_ThrowRockSpider(origin, EntityToPointer(spawner), target, ffichecks.optnumber(variant, 0), ffichecks.optnumber(yPosOffset, -10)) return result
     end,
     ThrowSpider = function(position, spawner, targetPosition, big, yOffset)
         ffichecks.checkcdata(1, position, "Vector")
         ffichecks.checkcdata(3, targetPosition, "Vector")
         big = ffichecks.checkboolean(4, big)
         yOffset = ffichecks.checknumber(5, yOffset)
-        return repentogon.L_EntityNPC_ThrowSpider(position, EntityToPointer(spawner), targetPosition, big, yOffset)
+        local result = repentogon.L_EntityNPC_ThrowSpider(position, EntityToPointer(spawner), targetPosition, big, yOffset) return result
     end,
     ThrowStrider = function(origin, spawner, target)
         ffichecks.checkcdata(1, origin, "Vector")
         ffichecks.checkcdata(3, target, "Vector")
-        return repentogon.L_EntityNPC_ThrowStrider(origin, EntityToPointer(spawner), target)
+        local result = repentogon.L_EntityNPC_ThrowStrider(origin, EntityToPointer(spawner), target) return result
     end,
 }, { __class = NPCMT })
 

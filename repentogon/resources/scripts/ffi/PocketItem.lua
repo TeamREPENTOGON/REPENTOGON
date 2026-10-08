@@ -12,10 +12,10 @@ local PocketItemMT
 PocketItemMT = {
     __type = "PocketItem",
     GetSlot = function(self)
-        return ffi.getprivate(self, "Slot")
+        local result = ffi.getprivate(self, "Slot") return result
     end,
     GetType = function(self)
-        return ffi.getprivate(self, "Type")
+        local result = ffi.getprivate(self, "Type") return result
     end,
 }
 

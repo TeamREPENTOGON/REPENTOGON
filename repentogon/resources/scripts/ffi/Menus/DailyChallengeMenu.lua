@@ -17,39 +17,39 @@ local repentogon = ffidll
 DailyChallengeMenu = {
     GetSprite = function()
         ffichecks.checkmainmenu("DailyChallengeMenu")
-        return repentogon.L_DailyChallengeMenu_GetSprite()
+        local result = repentogon.L_DailyChallengeMenu_GetSprite() return result
     end,
     GetLeaderboardSprite = function()
         ffichecks.checkmainmenu("DailyChallengeMenu")
-        return repentogon.L_DailyChallengeMenu_GetLeaderboardSprite()
+        local result = repentogon.L_DailyChallengeMenu_GetLeaderboardSprite() return result
     end,
     GetLeaderboardScoreMenuSprite = function()
         ffichecks.checkmainmenu("DailyChallengeMenu")
-        return repentogon.L_DailyChallengeMenu_GetLeaderboardScoreMenuSprite()
+        local result = repentogon.L_DailyChallengeMenu_GetLeaderboardScoreMenuSprite() return result
     end,
     GetSelectedElement = function()
         ffichecks.checkmainmenu("DailyChallengeMenu")
-        return repentogon.L_DailyChallengeMenu_GetSelectedElement()
+        local result = repentogon.L_DailyChallengeMenu_GetSelectedElement() return result
     end,
     GetState = function()
         ffichecks.checkmainmenu("DailyChallengeMenu")
-        return repentogon.L_DailyChallengeMenu_GetState()
+        local result = repentogon.L_DailyChallengeMenu_GetState() return result
     end,
     GetTimeLeftHours = function()
         ffichecks.checkmainmenu("DailyChallengeMenu")
-        return repentogon.L_DailyChallengeMenu_GetTimeLeftHours()
+        local result = repentogon.L_DailyChallengeMenu_GetTimeLeftHours() return result
     end,
     GetTimeLeftMinutes = function()
         ffichecks.checkmainmenu("DailyChallengeMenu")
-        return repentogon.L_DailyChallengeMenu_GetTimeLeftMinutes()
+        local result = repentogon.L_DailyChallengeMenu_GetTimeLeftMinutes() return result
     end,
     GetTimeLeftSeconds = function()
         ffichecks.checkmainmenu("DailyChallengeMenu")
-        return repentogon.L_DailyChallengeMenu_GetTimeLeftSeconds()
+        local result = repentogon.L_DailyChallengeMenu_GetTimeLeftSeconds() return result
     end,
     IsLeaderboardVisible = function()
         ffichecks.checkmainmenu("DailyChallengeMenu")
-        return repentogon.L_DailyChallengeMenu_IsLeaderboardVisible()
+        local result = repentogon.L_DailyChallengeMenu_IsLeaderboardVisible() return result
     end,
     SetSelectedElement = function(element)
         ffichecks.checkmainmenu("DailyChallengeMenu")

@@ -19,19 +19,19 @@ local HUDMessageMT
 HUDMessageMT = {
     __type = "HUDMessage",
     GetMainText = function(self)
-        return ffi.string(repentogon.L_HUDMessage_GetMainText(self))
+        local result = ffi.string(repentogon.L_HUDMessage_GetMainText(self)) return result
     end,
     GetSprite = function(self)
-        return ffi.getprivate(self, "Sprite")
+        local result = ffi.getprivate(self, "Sprite") return result
     end,
     GetSubText = function(self)
-        return ffi.string(repentogon.L_HUDMessage_GetSubText(self))
+        local result = ffi.string(repentogon.L_HUDMessage_GetSubText(self)) return result
     end,
     Hide = function(self)
         ffi.setprivate(self, "Showing", false)
     end,
     IsShowing = function(self)
-        return ffi.getprivate(self, "Showing")
+        local result = ffi.getprivate(self, "Showing") return result
     end,
     SetMainText = function(self, text)
         text = ffichecks.checkstring(1, text)

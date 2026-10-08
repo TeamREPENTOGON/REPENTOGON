@@ -33,25 +33,25 @@ local EntityDescMT
 EntityDescMT = {
     __type = "EntityDesc",
     GetChampionId = function(self)
-        return ffi.getprivate(self, "ChampionId")
+        local result = ffi.getprivate(self, "ChampionId") return result
     end,
     GetHealth = function(self)
-        return ffi.getprivate(self, "Health")
+        local result = ffi.getprivate(self, "Health") return result
     end,
     GetMaxHealth = function(self)
-        return ffi.getprivate(self, "MaxHealth")
+        local result = ffi.getprivate(self, "MaxHealth") return result
     end,
     GetSubtype = function(self)
-        return ffi.getprivate(self, "Subtype")
+        local result = ffi.getprivate(self, "Subtype") return result
     end,
     GetType = function(self)
-        return ffi.getprivate(self, "Type")
+        local result = ffi.getprivate(self, "Type") return result
     end,
     GetVariant = function(self)
-        return ffi.getprivate(self, "Variant")
+        local result = ffi.getprivate(self, "Variant") return result
     end,
     IsPlayerControlled = function(self)
-        return ffi.getprivate(self, "PlayerControlled")
+        local result = ffi.getprivate(self, "PlayerControlled") return result
     end,
     SetChampionId = function(self, id)
         id = ffichecks.checkinteger(1, id)

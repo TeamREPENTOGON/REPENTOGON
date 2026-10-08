@@ -23,7 +23,7 @@ local SourceQuadMT
 SourceQuadMT = {
     __type = "SourceQuad",
     Copy = function(self) 
-        return SourceQuadT(self)
+        local result = SourceQuadT(self) return result
     end,
     IsUVSpace = function(self) 
         return ffi.getprivate(self, "CoordinateSpace") == CoordinateSpace.NORMALIZED_UV 

@@ -35,19 +35,19 @@ local MultiShotParamsMT
 MultiShotParamsMT = {
     __type = "MultiShotParams",
     GetMultiEyeAngle = function(self)
-        return ffi.getprivate(self, "MultiEyeAngle")
+        local result = ffi.getprivate(self, "MultiEyeAngle") return result
     end,
     GetNumEyesActive = function(self)
-        return ffi.getprivate(self, "NumEyesActive")
+        local result = ffi.getprivate(self, "NumEyesActive") return result
     end,
     GetNumLanesPerEye = function(self)
-        return ffi.getprivate(self, "NumLanesPerEye")
+        local result = ffi.getprivate(self, "NumLanesPerEye") return result
     end,
     GetNumRandomDirTears = function(self)
-        return ffi.getprivate(self, "NumRandomDirTears")
+        local result = ffi.getprivate(self, "NumRandomDirTears") return result
     end,
     GetNumTears = function(self)
-        return ffi.getprivate(self, "NumTears")
+        local result = ffi.getprivate(self, "NumTears") return result
     end,
     GetSpreadAngle = function(self, weaponType)
         weaponType = ffichecks.checkinteger(1, weaponType)
@@ -61,13 +61,13 @@ MultiShotParamsMT = {
         ffichecks.argerror(1, "WeaponTypes bigger than 15 are not supported")
     end,
     IsCrossEyed = function(self)
-        return ffi.getprivate(self, "CrossEyed")
+        local result = ffi.getprivate(self, "CrossEyed") return result
     end,
     IsShootingBackwards = function(self)
-        return ffi.getprivate(self, "ShootingBackwards")
+        local result = ffi.getprivate(self, "ShootingBackwards") return result
     end,
     IsShootingSideways = function(self)
-        return ffi.getprivate(self, "ShootingSideways")
+        local result = ffi.getprivate(self, "ShootingSideways") return result
     end,
     SetIsCrossEyed = function(self, value)
         value = ffichecks.checkboolean(1, value)

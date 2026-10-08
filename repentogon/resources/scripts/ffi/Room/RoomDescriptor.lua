@@ -53,7 +53,7 @@ local repentogon = ffidll
 local RoomDescriptorListMT; RoomDescriptorListMT = { __type = "RoomDescriptorList" }
 
 local function rdl_size(self)
-    return ffi.getprivate(self, "_size")
+    local result = ffi.getprivate(self, "_size") return result
 end
 
 RoomDescriptorListMT.__len = function(self) return rdl_size(self) end
@@ -82,22 +82,22 @@ RoomDescriptorMT = {
         repentogon.L_RoomDescriptor_AddRestrictedGridIndex(self, gridIndex)
     end,
     GetDecoSaveState = function(self)
-        return repentogon.L_RoomDescriptor_GetDecoSaveState(self)
+        local result = repentogon.L_RoomDescriptor_GetDecoSaveState(self) return result
     end,
     GetDimension = function(self)
-        return ffi.getprivate(self, "Dimension")
+        local result = ffi.getprivate(self, "Dimension") return result
     end,
     GetEntitiesSaveState = function(self)
-        return repentogon.L_RoomDescriptor_GetEntitiesSaveState(self)
+        local result = repentogon.L_RoomDescriptor_GetEntitiesSaveState(self) return result
     end,
     GetErrorTrinketEffect = function(self)
-        return repentogon.L_RoomDescriptor_GetErrorTrinketEffect(self)
+        local result = repentogon.L_RoomDescriptor_GetErrorTrinketEffect(self) return result
     end,
     GetGridEntitiesSaveState = function(self)
-        return repentogon.L_RoomDescriptor_GetGridEntitiesSaveState(self)
+        local result = repentogon.L_RoomDescriptor_GetGridEntitiesSaveState(self) return result
     end,
     GetGroup = function(self)
-        return ffi.getprivate(self, "Group")
+        local result = ffi.getprivate(self, "Group") return result
     end,
     GetNeighboringRooms = function(self)
         local slots = ffi.new("int[?]", 8)
@@ -125,7 +125,7 @@ RoomDescriptorMT = {
         return result
     end,
     GetTaintedKeeperCoinSpawns = function(self)
-        return ffi.getprivate(self, "TaintedKeeperCoinSpawns")
+        local result = ffi.getprivate(self, "TaintedKeeperCoinSpawns") return result
     end,
     GetValidNeighborPlacementLocations = function(self, param1, param2, param3, param4)
         local roomShape, doorMask, allowMultipleDoors, allowSpecialNeighbors

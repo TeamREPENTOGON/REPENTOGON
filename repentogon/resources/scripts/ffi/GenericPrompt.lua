@@ -27,20 +27,20 @@ GenericPromptMT = {
         repentogon.L_GenericPrompt_Destroy(self)
     end,
     GetCurrentSelection = function(self)
-        return ffi.getprivate(self, "CurrentSelection")
+        local result = ffi.getprivate(self, "CurrentSelection") return result
     end,
     GetSprite = function(self)
-        return ffi.getprivate(self, "Sprite")
+        local result = ffi.getprivate(self, "Sprite") return result
     end,
     GetSubmittedSelection = function(self)
-        return ffi.getprivate(self, "SubmittedSelection")
+        local result = ffi.getprivate(self, "SubmittedSelection") return result
     end,
     Initialize = function(self, smallPrompt)
         smallPrompt = ffichecks.optboolean(smallPrompt, false)
         repentogon.L_GenericPrompt_Initialize(self, smallPrompt)
     end,
     IsActive = function(self)
-        return repentogon.L_GenericPrompt_IsActive(self)
+        local result = repentogon.L_GenericPrompt_IsActive(self) return result
     end,
     Render = function(self)
         repentogon.L_GenericPrompt_Render(self)

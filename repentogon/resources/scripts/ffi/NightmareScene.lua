@@ -24,7 +24,7 @@ NightmareSceneMT.__index = NightmareSceneMT
 local NightmareSceneT = ffi.metatype("struct NightmareScene", NightmareSceneMT)
 
 local function GetNightmareScene()
-    return repentogon.L_NightmareScene_Get()
+    local result = repentogon.L_NightmareScene_Get() return result
 end
 
 NightmareScene = {

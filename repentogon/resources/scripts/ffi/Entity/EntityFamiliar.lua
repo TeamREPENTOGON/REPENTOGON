@@ -99,11 +99,11 @@ end
 
 local function GetRandomWisp(rng)
     ffichecks.checkcdata(1, rng, "RNG")
-    return repentogon.L_EntityFamiliar_GetRandomWisp(rng)
+    local result = repentogon.L_EntityFamiliar_GetRandomWisp(rng) return result
 end
 
 local function GetPathfinder(self)
-    return repentogon.L_EntityFamiliar_GetPathfinder(self)
+    local result = repentogon.L_EntityFamiliar_GetPathfinder(self) return result
 end
 
 local getters = {
@@ -146,7 +146,7 @@ local methods = {
     CanCharm = BoolMethod(repentogon.L_EntityFamiliar_CanCharm),
     FireProjectile = function(self, direction)
         ffichecks.checkcdata(1, direction, "Vector")
-        return repentogon.L_EntityFamiliar_FireProjectile(self, direction)
+        local result = repentogon.L_EntityFamiliar_FireProjectile(self, direction) return result
     end,
     FollowParent = VoidMethod(repentogon.L_EntityFamiliar_FollowParent),
     FollowPosition = function(self, position)
@@ -154,24 +154,24 @@ local methods = {
         repentogon.L_EntityFamiliar_FollowPosition(self, position)
     end,
     GetActiveWeaponEntity = function(self)
-        return repentogon.L_EntityFamiliar_GetActiveWeaponEntity(self)
+        local result = repentogon.L_EntityFamiliar_GetActiveWeaponEntity(self) return result
     end,
     GetActiveWeaponNumFired = function(self)
         if ffi.getprivate(self, "WeaponValue") == nil then
             return nil
         end
-        return repentogon.L_EntityFamiliar_GetActiveWeaponNumFired(self)
+        local result = repentogon.L_EntityFamiliar_GetActiveWeaponNumFired(self) return result
     end,
     GetDirtColor = function(self)
         return CopyStruct("struct Color", ffi.getprivate(self, "DirtColorValue"))
     end,
     GetFollowerPriority = function(self)
-        return repentogon.L_EntityFamiliar_GetFollowerPriority(self)
+        local result = repentogon.L_EntityFamiliar_GetFollowerPriority(self) return result
     end,
     GetItemConfig = Getter("ItemValue"),
     GetMoveDelayNum = Getter("MoveDelayNumValue"),
     GetMultiplier = function(self)
-        return repentogon.L_EntityFamiliar_GetMultiplier(self)
+        local result = repentogon.L_EntityFamiliar_GetMultiplier(self) return result
     end,
     GetOrbitPosition = function(self, offset)
         ffichecks.checkcdata(1, offset, "Vector")
@@ -211,7 +211,7 @@ local methods = {
     PlayShootAnim = IntegerMethod(repentogon.L_EntityFamiliar_PlayShootAnim),
     RecalculateOrbitOffset = function(self, layer, add)
         layer = ffichecks.checkinteger(1, layer)
-        return repentogon.L_EntityFamiliar_RecalculateOrbitOffset(self, layer, not not add)
+        local result = repentogon.L_EntityFamiliar_RecalculateOrbitOffset(self, layer, not not add) return result
     end,
     RemoveFromDelayed = VoidMethod(repentogon.L_EntityFamiliar_RemoveFromDelayed),
     RemoveFromFollowers = VoidMethod(repentogon.L_EntityFamiliar_RemoveFromFollowers),

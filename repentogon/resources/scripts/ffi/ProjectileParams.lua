@@ -41,7 +41,7 @@ ProjectileParamsMT = {
 
 ProjectileParamsMT.__index = function(self, key)
     if key == "Damage" then
-        return ffi.getprivate(self, "_Damage")
+        local result = ffi.getprivate(self, "_Damage") return result
     end
 
     return ProjectileParamsMT[key]
@@ -60,7 +60,7 @@ local ProjectileParamsT = ffi.metatype("struct ProjectileParams", ProjectilePara
 
 local ProjectileParamsGlobalMT = {
     __call = function()
-        return ProjectileParamsT({
+        local result = ProjectileParamsT({
             GridCollision = true,
             HeightModifier = 0,
             FallingSpeedModifier = 0,
@@ -85,7 +85,7 @@ local ProjectileParamsGlobalMT = {
             DepthOffset = 0,
             Variant = 0,
             Damage = -1,
-        })
+        }) return result
     end,
 
     __class = ProjectileParamsMT,

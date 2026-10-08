@@ -29,7 +29,7 @@ local MAX_EXACT = 9007199254740992LL
 local function Flags64(value)
     local signed = ffi.cast("int64_t", value)
     if signed >= -MAX_EXACT and signed <= MAX_EXACT then
-        return tonumber(signed)
+        local result = tonumber(signed) return result
     end
     return signed
 end

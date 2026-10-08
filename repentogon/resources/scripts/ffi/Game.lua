@@ -136,7 +136,7 @@ end
 
 local function Getter(field)
     return function(self)
-        return ffi.getprivate(self, field)
+        local result = ffi.getprivate(self, field) return result
     end
 end
 
@@ -373,7 +373,7 @@ GameMT = {
         return Ambush
     end,
     GetChallengeParams = function(self)
-        return repentogon.L_Game_GetChallengeParams(self)
+        local result = repentogon.L_Game_GetChallengeParams(self) return result
     end,
     GetCurrentColorModifier = ColorModifierGetter("CurrentColorModifier"),
     GetDarknessModifier = Getter("DarknessModifier"),
@@ -383,7 +383,7 @@ GameMT = {
     GetDonationModAngel = Getter("DonationModAngel"),
     GetDonationModGreed = Getter("DonationModGreed"),
     GetFont = function(self)
-        return repentogon.L_Game_GetFont()
+        local result = repentogon.L_Game_GetFont() return result
     end,
     GetFrameCount = function(self)
         return self.FrameCount
@@ -409,7 +409,7 @@ GameMT = {
     GetLastLevelWithoutHalfHp = Getter("LastLevelWithoutHalfHp"),
     GetLerpColorModifier = ColorModifierGetter("LerpColorModifier"),
     GetLevel = function(self)
-        return ffi.cast(LevelPtr, self)
+        local result = ffi.cast(LevelPtr, self) return result
     end,
     GetNearestPlayer = function(self, position)
         ffichecks.checkcdata(1, position, "Vector")
@@ -419,10 +419,10 @@ GameMT = {
         return ffichecks.vectorsize(ffi.getprivate(self, "EncounteredBossesBegin"), ffi.getprivate(self, "EncounteredBossesEnd"), 8)
     end,
     GetNumPlayers = function(self)
-        return repentogon.L_Game_GetNumPlayers(self)
+        local result = repentogon.L_Game_GetNumPlayers(self) return result
     end,
     GetPauseMenuState = function(self)
-        return repentogon.L_Game_GetPauseMenuState(self)
+        local result = repentogon.L_Game_GetPauseMenuState(self) return result
     end,
     GetPlanetariumsVisited = Getter("PlanetariumsVisited"),
     GetPlayer = function(self, index)
@@ -443,7 +443,7 @@ GameMT = {
     GetStagesWithoutHeartsPicked = Getter("StagesWithoutHeartsPicked"),
     GetStateFlag = function(self, flag)
         flag = ffichecks.checkinteger(1, flag)
-        return repentogon.L_Game_GetStateFlag(self, flag)
+        local result = repentogon.L_Game_GetStateFlag(self, flag) return result
     end,
     GetTargetColorModifier = ColorModifierGetter("TargetColorModifier"),
     GetTargetDarkness = Getter("TargetDarkness"),
@@ -452,7 +452,7 @@ GameMT = {
     HasEncounteredBoss = function(self, type, variant)
         type = ffichecks.checkinteger(1, type)
         variant = ffichecks.checkinteger(2, variant)
-        return repentogon.L_Game_HasEncounteredBoss(self, type, variant)
+        local result = repentogon.L_Game_HasEncounteredBoss(self, type, variant) return result
     end,
     HasHallucination = function(self)
         return ffi.getprivate(self, "HallucinationFrames") > 0
@@ -463,9 +463,9 @@ GameMT = {
             variant = ffichecks.checkinteger(2, variant)
             subtype = ffichecks.optnumber(subtype, -1)
             subtype = ffichecks.checkinteger(3, subtype)
-            return repentogon.L_Game_IsErased(self, entityOrType, variant, subtype)
+            local result = repentogon.L_Game_IsErased(self, entityOrType, variant, subtype) return result
         end
-        return repentogon.L_Game_IsErasedEntity(self, EntityToPointer(entityOrType))
+        local result = repentogon.L_Game_IsErasedEntity(self, EntityToPointer(entityOrType)) return result
     end,
     IsGreedBoss = BoolMethod(repentogon.L_Game_IsGreedBoss),
     IsGreedFinalBoss = BoolMethod(repentogon.L_Game_IsGreedFinalBoss),
@@ -505,7 +505,7 @@ GameMT = {
         repentogon.L_Game_RemoveErasedEnemy(self, type, variant)
     end,
     RerollEnemy = function(self, entity, unk)
-        return repentogon.L_Game_RerollEnemy(self, EntityToPointer(entity), ffichecks.optboolean(unk, false))
+        local result = repentogon.L_Game_RerollEnemy(self, EntityToPointer(entity), ffichecks.optboolean(unk, false)) return result
     end,
     RerollLevelCollectibles = VoidMethod(repentogon.L_Game_RerollLevelCollectibles),
     RerollLevelPickups = function(self, seed)
@@ -615,6 +615,6 @@ ffi.metatype("struct Game", GameMT)
 Game = setmetatable({}, {
     __class = GameMT,
     __call = function()
-        return repentogon.L_Game_Get()
+        local result = repentogon.L_Game_Get() return result
     end,
 })

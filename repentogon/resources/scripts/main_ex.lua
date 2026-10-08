@@ -12,21 +12,41 @@ local debug_getinfo = debug.getinfo
 
 collectgarbage("setpause", 125)
 collectgarbage("setstepmul", 200)
-jit.opt.start('maxtrace=8000', 'maxmcode=8192')
+jit.opt.start('maxtrace=20000', 'maxmcode=32768')
 local builtinIpairs = ipairs
+local builtinPairs = pairs
 require("compat53.init")
 
 -- compat53 overrides ipairs with one that's Lua 5.3 compliant, which is all well and good,
 -- except it does pointer arithmetic on cdata! Not Good!
 -- For cdata, use LuaJIT's built in implementation.
 do
-	local compatIpairs = ipairs
 	local rawgetmetatable = getmetatable
-	ipairs = function(t)
-		if rawgetmetatable(t) == "ffi" then
-			return builtinIpairs(t)
+	local gmt = type(debug) == "table" and debug.getmetatable or rawgetmetatable
+	local function ipairsIterator(t, i)
+		i = i + 1
+		local v = t[i]
+		if v ~= nil then
+			return i, t[i]
 		end
-		return compatIpairs(t)
+	end
+	ipairs = function(t)
+		if rawgetmetatable(t) == "ffi" or gmt(t) == nil then
+			local f, s, i = builtinIpairs(t)
+			return f, s, i
+		end
+		return ipairsIterator, t, 0
+	end
+	if pairs ~= builtinPairs then
+		pairs = function(t)
+			local mt = gmt(t)
+			if type(mt) == "table" and type(mt.__pairs) == "function" then
+				local f, s, k = mt.__pairs(t)
+				return f, s, k
+			end
+			local f, s, k = builtinPairs(t)
+			return f, s, k
+		end
 	end
 end
 
@@ -1141,7 +1161,7 @@ local function GetCallbackIterator(callbackID, param, extraParam)
 	end
 
 	if param == -1 and not RUN_CALLBACK_MINUS_ONE_PARAM_BLACKLIST[callbackID] then
-		return setmetatable({ Head = callbackData.ALL[1] }, AllCallbackIteratorMeta)
+		local result = setmetatable({ Head = callbackData.ALL[1] }, AllCallbackIteratorMeta) return result
 	end
 
 	param = ConvertCallbackParam(callbackID, param)
@@ -1156,14 +1176,14 @@ local function GetCallbackIterator(callbackID, param, extraParam)
 	end
 
 	if not paramCallback then
-		return setmetatable({ Head = commonCallback }, CommonCallbackIteratorMeta)
+		local result = setmetatable({ Head = commonCallback }, CommonCallbackIteratorMeta) return result
 	end
 
 	if not extraParamCallback then
-		return setmetatable({ Common = commonCallback, Param = paramCallback }, MergedCallbackIteratorMeta)
+		local result = setmetatable({ Common = commonCallback, Param = paramCallback }, MergedCallbackIteratorMeta) return result
 	end
 
-	return setmetatable({ Common = commonCallback, Param = paramCallback, ExtraParam = extraParamCallback }, TripleCallbackIteratorMeta)
+	local result = setmetatable({ Common = commonCallback, Param = paramCallback, ExtraParam = extraParamCallback }, TripleCallbackIteratorMeta) return result
 end
 
 local ALL_CALLBACKS_LIST = {}

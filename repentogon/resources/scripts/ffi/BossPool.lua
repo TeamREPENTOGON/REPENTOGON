@@ -39,7 +39,7 @@ local ffi = ffi
 local NUM_STB = 37
 
 local function GetDoubleTroubleRoomVariantStart(self)
-    return ffi.getprivate(self, "DoubleTroubleRoomVariantStart")
+    local result = ffi.getprivate(self, "DoubleTroubleRoomVariantStart") return result
 end
 
 local BossPoolMT
@@ -66,10 +66,10 @@ BossPoolMT = {
         return ffichecks.stdstring(ffi.getprivate(self, "Name"))
     end,
     GetRNG = function(self)
-        return ffi.getprivate(self, "RNG")
+        local result = ffi.getprivate(self, "RNG") return result
     end,
     GetWeight = function(self)
-        return ffi.getprivate(self, "TotalWeight")
+        local result = ffi.getprivate(self, "TotalWeight") return result
     end,
 }
 

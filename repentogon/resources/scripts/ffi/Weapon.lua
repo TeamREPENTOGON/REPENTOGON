@@ -33,41 +33,41 @@ WeaponMT = {
         repentogon.L_Weapon_ClearItemAnim(self, item)
     end,
     GetCharge = function(self)
-        return ffi.getprivate(self, "Charge")
+        local result = ffi.getprivate(self, "Charge") return result
     end,
     GetDirection = function(self)
         return ffichecks.copyvector(ffi.getprivate(self, "Direction"))
     end,
     GetFireDelay = function(self)
-        return ffi.getprivate(self, "FireDelay")
+        local result = ffi.getprivate(self, "FireDelay") return result
     end,
     GetMainEntity = function(self)
-        return repentogon.L_Weapon_GetMainEntity(self)
+        local result = repentogon.L_Weapon_GetMainEntity(self) return result
     end,
     GetMaxCharge = function(self)
-        return repentogon.L_Weapon_GetMaxCharge(self)
+        local result = repentogon.L_Weapon_GetMaxCharge(self) return result
     end,
     GetMaxFireDelay = function(self)
-        return ffi.getprivate(self, "MaxFireDelay")
+        local result = ffi.getprivate(self, "MaxFireDelay") return result
     end,
     GetModifiers = function(self)
-        return ffi.getprivate(self, "Modifiers")
+        local result = ffi.getprivate(self, "Modifiers") return result
     end,
     GetNumFired = function(self)
-        return ffi.getprivate(self, "NumFired")
+        local result = ffi.getprivate(self, "NumFired") return result
     end,
     GetOwner = function(self)
-        return ffi.getprivate(self, "Owner")
+        local result = ffi.getprivate(self, "Owner") return result
     end,
     GetWeaponType = function(self)
-        return ffi.getprivate(self, "WeaponType")
+        local result = ffi.getprivate(self, "WeaponType") return result
     end,
     IsAxisAligned = function(self)
-        return repentogon.L_Weapon_IsAxisAligned(self)
+        local result = repentogon.L_Weapon_IsAxisAligned(self) return result
     end,
     IsItemAnimFinished = function(self, item)
         item = ffichecks.checkinteger(1, item)
-        return repentogon.L_Weapon_IsItemAnimFinished(self, item)
+        local result = repentogon.L_Weapon_IsItemAnimFinished(self, item) return result
     end,
     PlayItemAnim = function(self, item, anim, position, charge)
         item = ffichecks.checkinteger(1, item)

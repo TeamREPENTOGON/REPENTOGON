@@ -37,7 +37,7 @@ AnimationStateMT = {
         return frame
     end,
     IsEventTriggered = function(self, name)
-        return repentogon.L_AnimationState_IsEventTriggered(self, name)
+        local result = repentogon.L_AnimationState_IsEventTriggered(self, name) return result
     end,
     Play = function(self) 
         if not ffichecks.isnullptr(self.AnimData) then
@@ -57,7 +57,7 @@ AnimationStateMT = {
         repentogon.L_AnimationState_SetPosition(self, pos)
     end,
     WasEventTriggered = function(self, name)
-        return repentogon.L_AnimationState_WasEventTriggered(self, name)
+        local result = repentogon.L_AnimationState_WasEventTriggered(self, name) return result
     end,
 }
 

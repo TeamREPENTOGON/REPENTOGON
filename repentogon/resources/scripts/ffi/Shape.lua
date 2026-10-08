@@ -25,7 +25,7 @@ ShapeMT = {
         repentogon.L_Shape_Circle(self, position, size)
     end,
     GetTimeout = function(self)
-        return ffi.getprivate(self, "Timeout")
+        local result = ffi.getprivate(self, "Timeout") return result
     end,
     SetTimeout = function(self, timeout)
         timeout = ffichecks.checkinteger(1, timeout)

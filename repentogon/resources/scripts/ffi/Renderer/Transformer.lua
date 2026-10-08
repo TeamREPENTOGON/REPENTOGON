@@ -31,7 +31,7 @@ TransformerMT = {
         repentogon.L_Transformer_Apply(self)
     end,
     IsValid = function(self)
-        return ffi.getprivate(self, "Valid")
+        local result = ffi.getprivate(self, "Valid") return result
     end,
     Render = function(self, image, sourceQuad, destQuad, color)
         CheckValid(self)

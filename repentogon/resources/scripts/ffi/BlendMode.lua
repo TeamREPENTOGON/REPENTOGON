@@ -121,7 +121,7 @@ BlendMode = setmetatable({
         checkValidBlendFactor(4, dstAlpha)
         checkValidBlendEquation(5, equation)
 
-        return BlendModeT(equation, srcRGB, dstRGB, srcAlpha, dstAlpha)
+        local result = BlendModeT(equation, srcRGB, dstRGB, srcAlpha, dstAlpha) return result
     end,
     NewFromType = function(blendType) 
         blendType = ffichecks.checknumber(1, blendType)
@@ -132,7 +132,7 @@ BlendMode = setmetatable({
         end
     
         local mode = blendModes[blendType + 1]
-        return BlendModeT(mode[5], mode[1], mode[2], mode[3], mode[4])
+        local result = BlendModeT(mode[5], mode[1], mode[2], mode[3], mode[4]) return result
     end,
 }, {
     __class = BlendModeMT,

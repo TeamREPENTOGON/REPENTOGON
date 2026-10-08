@@ -10,15 +10,15 @@ local repentogon = ffidll
 MainMenu = {
     GetGameMenuSprite = function()
         ffichecks.checkmainmenu("MainMenu")
-        return repentogon.L_MainMenu_GetGameMenuSprite()
+        local result = repentogon.L_MainMenu_GetGameMenuSprite() return result
     end,
     GetContinueWidgetSprite = function()
         ffichecks.checkmainmenu("MainMenu")
-        return repentogon.L_MainMenu_GetContinueWidgetSprite()
+        local result = repentogon.L_MainMenu_GetContinueWidgetSprite() return result
     end,
     GetSelectedElement = function()
         ffichecks.checkmainmenu("MainMenu")
-        return repentogon.L_MainMenu_GetSelectedElement()
+        local result = repentogon.L_MainMenu_GetSelectedElement() return result
     end,
     SetSelectedElement = function(element)
         ffichecks.checkmainmenu("MainMenu")

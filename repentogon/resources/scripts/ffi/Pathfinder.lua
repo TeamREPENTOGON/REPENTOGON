@@ -30,7 +30,7 @@ end
 
 local function Getter(field)
     return function(self)
-        return ffi.getprivate(self, field)
+        local result = ffi.getprivate(self, field) return result
     end
 end
 
@@ -51,10 +51,10 @@ local PathFinderMT = {
     HasDirectPath = Getter("HasDirectPathValue"),
     HasPathToPos = function(self, position, ignorePoop)
         ffichecks.checkcdata(1, position, "Vector")
-        return repentogon.L_PathFinder_HasPathToPos(self, position, ffichecks.optboolean(ignorePoop, false))
+        local result = repentogon.L_PathFinder_HasPathToPos(self, position, ffichecks.optboolean(ignorePoop, false)) return result
     end,
     MoveRandomly = function(self, ignoreStatusEffects)
-        return repentogon.L_PathFinder_MoveRandomly(self, not not ignoreStatusEffects)
+        local result = repentogon.L_PathFinder_MoveRandomly(self, not not ignoreStatusEffects) return result
     end,
     MoveRandomlyAxisAligned = function(self, speed, ignoreStatusEffects)
         speed = ffichecks.checknumber(1, speed)

@@ -121,7 +121,7 @@ local methods = {
     FireSplitTear = Entity.Helpers.FireSplitTear,
     GetDeadEyeIntensity = Getter("DeadEyeIntensityValue"),
     GetDeadEyeSprite = function(self)
-        return repentogon.L_EntityTear_GetDeadEyeSprite(self)
+        local result = repentogon.L_EntityTear_GetDeadEyeSprite(self) return result
     end,
     GetHitList = function(self)
         local result = {}
@@ -131,21 +131,21 @@ local methods = {
         return result
     end,
     GetTearEffectSprite = function(self)
-        return repentogon.L_EntityTear_GetTearEffectSprite(self)
+        local result = repentogon.L_EntityTear_GetTearEffectSprite(self) return result
     end,
     GetTearHaloSprite = function(self)
-        return repentogon.L_EntityTear_GetTearHaloSprite(self)
+        local result = repentogon.L_EntityTear_GetTearHaloSprite(self) return result
     end,
     HasTearFlags = function(self, flags)
         return (self.TearFlags & flags) ~= TearFlags.TEAR_NORMAL
     end,
     InHitList = function(self, entity)
-        return repentogon.L_EntityTear_InHitList(self, ffichecks.checkentity(1, entity))
+        local result = repentogon.L_EntityTear_InHitList(self, ffichecks.checkentity(1, entity)) return result
     end,
     IsMultidimensionalTouched = Getter("MultidimensionalTouchedValue"),
     IsPrismTouched = Getter("PrismTouchedValue"),
     MakeMultidimensionalCopy = function(self)
-        return repentogon.L_EntityTear_MakeMultidimensionalCopy(self)
+        local result = repentogon.L_EntityTear_MakeMultidimensionalCopy(self) return result
     end,
     RemoveFromHitList = function(self, entity)
         repentogon.L_EntityTear_RemoveFromHitList(self, ffichecks.checkentity(1, entity))

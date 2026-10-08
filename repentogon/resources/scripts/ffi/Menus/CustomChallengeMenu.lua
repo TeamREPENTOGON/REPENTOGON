@@ -9,11 +9,11 @@ local repentogon = ffidll
 CustomChallengeMenu = {
     GetSprite = function()
         ffichecks.checkmainmenu("CustomChallengeMenu")
-        return repentogon.L_CustomChallengeMenu_GetSprite()
+        local result = repentogon.L_CustomChallengeMenu_GetSprite() return result
     end,
     GetSelectedChallengeID = function()
         ffichecks.checkmainmenu("CustomChallengeMenu")
-        return repentogon.L_CustomChallengeMenu_GetSelectedChallengeID()
+        local result = repentogon.L_CustomChallengeMenu_GetSelectedChallengeID() return result
     end,
     SetSelectedChallengeID = function(element)
         ffichecks.checkmainmenu("CustomChallengeMenu")

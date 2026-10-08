@@ -47,34 +47,34 @@ local EntityConfigPlayerMT
 EntityConfigPlayerMT = {
     __type = "EntityConfigPlayer",
     CanShoot = function(self)
-        return ffi.getprivate(self, "Shooting")
+        local result = ffi.getprivate(self, "Shooting") return result
     end,
     GetAchievementID = function(self)
-        return ffi.getprivate(self, "Achievement")
+        local result = ffi.getprivate(self, "Achievement") return result
     end,
     GetBirthrightDescription = function(self)
         return ffichecks.stdstring(ffi.getprivate(self, "BirthrightDescription"))
     end,
     GetBlackHearts = function(self)
-        return ffi.getprivate(self, "BlackHeart")
+        local result = ffi.getprivate(self, "BlackHeart") return result
     end,
     GetBombs = function(self)
-        return ffi.getprivate(self, "Bombs")
+        local result = ffi.getprivate(self, "Bombs") return result
     end,
     GetBrokenHearts = function(self)
-        return ffi.getprivate(self, "BrokenHeart")
+        local result = ffi.getprivate(self, "BrokenHeart") return result
     end,
     GetCard = function(self)
-        return ffi.getprivate(self, "Card")
+        local result = ffi.getprivate(self, "Card") return result
     end,
     GetCoins = function(self)
-        return ffi.getprivate(self, "Coins")
+        local result = ffi.getprivate(self, "Coins") return result
     end,
     GetCollectibles = function(self)
         return ffichecks.vectortotable(ffi.getprivate(self, "CollectiblesFirst"), ffi.getprivate(self, "CollectiblesLast"), 4)
     end,
     GetCostumeID = function(self)
-        return ffi.getprivate(self, "CostumeID")
+        local result = ffi.getprivate(self, "CostumeID") return result
     end,
     GetCostumeSuffix = function(self)
         return ffichecks.stdstring(ffi.getprivate(self, "CostumeSuffixName"))
@@ -83,22 +83,22 @@ EntityConfigPlayerMT = {
         return ffichecks.stdstring(ffi.getprivate(self, "ExtraPortraitPath"))
     end,
     GetKeys = function(self)
-        return ffi.getprivate(self, "Keys")
+        local result = ffi.getprivate(self, "Keys") return result
     end,
     GetModdedControlsSprite = function(self)
-        return ffi.getprivate(self, "ModdedControlsANM2")
+        local result = ffi.getprivate(self, "ModdedControlsANM2") return result
     end,
     GetModdedCoopMenuSprite = function(self)
-        return ffi.getprivate(self, "ModdedCoopMenuANM2")
+        local result = ffi.getprivate(self, "ModdedCoopMenuANM2") return result
     end,
     GetModdedGameOverSprite = function(self)
-        return ffi.getprivate(self, "ModdedGameOverANM2")
+        local result = ffi.getprivate(self, "ModdedGameOverANM2") return result
     end,
     GetModdedMenuBackgroundSprite = function(self)
-        return ffi.getprivate(self, "ModdedMenuBackgroundANM2")
+        local result = ffi.getprivate(self, "ModdedMenuBackgroundANM2") return result
     end,
     GetModdedMenuPortraitSprite = function(self)
-        return ffi.getprivate(self, "ModdedMenuPortraitANM2")
+        local result = ffi.getprivate(self, "ModdedMenuPortraitANM2") return result
     end,
     GetName = function(self)
         return ffichecks.stdstring(ffi.getprivate(self, "Name"))
@@ -107,34 +107,34 @@ EntityConfigPlayerMT = {
         return ffichecks.stdstring(ffi.getprivate(self, "NameImagePath"))
     end,
     GetPill = function(self)
-        return ffi.getprivate(self, "Pill")
+        local result = ffi.getprivate(self, "Pill") return result
     end,
     GetPlayerType = function(self)
-        return ffi.getprivate(self, "ID")
+        local result = ffi.getprivate(self, "ID") return result
     end,
     GetPocketActive = function(self)
-        return ffi.getprivate(self, "PocketActiveID")
+        local result = ffi.getprivate(self, "PocketActiveID") return result
     end,
     GetPortraitPath = function(self)
         return ffichecks.stdstring(ffi.getprivate(self, "PortraitPath"))
     end,
     GetRedHearts = function(self)
-        return ffi.getprivate(self, "Heart")
+        local result = ffi.getprivate(self, "Heart") return result
     end,
     GetSkinColor = function(self)
-        return ffi.getprivate(self, "SkinColor")
+        local result = ffi.getprivate(self, "SkinColor") return result
     end,
     GetSkinPath = function(self)
         return ffichecks.stdstring(ffi.getprivate(self, "SkinPath"))
     end,
     GetSoulHearts = function(self)
-        return ffi.getprivate(self, "Armor")
+        local result = ffi.getprivate(self, "Armor") return result
     end,
     GetTaintedCounterpart = function(self)
-        return repentogon.L_EntityConfigPlayer_GetTaintedCounterpart(self)
+        local result = repentogon.L_EntityConfigPlayer_GetTaintedCounterpart(self) return result
     end,
     GetTrinket = function(self)
-        return ffi.getprivate(self, "Trinket")
+        local result = ffi.getprivate(self, "Trinket") return result
     end,
     IsHidden = function(self)
         return ffi.getprivate(self, "Hidden") or HIDDEN_VANILLA_CHARACTERS[ffi.getprivate(self, "ID")] == true

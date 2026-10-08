@@ -36,7 +36,7 @@ local ACTION_SPAWN_ENTITY = 4
 local ACTION_FART = 5
 
 local function ToFloat(value)
-    return tonumber(ffi.new("float", value))
+    local result = tonumber(ffi.new("float", value)) return result
 end
 
 local ProceduralEffectMT
@@ -74,7 +74,7 @@ ProceduralEffectMT = {
         return {}
     end,
     GetActionType = function(self)
-        return ffi.getprivate(self, "ActionType")
+        local result = ffi.getprivate(self, "ActionType") return result
     end,
     GetConditionProperty = function(self)
         if ffi.getprivate(self, "ConditionType") == CONDITION_ENTITY_SPAWN then
@@ -86,10 +86,10 @@ ProceduralEffectMT = {
         return {}
     end,
     GetConditionType = function(self)
-        return ffi.getprivate(self, "ConditionType")
+        local result = ffi.getprivate(self, "ConditionType") return result
     end,
     GetScore = function(self)
-        return ffi.getprivate(self, "Score")
+        local result = ffi.getprivate(self, "Score") return result
     end,
     GetTriggerChance = function(self)
         local chance = ffi.getprivate(self, "TriggerChanceScale")
@@ -102,7 +102,7 @@ ProceduralEffectMT = {
         return chance
     end,
     GetTriggerChanceScale = function(self)
-        return ffi.getprivate(self, "TriggerChanceScale")
+        local result = ffi.getprivate(self, "TriggerChanceScale") return result
     end,
 }
 

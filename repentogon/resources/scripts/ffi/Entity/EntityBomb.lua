@@ -52,7 +52,7 @@ local function Deprecated(message, field)
     end
     return function(self)
         warn()
-        return ffi.getprivate(self, field)
+        local result = ffi.getprivate(self, field) return result
     end, function(self, value)
         warn()
         value = ffichecks.checknumber(1, value)
@@ -93,7 +93,7 @@ local methods = {
         if index < 0 or index >= 5 then
             error(string.format("Invalid index %d, value must be between 0 and 4", index), 2)
         end
-        return repentogon.L_EntityBomb_GetCostumeLayerSprite(self, index)
+        local result = repentogon.L_EntityBomb_GetCostumeLayerSprite(self, index) return result
     end,
     GetExplosionCountdown = Getter("ExplosionCountdownValue"),
     GetFallAcceleration = Getter("FallAccelerationValue"),

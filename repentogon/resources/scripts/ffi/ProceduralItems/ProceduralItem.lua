@@ -25,7 +25,7 @@ local ProceduralItemMT
 ProceduralItemMT = {
     __type = "ProceduralItem",
     GetDamage = function(self)
-        return ffi.getprivate(self, "Damage")
+        local result = ffi.getprivate(self, "Damage") return result
     end,
     GetEffect = function(self, index)
         index = ffichecks.checkinteger(1, index)
@@ -36,28 +36,28 @@ ProceduralItemMT = {
     end,
     GetEffectCount = GetEffectCount,
     GetFireDelay = function(self)
-        return ffi.getprivate(self, "FireDelay")
+        local result = ffi.getprivate(self, "FireDelay") return result
     end,
     GetID = function(self)
-        return ffi.getprivate(self, "ID")
+        local result = ffi.getprivate(self, "ID") return result
     end,
     GetItem = function(self)
-        return ffi.getprivate(self, "Item")
+        local result = ffi.getprivate(self, "Item") return result
     end,
     GetLuck = function(self)
-        return ffi.getprivate(self, "Luck")
+        local result = ffi.getprivate(self, "Luck") return result
     end,
     GetRange = function(self)
-        return ffi.getprivate(self, "Range")
+        local result = ffi.getprivate(self, "Range") return result
     end,
     GetShotSpeed = function(self)
-        return ffi.getprivate(self, "ShotSpeed")
+        local result = ffi.getprivate(self, "ShotSpeed") return result
     end,
     GetSpeed = function(self)
-        return ffi.getprivate(self, "Speed")
+        local result = ffi.getprivate(self, "Speed") return result
     end,
     GetTargetItem = function(self)
-        return ffi.getprivate(self, "TargetItem")
+        local result = ffi.getprivate(self, "TargetItem") return result
     end,
 }
 

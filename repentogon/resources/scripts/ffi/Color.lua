@@ -145,11 +145,11 @@ ColorMT.__index = ColorMT
 
 local ColorGlobalMT = {
     __call = function(_, R, G, B, A, RO, GO, BO, RC, GC, BC, AC)
-        return ColorT(
+        local result = ColorT(
             R or 1, G or 1, B or 1, A or 1,
             RC or 0, GC or 0, BC or 0, AC or 0,
             RO or 0, GO or 0, BO or 0
-        )
+        ) return result
     end,
 
     __class = ColorMT,

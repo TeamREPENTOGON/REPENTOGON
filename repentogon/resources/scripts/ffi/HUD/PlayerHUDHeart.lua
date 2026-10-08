@@ -17,14 +17,14 @@ local function OptString(ptr)
     if ptr == nil then
         return nil
     end
-    return ffi.string(ptr)
+    local result = ffi.string(ptr) return result
 end
 
 local PlayerHUDHeartMT
 PlayerHUDHeartMT = {
     __type = "PlayerHUDHeart",
     GetFlashType = function(self)
-        return ffi.getprivate(self, "FlashType")
+        local result = ffi.getprivate(self, "FlashType") return result
     end,
     GetHeartAnim = function(self)
         return OptString(ffi.getprivate(self, "SpriteAnim"))
@@ -33,16 +33,16 @@ PlayerHUDHeartMT = {
         return OptString(ffi.getprivate(self, "SpriteOverlayAnim"))
     end,
     IsEternalHeartOverlayVisible = function(self)
-        return ffi.getprivate(self, "EternalHeartVisible")
+        local result = ffi.getprivate(self, "EternalHeartVisible") return result
     end,
     IsFadingHeart = function(self)
-        return ffi.getprivate(self, "FadeHeart")
+        local result = ffi.getprivate(self, "FadeHeart") return result
     end,
     IsGoldenHeartOverlayVisible = function(self)
-        return ffi.getprivate(self, "GoldenHeartVisible")
+        local result = ffi.getprivate(self, "GoldenHeartVisible") return result
     end,
     IsVisible = function(self)
-        return ffi.getprivate(self, "Visible")
+        local result = ffi.getprivate(self, "Visible") return result
     end,
 }
 

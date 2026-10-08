@@ -40,26 +40,26 @@ local function GetRenderOffset(historyHUD, playerSlot, index)
 end
 
 local function GetHistoryItem(self)
-    return ffi.getprivate(ffi.getprivate(self, "Data"), "HistoryItem")
+    local result = ffi.getprivate(ffi.getprivate(self, "Data"), "HistoryItem") return result
 end
 
 local HistoryHUDItemMT
 HistoryHUDItemMT = {
     __type = "HistoryHUDItem",
     GetHistoryItem = function(self)
-        return HistoryItemT(GetHistoryItem(self))
+        local result = HistoryItemT(GetHistoryItem(self)) return result
     end,
     GetItemID = function(self)
-        return ffi.getprivate(GetHistoryItem(self), "ItemID")
+        local result = ffi.getprivate(GetHistoryItem(self), "ItemID") return result
     end,
     GetRenderOffset = function(self)
         return GetRenderOffset(repentogon.L_HistoryHUD_Get(), ffi.getprivate(self, "PlayerSlot"), ffi.getprivate(self, "Index"))
     end,
     GetTime = function(self)
-        return ffi.getprivate(GetHistoryItem(self), "Time")
+        local result = ffi.getprivate(GetHistoryItem(self), "Time") return result
     end,
     IsTrinket = function(self)
-        return ffi.getprivate(GetHistoryItem(self), "Trinket")
+        local result = ffi.getprivate(GetHistoryItem(self), "Trinket") return result
     end,
     IsVisible = function(self)
         return ffi.getprivate(self, "Index") < repentogon.L_HistoryHUD_GetNumVisibleItems(repentogon.L_HistoryHUD_Get())
@@ -152,7 +152,7 @@ HistoryHUDMT = {
     end,
     GetPlayer = function(self, playerIdx)
         playerIdx = CheckPlayerIndex(playerIdx, 3)
-        return ffi.getprivate(ffi.getprivate(self, "Players")[playerIdx], "Player")
+        local result = ffi.getprivate(ffi.getprivate(self, "Players")[playerIdx], "Player") return result
     end,
     GetPosition = function(self)
         local position = Vector(0, 0)

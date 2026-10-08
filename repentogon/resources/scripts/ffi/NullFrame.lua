@@ -18,19 +18,19 @@ local NullFrameMT
 NullFrameMT = {
     __type = "NullFrame",
     GetColor = function(self)
-        return ffi.new("struct Color", ffi.getprivate(self, "Color"))
+        local result = ffi.new("struct Color", ffi.getprivate(self, "Color")) return result
     end,
     GetPos = function(self)
         return ffichecks.copyvector(ffi.getprivate(self, "Pos"))
     end,
     GetRotation = function(self)
-        return ffi.getprivate(self, "Rotation")
+        local result = ffi.getprivate(self, "Rotation") return result
     end,
     GetScale = function(self)
         return ffichecks.copyvector(ffi.getprivate(self, "Scale"))
     end,
     IsVisible = function(self)
-        return ffi.getprivate(self, "Visible")
+        local result = ffi.getprivate(self, "Visible") return result
     end
 }
 

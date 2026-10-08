@@ -56,14 +56,14 @@ GridEntityDoorMT = {
         repentogon.L_GridEntityDoor_Bar(self)
     end,
     CanBlowOpen = function(self)
-        return repentogon.L_GridEntityDoor_CanBlowOpen(self)
+        local result = repentogon.L_GridEntityDoor_CanBlowOpen(self) return result
     end,
     Close = function(self, force) 
         force = ffichecks.optboolean(force, false)
         repentogon.L_GridEntityDoor_Close(self, force)
     end,
     GetExtraSprite = function(self)
-        return ffi.getprivate(self, "_ExtraSprite")
+        local result = ffi.getprivate(self, "_ExtraSprite") return result
     end,
     GetSpriteOffset = function(self)
         return ffi.getprivate(self, "Sprite").Offset
@@ -75,7 +75,7 @@ GridEntityDoorMT = {
         return self.Desc.Variant == 5
     end,
     IsLocked = function(self)
-        return repentogon.L_GridEntityDoor_IsLocked(self)
+        local result = repentogon.L_GridEntityDoor_IsLocked(self) return result
     end,
     IsOpen = function(self)
         return self.Desc.State == 2
@@ -88,7 +88,7 @@ GridEntityDoorMT = {
         return true
     end,
     IsTargetRoomArcade = function(self)
-        return repentogon.L_GridEntityDoor_IsTargetRoomArcade(self)
+        local result = repentogon.L_GridEntityDoor_IsTargetRoomArcade(self) return result
     end,
     SpawnDust = function(self)
         repentogon.L_GridEntityDoor_SpawnDust(self)
@@ -116,11 +116,11 @@ GridEntityDoorMT = {
         repentogon.L_GridEntityDoor_Update(self)
     end,
     TryBlowOpen = function(self, fromExplosion, source)
-        return repentogon.L_GridEntityDoor_TryBlowOpen(self, ffichecks.checkboolean(1, fromExplosion), ffichecks.entitytopointer(source))
+        local result = repentogon.L_GridEntityDoor_TryBlowOpen(self, ffichecks.checkboolean(1, fromExplosion), ffichecks.entitytopointer(source)) return result
     end,
     TryUnlock = function(self, player, force)
         ffichecks.checkcdata(1, player, "EntityPlayer")
-        return repentogon.L_GridEntityDoor_TryUnlock(self, player, ffichecks.checkboolean(2, force))
+        local result = repentogon.L_GridEntityDoor_TryUnlock(self, player, ffichecks.checkboolean(2, force)) return result
     end,
 }
 
@@ -129,7 +129,7 @@ local baseNewindex = getmetatable(GridEntity).__class.__newindex
 
 GridEntityDoorMT.__index = function(self, key)
     if key == "ExtraSprite" then
-        return ffi.getprivate(self, "_ExtraSprite")
+        local result = ffi.getprivate(self, "_ExtraSprite") return result
     end
     if key == "CloseAnimation" then
         return ffichecks.stdstring(ffi.getprivate(self, "CloseAnimationString"))

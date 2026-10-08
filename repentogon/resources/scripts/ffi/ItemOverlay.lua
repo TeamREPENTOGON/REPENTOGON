@@ -26,7 +26,7 @@ ItemOverlayMT.__index = ItemOverlayMT
 local ItemOverlayT = ffi.metatype("struct ItemOverlay", ItemOverlayMT)
 
 local function GetItemOverlay()
-    return repentogon.L_ItemOverlay_Get()
+    local result = repentogon.L_ItemOverlay_Get() return result
 end
 
 ItemOverlay = {
@@ -40,7 +40,7 @@ ItemOverlay = {
         return GetItemOverlay().OverlayID
     end,
     GetPlayer = function()
-        return ffi.getprivate(GetItemOverlay(), "Player")
+        local result = ffi.getprivate(GetItemOverlay(), "Player") return result
     end,
     GetSprite = function()
         return GetItemOverlay().Sprite

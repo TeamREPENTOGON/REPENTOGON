@@ -23,21 +23,21 @@ GridEntityTNTMT = {
     __type = "GridEntityTNT",
     Destroy = function(self, immediate)
         immediate = ffichecks.checkboolean(1, immediate)
-        return repentogon.L_GridEntityTNT_Destroy(self, immediate, EntityRef())
+        local result = repentogon.L_GridEntityTNT_Destroy(self, immediate, EntityRef()) return result
     end,
     DestroyWithSource = function(self, immediate, source)
         immediate = ffichecks.checkboolean(1, immediate)
         ffichecks.checkcdata(2, source, "EntityRef")
-        return repentogon.L_GridEntityTNT_Destroy(self, immediate, source)
+        local result = repentogon.L_GridEntityTNT_Destroy(self, immediate, source) return result
     end,
     Hurt = function(self, damage)
         damage = ffichecks.checkinteger(1, damage)
-        return repentogon.L_GridEntityTNT_Hurt(self, damage, EntityRef())
+        local result = repentogon.L_GridEntityTNT_Hurt(self, damage, EntityRef()) return result
     end,
     HurtWithSource = function(self, damage, source)
         damage = ffichecks.checkinteger(1, damage)
         ffichecks.checkcdata(2, source, "EntityRef")
-        return repentogon.L_GridEntityTNT_Hurt(self, damage, source)
+        local result = repentogon.L_GridEntityTNT_Hurt(self, damage, source) return result
     end,
     Update = function(self)
         repentogon.L_GridEntityTNT_Update(self)

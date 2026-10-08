@@ -15,22 +15,22 @@ local BackdropMT
 BackdropMT = {
     __type = "Backdrop",
     GetControlsANM2 = function(self)
-        return ffi.getprivate(self, "ControlsANM2")
+        local result = ffi.getprivate(self, "ControlsANM2") return result
     end,
     GetControlsButtonsANM2 = function(self)
-        return ffi.getprivate(self, "ControlsButtonsANM2")
+        local result = ffi.getprivate(self, "ControlsButtonsANM2") return result
     end,
     GetDetailANM2 = function(self)
-        return ffi.getprivate(self, "DetailANM2")
+        local result = ffi.getprivate(self, "DetailANM2") return result
     end,
     GetFloorANM2 = function(self)
-        return ffi.getprivate(self, "FloorANM2")
+        local result = ffi.getprivate(self, "FloorANM2") return result
     end,
     GetFloorImage = function(self)
-        return ffi.getprivate(self, "FloorImage")
+        local result = ffi.getprivate(self, "FloorImage") return result
     end,
     GetWallImage = function(self)
-        return ffi.getprivate(self, "WallImage")
+        local result = ffi.getprivate(self, "WallImage") return result
     end,
 }
 

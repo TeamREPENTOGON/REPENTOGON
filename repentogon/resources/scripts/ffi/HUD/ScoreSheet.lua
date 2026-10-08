@@ -38,7 +38,7 @@ ScoreSheetMT.__index = ScoreSheetMT
 local ScoreSheetT = ffi.metatype("struct ScoreSheet", ScoreSheetMT)
 
 local function GetScoreSheet()
-    return repentogon.L_ScoreSheet_Get()
+    local result = repentogon.L_ScoreSheet_Get() return result
 end
 
 ScoreSheet = {

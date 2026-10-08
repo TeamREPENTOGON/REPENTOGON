@@ -16,35 +16,35 @@ local repentogon = ffidll
 BestiaryMenu = {
     GetBestiaryMenuSprite = function()
         ffichecks.checkmainmenu("BestiaryMenu")
-        return repentogon.L_BestiaryMenu_GetBestiaryMenuSprite();
+        local result = repentogon.L_BestiaryMenu_GetBestiaryMenuSprite() return result
     end,
     GetDeathScreenSprite = function()
         ffichecks.checkmainmenu("BestiaryMenu")
-        return repentogon.L_BestiaryMenu_GetDeathScreenSprite();
+        local result = repentogon.L_BestiaryMenu_GetDeathScreenSprite() return result
     end,
     GetEnemySprite = function()
         ffichecks.checkmainmenu("BestiaryMenu")
-        return repentogon.L_BestiaryMenu_GetEnemySprite();
+        local result = repentogon.L_BestiaryMenu_GetEnemySprite() return result
     end,
     GetNumBossPages = function()
         ffichecks.checkmainmenu("BestiaryMenu")
-        return repentogon.L_BestiaryMenu_GetNumBossPages();
+        local result = repentogon.L_BestiaryMenu_GetNumBossPages() return result
     end,
     GetNumMonsterPages = function()
         ffichecks.checkmainmenu("BestiaryMenu")
-        return repentogon.L_BestiaryMenu_GetNumMonsterPages();
+        local result = repentogon.L_BestiaryMenu_GetNumMonsterPages() return result
     end,
     GetNumPages = function()
         ffichecks.checkmainmenu("BestiaryMenu")
-        return repentogon.L_BestiaryMenu_GetNumPages();
+        local result = repentogon.L_BestiaryMenu_GetNumPages() return result
     end,
     GetSelectedPage = function()
         ffichecks.checkmainmenu("BestiaryMenu")
-        return repentogon.L_BestiaryMenu_GetSelectedPage();
+        local result = repentogon.L_BestiaryMenu_GetSelectedPage() return result
     end,
     GetSelectedElement = function()
         ffichecks.checkmainmenu("BestiaryMenu")
-        return repentogon.L_BestiaryMenu_GetSelectedElement();
+        local result = repentogon.L_BestiaryMenu_GetSelectedElement() return result
     end,
     SetSelectedPage = function(page)
         ffichecks.checkmainmenu("BestiaryMenu")

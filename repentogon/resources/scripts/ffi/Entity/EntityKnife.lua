@@ -84,20 +84,20 @@ local methods = {
         return result
     end,
     GetHitboxParentKnife = function(self)
-        return repentogon.L_EntityKnife_GetHitboxParentKnife(self)
+        local result = repentogon.L_EntityKnife_GetHitboxParentKnife(self) return result
     end,
     GetIsSpinAttack = Getter("IsSpinAttackValue"),
     GetIsSwinging = Getter("IsSwingingValue"),
     GetKnifeDistance = Getter("KnifeDistanceValue"),
     GetKnifeVelocity = Getter("KnifeVelocityValue"),
     GetRenderZ = function(self)
-        return repentogon.L_EntityKnife_GetRenderZ(self)
+        local result = repentogon.L_EntityKnife_GetRenderZ(self) return result
     end,
     HasTearFlags = function(self, flags)
         return (self.TearFlags & flags) ~= TearFlags.TEAR_NORMAL
     end,
     InHitList = function(self, entity)
-        return repentogon.L_EntityKnife_InHitList(self, ffichecks.checkentity(1, entity))
+        local result = repentogon.L_EntityKnife_InHitList(self, ffichecks.checkentity(1, entity)) return result
     end,
     InitHomingPath = function(self, direction, source)
         ffichecks.checkcdata(1, direction, "Vector")

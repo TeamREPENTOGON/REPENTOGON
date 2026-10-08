@@ -121,11 +121,11 @@ ItemConfigItemMT = {
     end,
     HasCustomCacheTag = function(self, tag)
         tag = ffichecks.checkstring(2, tag)
-        return repentogon.L_ItemConfigItem_HasCustomCacheTag(self, tag)
+        local result = repentogon.L_ItemConfigItem_HasCustomCacheTag(self, tag) return result
     end,
     HasCustomTag = function(self, tag)
         tag = ffichecks.checkstring(2, tag)
-        return repentogon.L_ItemConfigItem_HasCustomTag(self, tag)
+        local result = repentogon.L_ItemConfigItem_HasCustomTag(self, tag) return result
     end,
     HasTags = function(self, tags)
         tags = ffichecks.checknumber(2, tags)
@@ -135,7 +135,7 @@ ItemConfigItemMT = {
         return false
     end,
     IsAvailable = function(self)
-        return repentogon.L_ItemConfigItem_IsAvailable(self)
+        local result = repentogon.L_ItemConfigItem_IsAvailable(self) return result
     end,
     IsCollectible = function(self)
         local type = self.Type

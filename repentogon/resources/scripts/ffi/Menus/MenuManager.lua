@@ -25,41 +25,41 @@ end
 MenuManager = {
     GetActiveMenu = function()
         ffichecks.checkmainmenu("MenuManager")
-        return repentogon.L_MenuManager_GetActiveMenu();
+        local result = repentogon.L_MenuManager_GetActiveMenu() return result
     end,
     GetColorModifierLerpAmount = function()
         ffichecks.checkmainmenu("MenuManager")
         local p = repentogon.L_MenuManager_GetColorModifierLerpAmount();
-        return ffi.new("struct ColorModifier", p[0])
+        local result = ffi.new("struct ColorModifier", p[0]) return result
     end,
     GetCurrentColorModifier = function()
         ffichecks.checkmainmenu("MenuManager")
         local p = repentogon.L_MenuManager_GetCurrentColorModifier()
-        return ffi.new("struct ColorModifier", p[0])
+        local result = ffi.new("struct ColorModifier", p[0]) return result
     end,
     GetInputMask = function()
         ffichecks.checkmainmenu("MenuManager")
-        return repentogon.L_MenuManager_GetInputMask();
+        local result = repentogon.L_MenuManager_GetInputMask() return result
     end,
     GetSeeds = function()
         ffichecks.checkmainmenu("MenuManager")
-        return repentogon.L_MenuManager_GetSeeds()
+        local result = repentogon.L_MenuManager_GetSeeds() return result
     end,
     GetShadowSprite = function()
         ffichecks.checkmainmenu("MenuManager")
-        return repentogon.L_MenuManager_GetShadowSprite();
+        local result = repentogon.L_MenuManager_GetShadowSprite() return result
     end,
     GetTargetColorModifier = function()
         ffichecks.checkmainmenu("MenuManager")
         local p = repentogon.L_MenuManager_GetTargetColorModifier();
-        return ffi.new("struct ColorModifier", p[0])
+        local result = ffi.new("struct ColorModifier", p[0]) return result
     end,
     GetViewPosition = function()
         ffichecks.checkmainmenu("MenuManager")
         return ffichecks.copyvector(repentogon.L_MenuManager_GetViewPosition())
     end,
     IsActive = function()
-        return repentogon.L_MenuManager_IsActive();
+        local result = repentogon.L_MenuManager_IsActive() return result
     end,
     SetActiveMenu = function(menu)
         ffichecks.checkmainmenu("MenuManager")

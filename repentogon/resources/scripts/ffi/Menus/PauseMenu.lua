@@ -13,22 +13,22 @@ local repentogon = ffidll
 
 PauseMenu = {
     GetCompletionMarksSprite = function()
-        return repentogon.L_PauseMenu_GetCompletionMarksSprite()
+        local result = repentogon.L_PauseMenu_GetCompletionMarksSprite() return result
     end,
     GetMyStuffSprite = function()
-        return repentogon.L_PauseMenu_GetMyStuffSprite()
+        local result = repentogon.L_PauseMenu_GetMyStuffSprite() return result
     end,
     GetSelectedElement = function()
-        return repentogon.L_PauseMenu_GetSelectedElement()
+        local result = repentogon.L_PauseMenu_GetSelectedElement() return result
     end,
     GetSprite = function()
-        return repentogon.L_PauseMenu_GetSprite()
+        local result = repentogon.L_PauseMenu_GetSprite() return result
     end,
     GetState = function()
-        return repentogon.L_PauseMenu_GetState()
+        local result = repentogon.L_PauseMenu_GetState() return result
     end,
     GetStatsSprite = function()
-        return repentogon.L_PauseMenu_GetStatsSprite()
+        local result = repentogon.L_PauseMenu_GetStatsSprite() return result
     end,
     SetSelectedElement = function(element)
         element = ffichecks.checkinteger(1, element)

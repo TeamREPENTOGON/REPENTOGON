@@ -9,13 +9,13 @@ local repentogon = ffidll
 
 OptionsMenu = {
     GetOptionsMenuSprite = function()
-        return repentogon.L_OptionsMenu_GetOptionsMenuSprite()
+        local result = repentogon.L_OptionsMenu_GetOptionsMenuSprite() return result
     end,
     GetGammaWidgetSprite = function()
-        return repentogon.L_OptionsMenu_GetGammaWidgetSprite()
+        local result = repentogon.L_OptionsMenu_GetGammaWidgetSprite() return result
     end,
     GetSelectedElement = function()
-        return repentogon.L_OptionsMenu_GetSelectedElement()
+        local result = repentogon.L_OptionsMenu_GetSelectedElement() return result
     end,
     SetSelectedElement = function(element)
         element = ffichecks.checkinteger(1, element)

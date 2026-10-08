@@ -38,17 +38,17 @@ GridEntityRockMT = {
     __type = "GridEntityRock",
     Destroy = function(self, immediate)
         immediate = ffichecks.optboolean(immediate, false)
-        return repentogon.L_GridEntityRock_Destroy(self, immediate, EntityRef())
+        local result = repentogon.L_GridEntityRock_Destroy(self, immediate, EntityRef()) return result
     end,
     DestroyWithSource = function(self, immediate, source)
         immediate = ffichecks.checkboolean(1, immediate)
         ffichecks.checkcdata(2, source, "EntityRef")
-        return repentogon.L_GridEntityRock_Destroy(self, immediate, source)
+        local result = repentogon.L_GridEntityRock_Destroy(self, immediate, source) return result
     end,
     GetAltRockType = function(_, backdrop)
         backdrop = backdrop or 0
         backdrop = ffichecks.checkinteger(1, backdrop)
-        return repentogon.L_GridEntityRock_GetAltRockType(backdrop)
+        local result = repentogon.L_GridEntityRock_GetAltRockType(backdrop) return result
     end,
     GetBigRockFrame = function(self)
         if self.Desc.Variant < 1000 then
@@ -151,6 +151,6 @@ GridEntityRock = setmetatable({
     GetAltRockType = function(backdrop)
         backdrop = backdrop or 0
         backdrop = ffichecks.checkinteger(1, backdrop)
-        return repentogon.L_GridEntityRock_GetAltRockType(backdrop)
+        local result = repentogon.L_GridEntityRock_GetAltRockType(backdrop) return result
     end,
 }, {__class = GridEntityRockMT})

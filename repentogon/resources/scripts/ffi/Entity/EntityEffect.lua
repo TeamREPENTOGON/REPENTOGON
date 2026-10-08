@@ -80,7 +80,7 @@ local methods = {
         repentogon.L_EntityEffect_FollowParent(self, EntityToPointer(parent))
     end,
     GetGridEntityDesc = function(self)
-        return repentogon.L_EntityEffect_GetGridEntityDesc(self)
+        local result = repentogon.L_EntityEffect_GetGridEntityDesc(self) return result
     end,
     GetTearFlags = function(self)
         if CanAccessTearFlags(self) then
@@ -129,7 +129,7 @@ ffichecks.pointertoeffect = function(pointer)
     if pointer == nil then
         return nil
     end
-    return ffi.cast(effectType, pointer)
+    local result = ffi.cast(effectType, pointer) return result
 end
 
 EntityEffect = setmetatable({
@@ -143,12 +143,12 @@ EntityEffect = setmetatable({
         else
             color = nil
         end
-        return repentogon.L_EntityEffect_CreateLight(position, scale, lifespan, state, color)
+        local result = repentogon.L_EntityEffect_CreateLight(position, scale, lifespan, state, color) return result
     end,
     CreateLootPreview = function(lootList, position, owner, effect)
         ffichecks.checkcdata(1, lootList, "LootList")
         ffichecks.checkcdata(2, position, "Vector")
-        return repentogon.L_EntityEffect_CreateLootPreview(lootList, position, ffichecks.checkentity(3, owner), ffichecks.checkentity(4, effect))
+        local result = repentogon.L_EntityEffect_CreateLootPreview(lootList, position, ffichecks.checkentity(3, owner), ffichecks.checkentity(4, effect)) return result
     end,
     IsPlayerCreep = function(variant)
         variant = ffichecks.checkinteger(1, variant)

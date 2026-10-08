@@ -12,19 +12,19 @@ local repentogon = ffidll
 CollectionMenu = {
     GetCollectionMenuSprite = function()
         ffichecks.checkmainmenu("CollectionMenu")
-        return repentogon.L_CollectionMenu_GetCollectionMenuSprite()
+        local result = repentogon.L_CollectionMenu_GetCollectionMenuSprite() return result
     end,
     GetDeathScreenSprite = function()
         ffichecks.checkmainmenu("CollectionMenu")
-        return repentogon.L_CollectionMenu_GetDeathScreenSprite()
+        local result = repentogon.L_CollectionMenu_GetDeathScreenSprite() return result
     end,
     GetSelectedElement = function()
         ffichecks.checkmainmenu("CollectionMenu")
-        return repentogon.L_CollectionMenu_GetSelectedElement()
+        local result = repentogon.L_CollectionMenu_GetSelectedElement() return result
     end,
     GetSelectedPage = function()
         ffichecks.checkmainmenu("CollectionMenu")
-        return repentogon.L_CollectionMenu_GetSelectedPage()
+        local result = repentogon.L_CollectionMenu_GetSelectedPage() return result
     end,
     SetSelectedElement = function(element)
         ffichecks.checkmainmenu("CollectionMenu")

@@ -137,7 +137,7 @@ local function Unsigned(name, min, max)
 end
 
 getters.Language = function()
-    return ffi.string(repentogon.L_Options_GetLanguage())
+    local result = ffi.string(repentogon.L_Options_GetLanguage()) return result
 end
 setters.Language = function()
     error("'Language' is read-only", 0)
@@ -222,7 +222,7 @@ Integer("WindowPosY", true, 8, 65535)
 
 local function RepentogonOption(name, index, writable)
     getters[name] = function()
-        return repentogon.L_Options_GetRepentogonOption(index)
+        local result = repentogon.L_Options_GetRepentogonOption(index) return result
     end
     if writable then
         setters[name] = function(value)

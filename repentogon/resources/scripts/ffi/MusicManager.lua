@@ -73,23 +73,23 @@ MusicManagerMT = {
         repentogon.L_MusicManager_Fadeout(fadeRate)
     end,
     GetCurrentJingleID = function(self)
-        return repentogon.L_MusicManager_GetCurrentJingleID()
+        local result = repentogon.L_MusicManager_GetCurrentJingleID() return result
     end,
     GetCurrentMusicID = function(self)
-        return repentogon.L_MusicManager_GetCurrentMusicID()
+        local result = repentogon.L_MusicManager_GetCurrentMusicID() return result
     end,
     GetCurrentPitch = function(self)
-        return repentogon.L_MusicManager_GetCurrentPitch()
+        local result = repentogon.L_MusicManager_GetCurrentPitch() return result
     end,
     GetQueuedMusicID = function(self)
-        return repentogon.L_MusicManager_GetQueuedMusicID()
+        local result = repentogon.L_MusicManager_GetQueuedMusicID() return result
     end,
     IsEnabled = function(self)
-        return repentogon.L_MusicManager_IsEnabled()
+        local result = repentogon.L_MusicManager_IsEnabled() return result
     end,
     IsLayerEnabled = function(self, layerId)
         layerId = ffichecks.optnumber(layerId, 0)
-        return repentogon.L_MusicManager_IsLayerEnabled(layerId)
+        local result = repentogon.L_MusicManager_IsLayerEnabled(layerId) return result
     end,
     Pause = function(self)
         repentogon.L_MusicManager_Pause()

@@ -24,7 +24,7 @@ CapsuleMT = {
     Collide = function(self, capsule, point)
         ffichecks.checkcdata(1, capsule, "Capsule")
         ffichecks.checkcdata(2, point, "Vector")
-        return repentogon.L_Capsule_Collide(self, capsule, point)
+        local result = repentogon.L_Capsule_Collide(self, capsule, point) return result
     end,
     GetDirection = function(self)
         return ffichecks.copyvector(ffi.getprivate(self, "Direction"))
@@ -36,10 +36,10 @@ CapsuleMT = {
         return ffichecks.copyvector(ffi.getprivate(self, "Position"))
     end,
     GetSize = function(self)
-        return ffi.getprivate(self, "Size")
+        local result = ffi.getprivate(self, "Size") return result
     end,
     GetSizeDifference = function(self)
-        return ffi.getprivate(self, "SizeDifference")
+        local result = ffi.getprivate(self, "SizeDifference") return result
     end,
     GetStartPoint = function(self)
         return ffichecks.copyvector(ffi.getprivate(self, "StartPoint"))

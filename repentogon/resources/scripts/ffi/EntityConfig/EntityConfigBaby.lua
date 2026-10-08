@@ -14,10 +14,10 @@ local EntityConfigBabyMT
 EntityConfigBabyMT = {
     __type = "EntityConfigBaby",
     GetAchievementID = function(self)
-        return ffi.getprivate(self, "AchievementID")
+        local result = ffi.getprivate(self, "AchievementID") return result
     end,
     GetID = function(self)
-        return ffi.getprivate(self, "ID")
+        local result = ffi.getprivate(self, "ID") return result
     end,
     GetName = function(self)
         return ffichecks.stdstring(ffi.getprivate(self, "Name"))

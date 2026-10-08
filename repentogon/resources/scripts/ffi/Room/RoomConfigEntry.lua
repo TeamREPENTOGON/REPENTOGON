@@ -18,7 +18,7 @@ local ffi = ffi
 local RoomConfigEntriesMT; RoomConfigEntriesMT = { __type = "RoomConfigEntries" }
 
 local function el_size(self)
-    return ffi.getprivate(self, "_size")
+    local result = ffi.getprivate(self, "_size") return result
 end
 
 RoomConfigEntriesMT.__len = function(self) return el_size(self) end

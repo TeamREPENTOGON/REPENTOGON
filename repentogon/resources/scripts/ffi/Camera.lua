@@ -16,11 +16,11 @@ local CameraMT
 CameraMT = {
     __type = "Camera",
     IsClampEnabled = function(self)
-        return repentogon.L_Camera_IsClampEnabled(self)
+        local result = repentogon.L_Camera_IsClampEnabled(self) return result
     end,
     IsPosVisible = function(self, pos)
         ffichecks.checkcdata(1, pos, "Vector")
-        return repentogon.L_Camera_IsPosVisible(self, pos)
+        local result = repentogon.L_Camera_IsPosVisible(self, pos) return result
     end,
     SetClampEnabled = function(self, clamped)
         clamped = ffichecks.checkboolean(1, clamped)

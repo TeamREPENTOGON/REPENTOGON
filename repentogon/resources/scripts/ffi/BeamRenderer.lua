@@ -39,19 +39,19 @@ local PointMT
 PointMT = {
     __type = "Point",
     GetColor = function(self)
-        return ffi.new("struct Color", ffi.getprivate(self, "Color"))
+        local result = ffi.new("struct Color", ffi.getprivate(self, "Color")) return result
     end,
     GetIsWorldSpace = function(self)
-        return ffi.getprivate(self, "WorldSpace")
+        local result = ffi.getprivate(self, "WorldSpace") return result
     end,
     GetPosition = function(self)
         return ffichecks.copyvector(ffi.getprivate(self, "Position"))
     end,
     GetSpritesheetCoordinate = function(self)
-        return ffi.getprivate(self, "SpritesheetCoordinate")
+        local result = ffi.getprivate(self, "SpritesheetCoordinate") return result
     end,
     GetWidth = function(self)
-        return ffi.getprivate(self, "Width")
+        local result = ffi.getprivate(self, "Width") return result
     end,
     SetColor = function(self, color)
         ffichecks.checkcdata(1, color, "Color")
@@ -153,7 +153,7 @@ BeamMT = {
         repentogon.L_Beam_Add(self, point)
     end,
     GetLayer = function(self)
-        return ffi.getprivate(self, "Layer")
+        local result = ffi.getprivate(self, "Layer") return result
     end,
     GetPoints = function(self)
         local count = repentogon.L_Beam_GetPointCount(self)
@@ -168,13 +168,13 @@ BeamMT = {
         return points
     end,
     GetSprite = function(self)
-        return ffi.getprivate(self, "Sprite")
+        local result = ffi.getprivate(self, "Sprite") return result
     end,
     GetUnkBool = function(self)
-        return ffi.getprivate(self, "UnkBool")
+        local result = ffi.getprivate(self, "UnkBool") return result
     end,
     GetUseOverlay = function(self)
-        return ffi.getprivate(self, "UseOverlay")
+        local result = ffi.getprivate(self, "UseOverlay") return result
     end,
     Render = function(self, clearPoints)
         local err = repentogon.L_Beam_Render(self, ffichecks.optboolean(clearPoints, true))

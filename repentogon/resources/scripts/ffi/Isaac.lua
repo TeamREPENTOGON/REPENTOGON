@@ -148,7 +148,7 @@ local function StringOrNil(pointer)
     if pointer == nil then
         return nil
     end
-    return ffi.string(pointer)
+    local result = ffi.string(pointer) return result
 end
 
 local function RegistryRef(value)
@@ -220,7 +220,7 @@ local isaac = {
             return
         end
         playerType = ffichecks.checkinteger(1, playerType)
-        return repentogon.L_Isaac_AllMarksFilled(playerType)
+        local result = repentogon.L_Isaac_AllMarksFilled(playerType) return result
     end,
     AllTaintedCompletion = function(playerType, group)
         if not repentogon.L_Isaac_CompletionMarksInitialized() then
@@ -228,10 +228,10 @@ local isaac = {
         end
         playerType = ffichecks.checkinteger(1, playerType)
         group = ffichecks.checkinteger(2, group)
-        return repentogon.L_Isaac_AllTaintedCompletion(playerType, group)
+        local result = repentogon.L_Isaac_AllTaintedCompletion(playerType, group) return result
     end,
     CanStartTrueCoop = function()
-        return repentogon.L_Isaac_CanStartTrueCoop()
+        local result = repentogon.L_Isaac_CanStartTrueCoop() return result
     end,
     CenterCursor = function()
         repentogon.L_Isaac_CenterCursor()
@@ -263,20 +263,20 @@ local isaac = {
         if room == nil then
             return 0
         end
-        return math.max(0, room:GetAliveBossesCount())
+        local result = math.max(0, room:GetAliveBossesCount()) return result
     end,
     CountEnemies = function()
         local room = CurrentRoom()
         if room == nil then
             return 0
         end
-        return math.max(0, room:GetAliveEnemiesCount())
+        local result = math.max(0, room:GetAliveEnemiesCount()) return result
     end,
     CountEntities = function(spawner, type, variant, subtype)
         type = ffichecks.optinteger(type, 0)
         variant = ffichecks.optinteger(variant, -1)
         subtype = ffichecks.optinteger(subtype, -1)
-        return repentogon.L_Isaac_CountEntities(EntityToPointer(spawner), type, variant, subtype)
+        local result = repentogon.L_Isaac_CountEntities(EntityToPointer(spawner), type, variant, subtype) return result
     end,
     CreateWeapon = function(weaponType, entity)
         weaponType = ffichecks.checkinteger(1, weaponType)
@@ -313,7 +313,7 @@ local isaac = {
     end,
     ExecuteCommand = function(command)
         command = ffichecks.checkstring(1, command)
-        return ffi.string(repentogon.L_Isaac_ExecuteCommand(command))
+        local result = ffi.string(repentogon.L_Isaac_ExecuteCommand(command)) return result
     end,
     Explode = function(position, source, damage)
         ffichecks.checkcdata(1, position, "Vector")
@@ -349,64 +349,64 @@ local isaac = {
     FindTargetPit = function(position, targetPosition, pitIndex)
         ffichecks.checkcdata(1, position, "Vector")
         ffichecks.checkcdata(2, targetPosition, "Vector")
-        return repentogon.L_Isaac_FindTargetPit(position, targetPosition, ffichecks.optinteger(pitIndex, -1))
+        local result = repentogon.L_Isaac_FindTargetPit(position, targetPosition, ffichecks.optinteger(pitIndex, -1)) return result
     end,
     GetAchievementIdByName = function(name)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_Isaac_GetAchievementIdByName(name)
+        local result = repentogon.L_Isaac_GetAchievementIdByName(name) return result
     end,
     GetAxisAlignedUnitVectorFromDir = function(direction)
         return VectorResult(repentogon.L_Isaac_GetAxisAlignedUnitVectorFromDir, ffichecks.optinteger(direction, -1))
     end,
     GetBabyIdByName = function(name)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_Isaac_GetBabyIdByName(name)
+        local result = repentogon.L_Isaac_GetBabyIdByName(name) return result
     end,
     GetBuiltInCallbackState = function(callbackId)
         callbackId = ffichecks.checkinteger(1, callbackId)
-        return repentogon.L_Isaac_GetBuiltInCallbackState(callbackId)
+        local result = repentogon.L_Isaac_GetBuiltInCallbackState(callbackId) return result
     end,
     GetCardIdByName = function(name)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_Isaac_GetCardIdByName(name)
+        local result = repentogon.L_Isaac_GetCardIdByName(name) return result
     end,
     GetChallenge = function()
-        return repentogon.L_Isaac_GetChallenge()
+        local result = repentogon.L_Isaac_GetChallenge() return result
     end,
     GetChallengeIdByName = function(name)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_Isaac_GetChallengeIdByName(name)
+        local result = repentogon.L_Isaac_GetChallengeIdByName(name) return result
     end,
     GetCostumeIdByPath = function(path)
         path = ffichecks.checkstring(1, path)
-        return repentogon.L_Isaac_GetCostumeIdByPath(path)
+        local result = repentogon.L_Isaac_GetCostumeIdByPath(path) return result
     end,
     GetCurseIdByName = function(name)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_Isaac_GetCurseIdByName(name)
+        local result = repentogon.L_Isaac_GetCurseIdByName(name) return result
     end,
     GetEntityTypeByName = function(name)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_Isaac_GetEntityTypeByName(name)
+        local result = repentogon.L_Isaac_GetEntityTypeByName(name) return result
     end,
     GetEntityVariantByName = function(name)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_Isaac_GetEntityVariantByName(name)
+        local result = repentogon.L_Isaac_GetEntityVariantByName(name) return result
     end,
     GetFrameCount = function()
-        return repentogon.L_Isaac_GetFrameCount()
+        local result = repentogon.L_Isaac_GetFrameCount() return result
     end,
     GetItemIdByName = function(name)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_Isaac_GetItemIdByName(name)
+        local result = repentogon.L_Isaac_GetItemIdByName(name) return result
     end,
     GetMusicIdByName = function(name)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_Isaac_GetMusicIdByName(name)
+        local result = repentogon.L_Isaac_GetMusicIdByName(name) return result
     end,
     GetPillEffectByName = function(name)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_Isaac_GetPillEffectByName(name)
+        local result = repentogon.L_Isaac_GetPillEffectByName(name) return result
     end,
     GetPlayer = function(index)
         index = ffichecks.optinteger(index, 0)
@@ -414,42 +414,42 @@ local isaac = {
     end,
     GetPlayerTypeByName = function(name, isBSkin)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_Isaac_GetPlayerTypeByName(name, ffichecks.optboolean(isBSkin, false))
+        local result = repentogon.L_Isaac_GetPlayerTypeByName(name, ffichecks.optboolean(isBSkin, false)) return result
     end,
     GetScreenHeight = function()
-        return repentogon.L_Isaac_GetScreenHeight()
+        local result = repentogon.L_Isaac_GetScreenHeight() return result
     end,
     GetScreenPointScale = function()
-        return repentogon.L_Isaac_GetScreenPointScale()
+        local result = repentogon.L_Isaac_GetScreenPointScale() return result
     end,
     GetScreenWidth = function()
-        return repentogon.L_Isaac_GetScreenWidth()
+        local result = repentogon.L_Isaac_GetScreenWidth() return result
     end,
     GetSoundIdByName = function(name)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_Isaac_GetSoundIdByName(name)
+        local result = repentogon.L_Isaac_GetSoundIdByName(name) return result
     end,
     GetTextWidth = function(text)
         text = ffichecks.checkstring(1, text)
         return repentogon.L_Isaac_GetTextFont():GetStringWidth(text)
     end,
     GetTime = function()
-        return repentogon.L_Isaac_GetTime()
+        local result = repentogon.L_Isaac_GetTime() return result
     end,
     GetTrinketIdByName = function(name)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_Isaac_GetTrinketIdByName(name)
+        local result = repentogon.L_Isaac_GetTrinketIdByName(name) return result
     end,
     GetBackdropIdByName = function(name)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_Isaac_GetBackdropTypeByName(name)
+        local result = repentogon.L_Isaac_GetBackdropTypeByName(name) return result
     end,
     GetBossColorIdxByName = function(name)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_Isaac_GetBossColorIdxByName(name)
+        local result = repentogon.L_Isaac_GetBossColorIdxByName(name) return result
     end,
     GetButtonsSprite = function()
-        return repentogon.L_Isaac_GetButtonsSprite()
+        local result = repentogon.L_Isaac_GetButtonsSprite() return result
     end,
     GetClipboard = function()
         return StringOrNil(repentogon.L_Isaac_GetClipboard())
@@ -464,7 +464,7 @@ local isaac = {
         if not repentogon.L_Isaac_CompletionMarksInitialized() then
             return
         end
-        return repentogon.L_Isaac_GetCompletionMark(playerType, completionType)
+        local result = repentogon.L_Isaac_GetCompletionMark(playerType, completionType) return result
     end,
     GetCompletionMarkData = function(modId, playerName, tainted)
         modId = ffichecks.checkstring(1, modId)
@@ -481,21 +481,21 @@ local isaac = {
         return MarksToTable(marksOut, playerType)
     end,
     GetCurrentStageConfigId = function()
-        return repentogon.L_Isaac_GetCurrentStageConfigId()
+        local result = repentogon.L_Isaac_GetCurrentStageConfigId() return result
     end,
     GetCursorSprite = function()
-        return repentogon.L_Isaac_GetCursorSprite()
+        local result = repentogon.L_Isaac_GetCursorSprite() return result
     end,
     GetCutsceneIdByName = function(name)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_Isaac_GetCutsceneByName(name)
+        local result = repentogon.L_Isaac_GetCutsceneByName(name) return result
     end,
     GetDwmWindowAttribute = function(attribute)
-        return repentogon.L_Isaac_GetDwmWindowAttribute(ffichecks.optinteger(attribute, 0))
+        local result = repentogon.L_Isaac_GetDwmWindowAttribute(ffichecks.optinteger(attribute, 0)) return result
     end,
     GetEntitySubTypeByName = function(name)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_Isaac_GetSubTypeByName(name)
+        local result = repentogon.L_Isaac_GetSubTypeByName(name) return result
     end,
     GetFreeNearPosition = function(position, step)
         ffichecks.checkcdata(1, position, "Vector")
@@ -504,7 +504,7 @@ local isaac = {
     end,
     GetGiantBookIdByName = function(name)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_Isaac_GetGiantBookByName(name)
+        local result = repentogon.L_Isaac_GetGiantBookByName(name) return result
     end,
     GetLoadedModules = function()
         return getregistry()._LOADED
@@ -521,7 +521,7 @@ local isaac = {
     end,
     GetModChallengeClearCount = function(challengeId)
         challengeId = ffichecks.checkinteger(1, challengeId)
-        return repentogon.L_Isaac_GetModChallengeClearCount(challengeId)
+        local result = repentogon.L_Isaac_GetModChallengeClearCount(challengeId) return result
     end,
     GetModChallengeCompletionData = function(modId, challengeName)
         modId = ffichecks.checkstring(1, modId)
@@ -533,15 +533,15 @@ local isaac = {
         return completed ~= 0
     end,
     GetNanoTime = function()
-        return tonumber(repentogon.L_Isaac_GetNanoTime())
+        local result = tonumber(repentogon.L_Isaac_GetNanoTime()) return result
     end,
     GetNullItemIdByName = function(name)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_Isaac_GetNullItemIdByName(name)
+        local result = repentogon.L_Isaac_GetNullItemIdByName(name) return result
     end,
     GetPoolIdByName = function(name)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_Isaac_GetPoolIdByName(name)
+        local result = repentogon.L_Isaac_GetPoolIdByName(name) return result
     end,
     GetRandomPosition = function()
         return VectorResult(repentogon.L_Isaac_GetRandomPosition)
@@ -560,30 +560,30 @@ local isaac = {
         return StringOrNil(repentogon.L_Isaac_GetString(category, key))
     end,
     GetWindowTitle = function()
-        return ffi.string(repentogon.L_Isaac_GetWindowTitle())
+        local result = ffi.string(repentogon.L_Isaac_GetWindowTitle()) return result
     end,
     GridSpawn = function(type, variant, position, forced)
         type = ffichecks.checkinteger(1, type)
         variant = ffichecks.checkinteger(2, variant)
         ffichecks.checkcdata(3, position, "Vector")
-        return repentogon.L_Isaac_GridSpawn(type, variant, position, ffichecks.optboolean(forced, false))
+        local result = repentogon.L_Isaac_GridSpawn(type, variant, position, ffichecks.optboolean(forced, false)) return result
     end,
     HasModData = function(mod)
-        return repentogon.L_Isaac_HasModData(RegistryRef(mod))
+        local result = repentogon.L_Isaac_HasModData(RegistryRef(mod)) return result
     end,
     IsChallengeDone = function(challengeId)
         challengeId = ffichecks.checkinteger(1, challengeId)
         CheckChallengeId(challengeId)
-        return repentogon.L_Isaac_IsChallengeDone(challengeId)
+        local result = repentogon.L_Isaac_IsChallengeDone(challengeId) return result
     end,
     IsInGame = function()
-        return repentogon.L_Isaac_IsInGame()
+        local result = repentogon.L_Isaac_IsInGame() return result
     end,
     IsShuttingDown = function()
-        return repentogon.L_Isaac_IsShuttingDown()
+        local result = repentogon.L_Isaac_IsShuttingDown() return result
     end,
     LoadModData = function(mod)
-        return ffi.string(repentogon.L_Isaac_LoadModData(RegistryRef(mod)))
+        local result = ffi.string(repentogon.L_Isaac_LoadModData(RegistryRef(mod))) return result
     end,
     LoadModDataFromFolder = function(folderName)
         folderName = ffichecks.checkstring(1, folderName)
@@ -594,7 +594,7 @@ local isaac = {
         repentogon.L_Isaac_PlayCutscene(cutscene, ffichecks.optboolean(shouldClear, false))
     end,
     RGON_GetChangelog = function()
-        return ffi.string(repentogon.L_Isaac_GetChangelog())
+        local result = ffi.string(repentogon.L_Isaac_GetChangelog()) return result
     end,
     RegisterMod = function(mod, name, apiVersion)
         name = ffichecks.checkstring(2, name)
@@ -679,7 +679,7 @@ local isaac = {
     end,
     SetClipboard = function(text)
         text = ffichecks.checkstring(1, text)
-        return repentogon.L_Isaac_SetClipboard(text)
+        local result = repentogon.L_Isaac_SetClipboard(text) return result
     end,
     SetCompletionMark = function(playerType, completionType, value)
         playerType = ffichecks.checkinteger(1, playerType)
@@ -778,7 +778,7 @@ local isaac = {
     ShowErrorDialog = function(title, text, icon, buttons)
         title = ffichecks.checkstring(1, title)
         text = ffichecks.checkstring(2, text)
-        return repentogon.L_Isaac_ShowErrorDialog(title, text, ffichecks.optinteger(icon, MB_ICONERROR), ffichecks.optinteger(buttons, MB_OK))
+        local result = repentogon.L_Isaac_ShowErrorDialog(title, text, ffichecks.optinteger(icon, MB_ICONERROR), ffichecks.optinteger(buttons, MB_OK)) return result
     end,
     Spawn = function(type, variant, subtype, position, velocity, spawner)
         type = ffichecks.checkinteger(1, type)

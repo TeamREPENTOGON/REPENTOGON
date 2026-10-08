@@ -520,6 +520,7 @@ local repentogon = ffidll
 
 ffi.reentrant(repentogon.L_EntityPlayer_CheckFamiliar)
 ffi.reentrant(repentogon.L_EntityPlayer_CheckFamiliarEx)
+ffi.reentrant(repentogon.L_EntityPlayer_GetHealthType)
 
 local helpers = Entity.Helpers
 local Getter = helpers.Getter
@@ -657,7 +658,7 @@ local getters = {
     ControllerIndex = Getter("ControllerIndexValue"),
     CanFly = Getter("CanFlyValue"),
     FireDelay = function(self)
-        return repentogon.L_EntityPlayer_GetFireDelayNative(self)
+        local result = repentogon.L_EntityPlayer_GetFireDelayNative(self) return result
     end,
     TearsOffset = VectorGetter("TearsOffsetValue"),
     SpriteScale = VectorGetter("PlayerSpriteScaleValue"),
@@ -701,7 +702,7 @@ local methods = {
         repentogon.L_EntityPlayer_AddMaxHearts(self, amount, ignoreKeeper)
     end,
     HasFullHearts = function(self)
-        return repentogon.L_EntityPlayer_HasFullHearts(self)
+        local result = repentogon.L_EntityPlayer_HasFullHearts(self) return result
     end,
     AddHearts = function(self, hearts, unk, unk2)
         hearts = ffichecks.checkinteger(1, hearts)
@@ -728,7 +729,7 @@ local methods = {
     end,
     IsBlackHeart = function(self, heart)
         heart = ffichecks.checkinteger(1, heart)
-        return repentogon.L_EntityPlayer_IsBlackHeart(self, heart)
+        local result = repentogon.L_EntityPlayer_IsBlackHeart(self, heart) return result
     end,
     AddJarHearts = function(self, amount)
         amount = ffichecks.checkinteger(1, amount)
@@ -771,7 +772,7 @@ local methods = {
         repentogon.L_EntityPlayer_AddPrettyFly(self)
     end,
     TryUseKey = function(self)
-        return repentogon.L_EntityPlayer_TryUseKey(self)
+        local result = repentogon.L_EntityPlayer_TryUseKey(self) return result
     end,
     AddBoneHearts = function(self, amount)
         amount = ffichecks.checkinteger(1, amount)
@@ -799,42 +800,42 @@ local methods = {
         repentogon.L_EntityPlayer_AddBloodCharge(self, amount)
     end,
     GetEffectiveSoulCharge = function(self)
-        return repentogon.L_EntityPlayer_GetEffectiveSoulCharge(self)
+        local result = repentogon.L_EntityPlayer_GetEffectiveSoulCharge(self) return result
     end,
     GetEffectiveBloodCharge = function(self)
-        return repentogon.L_EntityPlayer_GetEffectiveBloodCharge(self)
+        local result = repentogon.L_EntityPlayer_GetEffectiveBloodCharge(self) return result
     end,
     GetEffectiveMaxHearts = function(self)
-        return repentogon.L_EntityPlayer_GetEffectiveMaxHearts(self)
+        local result = repentogon.L_EntityPlayer_GetEffectiveMaxHearts(self) return result
     end,
     GetHeartLimit = function(self, keeper)
         keeper = not not keeper
-        return repentogon.L_EntityPlayer_GetHeartLimit(self, keeper)
+        local result = repentogon.L_EntityPlayer_GetHeartLimit(self, keeper) return result
     end,
     SetFullHearts = function(self)
         repentogon.L_EntityPlayer_SetFullHearts(self)
     end,
     IsBoneHeart = function(self, heart)
         heart = ffichecks.checkinteger(1, heart)
-        return repentogon.L_EntityPlayer_IsBoneHeart(self, heart)
+        local result = repentogon.L_EntityPlayer_IsBoneHeart(self, heart) return result
     end,
     CanPickRedHearts = function(self)
-        return repentogon.L_EntityPlayer_CanPickRedHearts(self)
+        local result = repentogon.L_EntityPlayer_CanPickRedHearts(self) return result
     end,
     CanPickSoulHearts = function(self)
-        return repentogon.L_EntityPlayer_CanPickSoulHearts(self)
+        local result = repentogon.L_EntityPlayer_CanPickSoulHearts(self) return result
     end,
     CanPickBlackHearts = function(self)
-        return repentogon.L_EntityPlayer_CanPickBlackHearts(self)
+        local result = repentogon.L_EntityPlayer_CanPickBlackHearts(self) return result
     end,
     CanPickGoldenHearts = function(self)
-        return repentogon.L_EntityPlayer_CanPickGoldenHearts(self)
+        local result = repentogon.L_EntityPlayer_CanPickGoldenHearts(self) return result
     end,
     CanPickBoneHearts = function(self)
-        return repentogon.L_EntityPlayer_CanPickBoneHearts(self)
+        local result = repentogon.L_EntityPlayer_CanPickBoneHearts(self) return result
     end,
     CanPickRottenHearts = function(self)
-        return repentogon.L_EntityPlayer_CanPickRottenHearts(self)
+        local result = repentogon.L_EntityPlayer_CanPickRottenHearts(self) return result
     end,
     ChangePlayerType = function(self, playerType, unk)
         playerType = ffichecks.checkinteger(1, playerType)
@@ -842,10 +843,10 @@ local methods = {
         repentogon.L_EntityPlayer_ChangePlayerType(self, playerType, unk)
     end,
     GetExtraLives = function(self)
-        return repentogon.L_EntityPlayer_GetExtraLives(self)
+        local result = repentogon.L_EntityPlayer_GetExtraLives(self) return result
     end,
     WillPlayerRevive = function(self)
-        return repentogon.L_EntityPlayer_WillPlayerRevive(self)
+        local result = repentogon.L_EntityPlayer_WillPlayerRevive(self) return result
     end,
     Revive = function(self)
         repentogon.L_EntityPlayer_Revive(self)
@@ -864,11 +865,11 @@ local methods = {
     end,
     GetCard = function(self, slot)
         slot = ffichecks.checkinteger(1, slot)
-        return repentogon.L_EntityPlayer_GetCard(self, slot)
+        local result = repentogon.L_EntityPlayer_GetCard(self, slot) return result
     end,
     GetPill = function(self, slot)
         slot = ffichecks.checkinteger(1, slot)
-        return repentogon.L_EntityPlayer_GetPill(self, slot)
+        local result = repentogon.L_EntityPlayer_GetPill(self, slot) return result
     end,
     SetCard = function(self, slot, card)
         slot = ffichecks.checkinteger(1, slot)
@@ -881,10 +882,10 @@ local methods = {
         repentogon.L_EntityPlayer_SetPill(self, slot, color)
     end,
     FlushQueueItem = function(self)
-        return repentogon.L_EntityPlayer_FlushQueueItem(self)
+        local result = repentogon.L_EntityPlayer_FlushQueueItem(self) return result
     end,
     GetCollectibleCount = function(self)
-        return repentogon.L_EntityPlayer_GetCollectibleCount(self)
+        local result = repentogon.L_EntityPlayer_GetCollectibleCount(self) return result
     end,
     AddTrinket = function(self, trinket, firstTime)
         trinket = ffichecks.checkinteger(1, trinket)
@@ -893,10 +894,10 @@ local methods = {
     end,
     TryRemoveTrinket = function(self, trinket)
         trinket = ffichecks.checkinteger(1, trinket)
-        return repentogon.L_EntityPlayer_TryRemoveTrinket(self, trinket)
+        local result = repentogon.L_EntityPlayer_TryRemoveTrinket(self, trinket) return result
     end,
     GetMaxTrinkets = function(self)
-        return repentogon.L_EntityPlayer_GetMaxTrinkets(self)
+        local result = repentogon.L_EntityPlayer_GetMaxTrinkets(self) return result
     end,
     RemoveCollectible = function(self, collectible, ignoreModifiers, slot, removeFromPlayerForm)
         collectible = ffichecks.checkinteger(1, collectible)
@@ -910,15 +911,15 @@ local methods = {
     end,
     HasPlayerForm = function(self, form)
         form = ffichecks.checkinteger(1, form)
-        return repentogon.L_EntityPlayer_HasPlayerForm(self, form)
+        local result = repentogon.L_EntityPlayer_HasPlayerForm(self, form) return result
     end,
     CanAddCollectible = function(self, collectible)
         if collectible == nil then collectible = 0 else collectible = ffichecks.checkinteger(1, collectible) end
-        return repentogon.L_EntityPlayer_CanAddCollectible(self, collectible)
+        local result = repentogon.L_EntityPlayer_CanAddCollectible(self, collectible) return result
     end,
     TryHoldTrinket = function(self, trinket)
         trinket = ffichecks.checkinteger(1, trinket)
-        return repentogon.L_EntityPlayer_TryHoldTrinket(self, trinket)
+        local result = repentogon.L_EntityPlayer_TryHoldTrinket(self, trinket) return result
     end,
     EvaluateItems = function(self)
         repentogon.L_EntityPlayer_EvaluateItems(self)
@@ -928,7 +929,7 @@ local methods = {
     end,
     HasWeaponType = function(self, weaponType)
         weaponType = ffichecks.checkinteger(1, weaponType)
-        return repentogon.L_EntityPlayer_HasWeaponType(self, weaponType)
+        local result = repentogon.L_EntityPlayer_HasWeaponType(self, weaponType) return result
     end,
     TryRemoveCollectibleCostume = function(self, collectible, unk)
         collectible = ffichecks.checkinteger(1, collectible)
@@ -976,7 +977,7 @@ local methods = {
         repentogon.L_EntityPlayer_ResetItemState(self)
     end,
     HasTimedItem = function(self)
-        return repentogon.L_EntityPlayer_HasTimedItem(self)
+        local result = repentogon.L_EntityPlayer_HasTimedItem(self) return result
     end,
     AddDollarBillEffect = function(self)
         repentogon.L_EntityPlayer_AddDollarBillEffect(self)
@@ -997,20 +998,20 @@ local methods = {
         repentogon.L_EntityPlayer_AddDeadEyeCharge(self)
     end,
     GetZodiacEffect = function(self)
-        return repentogon.L_EntityPlayer_GetZodiacEffect(self)
+        local result = repentogon.L_EntityPlayer_GetZodiacEffect(self) return result
     end,
     GetGreedDonationBreakChance = function(self)
-        return repentogon.L_EntityPlayer_GetGreedDonationBreakChance(self)
+        local result = repentogon.L_EntityPlayer_GetGreedDonationBreakChance(self) return result
     end,
     IsFullSpriteRendering = function(self)
-        return repentogon.L_EntityPlayer_IsFullSpriteRendering(self)
+        local result = repentogon.L_EntityPlayer_IsFullSpriteRendering(self) return result
     end,
     UsePoopSpell = function(self, spell)
         spell = ffichecks.checkinteger(1, spell)
         repentogon.L_EntityPlayer_UsePoopSpell(self, spell)
     end,
     GetMaxPoopMana = function(self)
-        return repentogon.L_EntityPlayer_GetMaxPoopMana(self)
+        local result = repentogon.L_EntityPlayer_GetMaxPoopMana(self) return result
     end,
     AddPoopMana = function(self, amount)
         amount = ffichecks.checkinteger(1, amount)
@@ -1018,30 +1019,30 @@ local methods = {
     end,
     GetPoopSpell = function(self, slot)
         slot = ffichecks.checkinteger(1, slot)
-        return repentogon.L_EntityPlayer_GetPoopSpell(self, slot)
+        local result = repentogon.L_EntityPlayer_GetPoopSpell(self, slot) return result
     end,
     GetNPCTarget = function(self)
-        return repentogon.L_EntityPlayer_GetNPCTarget(self)
+        local result = repentogon.L_EntityPlayer_GetNPCTarget(self) return result
     end,
     GetActiveWeaponEntity = function(self)
-        return repentogon.L_EntityPlayer_GetActiveWeaponEntity(self)
+        local result = repentogon.L_EntityPlayer_GetActiveWeaponEntity(self) return result
     end,
     GetMainTwin = function(self)
-        return repentogon.L_EntityPlayer_GetMainTwin(self)
+        local result = repentogon.L_EntityPlayer_GetMainTwin(self) return result
     end,
     CanPickupItem = function(self)
-        return repentogon.L_EntityPlayer_CanPickupItem(self)
+        local result = repentogon.L_EntityPlayer_CanPickupItem(self) return result
     end,
     IsHoldingItem = function(self)
-        return repentogon.L_EntityPlayer_IsHoldingItem(self)
+        local result = repentogon.L_EntityPlayer_IsHoldingItem(self) return result
     end,
     IsHeldItemVisible = function(self)
-        return repentogon.L_EntityPlayer_IsHeldItemVisible(self)
+        local result = repentogon.L_EntityPlayer_IsHeldItemVisible(self) return result
     end,
     TryHoldEntity = function(self, entity)
         if entity == nil then ffichecks.argerror(1, "Entity expected, got nil") end
         entity = EntityToPointer(entity)
-        return repentogon.L_EntityPlayer_TryHoldEntity(self, entity)
+        local result = repentogon.L_EntityPlayer_TryHoldEntity(self, entity) return result
     end,
     SetShootingCooldown = function(self, cooldown)
         cooldown = ffichecks.checkinteger(1, cooldown)
@@ -1052,7 +1053,7 @@ local methods = {
         repentogon.L_EntityPlayer_SetMinDamageCooldown(self, cooldown)
     end,
     AreControlsEnabled = function(self)
-        return repentogon.L_EntityPlayer_AreControlsEnabled(self)
+        local result = repentogon.L_EntityPlayer_AreControlsEnabled(self) return result
     end,
     AnimateCollectible = function(self, collectible, animName, spriteAnimName)
         collectible = ffichecks.checkinteger(1, collectible)
@@ -1114,38 +1115,38 @@ local methods = {
         amount = ffichecks.checkinteger(1, amount)
         ffichecks.checkcdata(2, position, "Vector")
         target = EntityToPointer(target)
-        return repentogon.L_EntityPlayer_AddBlueFlies(self, amount, position, target)
+        local result = repentogon.L_EntityPlayer_AddBlueFlies(self, amount, position, target) return result
     end,
     AddBlueSpider = function(self, position)
         ffichecks.checkcdata(1, position, "Vector")
-        return repentogon.L_EntityPlayer_AddBlueSpider(self, position)
+        local result = repentogon.L_EntityPlayer_AddBlueSpider(self, position) return result
     end,
     AddFriendlyDip = function(self, subtype, position)
         subtype = ffichecks.checkinteger(1, subtype)
         ffichecks.checkcdata(2, position, "Vector")
-        return repentogon.L_EntityPlayer_AddFriendlyDip(self, subtype, position)
+        local result = repentogon.L_EntityPlayer_AddFriendlyDip(self, subtype, position) return result
     end,
     AddItemWisp = function(self, collectible, position, adjustOrbitLayer)
         collectible = ffichecks.checkinteger(1, collectible)
         ffichecks.checkcdata(2, position, "Vector")
         adjustOrbitLayer = ffichecks.optboolean(adjustOrbitLayer, false)
-        return repentogon.L_EntityPlayer_AddItemWisp(self, collectible, position, adjustOrbitLayer)
+        local result = repentogon.L_EntityPlayer_AddItemWisp(self, collectible, position, adjustOrbitLayer) return result
     end,
     AddMinisaac = function(self, position, playAnim)
         ffichecks.checkcdata(1, position, "Vector")
         playAnim = ffichecks.optboolean(playAnim, true)
-        return repentogon.L_EntityPlayer_AddMinisaac(self, position, playAnim)
+        local result = repentogon.L_EntityPlayer_AddMinisaac(self, position, playAnim) return result
     end,
     AddSwarmFlyOrbital = function(self, position)
         ffichecks.checkcdata(1, position, "Vector")
-        return repentogon.L_EntityPlayer_AddSwarmFlyOrbital(self, position)
+        local result = repentogon.L_EntityPlayer_AddSwarmFlyOrbital(self, position) return result
     end,
     AddWisp = function(self, collectible, position, adjustOrbitLayer, dontUpdate)
         collectible = ffichecks.checkinteger(1, collectible)
         ffichecks.checkcdata(2, position, "Vector")
         adjustOrbitLayer = ffichecks.optboolean(adjustOrbitLayer, false)
         dontUpdate = ffichecks.optboolean(dontUpdate, false)
-        return repentogon.L_EntityPlayer_AddWisp(self, collectible, position, adjustOrbitLayer, dontUpdate)
+        local result = repentogon.L_EntityPlayer_AddWisp(self, collectible, position, adjustOrbitLayer, dontUpdate) return result
     end,
     DoZitEffect = function(self, direction)
         ffichecks.checkcdata(1, direction, "Vector")
@@ -1165,7 +1166,7 @@ local methods = {
         ffichecks.checkcdata(1, position, "Vector")
         ffichecks.checkcdata(2, velocity, "Vector")
         source = EntityToPointer(source)
-        return repentogon.L_EntityPlayer_FireBomb(self, position, velocity, source)
+        local result = repentogon.L_EntityPlayer_FireBomb(self, position, velocity, source) return result
     end,
     FireKnife = function(self, parent, rotationOffset, cantOverwrite, subType, variant)
         if parent == nil then ffichecks.argerror(1, "Entity expected, got nil") end
@@ -1174,23 +1175,23 @@ local methods = {
         cantOverwrite = not not cantOverwrite
         if subType == nil then subType = 0 else subType = ffichecks.checkinteger(4, subType) end
         if variant == nil then variant = 0 else variant = ffichecks.checkinteger(5, variant) end
-        return repentogon.L_EntityPlayer_FireKnife(self, parent, rotationOffset, cantOverwrite, subType, variant)
+        local result = repentogon.L_EntityPlayer_FireKnife(self, parent, rotationOffset, cantOverwrite, subType, variant) return result
     end,
     FireDelayedBrimstone = function(self, angle, source)
         angle = ffichecks.checknumber(1, angle)
         if source == nil then ffichecks.argerror(2, "Entity expected, got nil") end
         source = EntityToPointer(source)
-        return repentogon.L_EntityPlayer_FireDelayedBrimstone(self, angle, source)
+        local result = repentogon.L_EntityPlayer_FireDelayedBrimstone(self, angle, source) return result
     end,
     SpawnMawOfVoid = function(self, timeout)
         timeout = ffichecks.checkinteger(1, timeout)
-        return repentogon.L_EntityPlayer_SpawnMawOfVoid(self, timeout)
+        local result = repentogon.L_EntityPlayer_SpawnMawOfVoid(self, timeout) return result
     end,
     FireBrimstone = function(self, direction, source, damageMultiplier)
         ffichecks.checkcdata(1, direction, "Vector")
         source = EntityToPointer(source)
         if damageMultiplier == nil then damageMultiplier = 1 else damageMultiplier = ffichecks.checknumber(3, damageMultiplier) end
-        return repentogon.L_EntityPlayer_FireBrimstone(self, direction, source, damageMultiplier)
+        local result = repentogon.L_EntityPlayer_FireBrimstone(self, direction, source, damageMultiplier) return result
     end,
     FireTechLaser = function(self, position, offsetID, direction, leftEye, oneHit, source, damageMultiplier)
         ffichecks.checkcdata(1, position, "Vector")
@@ -1200,7 +1201,7 @@ local methods = {
         oneHit = ffichecks.optboolean(oneHit, false)
         source = EntityToPointer(source)
         if damageMultiplier == nil then damageMultiplier = 1 else damageMultiplier = ffichecks.checknumber(7, damageMultiplier) end
-        return repentogon.L_EntityPlayer_FireTechLaser(self, position, offsetID, direction, leftEye, oneHit, source, damageMultiplier)
+        local result = repentogon.L_EntityPlayer_FireTechLaser(self, position, offsetID, direction, leftEye, oneHit, source, damageMultiplier) return result
     end,
     FireTechXLaser = function(self, position, direction, radius, source, damageMultiplier)
         ffichecks.checkcdata(1, position, "Vector")
@@ -1208,16 +1209,16 @@ local methods = {
         radius = ffichecks.checknumber(3, radius)
         source = EntityToPointer(source)
         if damageMultiplier == nil then damageMultiplier = 1 else damageMultiplier = ffichecks.checknumber(5, damageMultiplier) end
-        return repentogon.L_EntityPlayer_FireTechXLaser(self, position, direction, radius, source, damageMultiplier)
+        local result = repentogon.L_EntityPlayer_FireTechXLaser(self, position, direction, radius, source, damageMultiplier) return result
     end,
     ThrowBlueSpider = function(self, position, target)
         ffichecks.checkcdata(1, position, "Vector")
         ffichecks.checkcdata(2, target, "Vector")
-        return repentogon.L_EntityPlayer_ThrowBlueSpider(self, position, target)
+        local result = repentogon.L_EntityPlayer_ThrowBlueSpider(self, position, target) return result
     end,
     ThrowHeldEntity = function(self, velocity)
         ffichecks.checkcdata(1, velocity, "Vector")
-        return repentogon.L_EntityPlayer_ThrowHeldEntity(self, velocity)
+        local result = repentogon.L_EntityPlayer_ThrowHeldEntity(self, velocity) return result
     end,
     GetFlyingOffset = function(self)
         local result = Vector(0, 0)
@@ -1259,7 +1260,7 @@ local methods = {
     end,
     IsPosInSpotLight = function(self, position)
         ffichecks.checkcdata(1, position, "Vector")
-        return repentogon.L_EntityPlayer_IsPosInSpotLight(self, position)
+        local result = repentogon.L_EntityPlayer_IsPosInSpotLight(self, position) return result
     end,
     RenderBody = function(self, position)
         ffichecks.checkcdata(1, position, "Vector")
@@ -1290,7 +1291,7 @@ local methods = {
     end,
     TryForgottenThrow = function(self, direction)
         ffichecks.checkcdata(1, direction, "Vector")
-        return repentogon.L_EntityPlayer_TryForgottenThrow(self, direction)
+        local result = repentogon.L_EntityPlayer_TryForgottenThrow(self, direction) return result
     end,
     AddCollectible = function(self, collectible, charge, firstTime, slot, varData, pool)
         collectible = ffichecks.checkinteger(1, collectible)
@@ -1320,7 +1321,7 @@ local methods = {
     end,
     InitTwin = function(self, playerType)
         playerType = ffichecks.checkinteger(1, playerType)
-        return repentogon.L_EntityPlayer_InitTwin(self, playerType)
+        local result = repentogon.L_EntityPlayer_InitTwin(self, playerType) return result
     end,
     InitPostLevelInitStats = function(self)
         repentogon.L_EntityPlayer_InitPostLevelInitStats(self)
@@ -1330,19 +1331,19 @@ local methods = {
         repentogon.L_EntityPlayer_SetItemState(self, collectible)
     end,
     GetHealthType = function(self)
-        return repentogon.L_EntityPlayer_GetHealthType(self)
+        local result = repentogon.L_EntityPlayer_GetHealthType(self) return result
     end,
     GetTotalActiveCharge = function(self, slot)
         slot = CheckActiveSlot(1, slot, false)
-        return repentogon.L_EntityPlayer_GetTotalActiveCharge(self, slot)
+        local result = repentogon.L_EntityPlayer_GetTotalActiveCharge(self, slot) return result
     end,
     GetActiveMaxCharge = function(self, slot)
         slot = CheckActiveSlot(1, slot, false)
-        return repentogon.L_EntityPlayer_GetActiveMaxCharge(self, slot)
+        local result = repentogon.L_EntityPlayer_GetActiveMaxCharge(self, slot) return result
     end,
     GetActiveMinUsableCharge = function(self, slot)
         slot = CheckActiveSlot(1, slot, false)
-        return repentogon.L_EntityPlayer_GetActiveMinUsableCharge(self, slot)
+        local result = repentogon.L_EntityPlayer_GetActiveMinUsableCharge(self, slot) return result
     end,
     SetActiveVarData = function(self, varData, slot)
         varData = ffichecks.checkinteger(1, varData)
@@ -1351,23 +1352,23 @@ local methods = {
     end,
     GetActiveItem = function(self, slot)
         slot = CheckActiveSlot(1, slot, false)
-        return repentogon.L_EntityPlayer_GetActiveItem(self, slot)
+        local result = repentogon.L_EntityPlayer_GetActiveItem(self, slot) return result
     end,
     GetActiveCharge = function(self, slot)
         slot = CheckActiveSlot(1, slot, false)
-        return repentogon.L_EntityPlayer_GetActiveCharge(self, slot)
+        local result = repentogon.L_EntityPlayer_GetActiveCharge(self, slot) return result
     end,
     GetActiveSubCharge = function(self, slot)
         slot = CheckActiveSlot(1, slot, false)
-        return repentogon.L_EntityPlayer_GetActiveSubCharge(self, slot)
+        local result = repentogon.L_EntityPlayer_GetActiveSubCharge(self, slot) return result
     end,
     GetBatteryCharge = function(self, slot)
         slot = CheckActiveSlot(1, slot, false)
-        return repentogon.L_EntityPlayer_GetBatteryCharge(self, slot)
+        local result = repentogon.L_EntityPlayer_GetBatteryCharge(self, slot) return result
     end,
     NeedsCharge = function(self, slot)
         slot = CheckActiveSlot(1, slot, true)
-        return repentogon.L_EntityPlayer_NeedsCharge(self, slot)
+        local result = repentogon.L_EntityPlayer_NeedsCharge(self, slot) return result
     end,
     SetActiveCharge = function(self, charge, slot)
         charge = ffichecks.checkinteger(1, charge)
@@ -1380,12 +1381,12 @@ local methods = {
         flashHUD = ffichecks.optboolean(flashHUD, true)
         overcharge = ffichecks.optboolean(overcharge, false)
         force = ffichecks.optboolean(force, false)
-        return repentogon.L_EntityPlayer_AddActiveCharge(self, charge, slot, flashHUD, overcharge, force)
+        local result = repentogon.L_EntityPlayer_AddActiveCharge(self, charge, slot, flashHUD, overcharge, force) return result
     end,
     FullCharge = function(self, slot, force)
         slot = CheckActiveSlot(1, slot, true)
         force = ffichecks.optboolean(force, true)
-        return repentogon.L_EntityPlayer_FullCharge(self, slot, force)
+        local result = repentogon.L_EntityPlayer_FullCharge(self, slot, force) return result
     end,
     DischargeActiveItem = function(self, slot)
         slot = CheckActiveSlot(1, slot, false)
@@ -1393,11 +1394,11 @@ local methods = {
     end,
     CanOverrideActiveItem = function(self, slot)
         slot = CheckActiveSlot(1, slot, false)
-        return repentogon.L_EntityPlayer_CanOverrideActiveItem(self, slot)
+        local result = repentogon.L_EntityPlayer_CanOverrideActiveItem(self, slot) return result
     end,
     GetActiveItemSlot = function(self, collectible)
         collectible = ffichecks.checkinteger(1, collectible)
-        return repentogon.L_EntityPlayer_GetActiveItemSlot(self, collectible)
+        local result = repentogon.L_EntityPlayer_GetActiveItemSlot(self, collectible) return result
     end,
     IncrementPlayerFormCounter = function(self, form, amount)
         form = ffichecks.checkinteger(1, form)
@@ -1405,17 +1406,17 @@ local methods = {
         repentogon.L_EntityPlayer_IncrementPlayerFormCounter(self, form, amount)
     end,
     TryPreventDeath = function(self)
-        return repentogon.L_EntityPlayer_TryPreventDeath(self)
+        local result = repentogon.L_EntityPlayer_TryPreventDeath(self) return result
     end,
     RemoveCollectibleByHistoryIndex = function(self, index)
         index = ffichecks.checkinteger(1, index)
         repentogon.L_EntityPlayer_RemoveCollectibleByHistoryIndex(self, index)
     end,
     TryFakeDeath = function(self)
-        return repentogon.L_EntityPlayer_TryFakeDeath(self)
+        local result = repentogon.L_EntityPlayer_TryFakeDeath(self) return result
     end,
     GetWeaponModifiers = function(self)
-        return repentogon.L_EntityPlayer_GetWeaponModifiers(self)
+        local result = repentogon.L_EntityPlayer_GetWeaponModifiers(self) return result
     end,
     EnableWeaponType = function(self, weaponType, set)
         weaponType = ffichecks.checkinteger(1, weaponType)
@@ -1430,12 +1431,12 @@ local methods = {
         repentogon.L_EntityPlayer_UpdateIsaacPregnancy(self, cambion)
     end,
     GetCambionPregnancyLevel = function(self)
-        return repentogon.L_EntityPlayer_GetCambionPregnancyLevel(self)
+        local result = repentogon.L_EntityPlayer_GetCambionPregnancyLevel(self) return result
     end,
     SwapForgottenForm = function(self, ignoreHealth, noEffects)
         ignoreHealth = ffichecks.optboolean(ignoreHealth, false)
         noEffects = ffichecks.optboolean(noEffects, false)
-        return repentogon.L_EntityPlayer_SwapForgottenForm(self, ignoreHealth, noEffects)
+        local result = repentogon.L_EntityPlayer_SwapForgottenForm(self, ignoreHealth, noEffects) return result
     end,
     PlayDelayedSFX = function(self, soundEffectID, soundDelay, frameDelay, volume)
         soundEffectID = ffichecks.checkinteger(1, soundEffectID)
@@ -1446,14 +1447,14 @@ local methods = {
     end,
     CanUsePill = function(self, pillEffect)
         pillEffect = ffichecks.checkinteger(1, pillEffect)
-        return repentogon.L_EntityPlayer_CanUsePill(self, pillEffect)
+        local result = repentogon.L_EntityPlayer_CanUsePill(self, pillEffect) return result
     end,
     GetMaxPocketItems = function(self)
-        return repentogon.L_EntityPlayer_GetMaxPocketItems(self)
+        local result = repentogon.L_EntityPlayer_GetMaxPocketItems(self) return result
     end,
     CanAddCollectibleToInventory = function(self, collectible)
         collectible = ffichecks.checkinteger(1, collectible)
-        return repentogon.L_EntityPlayer_CanAddCollectibleToInventory(self, collectible)
+        local result = repentogon.L_EntityPlayer_CanAddCollectibleToInventory(self, collectible) return result
     end,
     AddLeprosy = function(self)
         repentogon.L_EntityPlayer_AddLeprosy(self)
@@ -1465,36 +1466,36 @@ local methods = {
     GetDeathAnimName = function(self)
         local text = repentogon.L_EntityPlayer_GetDeathAnimName(self)
         if text == nil then return nil end
-        return ffi.string(text)
+        local result = ffi.string(text) return result
     end,
     GetGlitchBabySubType = function(self)
-        return repentogon.L_EntityPlayer_GetGlitchBabySubType(self)
+        local result = repentogon.L_EntityPlayer_GetGlitchBabySubType(self) return result
     end,
     GetGreedsGulletHearts = function(self)
-        return repentogon.L_EntityPlayer_GetGreedsGulletHearts(self)
+        local result = repentogon.L_EntityPlayer_GetGreedsGulletHearts(self) return result
     end,
     CanCrushRocks = function(self)
-        return repentogon.L_EntityPlayer_CanCrushRocks(self)
+        local result = repentogon.L_EntityPlayer_CanCrushRocks(self) return result
     end,
     HasInstantDeathCurse = function(self)
-        return repentogon.L_EntityPlayer_HasInstantDeathCurse(self)
+        local result = repentogon.L_EntityPlayer_HasInstantDeathCurse(self) return result
     end,
     HasPoisonImmunity = function(self)
-        return repentogon.L_EntityPlayer_HasPoisonImmunity(self)
+        local result = repentogon.L_EntityPlayer_HasPoisonImmunity(self) return result
     end,
     IsEntityValidTarget = function(self, target)
         if target == nil then ffichecks.argerror(1, "Entity expected, got nil") end
         target = EntityToPointer(target)
-        return repentogon.L_EntityPlayer_IsEntityValidTarget(self, target)
+        local result = repentogon.L_EntityPlayer_IsEntityValidTarget(self, target) return result
     end,
     IsHeadless = function(self)
-        return repentogon.L_EntityPlayer_IsHeadless(self)
+        local result = repentogon.L_EntityPlayer_IsHeadless(self) return result
     end,
     IsHologram = function(self)
-        return repentogon.L_EntityPlayer_IsHologram(self)
+        local result = repentogon.L_EntityPlayer_IsHologram(self) return result
     end,
     IsInvisible = function(self)
-        return repentogon.L_EntityPlayer_IsInvisible(self)
+        local result = repentogon.L_EntityPlayer_IsInvisible(self) return result
     end,
     MorphToCoopGhost = function(self)
         repentogon.L_EntityPlayer_MorphToCoopGhost(self)
@@ -1515,7 +1516,7 @@ local methods = {
     TryAddToBagOfCrafting = function(self, pickup)
         if pickup == nil then ffichecks.argerror(1, "Entity expected, got nil") end
         pickup = EntityToPointer(pickup)
-        return repentogon.L_EntityPlayer_TryAddToBagOfCrafting(self, pickup)
+        local result = repentogon.L_EntityPlayer_TryAddToBagOfCrafting(self, pickup) return result
     end,
     TryDecreaseGlowingHourglassUses = function(self, unk1, unk2)
         unk1 = ffichecks.checkinteger(1, unk1)
@@ -1528,11 +1529,11 @@ local methods = {
     end,
     VoidHasCollectible = function(self, collectible)
         collectible = ffichecks.checkinteger(1, collectible)
-        return repentogon.L_EntityPlayer_VoidHasCollectible(self, collectible)
+        local result = repentogon.L_EntityPlayer_VoidHasCollectible(self, collectible) return result
     end,
     PlayItemNullAnimation = function(self, animName)
         animName = ffichecks.checkstring(1, animName)
-        return repentogon.L_EntityPlayer_PlayItemNullAnimation(self, animName)
+        local result = repentogon.L_EntityPlayer_PlayItemNullAnimation(self, animName) return result
     end,
     ClearQueueItem = function(self)
         repentogon.L_EntityPlayer_ClearQueueItem(self)
@@ -1545,30 +1546,30 @@ local methods = {
     IsFootstepFrame = function(self, foot)
         if foot == nil then foot = -1 else foot = ffichecks.checkinteger(1, foot) end
         if foot < -1 or foot > 1 then ffichecks.argerror(1, "Invalid foot ID " .. foot .. ", valid range is -1 to 1") end
-        return repentogon.L_EntityPlayer_IsFootstepFrame(self, foot)
+        local result = repentogon.L_EntityPlayer_IsFootstepFrame(self, foot) return result
     end,
     GetPocketItem = function(self, slot)
         slot = ffichecks.checkinteger(1, slot)
-        return repentogon.L_EntityPlayer_GetPocketItem(self, slot)
+        local result = repentogon.L_EntityPlayer_GetPocketItem(self, slot) return result
     end,
     GetHistory = function(self)
-        return repentogon.L_EntityPlayer_GetHistory(self)
+        local result = repentogon.L_EntityPlayer_GetHistory(self) return result
     end,
     GetCardRNG = function(self, id)
         id = ffichecks.checkinteger(1, id)
-        return repentogon.L_EntityPlayer_GetCardRNG(self, id)
+        local result = repentogon.L_EntityPlayer_GetCardRNG(self, id) return result
     end,
     GetCollectibleRNG = function(self, id)
         id = ffichecks.checkinteger(1, id)
-        return repentogon.L_EntityPlayer_GetCollectibleRNG(self, id)
+        local result = repentogon.L_EntityPlayer_GetCollectibleRNG(self, id) return result
     end,
     GetPillRNG = function(self, id)
         id = ffichecks.checkinteger(1, id)
-        return repentogon.L_EntityPlayer_GetPillRNG(self, id)
+        local result = repentogon.L_EntityPlayer_GetPillRNG(self, id) return result
     end,
     GetTrinketRNG = function(self, id)
         id = ffichecks.checkinteger(1, id)
-        return repentogon.L_EntityPlayer_GetTrinketRNG(self, id)
+        local result = repentogon.L_EntityPlayer_GetTrinketRNG(self, id) return result
     end,
     GetBombFlags = function(self, isFetus)
         isFetus = ffichecks.optboolean(isFetus, false)
@@ -1578,13 +1579,13 @@ local methods = {
     end,
     GetActiveItemDesc = function(self, slot)
         slot = CheckActiveSlot(1, slot, false)
-        return repentogon.L_EntityPlayer_GetActiveItemDesc(self, slot)
+        local result = repentogon.L_EntityPlayer_GetActiveItemDesc(self, slot) return result
     end,
     GetFocusEntity = function(self)
-        return repentogon.L_EntityPlayer_GetFocusEntity(self)
+        local result = repentogon.L_EntityPlayer_GetFocusEntity(self) return result
     end,
     SpawnSaturnusTears = function(self)
-        return repentogon.L_EntityPlayer_SpawnSaturnusTears(self)
+        local result = repentogon.L_EntityPlayer_SpawnSaturnusTears(self) return result
     end,
     SetPocketActiveItem = function(self, collectible, slot, keepInPools)
         collectible = ffichecks.checkinteger(1, collectible)
@@ -1776,14 +1777,14 @@ local methods = {
     GetImmaculateConceptionState = Getter("ImmaculateConceptionStateValue"),
     GetMegaBlastDuration = Getter("MegaBlastDurationValue"),
     GetEntityConfigPlayer = function(self)
-        return repentogon.L_EntityPlayer_GetEntityConfigPlayer(self)
+        local result = repentogon.L_EntityPlayer_GetEntityConfigPlayer(self) return result
     end,
     GetWeapon = function(self, index)
         index = ffichecks.checkinteger(1, index)
         if index < 0 or index > 4 then
             ffichecks.argerror(1, "Index must be between 0 and 4")
         end
-        return repentogon.L_EntityPlayer_GetWeapon(self, index)
+        local result = repentogon.L_EntityPlayer_GetWeapon(self, index) return result
     end,
     SetWeapon = function(self, weapon, index)
         ffichecks.checkcdata(1, weapon, "Weapon")
@@ -1801,25 +1802,25 @@ local methods = {
         return nil
     end,
     GetEffects = function(self)
-        return repentogon.L_EntityPlayer_GetEffects(self)
+        local result = repentogon.L_EntityPlayer_GetEffects(self) return result
     end,
     GetBodySprite = function(self)
-        return repentogon.L_EntityPlayer_GetBodySprite(self)
+        local result = repentogon.L_EntityPlayer_GetBodySprite(self) return result
     end,
     GetBloodGushSprite = function(self)
-        return repentogon.L_EntityPlayer_GetBloodGushSprite(self)
+        local result = repentogon.L_EntityPlayer_GetBloodGushSprite(self) return result
     end,
     GetHeldSprite = function(self)
-        return repentogon.L_EntityPlayer_GetHeldSprite(self)
+        local result = repentogon.L_EntityPlayer_GetHeldSprite(self) return result
     end,
     GetLastDamageSource = function(self)
         return CopyStruct("struct EntityRef", repentogon.L_EntityPlayer_GetLastDamageSource(self))
     end,
     GetMovingBoxContents = function(self)
-        return repentogon.L_EntityPlayer_GetMovingBoxContents(self)
+        local result = repentogon.L_EntityPlayer_GetMovingBoxContents(self) return result
     end,
     GetPlayerHUD = function(self)
-        return repentogon.L_EntityPlayer_GetPlayerHUD(self)
+        local result = repentogon.L_EntityPlayer_GetPlayerHUD(self) return result
     end,
     GetCostumeSpriteDescs = function(self)
         return ffichecks.vectortotable(ffi.getprivate(self, "CostumeSpriteDescsFirstValue"), ffi.getprivate(self, "CostumeSpriteDescsLastValue"), COSTUME_SPRITE_DESC_SIZE)
@@ -1843,7 +1844,7 @@ local methods = {
         if form < 0 or form > 14 then
             ffichecks.argerror(1, string.format("Invalid PlayerForm %d", form))
         end
-        return repentogon.L_EntityPlayer_GetPlayerFormCounter(self, form)
+        local result = repentogon.L_EntityPlayer_GetPlayerFormCounter(self, form) return result
     end,
     GetCostumeLayerMap = function(self)
         local result = {}
@@ -1906,18 +1907,18 @@ local methods = {
     end,
     AddSmeltedTrinket = function(self, trinket, firstTime)
         trinket = ffichecks.checkinteger(1, trinket)
-        return repentogon.L_EntityPlayer_AddSmeltedTrinket(self, trinket, ffichecks.optboolean(firstTime, true))
+        local result = repentogon.L_EntityPlayer_AddSmeltedTrinket(self, trinket, ffichecks.optboolean(firstTime, true)) return result
     end,
 
     AddBoneOrbital = function(self, position)
         ffichecks.checkcdata(1, position, "Vector")
-        return repentogon.L_EntityPlayer_AddBoneOrbital(self, position)
+        local result = repentogon.L_EntityPlayer_AddBoneOrbital(self, position) return result
     end,
     FireBrimstoneBall = function(self, position, velocity, offset)
         ffichecks.checkcdata(1, position, "Vector")
         ffichecks.checkcdata(2, velocity, "Vector")
         ffichecks.checkcdata(3, offset, "Vector", true)
-        return repentogon.L_EntityPlayer_FireBrimstoneBall(self, position, velocity, offset)
+        local result = repentogon.L_EntityPlayer_FireBrimstoneBall(self, position, velocity, offset) return result
     end,
     FireTear = function(self, position, velocity, canBeEye, noTractorBeam, canTriggerStreakEnd, source, damageMultiplier)
         ffichecks.checkcdata(1, position, "Vector")
@@ -1927,15 +1928,15 @@ local methods = {
         canTriggerStreakEnd = ffichecks.optboolean(canTriggerStreakEnd, true)
         damageMultiplier = ffichecks.optnumber(damageMultiplier, 1)
         local flags = (canBeEye and 0x4 or 0) | (noTractorBeam and 0x2 or 0) | (canTriggerStreakEnd and 0x1 or 0)
-        return repentogon.L_EntityPlayer_FireTearEx(self, position, velocity, flags, EntityToPointer(source), damageMultiplier)
+        local result = repentogon.L_EntityPlayer_FireTearEx(self, position, velocity, flags, EntityToPointer(source), damageMultiplier) return result
     end,
     ShootRedCandle = function(self, direction)
         ffichecks.checkcdata(1, direction, "Vector")
-        return repentogon.L_EntityPlayer_ShootRedCandle(self, direction)
+        local result = repentogon.L_EntityPlayer_ShootRedCandle(self, direction) return result
     end,
     ShootBlueCandle = function(self, direction)
         ffichecks.checkcdata(1, direction, "Vector")
-        return repentogon.L_EntityPlayer_ShootBlueCandle(self, direction)
+        local result = repentogon.L_EntityPlayer_ShootBlueCandle(self, direction) return result
     end,
     ThrowFriendlyDip = function(self, subtype, position, target)
         subtype = ffichecks.checkinteger(1, subtype)
@@ -1943,11 +1944,11 @@ local methods = {
         if not ffichecks.iscdata(target, "Vector") then
             target = nil
         end
-        return repentogon.L_EntityPlayer_ThrowFriendlyDip(self, subtype, position, target)
+        local result = repentogon.L_EntityPlayer_ThrowFriendlyDip(self, subtype, position, target) return result
     end,
     DropCollectible = function(self, collectible, pickup, removeFromPlayerForm)
         collectible = ffichecks.checkinteger(1, collectible)
-        return repentogon.L_EntityPlayer_DropCollectible(self, collectible, EntityToPointer(pickup), ffichecks.optboolean(removeFromPlayerForm, false))
+        local result = repentogon.L_EntityPlayer_DropCollectible(self, collectible, EntityToPointer(pickup), ffichecks.optboolean(removeFromPlayerForm, false)) return result
     end,
     DropCollectibleByHistoryIndex = function(self, index, pickup)
         index = ffichecks.checkinteger(1, index)
@@ -1956,7 +1957,7 @@ local methods = {
     end,
     SpawnAquariusCreep = function(self, params)
         ffichecks.checkcdata(1, params, "TearParams", true)
-        return repentogon.L_EntityPlayer_SpawnAquariusCreep(self, params)
+        local result = repentogon.L_EntityPlayer_SpawnAquariusCreep(self, params) return result
     end,
     AddLocust = function(self, collectible, position)
         collectible = ffichecks.checkinteger(1, collectible)
@@ -2023,7 +2024,7 @@ local methods = {
     IsCollectibleAnimFinished = function(self, collectible, animName)
         collectible = ffichecks.checkinteger(1, collectible)
         animName = ffichecks.checkstring(2, animName)
-        return repentogon.L_EntityPlayer_IsCollectibleAnimFinished(self, collectible, animName)
+        local result = repentogon.L_EntityPlayer_IsCollectibleAnimFinished(self, collectible, animName) return result
     end,
     ClearCollectibleAnim = function(self, collectible)
         collectible = ffichecks.checkinteger(1, collectible)
@@ -2063,7 +2064,7 @@ local methods = {
     end,
     GetSpecialGridCollision = function(self, position)
         ffichecks.checkcdata(1, position, "Vector", true)
-        return repentogon.L_EntityPlayer_GetSpecialGridCollision(self, position)
+        local result = repentogon.L_EntityPlayer_GetSpecialGridCollision(self, position) return result
     end,
     GetFootprintColor = function(self, rightFoot)
         rightFoot = ffichecks.checkboolean(1, rightFoot)
@@ -2085,23 +2086,23 @@ local methods = {
 
     HasCollectible = function(self, collectible, ignoreModifiers, ignoreSpoof)
         collectible = ffichecks.checkinteger(1, collectible)
-        return repentogon.L_EntityPlayer_HasCollectible(self, collectible, ffichecks.optboolean(ignoreModifiers, false), ffichecks.optboolean(ignoreSpoof, false))
+        local result = repentogon.L_EntityPlayer_HasCollectible(self, collectible, ffichecks.optboolean(ignoreModifiers, false), ffichecks.optboolean(ignoreSpoof, false)) return result
     end,
     GetCollectibleNum = function(self, collectible, onlyCountTrueItems, ignoreSpoof)
         collectible = ffichecks.checkinteger(1, collectible)
-        return repentogon.L_EntityPlayer_GetCollectibleNum(self, collectible, ffichecks.optboolean(onlyCountTrueItems, false), ffichecks.optboolean(ignoreSpoof, false))
+        local result = repentogon.L_EntityPlayer_GetCollectibleNum(self, collectible, ffichecks.optboolean(onlyCountTrueItems, false), ffichecks.optboolean(ignoreSpoof, false)) return result
     end,
     HasTrinket = function(self, trinket, ignoreModifiers, ignoreSpoof)
         trinket = ffichecks.checkinteger(1, trinket)
-        return repentogon.L_EntityPlayer_HasTrinket(self, trinket, ffichecks.optboolean(ignoreModifiers, false), ffichecks.optboolean(ignoreSpoof, false))
+        local result = repentogon.L_EntityPlayer_HasTrinket(self, trinket, ffichecks.optboolean(ignoreModifiers, false), ffichecks.optboolean(ignoreSpoof, false)) return result
     end,
     GetTrinketMultiplier = function(self, trinket, ignoreSpoof)
         trinket = ffichecks.checkinteger(1, trinket)
-        return repentogon.L_EntityPlayer_GetTrinketMultiplier(self, trinket, ffichecks.optboolean(ignoreSpoof, false))
+        local result = repentogon.L_EntityPlayer_GetTrinketMultiplier(self, trinket, ffichecks.optboolean(ignoreSpoof, false)) return result
     end,
     HasGoldenTrinket = function(self, trinket, ignoreSpoof)
         trinket = ffichecks.checkinteger(1, trinket)
-        return repentogon.L_EntityPlayer_HasGoldenTrinket(self, trinket, ffichecks.optboolean(ignoreSpoof, false))
+        local result = repentogon.L_EntityPlayer_HasGoldenTrinket(self, trinket, ffichecks.optboolean(ignoreSpoof, false)) return result
     end,
     AddCacheFlags = function(self, flags, evaluateItems)
         flags = ffichecks.checkinteger(1, flags)
@@ -2151,7 +2152,7 @@ local methods = {
                 varData = customVarData
             end
         end
-        return repentogon.L_EntityPlayer_UseActiveItem(self, collectible, useFlags, activeSlot, varData)
+        local result = repentogon.L_EntityPlayer_UseActiveItem(self, collectible, useFlags, activeSlot, varData) return result
     end,
     HasInvincibility = function(self, damageFlags, source)
         if damageFlags == nil then
@@ -2160,7 +2161,7 @@ local methods = {
             damageFlags = ffichecks.checkinteger64(1, damageFlags)
         end
         ffichecks.checkcdata(2, source, "EntityRef", true)
-        return repentogon.L_EntityPlayer_HasInvincibility(self, damageFlags, source)
+        local result = repentogon.L_EntityPlayer_HasInvincibility(self, damageFlags, source) return result
     end,
     ClearDeadEyeCharge = function(self, reset)
         if reset then
@@ -2205,31 +2206,31 @@ local methods = {
         repentogon.L_EntityPlayer_SetBlackHeart(self, heart)
     end,
     HasChanceRevive = function(self)
-        return repentogon.L_EntityPlayer_HasChanceRevive(self)
+        local result = repentogon.L_EntityPlayer_HasChanceRevive(self) return result
     end,
     ReviveCoopGhost = function(self)
-        return repentogon.L_EntityPlayer_ReviveCoopGhost(self)
+        local result = repentogon.L_EntityPlayer_ReviveCoopGhost(self) return result
     end,
     IsPacifist = function(self)
-        return repentogon.L_EntityPlayer_IsPacifist(self)
+        local result = repentogon.L_EntityPlayer_IsPacifist(self) return result
     end,
     IsLocalPlayer = function(self)
-        return repentogon.L_EntityPlayer_IsLocalPlayer(self)
+        local result = repentogon.L_EntityPlayer_IsLocalPlayer(self) return result
     end,
     GetErrorTrinketEffect = function(self)
-        return repentogon.L_EntityPlayer_GetErrorTrinketEffect(self)
+        local result = repentogon.L_EntityPlayer_GetErrorTrinketEffect(self) return result
     end,
     IsItemCostumeVisible = function(self, item, layer)
         ffichecks.checkcdata(1, item, "ItemConfigItem")
-        return repentogon.L_EntityPlayer_IsItemCostumeVisibleEx(self, item, LayerId(self, 2, layer))
+        local result = repentogon.L_EntityPlayer_IsItemCostumeVisibleEx(self, item, LayerId(self, 2, layer)) return result
     end,
     IsCollectibleCostumeVisible = function(self, collectible, layer)
         collectible = ffichecks.checkinteger(1, collectible)
-        return repentogon.L_EntityPlayer_IsCollectibleCostumeVisibleEx(self, collectible, LayerId(self, 2, layer))
+        local result = repentogon.L_EntityPlayer_IsCollectibleCostumeVisibleEx(self, collectible, LayerId(self, 2, layer)) return result
     end,
     IsNullItemCostumeVisible = function(self, nullItem, layer)
         nullItem = ffichecks.checkinteger(1, nullItem)
-        return repentogon.L_EntityPlayer_IsNullItemCostumeVisibleEx(self, nullItem, LayerId(self, 2, layer))
+        local result = repentogon.L_EntityPlayer_IsNullItemCostumeVisibleEx(self, nullItem, LayerId(self, 2, layer)) return result
     end,
     SetHeadDirection = function(self, direction, time, force)
         direction = ffichecks.checkinteger(1, direction)
@@ -2308,7 +2309,7 @@ local methods = {
     end,
     IsCollectibleBlocked = function(self, collectible)
         collectible = ffichecks.checkinteger(1, collectible)
-        return repentogon.L_EntityPlayer_IsCollectibleBlocked(self, collectible)
+        local result = repentogon.L_EntityPlayer_IsCollectibleBlocked(self, collectible) return result
     end,
     BlockTrinket = function(self, trinket)
         trinket = ffichecks.checkinteger(1, trinket)
@@ -2324,7 +2325,7 @@ local methods = {
     end,
     IsTrinketBlocked = function(self, trinket)
         trinket = ffichecks.checkinteger(1, trinket)
-        return repentogon.L_EntityPlayer_IsTrinketBlocked(self, trinket)
+        local result = repentogon.L_EntityPlayer_IsTrinketBlocked(self, trinket) return result
     end,
     AddInnateCollectible = function(self, collectible, amount, groupKey, duration, addCostume)
         collectible = ffichecks.checkinteger(1, collectible)
@@ -2364,32 +2365,32 @@ local methods = {
     RemoveInnateCollectible = function(self, collectible, amount, groupKey)
         collectible = ffichecks.checkinteger(1, collectible)
         CheckInnateId(false, collectible)
-        return repentogon.L_EntityPlayer_RemoveInnateItem(self, false, collectible, ffichecks.optinteger(amount, 1), ffichecks.optstring(groupKey, ""))
+        local result = repentogon.L_EntityPlayer_RemoveInnateItem(self, false, collectible, ffichecks.optinteger(amount, 1), ffichecks.optstring(groupKey, "")) return result
     end,
     RemoveInnateTrinket = function(self, trinket, amount, groupKey)
         trinket = ffichecks.checkinteger(1, trinket)
         CheckInnateId(true, trinket)
-        return repentogon.L_EntityPlayer_RemoveInnateItem(self, true, trinket, ffichecks.optinteger(amount, 1), ffichecks.optstring(groupKey, ""))
+        local result = repentogon.L_EntityPlayer_RemoveInnateItem(self, true, trinket, ffichecks.optinteger(amount, 1), ffichecks.optstring(groupKey, "")) return result
     end,
     GetInnateCollectibleCount = function(self, collectible, groupKey)
         collectible = ffichecks.checkinteger(1, collectible)
         CheckInnateId(false, collectible)
-        return repentogon.L_EntityPlayer_GetInnateItemCount(self, false, collectible, ffichecks.optstring(groupKey, ""))
+        local result = repentogon.L_EntityPlayer_GetInnateItemCount(self, false, collectible, ffichecks.optstring(groupKey, "")) return result
     end,
     GetInnateTrinketCount = function(self, trinket, groupKey)
         trinket = ffichecks.checkinteger(1, trinket)
         CheckInnateId(true, trinket)
-        return repentogon.L_EntityPlayer_GetInnateItemCount(self, true, trinket, ffichecks.optstring(groupKey, ""))
+        local result = repentogon.L_EntityPlayer_GetInnateItemCount(self, true, trinket, ffichecks.optstring(groupKey, "")) return result
     end,
     SetInnateCollectibleCount = function(self, collectible, count, groupKey, addCostume)
         collectible = ffichecks.checkinteger(1, collectible)
         CheckInnateId(false, collectible)
-        return repentogon.L_EntityPlayer_SetInnateItemCount(self, false, collectible, ffichecks.optinteger(count, 1), ffichecks.optstring(groupKey, ""), ffichecks.optboolean(addCostume, true))
+        local result = repentogon.L_EntityPlayer_SetInnateItemCount(self, false, collectible, ffichecks.optinteger(count, 1), ffichecks.optstring(groupKey, ""), ffichecks.optboolean(addCostume, true)) return result
     end,
     SetInnateTrinketCount = function(self, trinket, count, groupKey, addCostume)
         trinket = ffichecks.checkinteger(1, trinket)
         CheckInnateId(true, trinket)
-        return repentogon.L_EntityPlayer_SetInnateItemCount(self, true, trinket, ffichecks.optinteger(count, 1), ffichecks.optstring(groupKey, ""), ffichecks.optboolean(addCostume, true))
+        local result = repentogon.L_EntityPlayer_SetInnateItemCount(self, true, trinket, ffichecks.optinteger(count, 1), ffichecks.optstring(groupKey, ""), ffichecks.optboolean(addCostume, true)) return result
     end,
     GetInnateCollectibleGroup = function(self, groupKey)
         return SnapshotPairs(repentogon.L_EntityPlayer_SnapshotInnateGroup(self, false, ffichecks.optstring(groupKey, "")))
@@ -2446,7 +2447,7 @@ local methods = {
         if slot < 0 or slot > 7 then
             ffichecks.argerror(1, string.format("invalid slot id %d", slot))
         end
-        return repentogon.L_EntityPlayer_GetBagOfCraftingSlot(self, slot)
+        local result = repentogon.L_EntityPlayer_GetBagOfCraftingSlot(self, slot) return result
     end,
     SetBagOfCraftingSlot = function(self, slot, pickup)
         slot = ffichecks.checkinteger(1, slot)
@@ -2460,10 +2461,10 @@ local methods = {
         repentogon.L_EntityPlayer_SetBagOfCraftingSlot(self, slot, pickup)
     end,
     GetBagOfCraftingOutput = function(self)
-        return repentogon.L_EntityPlayer_GetBagOfCraftingOutput(self)
+        local result = repentogon.L_EntityPlayer_GetBagOfCraftingOutput(self) return result
     end,
     GetBagOfCraftingOutputItemPool = function(self)
-        return repentogon.L_EntityPlayer_GetBagOfCraftingOutputItemPool(self)
+        local result = repentogon.L_EntityPlayer_GetBagOfCraftingOutputItemPool(self) return result
     end,
     SetBagOfCraftingOutput = function(self, collectible, itemPool)
         collectible = ffichecks.checkinteger(1, collectible)
@@ -2487,35 +2488,35 @@ local methods = {
     end,
     GetCustomCacheValue = function(self, tag)
         tag = ffichecks.checkstring(1, tag)
-        return repentogon.L_EntityPlayer_GetCustomCacheValue(self, tag)
+        local result = repentogon.L_EntityPlayer_GetCustomCacheValue(self, tag) return result
     end,
     GetTearsCap = function(self)
-        return repentogon.L_EntityPlayer_GetCustomCacheValue(self, "tearscap")
+        local result = repentogon.L_EntityPlayer_GetCustomCacheValue(self, "tearscap") return result
     end,
     GetStatMultiplier = function(self)
-        return repentogon.L_EntityPlayer_GetCustomCacheValue(self, "statmultiplier")
+        local result = repentogon.L_EntityPlayer_GetCustomCacheValue(self, "statmultiplier") return result
     end,
     GetMaxCoins = function(self)
-        return repentogon.L_EntityPlayer_GetMaxCoins()
+        local result = repentogon.L_EntityPlayer_GetMaxCoins() return result
     end,
     GetMaxKeys = function(self)
-        return repentogon.L_EntityPlayer_GetMaxKeys()
+        local result = repentogon.L_EntityPlayer_GetMaxKeys() return result
     end,
     GetMaxBombs = function(self)
-        return repentogon.L_EntityPlayer_GetMaxBombs()
+        local result = repentogon.L_EntityPlayer_GetMaxBombs() return result
     end,
     HasForcedCamoEffect = function(self)
-        return repentogon.L_EntityPlayer_IsForceCamo(self)
+        local result = repentogon.L_EntityPlayer_IsForceCamo(self) return result
     end,
     SetForceCamoEffect = function(self, forced)
         forced = ffichecks.checkboolean(1, forced)
         repentogon.L_EntityPlayer_SetForceCamo(self, forced)
     end,
     HasCamoEffect = function(self)
-        return repentogon.L_EntityPlayer_HasCamoEffect(self)
+        local result = repentogon.L_EntityPlayer_HasCamoEffect(self) return result
     end,
     GetMaxInventorySize = function(self)
-        return repentogon.L_EntityPlayer_GetMaxInventorySize(self)
+        local result = repentogon.L_EntityPlayer_GetMaxInventorySize(self) return result
     end,
     GetInventoryHistoryIndex = function(self, slot)
         slot = ffichecks.checkinteger(1, slot)
@@ -2534,7 +2535,7 @@ local methods = {
             ffichecks.argerror(1, string.format("Invalid slot index %d", slot))
         end
         if repentogon.L_EntityPlayer_GetInventoryHistoryIndex(self, slot) >= 0 then
-            return repentogon.L_EntityPlayer_GetInventoryCollectible(self, slot)
+            local result = repentogon.L_EntityPlayer_GetInventoryCollectible(self, slot) return result
         end
         return nil
     end,
@@ -2562,9 +2563,9 @@ local methods = {
     GetTrinket = function(self, slot)
         slot = ffichecks.checkinteger(1, slot)
         if slot == 0 then
-            return ffi.getprivate(self, "Trinket0Value")
+            local result = ffi.getprivate(self, "Trinket0Value") return result
         elseif slot == 1 then
-            return ffi.getprivate(self, "Trinket1Value")
+            local result = ffi.getprivate(self, "Trinket1Value") return result
         end
         return 0
     end,

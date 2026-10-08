@@ -7,6 +7,6 @@ local repentogon = ffidll
 TitleMenu = {
     GetSprite = function()
         ffichecks.checkmainmenu("TitleMenu")
-        return repentogon.L_TitleMenu_GetSprite()
+        local result = repentogon.L_TitleMenu_GetSprite() return result
     end,
 }

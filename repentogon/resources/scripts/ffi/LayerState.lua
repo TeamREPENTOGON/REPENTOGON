@@ -53,10 +53,10 @@ LayerStateMT = {
         repentogon.L_LayerState_ClearCustomShader(self, false)
     end, 
     GetBlendMode = function(self)
-        return ffi.getprivate(self, "BlendMode")
+        local result = ffi.getprivate(self, "BlendMode") return result
     end,
     GetColor = function(self)
-        return ffi.new("struct Color", ffi.getprivate(self, "Color"))
+        local result = ffi.new("struct Color", ffi.getprivate(self, "Color")) return result
     end,
     GetCropOffset = function(self)
         return ffichecks.copyvector(ffi.getprivate(self, "CropOffset"))
@@ -65,10 +65,10 @@ LayerStateMT = {
         return ffichecks.stdstring(ffi.getprivate(ffi.getprivate(self, "LayerData"), "DefaultSpritesheetPath"))
     end,
     GetFlipX = function(self)
-        return ffi.getprivate(self, "FlipX")
+        local result = ffi.getprivate(self, "FlipX") return result
     end,
     GetFlipY = function(self)
-        return ffi.getprivate(self, "FlipY")
+        local result = ffi.getprivate(self, "FlipY") return result
     end,
     GetLayerID = function(self)
         return ffi.getprivate(self, "LayerData").ID
@@ -80,10 +80,10 @@ LayerStateMT = {
         return ffichecks.copyvector(ffi.getprivate(self, "Pos"))
     end,
     GetRenderFlags = function(self)
-        return ffi.getprivate(self, "RenderFlags")
+        local result = ffi.getprivate(self, "RenderFlags") return result
     end,
     GetRotation = function(self)
-        return ffi.getprivate(self, "Rotation")
+        local result = ffi.getprivate(self, "Rotation") return result
     end,
     GetSize = function(self)
         return ffichecks.copyvector(ffi.getprivate(self, "Size"))
@@ -99,27 +99,27 @@ LayerStateMT = {
         return ffichecks.stdstring(ffi.getprivate(self, "SpritesheetPath"))
     end,
     GetWrapSMode = function(self)
-        return ffi.getprivate(self, "WrapSMode")
+        local result = ffi.getprivate(self, "WrapSMode") return result
     end,
     GetWrapTMode = function(self)
-        return ffi.getprivate(self, "WrapTMode")
+        local result = ffi.getprivate(self, "WrapTMode") return result
     end,
     HasCustomChampionShader = function(self, path)
         path = ffichecks.optstring(path, "")
         if path == "" then
-            return repentogon.L_LayerState_HasCustomShader(self, true)
+            local result = repentogon.L_LayerState_HasCustomShader(self, true) return result
         end
-        return repentogon.L_LayerState_HasCustomShaderWithPath(self, path, true)
+        local result = repentogon.L_LayerState_HasCustomShaderWithPath(self, path, true) return result
     end,
     HasCustomShader = function(self, path)
         path = ffichecks.optstring(path, "")
         if path == "" then
-            return repentogon.L_LayerState_HasCustomShader(self, false)
+            local result = repentogon.L_LayerState_HasCustomShader(self, false) return result
         end
-        return repentogon.L_LayerState_HasCustomShaderWithPath(self, path, false)
+        local result = repentogon.L_LayerState_HasCustomShaderWithPath(self, path, false) return result
     end,
     IsVisible = function(self)
-        return ffi.getprivate(self, "Visible")
+        local result = ffi.getprivate(self, "Visible") return result
     end,
     SetColor = function(self, color)
         ffichecks.checkcdata(1, color, "Color")

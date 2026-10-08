@@ -9,11 +9,11 @@ local repentogon = ffidll
 CutscenesMenu = {
     GetSprite = function()
         ffichecks.checkmainmenu("CutscenesMenu")
-        return repentogon.L_CutscenesMenu_GetSprite()
+        local result = repentogon.L_CutscenesMenu_GetSprite() return result
     end,
     GetSelectedElement = function()
         ffichecks.checkmainmenu("CutscenesMenu")
-        return repentogon.L_CutscenesMenu_GetSelectedElement()
+        local result = repentogon.L_CutscenesMenu_GetSelectedElement() return result
     end,
     SetSelectedElement = function(element)
         ffichecks.checkmainmenu("CutscenesMenu")

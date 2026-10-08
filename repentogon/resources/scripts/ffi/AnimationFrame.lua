@@ -25,40 +25,40 @@ local AnimationFrameMT
 AnimationFrameMT = {
     __type = "AnimationFrame",
     GetColor = function(self) 
-        return ffi.getprivate(self, "Color")
+        local result = ffi.getprivate(self, "Color") return result
     end,
     GetCrop = function(self) 
-        return ffi.getprivate(self, "Crop")
+        local result = ffi.getprivate(self, "Crop") return result
     end,
     GetEndFrame = function(self) 
-        return ffi.getprivate(self, "EndFrame")
+        local result = ffi.getprivate(self, "EndFrame") return result
     end,
     GetHeight = function(self) 
-        return ffi.getprivate(self, "Height")
+        local result = ffi.getprivate(self, "Height") return result
     end,
     GetPivot = function(self) 
-        return ffi.getprivate(self, "Pivot")
+        local result = ffi.getprivate(self, "Pivot") return result
     end,
     GetPos = function(self) 
-        return ffi.getprivate(self, "Pos")
+        local result = ffi.getprivate(self, "Pos") return result
     end,
     GetRotation = function(self) 
-        return ffi.getprivate(self, "Rotation")
+        local result = ffi.getprivate(self, "Rotation") return result
     end,
     GetScale = function(self) 
-        return ffi.getprivate(self, "Scale")
+        local result = ffi.getprivate(self, "Scale") return result
     end,
     GetStartFrame = function(self) 
-        return ffi.getprivate(self, "StartFrame")
+        local result = ffi.getprivate(self, "StartFrame") return result
     end,
     GetWidth = function(self) 
-        return ffi.getprivate(self, "Width")
+        local result = ffi.getprivate(self, "Width") return result
     end,
     IsInterpolated = function(self) 
-        return ffi.getprivate(self, "Interpolated")
+        local result = ffi.getprivate(self, "Interpolated") return result
     end,
     IsVisible = function(self) 
-        return ffi.getprivate(self, "Visible")
+        local result = ffi.getprivate(self, "Visible") return result
     end,
 }
 

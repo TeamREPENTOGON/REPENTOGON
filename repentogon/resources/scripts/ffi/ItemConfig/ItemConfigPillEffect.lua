@@ -40,7 +40,7 @@ ItemConfigPillEffectMT = {
     end,
 
     IsAvailable = function(self)
-        return repentogon.L_ItemConfigPillEffect_IsAvailable(self)
+        local result = repentogon.L_ItemConfigPillEffect_IsAvailable(self) return result
     end,
 }
 

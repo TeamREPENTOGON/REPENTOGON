@@ -45,7 +45,7 @@ local stringKeys = {
 
 local getters = {
     ModdedCardFront = function(self)
-        return ffi.getprivate(self, "ModdedCardFrontSprite")
+        local result = ffi.getprivate(self, "ModdedCardFrontSprite") return result
     end,
     Hidden = repentogon.L_ItemConfigCard_GetHidden,
     InitialWeight = repentogon.L_ItemConfigCard_GetInitialWeight,
@@ -92,7 +92,7 @@ ItemConfigCardMT = {
         return entry and entry.condition
     end,
     IsAvailable = function(self)
-        return repentogon.L_ItemConfigCard_IsAvailable(self)
+        local result = repentogon.L_ItemConfigCard_IsAvailable(self) return result
     end,
     IsCard = function(self)
         local cardType = self.CardType

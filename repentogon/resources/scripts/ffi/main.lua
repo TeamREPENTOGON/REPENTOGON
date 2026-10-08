@@ -78,7 +78,7 @@ ffichecks.checknumber = function(index, val, level)
 end
 ffichecks.checkfunction = function(index, val, level) ffichecks.checktype(index, val, "function", (level or 2)+1) end
 ffichecks.checkstring = function(index, val, level)
-	if type(val) == "number" then return tostring(val) end
+	if type(val) == "number" then local result = tostring(val) return result end
 	ffichecks.checktype(index, val, "string", (level or 2)+1)
 	return val
 end
@@ -147,7 +147,7 @@ ffichecks.optstring = function(var, opt)
 		return var
 	end
 	if ffichecks.isnumber(var) then
-		return tostring(var)
+		local result = tostring(var) return result
 	end
 	return opt
 end
@@ -187,7 +187,7 @@ lffi.cdef [[
 
 local repentogon = ffidll
 ffichecks.stdstring = function(str)
-	return lffi.string(repentogon.L_StdString_CStr(str))
+	local result = lffi.string(repentogon.L_StdString_CStr(str)) return result
 end
 
 ffichecks.copyvector = function(vector)
@@ -222,19 +222,19 @@ ffichecks.entitytopointer = function(entity)
 	if not pcall(lffi.typeof, entity) then
 		error(string.format("Entity expected, got %s", type(entity)), 3)
 	end
-	return lffi.cast(voidptr, entity)
+	local result = lffi.cast(voidptr, entity) return result
 end
 ffichecks.checkentity = function(index, entity, level)
 	if entity == nil or not pcall(lffi.typeof, entity) then
 		ffichecks.argerror(index, "Entity expected, got " .. type(entity), (level or 2) + 1)
 	end
-	return lffi.cast(voidptr, entity)
+	local result = lffi.cast(voidptr, entity) return result
 end
 ffichecks.playertopointer = function(player)
 	if player == nil then
 		return nil
 	end
-	return lffi.cast(voidptr, player)
+	local result = lffi.cast(voidptr, player) return result
 end
 
 local playerPointerType
@@ -243,7 +243,7 @@ ffichecks.pointertoplayer = function(pointer)
 		return nil
 	end
 	playerPointerType = playerPointerType or lffi.typeof("struct EntityPlayer*")
-	return lffi.cast(playerPointerType, pointer)
+	local result = lffi.cast(playerPointerType, pointer) return result
 end
 ffichecks.entityresults = function()
 	local results = {}

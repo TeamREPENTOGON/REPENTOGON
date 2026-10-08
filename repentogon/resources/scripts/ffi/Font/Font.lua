@@ -50,7 +50,7 @@ end
 
 local function GetStringWidth(self, str)
     str = ffichecks.checkstring(1, str)
-    return repentogon.L_Font_GetStringWidth(self, str)
+    local result = repentogon.L_Font_GetStringWidth(self, str) return result
 end
 
 local FontMT
@@ -83,24 +83,23 @@ FontMT = {
         DrawStringScaled(self, str, x, y, 1, 1, color, boxWidth, center)
     end,
     GetBaselineHeight = function(self)
-        return ffi.getprivate(self, "BaselineHeight")
+        local result = ffi.getprivate(self, "BaselineHeight") return result
     end,
     GetCharacterWidth = function(self, character)
         character = ffichecks.checkstring(1, character)
-        -- Vanilla passes the first byte as a (signed) char
         local byte = string.byte(character, 1) or 0
         if byte > 127 then
             byte = byte - 256
         end
-        return repentogon.L_Font_GetCharacterWidth(self, byte)
+        local result = repentogon.L_Font_GetCharacterWidth(self, byte) return result
     end,
     GetLineHeight = function(self)
-        return ffi.getprivate(self, "LineHeight")
+        local result = ffi.getprivate(self, "LineHeight") return result
     end,
     GetStringWidth = GetStringWidth,
     GetStringWidthUTF8 = GetStringWidth,
     IsLoaded = function(self)
-        return ffi.getprivate(self, "Loaded")
+        local result = ffi.getprivate(self, "Loaded") return result
     end,
     Load = function(self, path)
         path = ffichecks.checkstring(1, path)

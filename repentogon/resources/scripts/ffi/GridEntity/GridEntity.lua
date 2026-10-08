@@ -80,15 +80,15 @@ GridEntityMT = {
     __type = "GridEntity",
     Destroy = function(self, immediate)
         immediate = ffichecks.optboolean(immediate, false)
-        return repentogon.L_GridEntity_Destroy(ffi.cast("struct GridEntity*", self), immediate, EntityRef())
+        local result = repentogon.L_GridEntity_Destroy(ffi.cast("struct GridEntity*", self), immediate, EntityRef()) return result
     end,
     DestroyWithSource = function(self, immediate, source)
         immediate = ffichecks.optboolean(immediate, false)
         ffichecks.checkcdata(2, source, "EntityRef")
-        return repentogon.L_GridEntity_Destroy(ffi.cast("struct GridEntity*", self), immediate, source)
+        local result = repentogon.L_GridEntity_Destroy(ffi.cast("struct GridEntity*", self), immediate, source) return result
     end,
     GetGridIndex = function(self)
-        return ffi.getprivate(self, "GridIndex")
+        local result = ffi.getprivate(self, "GridIndex") return result
     end,
     GetRenderPosition = function(self)
         local ret = Vector()
@@ -96,13 +96,13 @@ GridEntityMT = {
         return ret
     end,
     GetRNG = function(self)
-        return ffi.getprivate(self, "RNG")
+        local result = ffi.getprivate(self, "RNG") return result
     end,
     GetSaveState = function(self)
         return self.Desc
     end,
     GetSprite = function(self)
-        return ffi.getprivate(self, "Sprite")
+        local result = ffi.getprivate(self, "Sprite") return result
     end,
     GetType = function(self)
         return self.Desc.Type
@@ -111,11 +111,11 @@ GridEntityMT = {
         return self.Desc.Variant
     end,
     GetWaterClipFlags = function(self)
-        return repentogon.L_GridEntity_GetWaterClipFlags(ffi.cast("struct GridEntity*", self))
+        local result = repentogon.L_GridEntity_GetWaterClipFlags(ffi.cast("struct GridEntity*", self)) return result
     end,
     Hurt = function(self, damage)
         damage = ffichecks.checkinteger(1, damage)
-        return repentogon.L_GridEntity_Hurt(ffi.cast("struct GridEntity*", self), damage, EntityRef())
+        local result = repentogon.L_GridEntity_Hurt(ffi.cast("struct GridEntity*", self), damage, EntityRef()) return result
     end,
     HurtDamage = function(self, ent, playerDamage, damageFlags, damage, ignoreGridCollision)
         playerDamage = ffichecks.checkinteger(2, playerDamage)
@@ -135,7 +135,7 @@ GridEntityMT = {
     HurtWithSource = function(self, damage, source)
         damage = ffichecks.checkinteger(1, damage)
         ffichecks.checkcdata(2, source, "EntityRef")
-        return repentogon.L_GridEntity_Hurt(ffi.cast("struct GridEntity*", self), damage, source)
+        local result = repentogon.L_GridEntity_Hurt(ffi.cast("struct GridEntity*", self), damage, source) return result
     end,
     Init = function(self, seed)
         seed = ffichecks.checkinteger(1, seed)
@@ -203,75 +203,75 @@ GridEntityMT = {
     end,
     ToDecoration = function(self)
         if self.Desc.Type ~= GridEntityType.GRID_DECORATION then return nil end
-        return ffi.cast("struct GridEntityDecoration*", self)
+        local result = ffi.cast("struct GridEntityDecoration*", self) return result
     end,
     ToDoor = function(self)
         if self.Desc.Type ~= GridEntityType.GRID_DOOR then return nil end
-        return ffi.cast("struct GridEntityDoor*", self)
+        local result = ffi.cast("struct GridEntityDoor*", self) return result
     end,
     ToFire = function(self)
         if self.Desc.Type ~= GridEntityType.GRID_FIRE then return nil end
-        return ffi.cast("struct GridEntityFire*", self)
+        local result = ffi.cast("struct GridEntityFire*", self) return result
     end,
     ToGravity = function(self)
         if self.Desc.Type ~= GridEntityType.GRID_GRAVITY then return nil end
-        return ffi.cast("struct GridEntityGravity*", self)
+        local result = ffi.cast("struct GridEntityGravity*", self) return result
     end,    
     ToLock = function(self)
         if self.Desc.Type ~= GridEntityType.GRID_LOCK then return nil end
-        return ffi.cast("struct GridEntityLock*", self)
+        local result = ffi.cast("struct GridEntityLock*", self) return result
     end,
     ToPit = function(self)
         if self.Desc.Type ~= GridEntityType.GRID_PIT then return nil end
-        return ffi.cast("struct GridEntityPit*", self)
+        local result = ffi.cast("struct GridEntityPit*", self) return result
     end,
     ToPoop = function(self)
         if self.Desc.Type ~= GridEntityType.GRID_POOP then return nil end
-        return ffi.cast("struct GridEntityPoop*", self)
+        local result = ffi.cast("struct GridEntityPoop*", self) return result
     end,
     ToPressurePlate = function(self)
         if self.Desc.Type ~= GridEntityType.GRID_PRESSURE_PLATE then return nil end
-        return ffi.cast("struct GridEntityPressurePlate*", self)
+        local result = ffi.cast("struct GridEntityPressurePlate*", self) return result
     end,
     ToRock = function(self)
         for i, rock in ipairs(rocks) do
             if self.Desc.Type == rock then 
-                return ffi.cast("struct GridEntityRock*", self)
+                local result = ffi.cast("struct GridEntityRock*", self) return result
             end
         end   
     end,
     ToSpikes = function(self)
         if self.Desc.Type == GridEntityType.GRID_SPIKES or self.Desc.Type == GridEntityType.GRID_SPIKES_ONOFF then 
-            return ffi.cast("struct GridEntitySpikes*", self)
+            local result = ffi.cast("struct GridEntitySpikes*", self) return result
         end
     end,
     ToStairs = function(self)
         if self.Desc.Type ~= GridEntityType.GRID_STAIRS then return nil end
-        return ffi.cast("struct GridEntityStairs*", self)
+        local result = ffi.cast("struct GridEntityStairs*", self) return result
     end,
     ToStatue = function(self)
         if self.Desc.Type ~= GridEntityType.GRID_STATUE then return nil end
-        return ffi.cast("struct GridEntityStatue*", self)
+        local result = ffi.cast("struct GridEntityStatue*", self) return result
     end,
     ToTeleporter = function(self)
         if self.Desc.Type ~= GridEntityType.GRID_TELEPORTER then return nil end
-        return ffi.cast("struct GridEntityTeleporter*", self)
+        local result = ffi.cast("struct GridEntityTeleporter*", self) return result
     end,
     ToTNT = function(self)
         if self.Desc.Type ~= GridEntityType.GRID_TNT then return nil end
-        return ffi.cast("struct GridEntityTNT*", self)
+        local result = ffi.cast("struct GridEntityTNT*", self) return result
     end,
     ToTrapDoor = function(self)
         if self.Desc.Type ~= GridEntityType.GRID_TRAPDOOR then return nil end
-        return ffi.cast("struct GridEntityTrapDoor*", self)
+        local result = ffi.cast("struct GridEntityTrapDoor*", self) return result
     end,
     ToWall = function(self)
         if self.Desc.Type ~= GridEntityType.GRID_WALL then return nil end
-        return ffi.cast("struct GridEntityWall*", self)
+        local result = ffi.cast("struct GridEntityWall*", self) return result
     end,
     ToWeb = function(self)
         if self.Desc.Type ~= GridEntityType.GRID_SPIDERWEB then return nil end
-        return ffi.cast("struct GridEntityWeb*", self)
+        local result = ffi.cast("struct GridEntityWeb*", self) return result
     end,
     Update = function(self)
         -- before you accuse me of being yanderedev, this should be faster than caching the functions in a table with the jit compiler

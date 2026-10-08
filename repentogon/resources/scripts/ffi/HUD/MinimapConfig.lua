@@ -25,22 +25,22 @@ MinimapConfigMT = {
         return GetVector(self, "BorderPadding")
     end,
     GetBorderScale = function(self)
-        return ffi.getprivate(self, "BorderScale")
+        local result = ffi.getprivate(self, "BorderScale") return result
     end,
     GetI1 = function(self)
-        return ffi.getprivate(self, "I1")
+        local result = ffi.getprivate(self, "I1") return result
     end,
     GetI2 = function(self)
-        return ffi.getprivate(self, "I2")
+        local result = ffi.getprivate(self, "I2") return result
     end,
     GetIconNum = function(self)
-        return ffi.getprivate(self, "IconNum")
+        local result = ffi.getprivate(self, "IconNum") return result
     end,
     GetPosOffsetX = function(self)
-        return ffi.getprivate(self, "PosOffsetX")
+        local result = ffi.getprivate(self, "PosOffsetX") return result
     end,
     GetSprite = function(self)
-        return ffi.getprivate(self, "Sprite")
+        local result = ffi.getprivate(self, "Sprite") return result
     end,
     GetVec1 = function(self)
         return GetVector(self, "Vec1")

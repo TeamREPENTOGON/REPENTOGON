@@ -21,20 +21,20 @@ local GridEntityFireMT
 GridEntityFireMT = {
     __type = "GridEntityFire",
     Destroy = function(self)
-        return repentogon.L_GridEntityFire_Hurt(self, 4, EntityRef())
+        local result = repentogon.L_GridEntityFire_Hurt(self, 4, EntityRef()) return result
     end,
     DestroyWithSource = function(self, _, source)
         ffichecks.checkcdata(2, source, "EntityRef")
-        return repentogon.L_GridEntityFire_Hurt(self, 4, source)
+        local result = repentogon.L_GridEntityFire_Hurt(self, 4, source) return result
     end,
     Hurt = function(self, damage)
         damage = ffichecks.checkinteger(1, damage)
-        return repentogon.L_GridEntityFire_Hurt(self, damage, EntityRef())
+        local result = repentogon.L_GridEntityFire_Hurt(self, damage, EntityRef()) return result
     end,
     HurtWithSource = function(self, damage, source)
         damage = ffichecks.checkinteger(1, damage)
         ffichecks.checkcdata(2, source, "EntityRef")
-        return repentogon.L_GridEntityFire_Hurt(self, damage, source)
+        local result = repentogon.L_GridEntityFire_Hurt(self, damage, source) return result
     end,
     Render = function(self, offset)
         ffichecks.checkcdata(1, offset, "Vector")

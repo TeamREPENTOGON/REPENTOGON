@@ -10,11 +10,11 @@ local repentogon = ffidll
 ModsMenu = {
     GetSprite = function()
         ffichecks.checkmainmenu("ModsMenu")
-        return repentogon.L_ModsMenu_GetSprite()
+        local result = repentogon.L_ModsMenu_GetSprite() return result
     end,
     GetSelectedElement = function()
         ffichecks.checkmainmenu("ModsMenu")
-        return repentogon.L_ModsMenu_GetSelectedElement()
+        local result = repentogon.L_ModsMenu_GetSelectedElement() return result
     end,
     SetSelectedElement = function(element)
         ffichecks.checkmainmenu("ModsMenu")
@@ -23,6 +23,6 @@ ModsMenu = {
     end,
     WasListEdited = function()
         ffichecks.checkmainmenu("ModsMenu")
-        return repentogon.L_ModsMenu_WasListEdited()
+        local result = repentogon.L_ModsMenu_WasListEdited() return result
     end,
 }

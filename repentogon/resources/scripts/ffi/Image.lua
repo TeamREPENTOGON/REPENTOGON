@@ -80,21 +80,21 @@ ImageMT = {
     end,
 
     GetWidth = function(self) 
-        return repentogon.L_Image_GetWidth(self) 
+        local result = repentogon.L_Image_GetWidth(self) return result 
     end,
     GetHeight = function(self) 
-        return repentogon.L_Image_GetHeight(self) 
+        local result = repentogon.L_Image_GetHeight(self) return result 
     end,
     GetPaddedWidth  = function(self) 
-        return repentogon.L_Image_GetPaddedWidth(self) 
+        local result = repentogon.L_Image_GetPaddedWidth(self) return result 
     end,
     GetPaddedHeight = function(self) 
-        return repentogon.L_Image_GetPaddedHeight(self) 
+        local result = repentogon.L_Image_GetPaddedHeight(self) return result 
     end,
     GetName = function(self)
         local p = repentogon.L_Image_GetName(self)
         if p == nil then return nil end
-        return ffi.string(p)
+        local result = ffi.string(p) return result
     end,
 
     GetTexelRegion = function(self, x, y, w, h)
@@ -106,7 +106,7 @@ ImageMT = {
         local n = w * h * 4
         local buf = ffi.new("uint8_t[?]", n)
         repentogon.L_Image_GetTexelRegion(self, x, y, w, h, buf)
-        return ffi.string(buf, n)
+        local result = ffi.string(buf, n) return result
     end,
 
     Render = function(self, sourceQuad, destQuad, color, colorMod)

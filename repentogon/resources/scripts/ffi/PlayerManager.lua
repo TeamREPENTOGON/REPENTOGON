@@ -34,11 +34,11 @@ end
 PlayerManager = {
     AnyoneHasCollectible = function(collectible, ignoreModifiers)
         collectible = ffichecks.checkinteger(1, collectible)
-        return repentogon.L_PlayerManager_AnyoneHasCollectible(collectible, ffichecks.optboolean(ignoreModifiers, false))
+        local result = repentogon.L_PlayerManager_AnyoneHasCollectible(collectible, ffichecks.optboolean(ignoreModifiers, false)) return result
     end,
     AnyoneHasTrinket = function(trinket, ignoreModifiers)
         trinket = ffichecks.checkinteger(1, trinket)
-        return repentogon.L_PlayerManager_AnyoneHasTrinket(trinket, ffichecks.optboolean(ignoreModifiers, false))
+        local result = repentogon.L_PlayerManager_AnyoneHasTrinket(trinket, ffichecks.optboolean(ignoreModifiers, false)) return result
     end,
     AnyoneIsPlayerType = function(playerType)
         playerType = ffichecks.checkinteger(1, playerType)
@@ -46,17 +46,17 @@ PlayerManager = {
     end,
     AnyPlayerTypeHasBirthright = function(playerType)
         playerType = ffichecks.checkinteger(1, playerType)
-        return repentogon.L_PlayerManager_AnyPlayerTypeHasBirthright(playerType)
+        local result = repentogon.L_PlayerManager_AnyPlayerTypeHasBirthright(playerType) return result
     end,
     AnyPlayerTypeHasCollectible = function(playerType, collectible, ignoreModifiers)
         playerType = ffichecks.checkinteger(1, playerType)
         collectible = ffichecks.checkinteger(2, collectible)
-        return repentogon.L_PlayerManager_AnyPlayerTypeHasCollectible(playerType, collectible, ffichecks.optboolean(ignoreModifiers, false))
+        local result = repentogon.L_PlayerManager_AnyPlayerTypeHasCollectible(playerType, collectible, ffichecks.optboolean(ignoreModifiers, false)) return result
     end,
     AnyPlayerTypeHasTrinket = function(playerType, trinket, ignoreModifiers)
         playerType = ffichecks.checkinteger(1, playerType)
         trinket = ffichecks.checkinteger(2, trinket)
-        return repentogon.L_PlayerManager_AnyPlayerTypeHasTrinket(playerType, trinket, ffichecks.optboolean(ignoreModifiers, false))
+        local result = repentogon.L_PlayerManager_AnyPlayerTypeHasTrinket(playerType, trinket, ffichecks.optboolean(ignoreModifiers, false)) return result
     end,
     FirstBirthrightOwner = function(playerType)
         playerType = ffichecks.checkinteger(1, playerType)
@@ -90,7 +90,7 @@ PlayerManager = {
     end,
     GetNumCollectibles = function(collectible, ignoreModifiers)
         collectible = ffichecks.checkinteger(1, collectible)
-        return repentogon.L_PlayerManager_GetNumCollectibles(collectible, ffichecks.optboolean(ignoreModifiers, false))
+        local result = repentogon.L_PlayerManager_GetNumCollectibles(collectible, ffichecks.optboolean(ignoreModifiers, false)) return result
     end,
     GetPlayers = function()
         local players = {}
@@ -119,10 +119,10 @@ PlayerManager = {
     end,
     GetTotalTrinketMultiplier = function(trinket)
         trinket = ffichecks.checkinteger(1, trinket)
-        return repentogon.L_PlayerManager_GetTotalTrinketMultiplier(trinket)
+        local result = repentogon.L_PlayerManager_GetTotalTrinketMultiplier(trinket) return result
     end,
     IsCoopPlay = function()
-        return repentogon.L_PlayerManager_IsCoopPlay()
+        local result = repentogon.L_PlayerManager_IsCoopPlay() return result
     end,
     RemoveCoPlayer = function(player)
         ffichecks.checkcdata(1, player, "EntityPlayer")

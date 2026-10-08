@@ -8,6 +8,6 @@ DebugRenderer = {
     Get = function(index, unk)
         index = ffichecks.optnumber(index, -1)
         unk = ffichecks.optboolean(unk, false)
-        return repentogon.L_DebugRenderer_Get(index, unk)
+        local result = repentogon.L_DebugRenderer_Get(index, unk) return result
     end,
 }

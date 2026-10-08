@@ -31,16 +31,16 @@ FontRenderSettingsMT = {
         ffi.setprivate(self, "MaxLineWidth", width)
     end,
     GetAlignment = function(self)
-        return ffi.getprivate(self, "Align")
+        local result = ffi.getprivate(self, "Align") return result
     end,
     GetLineHeightModifier = function(self)
-        return ffi.getprivate(self, "LineHeightModifier")
+        local result = ffi.getprivate(self, "LineHeightModifier") return result
     end,
     GetMaxCharacters = function(self)
-        return ffi.getprivate(self, "MaxCharacters")
+        local result = ffi.getprivate(self, "MaxCharacters") return result
     end,
     GetMissingCharacterOverride = function(self)
-        return ffi.getprivate(self, "MissingCharacterOverride")
+        local result = ffi.getprivate(self, "MissingCharacterOverride") return result
     end,
     IsAutoWrapEnabled = function(self)
         return ffi.getprivate(self, "WrapMode") == WRAP_AUTO

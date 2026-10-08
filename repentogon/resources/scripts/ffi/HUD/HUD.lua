@@ -45,7 +45,7 @@ local function OptString(value)
     if value == nil then
         return ""
     end
-    return tostring(value)
+    local result = tostring(value) return result
 end
 
 local function GetMessage(self, field, index, max)
@@ -73,40 +73,40 @@ HUDMT = {
         repentogon.L_HUD_FlashRedHearts(self, player)
     end,
     GetBossHPBarFill = function(self)
-        return ffi.getprivate(self, "BossHPBarFill")
+        local result = ffi.getprivate(self, "BossHPBarFill") return result
     end,
     GetCardsPillsSprite = function(self)
-        return ffi.getprivate(self, "CardsPillsSprite")
+        local result = ffi.getprivate(self, "CardsPillsSprite") return result
     end,
     GetChargeBarSprite = function(self)
-        return ffi.getprivate(self, "ChargeBarSprite")
+        local result = ffi.getprivate(self, "ChargeBarSprite") return result
     end,
     GetCoopMenuSprite = function(self)
-        return ffi.getprivate(self, "CoopMenuSprite")
+        local result = ffi.getprivate(self, "CoopMenuSprite") return result
     end,
     GetCoopPlayerMessage = function(self, index)
         return GetMessage(self, "MessagePlayerHUD", index, 3)
     end,
     GetCraftingSprite = function(self)
-        return ffi.getprivate(self, "CraftingTableSprite")
+        local result = ffi.getprivate(self, "CraftingTableSprite") return result
     end,
     GetFortuneSprite = function(self)
-        return ffi.getprivate(self, "FortuneSprite")
+        local result = ffi.getprivate(self, "FortuneSprite") return result
     end,
     GetHeartsSprite = function(self)
-        return ffi.getprivate(self, "HeartsSprite")
+        local result = ffi.getprivate(self, "HeartsSprite") return result
     end,
     GetHistoryHUD = function(self)
-        return ffi.getprivate(self, "HistoryHUD")
+        local result = ffi.getprivate(self, "HistoryHUD") return result
     end,
     GetInventorySprite = function(self)
-        return ffi.getprivate(self, "InventorySprite")
+        local result = ffi.getprivate(self, "InventorySprite") return result
     end,
     GetMainMessage = function(self)
-        return ffi.getprivate(self, "MessageMain")
+        local result = ffi.getprivate(self, "MessageMain") return result
     end,
     GetPickupsHUDSprite = function(self)
-        return ffi.getprivate(self, "PickupHUDSprite")
+        local result = ffi.getprivate(self, "PickupHUDSprite") return result
     end,
     GetPlayerHUD = function(self, index)
         index = ffichecks.optnumber(index, 0)
@@ -116,13 +116,13 @@ HUDMT = {
         return ffi.getprivate(self, "PlayerHUDs")[index]
     end,
     GetPoopSpellSprite = function(self)
-        return ffi.getprivate(self, "PoopSpellsSprite")
+        local result = ffi.getprivate(self, "PoopSpellsSprite") return result
     end,
     GetStackedMessage = function(self, index)
         return GetMessage(self, "MessageStack", index, 5)
     end,
     GetStreakSprite = function(self)
-        return ffi.getprivate(ffi.getprivate(self, "MessageMain"), "Sprite")
+        local result = ffi.getprivate(ffi.getprivate(self, "MessageMain"), "Sprite") return result
     end,
     InvalidateActiveItem = function(self, player, slot)
         ffichecks.checkcdata(1, player, "EntityPlayer", true)
@@ -135,7 +135,7 @@ HUDMT = {
         repentogon.L_HUD_InvalidateCraftingItem(self, player)
     end,
     IsVisible = function(self)
-        return ffi.getprivate(self, "Visible")
+        local result = ffi.getprivate(self, "Visible") return result
     end,
     PostUpdate = function(self)
         repentogon.L_HUD_PostUpdate(self)

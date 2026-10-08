@@ -57,7 +57,7 @@ AnimationDataMT = {
         layer = ffichecks.checkinteger(1, layer)
         local layers = ffi.getprivate(self, "AnimationLayers")
         if not ffichecks.isnullptr(layers) and layer >= 0 and layer < ffi.getprivate(self, "LayerCount") then
-            return ffi.cast("const struct AnimationLayer*", layers + layer)
+            local result = ffi.cast("const struct AnimationLayer*", layers + layer) return result
         end
         return nil
     end,
@@ -70,17 +70,17 @@ AnimationDataMT = {
         return -1
     end,
     GetLength = function(self)
-        return ffi.getprivate(self, "Length")
+        local result = ffi.getprivate(self, "Length") return result
     end,
     GetName = function(self)
         return ffichecks.stdstring(ffi.getprivate(self, "Name"))
     end,
     IsLoopingAnimation = function(self)
-        return ffi.getprivate(self, "Loop")
+        local result = ffi.getprivate(self, "Loop") return result
     end,
     IsEventTriggered = function(self, name)
         name = ffichecks.checkstring(1, name)
-        return repentogon.L_AnimationData_IsEventTriggered(self, name)
+        local result = repentogon.L_AnimationData_IsEventTriggered(self, name) return result
     end,
 }
 

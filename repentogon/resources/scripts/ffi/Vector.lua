@@ -20,7 +20,7 @@ VectorMT = {
     __type = "Vector",
 
     __tostring = function(a) 
-        return string.format("%g %g", a.X, a.Y) 
+        local result = string.format("%g %g", a.X, a.Y) return result 
     end,
     __add = function(self, second)
         if ffichecks.isnumber(second) then
@@ -107,7 +107,7 @@ VectorMT = {
     Distance = function(self, second)
         local distanceSquared = DistanceSquared(self, second)
         
-        return math.sqrt(distanceSquared)
+        local result = math.sqrt(distanceSquared) return result
     end,
     DistanceSquared = function(self, second)
         return DistanceSquared(self, second)
@@ -123,7 +123,7 @@ VectorMT = {
     end,
     Length = function(self)
         local lengthSquared = self.X * self.X + self.Y * self.Y
-	    return math.sqrt(lengthSquared)
+	    local result = math.sqrt(lengthSquared) return result
     end,
     LengthSquared = function(self)
         return self.X * self.X + self.Y * self.Y
@@ -197,7 +197,7 @@ Vector = setmetatable({
 		angle = ffichecks.checknumber(1, angle)
 		
 		local radians = math.rad(angle)
-		return VectorT(math.cos(radians), math.sin(radians))
+		local result = VectorT(math.cos(radians), math.sin(radians)) return result
 	end,
     Zero = VectorT(0, 0),
     One = VectorT(1, 1)

@@ -28,7 +28,7 @@ EntityRefMT = {
 
 EntityRefMT.__index = function(self, key)
     if key == "Entity" then
-        return ffi.getprivate(self, "EntityValue")
+        local result = ffi.getprivate(self, "EntityValue") return result
     end
     if key == "IsCharmed" then
         return (ffi.getprivate(self, "Flags") & FLAG_CHARMED) ~= 0

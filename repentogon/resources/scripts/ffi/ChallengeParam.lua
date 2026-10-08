@@ -50,19 +50,19 @@ local ChallengeParamMT
 ChallengeParamMT = {
     __type = "ChallengeParam",
     CanShoot = function(self)
-        return ffi.getprivate(self, "ShootingEnabled")
+        local result = ffi.getprivate(self, "ShootingEnabled") return result
     end,
     GetAchievementList = function(self)
         return VectorToTable(ffi.getprivate(self, "AchievementList"))
     end,
     GetAddDamage = function(self)
-        return ffi.getprivate(self, "AddDamage")
+        local result = ffi.getprivate(self, "AddDamage") return result
     end,
     GetBlackHearts = function(self)
-        return ffi.getprivate(self, "BlackHearts")
+        local result = ffi.getprivate(self, "BlackHearts") return result
     end,
     GetCoins = function(self)
-        return ffi.getprivate(self, "Coins")
+        local result = ffi.getprivate(self, "Coins") return result
     end,
     GetCollectibleList = function(self)
         return VectorToTable(ffi.getprivate(self, "CollectibleList"))
@@ -71,31 +71,31 @@ ChallengeParamMT = {
         return VectorToTable(ffi.getprivate(self, "CollectibleTwinList"))
     end,
     GetCurse = function(self)
-        return ffi.getprivate(self, "Curse")
+        local result = ffi.getprivate(self, "Curse") return result
     end,
     GetCurseFilter = function(self)
-        return ffi.getprivate(self, "CurseFilter")
+        local result = ffi.getprivate(self, "CurseFilter") return result
     end,
     GetDifficulty = function(self)
-        return ffi.getprivate(self, "Difficulty")
+        local result = ffi.getprivate(self, "Difficulty") return result
     end,
     GetEndStage = function(self)
-        return ffi.getprivate(self, "EndStage")
+        local result = ffi.getprivate(self, "EndStage") return result
     end,
     GetHearts = function(self)
-        return ffi.getprivate(self, "Hearts")
+        local result = ffi.getprivate(self, "Hearts") return result
     end,
     GetMaxHearts = function(self)
-        return ffi.getprivate(self, "MaxHearts")
+        local result = ffi.getprivate(self, "MaxHearts") return result
     end,
     GetMinFireRate = function(self)
-        return ffi.getprivate(self, "MinFireRate")
+        local result = ffi.getprivate(self, "MinFireRate") return result
     end,
     GetName = function(self)
         return ffichecks.stdstring(ffi.getprivate(self, "Name"))
     end,
     GetPlayerType = function(self)
-        return ffi.getprivate(self, "PlayerType")
+        local result = ffi.getprivate(self, "PlayerType") return result
     end,
     GetRoomFilter = function(self)
         local size = repentogon.L_ChallengeParam_GetRoomFilterSize(self)
@@ -109,13 +109,13 @@ ChallengeParamMT = {
         return result
     end,
     GetSoulHearts = function(self)
-        return ffi.getprivate(self, "SoulHearts")
+        local result = ffi.getprivate(self, "SoulHearts") return result
     end,
     GetStartingCard = function(self)
-        return ffi.getprivate(self, "StartingCard")
+        local result = ffi.getprivate(self, "StartingCard") return result
     end,
     GetStartingPill = function(self)
-        return ffi.getprivate(self, "StartingPill")
+        local result = ffi.getprivate(self, "StartingPill") return result
     end,
     GetTrinketList = function(self)
         return VectorToTable(ffi.getprivate(self, "TrinketList"))
@@ -127,16 +127,16 @@ ChallengeParamMT = {
         return ffi.getprivate(self, "PathType") == 3
     end,
     IsBigRangeEnabled = function(self)
-        return ffi.getprivate(self, "BigRange")
+        local result = ffi.getprivate(self, "BigRange") return result
     end,
     IsMaxDamageEnabled = function(self)
-        return ffi.getprivate(self, "MaxDamage")
+        local result = ffi.getprivate(self, "MaxDamage") return result
     end,
     IsMegaSatanRun = function(self)
-        return ffi.getprivate(self, "IsMegaSatan")
+        local result = ffi.getprivate(self, "IsMegaSatan") return result
     end,
     IsMinShotSpeedEnabled = function(self)
-        return ffi.getprivate(self, "MinShotSpeed")
+        local result = ffi.getprivate(self, "MinShotSpeed") return result
     end,
     IsSecretPath = function(self)
         return ffi.getprivate(self, "PathType") == 2

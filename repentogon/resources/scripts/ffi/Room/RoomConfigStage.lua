@@ -46,7 +46,7 @@ local RoomConfigStageMT
 RoomConfigStageMT = {
     __type = "RoomConfigStage",
     GetBackdrop = function(self)
-        return ffi.getprivate(self, "Backdrop")
+        local result = ffi.getprivate(self, "Backdrop") return result
     end,
     GetBossSpot = function(self)
         return ffichecks.stdstring(ffi.getprivate(self, "BossSpot"))
@@ -55,10 +55,10 @@ RoomConfigStageMT = {
         return ffichecks.stdstring(ffi.getprivate(self, "DisplayName"))
     end,
     GetID = function(self)
-        return ffi.getprivate(self, "ID")
+        local result = ffi.getprivate(self, "ID") return result
     end,
     GetMusic = function(self)
-        return ffi.getprivate(self, "Music")
+        local result = ffi.getprivate(self, "Music") return result
     end,
     GetPlayerSpot = function(self)
         return ffichecks.stdstring(ffi.getprivate(self, "PlayerSpot"))
@@ -66,17 +66,17 @@ RoomConfigStageMT = {
     GetRoomSet = function(self, mode)
         mode = CheckMode(mode)
         repentogon.L_RoomConfigStage_LoadRoomSet(self, mode)
-        return RoomConfigSetT(ffi.getprivate(self, "Rooms") + mode, repentogon.L_RoomConfig_GetVanillaSetID(ffi.getprivate(self, "ID"), mode))
+        local result = RoomConfigSetT(ffi.getprivate(self, "Rooms") + mode, repentogon.L_RoomConfig_GetVanillaSetID(ffi.getprivate(self, "ID"), mode)) return result
     end,
     GetSuffix = function(self)
         return ffichecks.stdstring(ffi.getprivate(self, "Suffix"))
     end,
     GetXMLName = function(self)
-        return ffi.string(repentogon.L_RoomConfigStage_GetXMLName(self))
+        local result = ffi.string(repentogon.L_RoomConfigStage_GetXMLName(self)) return result
     end,
     IsLoaded = function(self, mode)
         mode = CheckMode(mode)
-        return ffi.getprivate(ffi.getprivate(self, "Rooms")[mode], "Loaded")
+        local result = ffi.getprivate(ffi.getprivate(self, "Rooms")[mode], "Loaded") return result
     end,
     SetBackdrop = function(self, backdrop)
         ffi.setprivate(self, "Backdrop", ToInteger(backdrop))

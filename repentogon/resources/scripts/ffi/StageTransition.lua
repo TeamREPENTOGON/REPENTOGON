@@ -19,7 +19,7 @@ StageTransitionMT.__index = StageTransitionMT
 local StageTransitionT = ffi.metatype("struct StageTransition", StageTransitionMT)
 
 local function GetStageTransition()
-    return repentogon.L_StageTransition_Get()
+    local result = repentogon.L_StageTransition_Get() return result
 end
 
 StageTransition = {

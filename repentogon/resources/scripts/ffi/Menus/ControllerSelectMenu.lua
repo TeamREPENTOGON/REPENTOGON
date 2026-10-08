@@ -9,11 +9,11 @@ local repentogon = ffidll
 ControllerSelectMenu = {
     GetSprite = function()
         ffichecks.checkmainmenu("ControllerSelectMenu")
-        return repentogon.L_ControllerSelectMenu_GetSprite()
+        local result = repentogon.L_ControllerSelectMenu_GetSprite() return result
     end,
     GetSelectedElement = function()
         ffichecks.checkmainmenu("ControllerSelectMenu")
-        return repentogon.L_ControllerSelectMenu_GetSelectedElement()
+        local result = repentogon.L_ControllerSelectMenu_GetSelectedElement() return result
     end,
     SetSelectedElement = function(element)
         ffichecks.checkmainmenu("ControllerSelectMenu")
