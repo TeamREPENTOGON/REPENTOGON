@@ -1,5 +1,7 @@
+#include "ASMDefinition.h"
 #include "ASMPatcher.hpp"
 #include "../ASMPatches.h"
+#include "../Stages/StageManager.h"
 #include "../../LuaInterfaces/Room/Room.h"
 
 /* Ambush waves have a hardcoded amount. This patch works around it by feeding the game a pointer to an int we control instead of the hardcoded 3.
@@ -234,4 +236,28 @@ void ASMPatchTrySpawnBlueWombDoor() {
 	ASMPatch patch;
 	patch.AddBytes(ByteBuffer().AddAny((char*)&desired, 4));
 	sASMPatcher.FlatPatch(addr, &patch);
+}
+
+// Prevent a custom StbType from being used to access the RoomConfig_Stage array in Room::Render.
+uint32_t __stdcall SanitizeStbType(uint32_t stbType) {
+	if (stbType >= NUM_STB) {
+		// For custom stages, the game SHOULD refer to the overridden StbType,
+		// since the override has placed the "correct" name in its place.
+		// If, somehow, there is no override active, this will return 0, which is fine.
+		return StageManager::GetCurrentOverride().GetVanillaStageID();
+	}
+	return stbType;
+}
+void ASMPatchRoomRenderStbType() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_Render_StbType);
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::EAX, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(reg)
+		.Push(ASMPatch::Registers::EAX)
+		.AddInternalCall(SanitizeStbType)
+		.RestoreRegisters(reg)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6))  // Restore overwritten bytes
+		.AddRelativeJump((char*)addr + 0x6);
+	sASMPatcher.PatchAt(addr, &patch);
 }
