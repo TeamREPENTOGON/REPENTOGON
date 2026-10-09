@@ -102,7 +102,7 @@ public:
 		_backdrop = std::atoi(xmlData["backdrop"].c_str());
 
 		if (stageId >= NUM_STB) {
-			VirtualRoomSetManager::InitializeSet(stageId);
+			VirtualRoomSetManager::TryInitializeSet(stageId);
 			if (!_binary.empty()) {
 				VirtualRoomSetManager::detail::AddStbRooms(stageId, 0, _binary);
 			}
@@ -194,6 +194,7 @@ private:
 	bool _achievement;
 };
 
+size_t GetNumStages();
 StageConfig* GetStage(uint32_t id);
 StageConfig* GetStageByName(std::string name);
 std::vector<StageConfig*> GetStagesByLevel(int levelStage, bool greedMode);

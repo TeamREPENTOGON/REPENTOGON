@@ -1,6 +1,7 @@
 #include "VirtualRoomSetManager.h"
 
 #include "Log.h"
+#include "../Patches/Stages/StageManager.h"
 #include "../RoomConfigUtility.h"
 #include "../MiscFunctions.h"
 #include "../LuaClasses.h"
@@ -21,9 +22,6 @@ typedef LogUtility::LogContext LogContext;
 #define LOG_INFO_HEADER "[INFO] [VirtualRoomSetManager] - "
 #define LOG_WARN_HEADER "[WARN] [VirtualRoomSetManager] -"
 #define LOG_ERROR_HEADER "[ERROR] [VirtualRoomSetManager] - "
-
-// Equivalent of NUM_STB including custom StbTypes
-static uint32_t s_NumStbTypes = NUM_STB;
 
 namespace {
 	static constexpr size_t CHUNK_SIZE = 64 * 1024 / sizeof(RoomConfig_Room); // 64 KB
@@ -183,8 +181,7 @@ static void FilterRooms(std::vector<RoomConfig_Room*>& buffer, _VirtualRoomSet& 
 
 /// @brief Loads the vanilla room set, if it has not already been loaded.
 static void try_init_vanilla_room_set(uint32_t stageId, int mode);
-/// @brief Commits the placement of room in the vanilla RoomConfig system,
-/// as if it were part of the room set.
+/// @brief Commits the placement of room in the room set (vanilla or custom).
 ///
 /// Details:
 /// - Initializes the StageID and Mode of all placed rooms.
@@ -244,7 +241,7 @@ static bool WriteDB(const std::string& filePath, uint32_t gameChecksum, RestoreR
 
 static size_t get_num_stages()
 {
-	return s_NumStbTypes;
+	return StageManager::GetNumStages();
 }
 
 static int normalize_mode(int mode)
@@ -489,20 +486,23 @@ static void try_init_vanilla_room_set(uint32_t stageId, int mode)
 	}
 }
 
+static RoomConfig_VariantSet* get_variant_set(uint32_t stageId, int mode, int roomType)
+{
+	if (stageId < NUM_STB)
+	{
+		return g_Game->GetRoomConfig()->_stages[stageId]._rooms[mode].GetVariantSet(roomType);
+	}
+	return &GetData().customVariantSets[{stageId, mode, roomType}];
+}
+
 static void commit_room_set_insertion(_VirtualRoomSet& virtualSet, size_t begin, size_t end, uint32_t stageId, int mode)
 {
-	if (stageId >= NUM_STB)
-		return;
-
-	RoomConfig& roomConfig = *g_Game->GetRoomConfig();
-	auto& vanillaRoomSet = roomConfig._stages[stageId]._rooms[mode];
-
 	for (size_t i = begin; i < end; i++)
 	{
 		RoomConfig_Room& room = *virtualSet[i];
 		room.StageId = stageId;
 		room.Mode = mode;
-        auto* variantSet = get_variant_set(stageId, mode, room.Type);
+		auto* variantSet = get_variant_set(stageId, mode, room.Type);
 		room.Variant = variantSet->AddUnique(room.originalVariant);
 	}
 }
@@ -1221,10 +1221,12 @@ HOOK_METHOD(RoomConfig, ResetRoomWeights, (uint32_t Stage, int Mode) -> void)
 
 HOOK_METHOD(RoomConfig, LoadStageBinary, (uint32_t Stage, uint32_t Mode) -> void)
 {
-    if (Stage < NUM_STB)
-    {
-        super(Stage, Mode);
-    }
+	if (Stage >= NUM_STB)
+	{
+		return;
+	}
+
+	super(Stage, Mode);
 
 	// recommit all insertions
 	Mode = normalize_mode(Mode);

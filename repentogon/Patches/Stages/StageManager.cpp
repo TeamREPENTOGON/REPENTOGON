@@ -14,8 +14,13 @@ static StageOverride s_StageOverrides[4]{};
 
 }  // namespace
 
-bool IsValidStage(uint32_t id) {
-	return false;
+size_t GetNumStages() {
+	size_t size = s_Stages.size();
+	// If called when the vector hasn't been initialized yet.
+	if (size < NUM_STB) {
+		return NUM_STB;
+	}
+	return s_Stages.size();
 }
 
 StageConfig* GetStage(uint32_t id) {
