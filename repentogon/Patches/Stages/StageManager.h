@@ -89,9 +89,10 @@ public:
 		}
 		_bossSpot = bossGfxRoot + bossSpot;
 		
-		_displayName = xmlData["untranslatedname"];
-		if (_displayName.empty()) {
-			_displayName = xmlData["name"];
+		_englishName = xmlData["name"];
+		_name = xmlData["untranslatedname"];
+		if (_name.empty()) {
+			_name = _englishName;
 		}
 
 		_suffix = xmlData["suffix"];
@@ -116,7 +117,7 @@ public:
 
 	inline void Load() const {
 		RoomConfig_Stage& stage = g_Game->GetRoomConfig()->_stages[_baseStageId];
-		stage._displayName = _displayName;
+		stage._displayName = _name;
 		stage._playerSpot = _playerSpot;
 		stage._bossSpot = _bossSpot;
 		stage._suffix = _suffix;
@@ -133,7 +134,15 @@ public:
 	}
 
 	inline const std::string& GetName() const {
-		return _displayName;
+		return _name;
+	}
+
+	inline const std::string& GetEnglishName() const {
+		return _englishName;
+	}
+
+	inline int GetBackdropType() const {
+		return _backdrop;
 	}
 
 	inline bool IsVanilla() const {
@@ -180,9 +189,11 @@ private:
 
 	std::string _binary;
 	std::string _greedBinary;
+
+	std::string _englishName;
 	
 	// RoomConfig_Stage attributes
-	std::string _displayName;
+	std::string _name;
 	std::string _playerSpot;
 	std::string _bossSpot;
 	std::string _suffix;

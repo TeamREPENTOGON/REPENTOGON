@@ -6,4 +6,4 @@ void ASMPatchMegaSatanEnding();
 void ASMPatchWaterDisabler();
 void PatchRoomClearDelay();
 void ASMPatchTrySpawnBlueWombDoor();
-void ASMPatchRoomRenderStbType();
+void ASMPatchRoomRenderDebugDisplayName();

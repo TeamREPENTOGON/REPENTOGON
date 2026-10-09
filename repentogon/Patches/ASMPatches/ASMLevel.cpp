@@ -2,6 +2,7 @@
 #include "ASMDefinition.h"
 #include "ASMPatcher.hpp"
 #include "../ASMPatches.h"
+#include "../Stages/StageManager.h"
 
 #include "ASMLevel.h"
 #include "../../LuaInterfaces/Level.h"
@@ -187,6 +188,30 @@ void PatchLoadBackdropGraphicsVoidEx(void* addr, const bool ecx) {
 		.AddRelativeJump((char*)addr + 0x5);
 	sASMPatcher.PatchAt(addr, &patch);
 }
+int __stdcall GetVoidBackdropType(uint32_t stageId) {
+	if (StageManager::GetCurrentOverride().IsOverridden(stageId)) {
+		stageId = StageManager::GetCurrentOverride().GetCustomStageID();
+	}
+	if (auto* stage = StageManager::GetStage(stageId)) {
+		return stage->GetBackdropType();
+	}
+	return 0;
+}
+void PatchLoadBackdropGraphicsVoidCustomStages() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LoadBackdropGraphics_VoidCustomStages);
+	
+	ZHL::Log("[REPENTOGON] Patching Room::LoadBackdropGraphics for custom stage backdrops in void @ %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX)
+		.AddInternalCall(GetVoidBackdropType)
+		.RestoreRegisters(savedRegisters)
+		.CopyRegister(ASMPatch::Registers::ESI, ASMPatch::Registers::EAX)
+		.AddRelativeJump((char*)addr + 0xD);
+	sASMPatcher.PatchAt(addr, &patch);
+}
 int __stdcall RoomInitVoidExTrampoline(const bool unused) {
 	if (IsVoidExRoom()) {
 		return GetVoidExRoomStageId();
@@ -289,6 +314,7 @@ void PatchPortalUnaliveSelf() {
 void ASMPatchesForVoidExSubtype() {
 	PatchLoadBackdropGraphicsVoidEx(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LoadBackdropGraphics_VoidEx1), true);
 	PatchLoadBackdropGraphicsVoidEx(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LoadBackdropGraphics_VoidEx2), false);
+	PatchLoadBackdropGraphicsVoidCustomStages();
 	PatchRoomInitVoidEx();
 	PatchPortalsVoidEx1();
 	PatchPortalsVoidEx2();
