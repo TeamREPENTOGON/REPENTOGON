@@ -239,25 +239,27 @@ void ASMPatchTrySpawnBlueWombDoor() {
 }
 
 // Prevent a custom StbType from being used to access the RoomConfig_Stage array in Room::Render.
-uint32_t __stdcall SanitizeStbType(uint32_t stbType) {
-	if (stbType >= NUM_STB) {
-		// For custom stages, the game SHOULD refer to the overridden StbType,
-		// since the override has placed the "correct" name in its place.
-		// If, somehow, there is no override active, this will return 0, which is fine.
-		return StageManager::GetCurrentOverride().GetVanillaStageID();
+void __stdcall GetRoomDisplayName(std::string* buffer) {
+	int stageId = g_Game->GetCurrentRoomDesc()->Data->StageId;
+	if (auto* stage = StageManager::GetStage(stageId)) {
+		new (buffer) std::string(stage->GetEnglishName());
+	} else {
+		new (buffer) std::string("");
 	}
-	return stbType;
 }
-void ASMPatchRoomRenderStbType() {
-	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_Render_StbType);
+void ASMPatchRoomRenderDebugDisplayName() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_Render_StageDisplayName);
 
-	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::EAX, true);
+	ZHL::Log("[REPENTOGON] Patching Room::Render for custom stage name debug render @ %p\n", addr);
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
-	patch.PreserveRegisters(reg)
+	patch.Pop(ASMPatch::Registers::EAX)
+		.AddBytes("\x83\xC4\x04")  // add esp, 4
+		.PreserveRegisters(reg)
 		.Push(ASMPatch::Registers::EAX)
-		.AddInternalCall(SanitizeStbType)
+		.AddInternalCall(GetRoomDisplayName)
 		.RestoreRegisters(reg)
-		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6))  // Restore overwritten bytes
-		.AddRelativeJump((char*)addr + 0x6);
+		.AddRelativeJump((char*)addr + 0x5);
 	sASMPatcher.PatchAt(addr, &patch);
 }

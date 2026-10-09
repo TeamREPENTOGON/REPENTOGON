@@ -243,12 +243,13 @@ asm CustomModManager_CurseMapIconsCustomRender "660f6ecf8d4e??0f5bc9e8????????8b
 
 asm LoadBackdropGraphics_VoidEx1 "8b49??8b0985c90f45c1";
 asm LoadBackdropGraphics_VoidEx2 "8b40??8b0085c9";
+asm LoadBackdropGraphics_VoidCustomStages "69c0c40000008bb4";
 asm RoomInit_VoidEx "e8????????83f81b74??83f81c";
 asm Portals_VoidEx1 "8b0d????????8d72??e8";
 asm Portals_VoidEx2 "a1????????33f68b40";
 asm PortalUnaliveSelf "ff50??8b43??83f801";
 
-asm Room_Render_StbType "69c8c4000000c785";
+asm Room_Render_StageDisplayName "e8????????c745??010000008b77";
 
 // Misc patches
 asm Misc_FixOptionsMusicVolumeBoundCheck "f30f1005????????8d45??0f57d2";

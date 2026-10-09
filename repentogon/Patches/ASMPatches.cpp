@@ -246,7 +246,7 @@ void PerformASMPatches() {
 	ASMPatchWaterDisabler();
 	PatchRoomClearDelay();
 	ASMPatchTrySpawnBlueWombDoor();
-	ASMPatchRoomRenderStbType();
+	ASMPatchRoomRenderDebugDisplayName();
 
 	// Player
 	ASMPatchCheckFamiliar();
