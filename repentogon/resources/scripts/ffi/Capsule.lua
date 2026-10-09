@@ -66,10 +66,13 @@ local CapsuleT = ffi.metatype("struct Capsule", CapsuleMT)
 
 Capsule = setmetatable({}, {
     __call = function(_, position, vec2, f1, f2) 
+        local capsule = CapsuleT()
+        if position == nil and vec2 == nil and f1 == nil then
+            return capsule
+        end
         ffichecks.checkcdata(1, position, "Vector")
         ffichecks.checkcdata(2, vec2, "Vector")
         f1 = ffichecks.checknumber(3, f1)
-        local capsule = CapsuleT()
         if type(f2) == "number" then
             repentogon.L_Capsule_Ctor(capsule, position, vec2, f1, f2)
         else
