@@ -1,6 +1,7 @@
 #include "VirtualRoomSetManager.h"
 
 #include "Log.h"
+#include "../Patches/Stages/StageManager.h"
 #include "../RoomConfigUtility.h"
 #include "../MiscFunctions.h"
 #include "HookSystem.h"
@@ -9,7 +10,7 @@
 #include <map>
 #include <fstream>
 #include <unordered_set>
-#include "../Patches/Stages/StageManager.h"
+#include <tuple>
 
 #undef ERROR
 
@@ -19,9 +20,6 @@ typedef LogUtility::LogContext LogContext;
 #define LOG_INFO_HEADER "[INFO] [VirtualRoomSetManager] - "
 #define LOG_WARN_HEADER "[WARN] [VirtualRoomSetManager] -"
 #define LOG_ERROR_HEADER "[ERROR] [VirtualRoomSetManager] - "
-
-// Equivalent of NUM_STB including custom StbTypes
-static uint32_t s_NumStbTypes = NUM_STB;
 
 namespace {
 	static constexpr size_t CHUNK_SIZE = 64 * 1024 / sizeof(RoomConfig_Room); // 64 KB
@@ -54,9 +52,11 @@ struct Data
 	/// It is what makes the conversion DbGameStateRoom -> VirtualGameStateRoom possible.
 	std::array<RestoreRoomsDB, TOTAL_SAVE_FILES> saveFileDB;
 	std::vector<_VirtualRoomSet> roomSets;
+	// { StbType, Mode, RoomType }
+	std::map<std::tuple<uint32_t, int, int>, RoomConfig_VariantSet> customVariantSets;
 };
 
-Data& GetData() {
+static Data& GetData() {
 	static Data* instance = new Data{};  // Initializing with {} is required due to std::array (and C++) being funny
 	return *instance;
 }
@@ -188,14 +188,13 @@ struct OutAddStbRooms
 };
 
 /// @brief Loads the vanilla room set, if it has not already been loaded.
-static void init_vanilla_room_set(uint32_t stageId, int mode);
-/// @brief Commits the placement of room in the vanilla RoomConfig system,
-/// as if it were part of the room set.
+static void try_init_vanilla_room_set(uint32_t stageId, int mode);
+/// @brief Commits the placement of room in the room set (vanilla or custom).
 ///
 /// Details:
 /// - Initializes the StageID and Mode of all placed rooms.
 /// - Registers the variant in the VariantSet, and assigns a new variant if it is not unique.
-static void commit_vanilla_room_set_insertion(_VirtualRoomSet& virtualSet, size_t begin, size_t end, uint32_t stageId, int mode);
+static void commit_room_set_insertion(_VirtualRoomSet& virtualSet, size_t begin, size_t end, uint32_t stageId, int mode);
 
 /// @brief Adds the room to the room holder.
 ///
@@ -293,14 +292,14 @@ static bool is_vanilla_set(size_t id)
 static std::pair<uint32_t, int> id_to_stage_mode(size_t id)
 {
 	uint32_t stageId = id / 2;
-	assert(stageId < s_NumStbTypes);
+	assert(stageId < StageManager::GetNumStages());
 	int mode = id % 2;
 	return {stageId, mode};
 }
 
 size_t stage_mode_to_id(uint32_t stageId, int mode)
 {
-	assert(stageId < s_NumStbTypes);
+	assert(stageId < StageManager::GetNumStages());
 	assert(0 <= mode && mode <= 1);
     return stageId * 2 + mode;
 }
@@ -431,7 +430,7 @@ static RoomConfig_Room* add_room(const RoomConfig_Room& room, bool isRestored)
 	return storage;
 }
 
-static void init_vanilla_room_set(uint32_t stageId, int mode)
+static void try_init_vanilla_room_set(uint32_t stageId, int mode)
 {
 	if (stageId >= NUM_STB)
 		return;
@@ -444,20 +443,23 @@ static void init_vanilla_room_set(uint32_t stageId, int mode)
 	}
 }
 
-static void commit_vanilla_room_set_insertion(_VirtualRoomSet& virtualSet, size_t begin, size_t end, uint32_t stageId, int mode)
+static RoomConfig_VariantSet* get_variant_set(uint32_t stageId, int mode, int roomType)
 {
-	if (stageId >= NUM_STB)
-		return;
+	if (stageId < NUM_STB)
+	{
+		return g_Game->GetRoomConfig()->_stages[stageId]._rooms[mode].GetVariantSet(roomType);
+	}
+	return &GetData().customVariantSets[{stageId, mode, roomType}];
+}
 
-	RoomConfig& roomConfig = *g_Game->GetRoomConfig();
-	auto& vanillaRoomSet = roomConfig._stages[stageId]._rooms[mode];
-
+static void commit_room_set_insertion(_VirtualRoomSet& virtualSet, size_t begin, size_t end, uint32_t stageId, int mode)
+{
 	for (size_t i = begin; i < end; i++)
 	{
 		RoomConfig_Room& room = *virtualSet[i];
 		room.StageId = stageId;
 		room.Mode = mode;
-		auto* variantSet = vanillaRoomSet.GetVariantSet(room.Type);
+		auto* variantSet = get_variant_set(stageId, mode, room.Type);
 		room.Variant = variantSet->AddUnique(room.originalVariant);
 	}
 }
@@ -633,10 +635,9 @@ int Lua_AddLuaRooms(lua_State* L, size_t id, int tableIndex)
 	uint32_t stageId = stagemode.first;
 	int mode = stagemode.second;
 
-	bool isVanilla = is_vanilla_set(id);
-	if (isVanilla)
+	if (is_vanilla_set(id))
 	{
-		init_vanilla_room_set(stageId, mode);
+		try_init_vanilla_room_set(stageId, mode);
 	}
 
 	_VirtualRoomSet& virtualSet = GetData().roomSets[id];
@@ -644,10 +645,7 @@ int Lua_AddLuaRooms(lua_State* L, size_t id, int tableIndex)
 	size_t placedRooms_begin = outLuaRooms.placedRooms_begin;
 	size_t placedRooms_end = outLuaRooms.placedRooms_end;
 
-	if (isVanilla)
-	{
-		commit_vanilla_room_set_insertion(virtualSet, placedRooms_begin, placedRooms_end, stageId, mode);
-	}
+	commit_room_set_insertion(virtualSet, placedRooms_begin, placedRooms_end, stageId, mode);
 
 	return build_add_lua_rooms_out_table(L, virtualSet, outLuaRooms);
 }
@@ -659,19 +657,15 @@ int Lua_AddStbRooms(lua_State* L, size_t id, const std::string& filename)
 	uint32_t stageId = stagemode.first;
 	int mode = stagemode.second;
 
-	bool isVanilla = is_vanilla_set(id);
-	if (isVanilla)
+	if (is_vanilla_set(id))
 	{
-		init_vanilla_room_set(stageId, mode);
+		try_init_vanilla_room_set(stageId, mode);
 	}
 
 	_VirtualRoomSet& virtualSet = GetData().roomSets[id];
 	const OutAddStbRooms outAddStbRooms = add_stb_rooms(virtualSet, filename, stageId);
 
-	if (isVanilla)
-	{
-		commit_vanilla_room_set_insertion(virtualSet, outAddStbRooms.placedRooms_begin, outAddStbRooms.placedRooms_end, stageId, mode);
-	}
+	commit_room_set_insertion(virtualSet, outAddStbRooms.placedRooms_begin, outAddStbRooms.placedRooms_end, stageId, mode);
 
 	return build_add_stb_rooms_out_table(L, virtualSet, outAddStbRooms);
 }
@@ -1128,25 +1122,15 @@ VirtualRoomSet VirtualRoomSetManager::GetSet(uint32_t stageId, int mode)
     return VirtualRoomSet(id);
 }
 
-void VirtualRoomSetManager::InitializeSet(uint32_t stageId)
+void VirtualRoomSetManager::TryInitializeSet(uint32_t stageId)
 {
-	if (stageId >= s_NumStbTypes)
-	{
-		s_NumStbTypes = stageId + 1;
-	}
+	assert(stageId >= 0 && stageId < StageManager::GetNumStages());
 	size_t id = stage_mode_to_id(stageId, 0);
 	size_t greedid = stage_mode_to_id(stageId, 1);
 	if (GetData().roomSets.size() <= greedid)
 	{
 		GetData().roomSets.resize(greedid + 1);
 	}
-}
-
-uint32_t VirtualRoomSetManager::AddSet()
-{
-	uint32_t stageId = s_NumStbTypes++;
-	InitializeSet(stageId);
-	return stageId;
 }
 
 RoomConfig_Room* VirtualRoomSet::operator[](size_t index)
@@ -1203,10 +1187,12 @@ int VirtualRoomSetManager::detail::Lua_AddStbRooms(lua_State *L, VirtualRoomSet 
 void VirtualRoomSetManager::detail::AddStbRooms(const uint32_t stageId, const uint32_t mode, const std::string& fileName)
 {
 	size_t id = stage_mode_to_id(stageId, mode);
+	assert(id < GetData().roomSets.size());
 	if (id < GetData().roomSets.size())
 	{
 		_VirtualRoomSet& virtualSet = GetData().roomSets[id];
-		add_stb_rooms(virtualSet, fileName, stageId);
+		const OutAddStbRooms outAddStbRooms = add_stb_rooms(virtualSet, fileName, stageId);
+		commit_room_set_insertion(virtualSet, outAddStbRooms.placedRooms_begin, outAddStbRooms.placedRooms_end, stageId, mode);
 	}
 }
 
@@ -1353,15 +1339,17 @@ HOOK_METHOD(RoomConfig, ResetRoomWeights, (uint32_t Stage, int Mode) -> void)
 
 HOOK_METHOD(RoomConfig, LoadStageBinary, (uint32_t Stage, uint32_t Mode) -> void)
 {
-	if (Stage < NUM_STB)
+	if (Stage >= NUM_STB)
 	{
-		super(Stage, Mode);
+		return;
 	}
+
+	super(Stage, Mode);
 
 	// recommit all insertions
 	Mode = normalize_mode(Mode);
 	_VirtualRoomSet& virtualSet = GetVirtualRoomSet(Stage, Mode);
-	commit_vanilla_room_set_insertion(virtualSet, 0, virtualSet.size(), Stage, Mode);
+	commit_room_set_insertion(virtualSet, 0, virtualSet.size(), Stage, Mode);
 }
 
 HOOK_METHOD(RoomConfig, GetRoomByStageTypeAndVariant, (unsigned int stage, unsigned int type, unsigned int variant, int mode) -> RoomConfig_Room*)

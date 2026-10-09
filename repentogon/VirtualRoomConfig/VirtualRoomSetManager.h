@@ -64,9 +64,7 @@ public:
 	/// @brief Gets the roomset extension corresponding to the given stage ID and mode (vanilla or custom).
 	static VirtualRoomSet GetSet(uint32_t stageId, int mode);
 	/// @brief Ensures that the virtual roomset for the given id is initialized.
-	static void InitializeSet(uint32_t stageId);
-	/// @brief Assigns the next unused stage id, initializes the virtual roomset for it, and returns that id.
-	static uint32_t AddSet();
+	static void TryInitializeSet(uint32_t stageId);
 };
 
 class VirtualRoomSet
