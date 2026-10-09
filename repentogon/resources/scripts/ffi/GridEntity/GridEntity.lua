@@ -28,6 +28,9 @@ local ffi = ffi
 local repentogon = ffidll
 
 ffi.reentrant(repentogon.L_GridEntity_Destroy)
+ffi.reentrant(repentogon.L_GridEntity_Hurt)
+ffi.reentrant(repentogon.L_GridEntity_HurtDamage)
+ffi.reentrant(repentogon.L_GridEntity_HurtSurroundings)
 
 local GridEntityType = {
 	GRID_NULL = 0,

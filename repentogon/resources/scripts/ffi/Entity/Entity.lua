@@ -162,6 +162,30 @@ ffi.cdef [[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_Entity_Update)
+ffi.reentrant(repentogon.L_Entity_TakeDamage)
+ffi.reentrant(repentogon.L_Entity_Kill)
+ffi.reentrant(repentogon.L_Entity_KillWithSource)
+ffi.reentrant(repentogon.L_Entity_Remove)
+ffi.reentrant(repentogon.L_Entity_BloodExplode)
+ffi.reentrant(repentogon.L_Entity_SpawnWaterImpactEffects)
+ffi.reentrant(repentogon.L_Entity_AddBleeding)
+ffi.reentrant(repentogon.L_Entity_AddBaited)
+ffi.reentrant(repentogon.L_Entity_AddMagnetized)
+ffi.reentrant(repentogon.L_Entity_AddWeakness)
+ffi.reentrant(repentogon.L_Entity_AddBrimstoneMark)
+ffi.reentrant(repentogon.L_Entity_AddIce)
+ffi.reentrant(repentogon.L_Entity_AddKnockback)
+ffi.reentrant(repentogon.L_Entity_AddBurn)
+ffi.reentrant(repentogon.L_Entity_AddCharmed)
+ffi.reentrant(repentogon.L_Entity_AddConfusion)
+ffi.reentrant(repentogon.L_Entity_AddFear)
+ffi.reentrant(repentogon.L_Entity_AddFreeze)
+ffi.reentrant(repentogon.L_Entity_AddMidasFreeze)
+ffi.reentrant(repentogon.L_Entity_AddPoison)
+ffi.reentrant(repentogon.L_Entity_AddShrink)
+ffi.reentrant(repentogon.L_Entity_AddSlowing)
+
 local EntityToPointer = ffichecks.entitytopointer
 local uintptrType = ffi.typeof("uintptr_t")
 local entityType = ffi.typeof("struct Entity*")
