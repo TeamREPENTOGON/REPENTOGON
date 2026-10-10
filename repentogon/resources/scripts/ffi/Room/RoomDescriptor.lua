@@ -101,7 +101,7 @@ RoomDescriptorMT = {
     end,
     GetNeighboringRooms = function(self)
         local slots = ffi.new("int[?]", 8)
-        local rooms = ffi.new("RoomDescriptor*[?]", 8)
+        local rooms = ffi.new("struct RoomDescriptor*[?]", 8)
 
         local count = repentogon.L_RoomDescriptor_GetNeighboringRooms(self, slots, rooms)
 
