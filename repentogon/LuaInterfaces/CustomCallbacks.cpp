@@ -7335,7 +7335,7 @@ HOOK_STATIC(LuaEngine, PostPEffectUpdate, (Entity_Player* player) -> void, __std
 		lua_State* L = g_LuaEngine->_state;
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 		lua::LuaCaller(L).push(callbackid)
-			.push(player->_type)
+			.push(player->_playerType)
 			.pushClassPtr<LuaEntityPlayer>(player)
 			.call(0);
 	}
