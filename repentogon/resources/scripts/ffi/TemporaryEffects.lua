@@ -37,6 +37,9 @@ void  L_TemporaryEffects_RemoveTrinketEffect(struct TemporaryEffects*, int, int)
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_TemporaryEffects_AddCollectibleEffect)
+ffi.reentrant(repentogon.L_TemporaryEffects_AddNullEffect)
+ffi.reentrant(repentogon.L_TemporaryEffects_AddTrinketEffect)
 ffi.reentrant(repentogon.L_TemporaryEffects_RemoveNullEffect)
 ffi.reentrant(repentogon.L_TemporaryEffects_RemoveTrinketEffect)
 

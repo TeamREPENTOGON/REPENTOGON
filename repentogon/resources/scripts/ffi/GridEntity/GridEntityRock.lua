@@ -33,6 +33,12 @@ ffi.cdef[[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_GridEntityRock_RegisterRocksDestroyed)
+ffi.reentrant(repentogon.L_GridEntityRock_PlayBreakSound)
+ffi.reentrant(repentogon.L_GridEntityRock_SpawnDrops)
+ffi.reentrant(repentogon.L_GridEntityRock_TrySpawnLadder)
+ffi.reentrant(repentogon.L_GridEntityRock_TrySpawnWorms)
+
 local GridEntityRockMT
 GridEntityRockMT = {
     __type = "GridEntityRock",
