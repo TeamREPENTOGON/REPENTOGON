@@ -12,6 +12,8 @@ ffi.cdef [[
 local repentogon = ffidll
 local ffi = ffi
 
+ffi.reentrant(repentogon.L_EntitiesSaveStateVector_Clear)
+
 local EntitySaveStateT = ffi.typeof("struct EntitySaveState")
 local DATA_SIZE = ffi.sizeof("struct EntitySaveStateData")
 
