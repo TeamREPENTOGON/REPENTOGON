@@ -6,7 +6,7 @@ ffi.cdef [[
         private int SpawnFrame;
         private struct RNG RNG;
         int CollisionClass;
-        private struct Sprite Sprite;
+        struct Sprite Sprite;
     };
 
     typedef struct GridEntity* GridEntityPtr;
@@ -105,7 +105,7 @@ GridEntityMT = {
         return self.Desc
     end,
     GetSprite = function(self)
-        local result = ffi.getprivate(self, "Sprite") return result
+        return self.Sprite
     end,
     GetType = function(self)
         return self.Desc.Type
