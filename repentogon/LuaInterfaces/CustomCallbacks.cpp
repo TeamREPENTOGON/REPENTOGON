@@ -7380,6 +7380,29 @@ HOOK_STATIC(LuaEngine, UseCard, (int card, Entity_Player* player, int useFlags) 
 	}
 }
 
+HOOK_STATIC(LuaEngine, GetCard, (RNG* rng, int card, bool includePlayingCards, bool includeRunes, bool onlyRunes) -> int, __stdcall) {
+	const int callbackid = 20; 
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.pushClassPtr<LuaRNG>(rng)
+			.push(card)
+			.push(includePlayingCards)
+			.push(includeRunes)
+			.push(onlyRunes)
+			.call(1);
+
+		if (!result) {
+			if (lua_isinteger(L, -1)) {
+				return lua_tointeger(L, -1);
+			}
+		}
+	}
+	return card;
+}
+
 void CustomCallbacks::detail::ApplyPatches()
 {
 	Patch_PlayerRemoveCollectible_TriggerCollectibleRemoved();
