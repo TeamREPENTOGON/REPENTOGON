@@ -111,6 +111,7 @@ namespace LoadingScreen {
 }
 
 HOOK_METHOD_PRIORITY(ModManager, LoadConfigs, INT_MIN, () -> void) {
+	luaL_dostring(g_LuaEngine->_state, "jit.off()"); // thread safety is my passion
 	if (LoadingScreen::startupDone) {
 		super();
 		return;
@@ -120,4 +121,5 @@ HOOK_METHOD_PRIORITY(ModManager, LoadConfigs, INT_MIN, () -> void) {
 	if (!LoadingScreen::RunWithLoadingScreen([this]() { super(); })) {
 		super();
 	}
+	luaL_dostring(g_LuaEngine->_state, "jit.on()");
 }
