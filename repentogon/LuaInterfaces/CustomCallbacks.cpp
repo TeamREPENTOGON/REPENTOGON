@@ -7035,17 +7035,25 @@ HOOK_STATIC(LuaEngine, PostFireTear, (Entity_Tear* tear) -> void, __stdcall) {
 	}
 }
 
-HOOK_STATIC(LuaEngine, PostGetTrinket, (int trinketType, RNG* rng) -> void, __stdcall) {
+HOOK_STATIC(LuaEngine, PostGetTrinket, (int trinketType, RNG* rng) -> int, __stdcall) {
 	const int callbackid = 66;
 	if (VanillaCallbackState.test(callbackid)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-		lua::LuaCaller(L).push(callbackid)
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.pushnil()
 			.push(trinketType)
 			.pushClassPtr<LuaRNG>(rng)
-			.call(0);
+			.call(1);
+
+		if (!result) {
+			if (lua_isinteger(L, -1)) {
+				return lua_tointeger(L, -1);
+			}
+		}
 	}
+
+	return trinketType;
 }
 
 HOOK_STATIC(LuaEngine, PostEntityRemove, (Entity* entity) -> void, __stdcall) {
