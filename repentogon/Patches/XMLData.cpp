@@ -3236,6 +3236,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 									newid = new xml_attribute<char>(); newid->name("id"); newid->value(IntToChar(maxfxlayerid)); clonedNode->append_attribute(newid);
 								}
 								SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.BackdropData, "backdrop");
+								SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.StageData, "stage");
 								root->append_node(clonedNode);
 							}
 							ProcessXmlNode(root,true);
@@ -3251,6 +3252,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 								inheritdaddy(auxnode, clonedNode);
 								maxfxlayerid += 1;
 								SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.BackdropData, "backdrop");
+								MultiValXMLParamParse(clonedNode, xmldoc, XMLStuff.StageData, "stages");  // fxrays uses a comma-separated list "stages" unlike the other two
 								root->append_node(clonedNode);
 							}
 							ProcessXmlNode(root, true);
@@ -3266,6 +3268,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 								inheritdaddy(auxnode, clonedNode);
 								maxfxlayerid += 1;
 								SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.BackdropData, "backdrop");
+								SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.StageData, "stage");
 								root->append_node(clonedNode);
 							}
 							ProcessXmlNode(root, true);

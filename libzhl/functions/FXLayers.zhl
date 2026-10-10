@@ -4,9 +4,9 @@ __thiscall void FXLayers::AddPoopFx(ColorMod* color);
 struct FXLayers depends (Vector, ColorMod, ANM2, FXParams) {
 	//Vector _averagePlayerPos : 0x0;
 	bool _loaded : 0x8;
-	//eLevelStage _levelStage : 0xc;
-	//eStageType _stageType : 0x10;
-	//eBackdropType _backdropType : 0x14;
+	int _levelStage : 0xc;
+	int _stageType : 0x10;
+	int _backdropType : 0x14;
 	//OLD_vector<FX> _fxLayers : 0x18;
 	//OLD_vector<RayGroup> _rayGroups : 0x24;
 	int _poopFxCountdown : 0x34;
