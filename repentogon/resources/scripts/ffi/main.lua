@@ -88,10 +88,10 @@ ffichecks.checkboolean = function(index, val, level)
 end
 ffichecks.checktable = function(index, val, level) ffichecks.checktype(index, val, "table", (level or 2)+1) end
 ffichecks.checkinteger = function(index, val, level)
-	if math.type(val) == "integer" then return val end
+	if type(val) == "number" and val == math.floor(val) then return val end
 	if type(val) == "string" then
 		local n = tonumber(val)
-		if math.type(n) == "integer" then return n end
+		if type(n) == "number" and n == math.floor(n) then return n end
 	end
 	error(string.format("bad argument #%d to '%s' (integer expected, got %s)", index, debug_getinfo(level or 2).name, type(val)), (level or 2)+1)
 end
