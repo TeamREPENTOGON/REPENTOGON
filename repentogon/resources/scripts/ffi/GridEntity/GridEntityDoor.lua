@@ -6,7 +6,7 @@ ffi.cdef[[
         private int SpawnFrame;
         private struct RNG RNG;
         int CollisionClass;
-        private struct Sprite Sprite;
+        struct Sprite Sprite;
         padding char[0x4];
         int Slot;
         int CurrentRoomType;

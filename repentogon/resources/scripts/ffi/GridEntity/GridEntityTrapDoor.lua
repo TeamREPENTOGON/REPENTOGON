@@ -6,7 +6,7 @@ ffi.cdef[[
         private int SpawnFrame;
         private struct RNG RNG;
         int CollisionClass;
-        private struct Sprite Sprite;
+        struct Sprite Sprite;
     };
     typedef struct GridEntityTrapDoor* GridEntityTrapDoorPtr;
     
