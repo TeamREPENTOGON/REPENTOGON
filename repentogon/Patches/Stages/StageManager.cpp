@@ -211,6 +211,11 @@ HOOK_METHOD(Level, SetStage, (int levelStage, int stageType)-> void) {
 	}
 
 	super(levelStage, stageType);
+
+	if (customStageId > 0) {
+		int progressIdx = levelStage + (stageType == STAGETYPE_REPENTANCE || stageType == STAGETYPE_REPENTANCE_B);
+		g_Manager->_nightmareScene._progressBar_stageFrame[progressIdx] = customStageId;
+	}
 }
 
 HOOK_METHOD_PRIORITY(RoomConfig, LoadStageBinary, -1, (uint32_t stage, uint32_t mode) -> void) {
