@@ -56,14 +56,19 @@ end
 local getters = {
     IsFollowing = Getter("IsFollowingValue"),
     ParentOffset = function(self)
-        local vector = ffi.getprivate(self, "ParentOffsetValue")
-        return Vector(vector.X, vector.Y)
+        local offset = ffi.getprivate(self, "ParentOffsetValue")
+        local vector = Vector(offset.X, offset.Y)
+        return vector
     end,
 }
 
 local setters = {
     IsFollowing = function(self, value)
         ffi.setprivate(self, "IsFollowingValue", not not value)
+    end,
+    ParentOffset = function(self, value)
+        ffichecks.checkcdata(1, value, "Vector")
+        ffi.setprivate(self, "ParentOffsetValue", value)
     end,
 }
 

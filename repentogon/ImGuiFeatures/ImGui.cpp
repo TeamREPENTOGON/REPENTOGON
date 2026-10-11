@@ -389,7 +389,9 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	if (menuShown) {
 		// Block the game's WndProc on input related uMsgs but allow any others through
 		if (std::find(blockedMsgs.begin(), blockedMsgs.end(), uMsg) == blockedMsgs.end()) {
-			return CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
+			LRESULT procRet = CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
+			ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
+			return procRet;
 		}
 
 		ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
