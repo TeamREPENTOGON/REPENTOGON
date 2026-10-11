@@ -24,21 +24,21 @@ local repentogon = ffidll
 local FMT_SIZE = { [1]=1, [2]=2, [3]=3, [4]=4, [5]=3, [6]=4, [7]=2, [8]=1 }
 
 local function fill_shader_vertices(vb, shader, params)
-    local attrs = shader._vertexAttributes
-    local n = shader._numVertexAttributes
+    local attrs = ffi.getprivate(shader, VertexAttributes)
+    local n = ffi.getprivate(shader, NumVertexAttributes)
     local errs
 
     local vertexSize = 0
     for i = 0, n - 1 do
-        vertexSize = vertexSize + (FMT_SIZE[attrs[i].format] or 0)
+        vertexSize = vertexSize + (FMT_SIZE[attrs[i].Format] or 0)
     end
 
     local off = 0
     for i = 0, n - 1 do
-        local a, fmt = attrs[i], attrs[i].format
+        local a, fmt = attrs[i], attrs[i].Format
 
         if fmt == 1 then
-            local name = ffi.string(a.name)
+            local name = ffi.string(a.Name)
             local v = params[name]
             if type(v) ~= "number" then
                 errs = errs or {}; errs[#errs + 1] = name
@@ -48,7 +48,7 @@ local function fill_shader_vertices(vb, shader, params)
             off = off + 1
 
         elseif fmt == 2 or fmt == 3 or fmt == 4 then
-            local name = ffi.string(a.name)
+            local name = ffi.string(a.Name)
             local t = params[name]
             local ok = type(t) == "table"
             if ok then

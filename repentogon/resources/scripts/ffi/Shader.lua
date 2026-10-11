@@ -1,8 +1,13 @@
 ffi.cdef [[
     struct Shader {
-        padding char[0x4];
-        const bool Initialized;
-        padding char[0x27];
+        const bool Initialized : 0x4;
+        private const struct VertexDescriptor* VertexAttributes : 0x8;
+        private unsigned int NumVertexAttributes : 0xc;
+    } : 0x28;
+
+    struct VertexDescriptor {
+        const char* Name : 0x0;
+        unsigned int Format : 0x4;
     };
 
     typedef struct Shader* ShaderPtr;
