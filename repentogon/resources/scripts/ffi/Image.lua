@@ -24,8 +24,8 @@ local repentogon = ffidll
 local FMT_SIZE = { [1]=1, [2]=2, [3]=3, [4]=4, [5]=3, [6]=4, [7]=2, [8]=1 }
 
 local function fill_shader_vertices(vb, shader, params)
-    local attrs = ffi.getprivate(shader, VertexAttributes)
-    local n = ffi.getprivate(shader, NumVertexAttributes)
+    local attrs = ffi.getprivate(shader, "VertexAttributes")
+    local n = ffi.getprivate(shader, "NumVertexAttributes")
     local errs
 
     local vertexSize = 0
