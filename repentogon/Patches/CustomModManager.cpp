@@ -36,6 +36,21 @@ void __stdcall LoadCustomMinimapANM2(ModEntry* mod) {
     }
 }
 
+void __stdcall LoadCustomStageIconsANM2(ModEntry* mod) {
+	if (mod == nullptr || !mod->_loaded) return;
+
+	std::string filename = "gfx/stageicons.anm2";
+	std::string path;
+	mod->GetContentPath(&path, &filename);
+
+	if (g_ContentManager.MountedFileExists(path)) {
+		ModEntryEx* ex = CustomModManager::GetInstance().GetEx(mod);
+		if (ex != nullptr) {
+			ex->_customStageIcons.Load(path, true);
+		}
+	}
+}
+
 ModEntry* capturedModEntry = nullptr;
 
 void __stdcall CaptureModEntry(ModEntry* mod) {
@@ -61,6 +76,7 @@ void ASMPatchCaptureModEntryForCurse() {
 HOOK_METHOD(RoomConfig, LoadCurses, (char* xmlPath, bool isMod) -> void) {
 	if (isMod) {
 		LoadCustomMinimapANM2(capturedModEntry);
+		LoadCustomStageIconsANM2(capturedModEntry);
 	}
 	super(xmlPath, isMod);
 }

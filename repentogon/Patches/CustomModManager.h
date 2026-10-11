@@ -4,6 +4,7 @@
 class ModEntryEx {
 public:
 	ANM2 _customMinimapANM2;
+	ANM2 _customStageIcons;
 };
 
 class CustomModManager

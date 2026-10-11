@@ -5,6 +5,7 @@
 #include "ASMDefinition.h"
 #include "ASMPatcher.hpp"
 #include "../ASMPatches.h"
+#include "../CustomModManager.h"
 #include "../Stages/StageManager.h"
 
 // TODO: Should probably refactor this to centralize the custom backdrop handling outside of XMLData
@@ -71,9 +72,59 @@ void ASMPatchLoadBackdropGraphicsNoShading() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+bool __stdcall RenderCustomStageIcon(Vector* pos, int index) {
+	index++;
+	int frame = g_Manager->_nightmareScene.GetProgressBarMap()[index];
+	if (frame >= NUM_STB) {
+		if (auto* stage = StageManager::GetStage(frame)) {
+			if (ModEntry* mod = stage->GetMod()) {
+				if (ModEntryEx* ex = CustomModManager::GetInstance().GetEx(mod)) {
+					if (ex->_customStageIcons._loaded && ex->_customStageIcons.SetAnimation(stage->GetName().c_str(), true)) {
+						ex->_customStageIcons.GetAnimationState()->Rewind();
+						Vector zeroVector(0, 0);
+						ex->_customStageIcons.Render(pos, &zeroVector, &zeroVector);
+						return false;
+					}
+				}
+			}
+		}
+	}
+	return g_Manager->_nightmareScene._ProgressBarANM2._loaded;
+}
+void ASMPatchNightmareSceneStageIcon() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::NightmareScene_Render_StageIcon);
+	int8_t posOffset = *(int8_t*)((char*)addr + 0x4);
+
+	printf("[REPENTOGON] Patching NightmareScene::Render at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))  // Restore overwritten bytes
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX)  // Index
+		.LoadEffectiveAddress(ASMPatch::Registers::EBP, posOffset, ASMPatch::Registers::EAX).Push(ASMPatch::Registers::EAX)  // Vector*
+		.AddInternalCall(RenderCustomStageIcon)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+/*
+void ASMPatchSetStageAlt() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::NightmareScene_SetStageAlt_VoidThing);
+
+	printf("[REPENTOGON] Patching NightmareScene::SetStageAlt at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddByte('\x90', 6));
+	sASMPatcher.FlatPatch(addr, &patch, true);
+}
+*/
 void ApplyPatches() {
 	ASMPatchFXLayersInit();
 	ASMPatchLoadBackdropGraphicsNoShading();
+	ASMPatchNightmareSceneStageIcon();
+	//ASMPatchSetStageAlt();
 }
 
 }  // namespace StagePatches

@@ -47,6 +47,17 @@ public:
 			_baseStageId = baseStage;
 
 			_achievement = std::atoi(xmlData["achievement"].c_str());
+
+			for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
+				std::string modid = mod->GetId() ? mod->GetId() : "";
+				if (modid.empty()) {
+					modid = mod->GetDir();
+				}
+				if (modid == xmlData["sourceid"]) {
+					_mod = mod;
+					break;
+				}
+			}
 		} else {
 			// Vanilla Stage
 			_baseStageId = _stageId;
@@ -178,6 +189,10 @@ public:
 		return _levelStage;
 	}
 
+	ModEntry* GetMod() const {
+		return _mod;
+	}
+
 protected:
 	int _stageType = -1;
 	int _levelStage = -1;
@@ -203,6 +218,7 @@ private:
 	// Custom stage attributes
 	bool _hidden;
 	bool _achievement;
+	ModEntry* _mod = nullptr;
 };
 
 size_t GetNumStages();
