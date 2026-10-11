@@ -73,6 +73,20 @@ local ffi = ffi
 local repentogon = ffidll
 
 ffi.reentrant(repentogon.L_EntityFamiliar_GetMultiplier)
+ffi.reentrant(repentogon.L_EntityFamiliar_AddCoins)
+ffi.reentrant(repentogon.L_EntityFamiliar_AddToFollowers)
+ffi.reentrant(repentogon.L_EntityFamiliar_CanCharm)
+ffi.reentrant(repentogon.L_EntityFamiliar_FireProjectile)
+ffi.reentrant(repentogon.L_EntityFamiliar_FollowParent)
+ffi.reentrant(repentogon.L_EntityFamiliar_GetFollowerPriority)
+ffi.reentrant(repentogon.L_EntityFamiliar_MoveDiagonally)
+ffi.reentrant(repentogon.L_EntityFamiliar_PickEnemyTarget)
+ffi.reentrant(repentogon.L_EntityFamiliar_PlayChargeAnim)
+ffi.reentrant(repentogon.L_EntityFamiliar_RemoveFromPlayer)
+ffi.reentrant(repentogon.L_EntityFamiliar_SetLilDelirium)
+ffi.reentrant(repentogon.L_EntityFamiliar_SetPlayer)
+ffi.reentrant(repentogon.L_EntityFamiliar_Shoot)
+ffi.reentrant(repentogon.L_EntityFamiliar_TriggerRoomClear)
 
 local helpers = Entity.Helpers
 local Getter = helpers.Getter

@@ -38,6 +38,9 @@ ffi.cdef[[
 
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_CharacterMenu_SetSelectedCharacterMenu)
+ffi.reentrant(repentogon.L_CharacterMenu_SwapCharacterMenu)
+
 CharacterMenu = {
     GetActiveStatus = function()
         ffichecks.checkmainmenu("CharacterMenu")

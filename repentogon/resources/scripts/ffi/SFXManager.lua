@@ -18,6 +18,7 @@ local repentogon = ffidll
 -- Since functions like SetAmbientSound aren't used much, they aren't caught in time before the calls compile!
 -- The Lua surrounding them still compiles, just not the call to C itself, so it's still faster than Luabridge and the interpreter.
 ffi.reentrant(repentogon.L_SFXManager_SetAmbientSound)
+ffi.reentrant(repentogon.L_SFXManager_Play)
 
 local SFXManagerMT
 SFXManagerMT = {

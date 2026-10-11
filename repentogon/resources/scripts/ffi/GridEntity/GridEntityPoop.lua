@@ -24,6 +24,11 @@ ffi.cdef[[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_GridEntityPoop_Hurt)
+ffi.reentrant(repentogon.L_GridEntityPoop_PostInit)
+ffi.reentrant(repentogon.L_GridEntityPoop_Render)
+ffi.reentrant(repentogon.L_GridEntityPoop_Update)
+
 local GridEntityPoopMT
 GridEntityPoopMT = {
     __type = "GridEntityPoop",

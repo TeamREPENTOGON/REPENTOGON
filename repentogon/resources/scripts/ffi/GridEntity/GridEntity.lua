@@ -31,6 +31,8 @@ ffi.reentrant(repentogon.L_GridEntity_Destroy)
 ffi.reentrant(repentogon.L_GridEntity_Hurt)
 ffi.reentrant(repentogon.L_GridEntity_HurtDamage)
 ffi.reentrant(repentogon.L_GridEntity_HurtSurroundings)
+ffi.reentrant(repentogon.L_GridEntity_Init)
+ffi.reentrant(repentogon.L_GridEntity_Render)
 
 local GridEntityType = {
 	GRID_NULL = 0,

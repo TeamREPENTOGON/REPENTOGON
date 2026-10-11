@@ -16,6 +16,8 @@ ffi.cdef[[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_GridEntityGravity_Update)
+
 local GridEntityGravityMT
 GridEntityGravityMT = {
     __type = "GridEntityGravity",

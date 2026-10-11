@@ -20,6 +20,12 @@ ffi.cdef [[
 local repentogon = ffidll
 local ffi = ffi
 
+ffi.reentrant(repentogon.L_PersistentGameData_AddBestiaryKill)
+ffi.reentrant(repentogon.L_PersistentGameData_AddBossKilled)
+ffi.reentrant(repentogon.L_PersistentGameData_IncreaseEventCounter)
+ffi.reentrant(repentogon.L_PersistentGameData_TryUnlock)
+ffi.reentrant(repentogon.L_PersistentGameData_Unlock)
+
 rawset(Isaac, "GetPersistentGameData", function()
     local result = repentogon.L_PersistentGameData_Get() return result
 end)

@@ -17,6 +17,8 @@ ffi.cdef [[
 local repentogon = ffidll
 local ffi = ffi
 
+ffi.reentrant(repentogon.L_PlayerHUD_RenderActiveItem)
+
 local PlayerHUDHeartT = ffi.typeof("struct PlayerHUDHeart")
 
 local function SetFlashCountdown(self, field, duration)

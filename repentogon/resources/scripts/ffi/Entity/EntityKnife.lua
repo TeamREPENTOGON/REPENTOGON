@@ -37,6 +37,11 @@ ffi.cdef [[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_EntityKnife_AddToHitList)
+ffi.reentrant(repentogon.L_EntityKnife_InHitList)
+ffi.reentrant(repentogon.L_EntityKnife_RemoveFromHitList)
+ffi.reentrant(repentogon.L_EntityKnife_Shoot)
+
 local helpers = Entity.Helpers
 local Getter = helpers.Getter
 local BooleanSetter = helpers.BooleanSetter

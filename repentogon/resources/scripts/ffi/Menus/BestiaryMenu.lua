@@ -13,6 +13,9 @@ ffi.cdef[[
 
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_BestiaryMenu_SetSelectedElement)
+ffi.reentrant(repentogon.L_BestiaryMenu_SetSelectedPage)
+
 BestiaryMenu = {
     GetBestiaryMenuSprite = function()
         ffichecks.checkmainmenu("BestiaryMenu")

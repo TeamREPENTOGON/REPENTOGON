@@ -22,6 +22,12 @@ ffi.cdef [[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_PathFinder_EvadeTarget)
+ffi.reentrant(repentogon.L_PathFinder_FindGridPath)
+ffi.reentrant(repentogon.L_PathFinder_MoveRandomly)
+ffi.reentrant(repentogon.L_PathFinder_MoveRandomlyAxisAligned)
+ffi.reentrant(repentogon.L_PathFinder_MoveRandomlyBoss)
+
 local function VoidMethod(export)
     return function(self)
         export(self)

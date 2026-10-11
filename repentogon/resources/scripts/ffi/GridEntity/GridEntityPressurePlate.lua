@@ -20,6 +20,10 @@ ffi.cdef[[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_GridEntityPressurePlate_Render)
+ffi.reentrant(repentogon.L_GridEntityPressurePlate_Reward)
+ffi.reentrant(repentogon.L_GridEntityPressurePlate_Update)
+
 local GridEntityPressurePlateMT
 GridEntityPressurePlateMT = {
     __type = "GridEntityPressurePlate",

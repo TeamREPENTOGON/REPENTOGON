@@ -49,6 +49,11 @@ ffi.cdef [[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_EntityTear_AddToHitList)
+ffi.reentrant(repentogon.L_EntityTear_InHitList)
+ffi.reentrant(repentogon.L_EntityTear_MakeMultidimensionalCopy)
+ffi.reentrant(repentogon.L_EntityTear_RemoveFromHitList)
+
 local helpers = Entity.Helpers
 local Getter = helpers.Getter
 local VectorGetter = helpers.VectorGetter

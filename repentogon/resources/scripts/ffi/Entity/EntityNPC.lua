@@ -88,6 +88,35 @@ ffi.cdef [[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_EntityNPC_ApplyTearflagEffects)
+ffi.reentrant(repentogon.L_EntityNPC_CalcTargetPosition)
+ffi.reentrant(repentogon.L_EntityNPC_FireBossProjectiles)
+ffi.reentrant(repentogon.L_EntityNPC_FireBossProjectilesEx)
+ffi.reentrant(repentogon.L_EntityNPC_FireGridEntity)
+ffi.reentrant(repentogon.L_EntityNPC_FireProjectiles)
+ffi.reentrant(repentogon.L_EntityNPC_FireProjectilesEx)
+ffi.reentrant(repentogon.L_EntityNPC_GetFireplaceLoot)
+ffi.reentrant(repentogon.L_EntityNPC_GetLootList)
+ffi.reentrant(repentogon.L_EntityNPC_GetPlayerTarget)
+ffi.reentrant(repentogon.L_EntityNPC_GetShopkeeperLoot)
+ffi.reentrant(repentogon.L_EntityNPC_KillUnique)
+ffi.reentrant(repentogon.L_EntityNPC_MakeBloodCloud)
+ffi.reentrant(repentogon.L_EntityNPC_MakeBloodSplash)
+ffi.reentrant(repentogon.L_EntityNPC_MakeChampion)
+ffi.reentrant(repentogon.L_EntityNPC_MakeSplat)
+ffi.reentrant(repentogon.L_EntityNPC_Morph)
+ffi.reentrant(repentogon.L_EntityNPC_PlaySound)
+ffi.reentrant(repentogon.L_EntityNPC_ReplaceSpritesheet)
+ffi.reentrant(repentogon.L_EntityNPC_ShootMaggotProjectile)
+ffi.reentrant(repentogon.L_EntityNPC_ThrowLeech)
+ffi.reentrant(repentogon.L_EntityNPC_ThrowMaggot)
+ffi.reentrant(repentogon.L_EntityNPC_ThrowMaggotAtPos)
+ffi.reentrant(repentogon.L_EntityNPC_ThrowRockSpider)
+ffi.reentrant(repentogon.L_EntityNPC_ThrowSpider)
+ffi.reentrant(repentogon.L_EntityNPC_ThrowStrider)
+ffi.reentrant(repentogon.L_EntityNPC_TrySplit)
+ffi.reentrant(repentogon.L_EntityNPC_UpdatePickupGhosts)
+
 local helpers = Entity.Helpers
 local Getter = helpers.Getter
 local VectorGetter = helpers.VectorGetter

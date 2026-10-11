@@ -16,6 +16,9 @@ ffi.cdef[[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_GridEntityTeleporter_Render)
+ffi.reentrant(repentogon.L_GridEntityTeleporter_Update)
+
 local GridEntityTeleporterMT
 GridEntityTeleporterMT = {
     __type = "GridEntityTeleporter",

@@ -38,6 +38,9 @@ ffi.reentrant(repentogon.L_GridEntityRock_PlayBreakSound)
 ffi.reentrant(repentogon.L_GridEntityRock_SpawnDrops)
 ffi.reentrant(repentogon.L_GridEntityRock_TrySpawnLadder)
 ffi.reentrant(repentogon.L_GridEntityRock_TrySpawnWorms)
+ffi.reentrant(repentogon.L_GridEntityRock_Destroy)
+ffi.reentrant(repentogon.L_GridEntityRock_Render)
+ffi.reentrant(repentogon.L_GridEntityRock_Update)
 
 local GridEntityRockMT
 GridEntityRockMT = {

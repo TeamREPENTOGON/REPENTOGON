@@ -17,6 +17,10 @@ ffi.cdef[[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_GridEntityFire_Hurt)
+ffi.reentrant(repentogon.L_GridEntityFire_Render)
+ffi.reentrant(repentogon.L_GridEntityFire_Update)
+
 local GridEntityFireMT
 GridEntityFireMT = {
     __type = "GridEntityFire",

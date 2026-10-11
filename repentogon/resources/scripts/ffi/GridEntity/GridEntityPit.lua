@@ -20,6 +20,9 @@ ffi.cdef[[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_GridEntityPit_Render)
+ffi.reentrant(repentogon.L_GridEntityPit_Update)
+
 local GRID_ENTITY_TYPES = {
     "GridEntity", "GridEntityDecoration", "GridEntityDoor", "GridEntityFire", "GridEntityGravity", "GridEntityLock",
     "GridEntityPit", "GridEntityPoop", "GridEntityPressurePlate", "GridEntityRock", "GridEntitySpikes", "GridEntityStairs",

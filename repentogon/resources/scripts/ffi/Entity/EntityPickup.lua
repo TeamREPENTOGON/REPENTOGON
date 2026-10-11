@@ -60,6 +60,24 @@ ffi.cdef [[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_EntityPickup_GetCoinValue)
+ffi.reentrant(repentogon.L_EntityPickup_GetLootList)
+ffi.reentrant(repentogon.L_EntityPickup_InitFlipState)
+ffi.reentrant(repentogon.L_EntityPickup_MakeShopItem)
+ffi.reentrant(repentogon.L_EntityPickup_Morph)
+ffi.reentrant(repentogon.L_EntityPickup_PlayDropSound)
+ffi.reentrant(repentogon.L_EntityPickup_PlayPickupSound)
+ffi.reentrant(repentogon.L_EntityPickup_ReloadGraphics)
+ffi.reentrant(repentogon.L_EntityPickup_SetForceBlind)
+ffi.reentrant(repentogon.L_EntityPickup_SetPrice)
+ffi.reentrant(repentogon.L_EntityPickup_SetupCollectibleGraphics)
+ffi.reentrant(repentogon.L_EntityPickup_TriggerTheresOptionsPickup)
+ffi.reentrant(repentogon.L_EntityPickup_TryFlip)
+ffi.reentrant(repentogon.L_EntityPickup_TryInitOptionCycle)
+ffi.reentrant(repentogon.L_EntityPickup_TryOpenChest)
+ffi.reentrant(repentogon.L_EntityPickup_TryRemoveCollectible)
+ffi.reentrant(repentogon.L_EntityPickup_UpdatePickupGhosts)
+
 local helpers = Entity.Helpers
 local Getter = helpers.Getter
 local BooleanSetter = helpers.BooleanSetter

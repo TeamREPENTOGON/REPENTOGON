@@ -38,6 +38,9 @@ local ffi = ffi
 ffi.reentrant(repentogon.L_HUD_ShowFortuneText)
 ffi.reentrant(repentogon.L_HUD_ShowStackedItemText)
 ffi.reentrant(repentogon.L_HUD_ShowItemTextPlayer)
+ffi.reentrant(repentogon.L_HUD_PostUpdate)
+ffi.reentrant(repentogon.L_HUD_Render)
+ffi.reentrant(repentogon.L_HUD_Update)
 
 local MAX_FORTUNE_LINES = 32
 

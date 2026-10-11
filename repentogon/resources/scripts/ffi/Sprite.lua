@@ -69,6 +69,8 @@ void L_Sprite_Update(struct Sprite*);
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_Sprite_ReplaceSpritesheet)
+
 local function GetLayerFrameDataInternal(animState, layerId)
         local animData = animState.AnimData
         if ffichecks.isnullptr(animData) then

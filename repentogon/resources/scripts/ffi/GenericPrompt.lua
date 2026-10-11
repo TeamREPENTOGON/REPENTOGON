@@ -20,6 +20,8 @@ ffi.cdef [[
 local repentogon = ffidll
 local ffi = ffi
 
+ffi.reentrant(repentogon.L_GenericPrompt_Update)
+
 local GenericPromptMT
 GenericPromptMT = {
     __type = "GenericPrompt",

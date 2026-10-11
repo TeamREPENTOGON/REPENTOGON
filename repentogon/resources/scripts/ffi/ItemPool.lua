@@ -61,6 +61,14 @@ ffi.cdef [[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_ItemPool_ForceAddPillEffect)
+ffi.reentrant(repentogon.L_ItemPool_GetCard)
+ffi.reentrant(repentogon.L_ItemPool_GetCardEx)
+ffi.reentrant(repentogon.L_ItemPool_GetCollectible)
+ffi.reentrant(repentogon.L_ItemPool_GetPill)
+ffi.reentrant(repentogon.L_ItemPool_GetPillEffect)
+ffi.reentrant(repentogon.L_ItemPool_GetTrinket)
+
 local ITEM_SIZE = ffi.sizeof("struct ItemPoolItem")
 local intOut = ffi.new("int[1]")
 

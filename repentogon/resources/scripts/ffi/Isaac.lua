@@ -128,6 +128,24 @@ local getregistry = debug.getregistry
 -- Setting a mark fires MC_POST_COMPLETION_MARK from inside the call
 ffi.reentrant(repentogon.L_Isaac_SetCompletionMark)
 ffi.reentrant(repentogon.L_Isaac_SetCompletionMarks)
+ffi.reentrant(repentogon.L_Isaac_AddPillEffectToPool)
+ffi.reentrant(repentogon.L_Isaac_ClearBossHazards)
+ffi.reentrant(repentogon.L_Isaac_ClearChallenge)
+ffi.reentrant(repentogon.L_Isaac_ClearCompletionMarks)
+ffi.reentrant(repentogon.L_Isaac_ExecuteCommand)
+ffi.reentrant(repentogon.L_Isaac_Explode)
+ffi.reentrant(repentogon.L_Isaac_FillCompletionMarks)
+ffi.reentrant(repentogon.L_Isaac_GridSpawn)
+ffi.reentrant(repentogon.L_Isaac_HasModData)
+ffi.reentrant(repentogon.L_Isaac_LoadModData)
+ffi.reentrant(repentogon.L_Isaac_PlayCutscene)
+ffi.reentrant(repentogon.L_Isaac_RegisterMod)
+ffi.reentrant(repentogon.L_Isaac_RemoveModData)
+ffi.reentrant(repentogon.L_Isaac_SaveModData)
+ffi.reentrant(repentogon.L_Isaac_SetCurrentFloorBackdrop)
+ffi.reentrant(repentogon.L_Isaac_SetCurrentFloorMusic)
+ffi.reentrant(repentogon.L_Isaac_Spawn)
+ffi.reentrant(repentogon.L_Isaac_SpawnBoss)
 local Game = Game
 
 local EntityToPointer = ffichecks.entitytopointer

@@ -15,6 +15,8 @@ ffi.cdef[[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_GridEntityStatue_Update)
+
 local GridEntityStatueMT
 GridEntityStatueMT = {
     __type = "GridEntityStatue",

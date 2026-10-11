@@ -23,6 +23,9 @@ ffi.cdef [[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_EntitySlot_CreateDropsFromExplosion)
+ffi.reentrant(repentogon.L_EntitySlot_SetPrizeCollectible)
+
 local Getter = Entity.Helpers.Getter
 
 local TYPE_SLOT = 6

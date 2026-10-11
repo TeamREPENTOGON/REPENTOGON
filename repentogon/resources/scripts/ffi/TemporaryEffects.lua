@@ -42,6 +42,8 @@ ffi.reentrant(repentogon.L_TemporaryEffects_AddNullEffect)
 ffi.reentrant(repentogon.L_TemporaryEffects_AddTrinketEffect)
 ffi.reentrant(repentogon.L_TemporaryEffects_RemoveNullEffect)
 ffi.reentrant(repentogon.L_TemporaryEffects_RemoveTrinketEffect)
+ffi.reentrant(repentogon.L_TemporaryEffects_ClearEffects)
+ffi.reentrant(repentogon.L_TemporaryEffects_RemoveCollectibleEffect)
 
 local EffectListMT; EffectListMT = { __type = "EffectList" }
 

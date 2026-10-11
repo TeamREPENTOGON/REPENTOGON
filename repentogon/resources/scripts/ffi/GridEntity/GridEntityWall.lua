@@ -15,6 +15,8 @@ ffi.cdef[[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_GridEntityWall_Render)
+
 local GridEntityWallMT
 GridEntityWallMT = {
     __type = "GridEntityWall",

@@ -30,6 +30,13 @@ ffi.cdef[[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_MusicManager_Crossfade)
+ffi.reentrant(repentogon.L_MusicManager_DisableLayer)
+ffi.reentrant(repentogon.L_MusicManager_EnableLayer)
+ffi.reentrant(repentogon.L_MusicManager_Fadein)
+ffi.reentrant(repentogon.L_MusicManager_Play)
+ffi.reentrant(repentogon.L_MusicManager_PlayJingle)
+
 local function ValidateMusicId(idx, id)
     local max = ffi.new("int[1]")
     if not repentogon.L_MusicManager_ValidateMusicID(id, max) then

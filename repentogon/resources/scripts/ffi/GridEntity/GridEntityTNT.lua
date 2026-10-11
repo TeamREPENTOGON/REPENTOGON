@@ -18,6 +18,10 @@ ffi.cdef[[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_GridEntityTNT_Destroy)
+ffi.reentrant(repentogon.L_GridEntityTNT_Hurt)
+ffi.reentrant(repentogon.L_GridEntityTNT_Update)
+
 local GridEntityTNTMT
 GridEntityTNTMT = {
     __type = "GridEntityTNT",

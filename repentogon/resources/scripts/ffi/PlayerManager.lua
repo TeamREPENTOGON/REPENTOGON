@@ -25,6 +25,13 @@ ffi.cdef [[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_PlayerManager_GetNumCollectibles)
+ffi.reentrant(repentogon.L_PlayerManager_GetTotalTrinketMultiplier)
+ffi.reentrant(repentogon.L_PlayerManager_RemoveCoPlayer)
+ffi.reentrant(repentogon.L_PlayerManager_SpawnCoPlayer2)
+ffi.reentrant(repentogon.L_PlayerManager_SpawnSelectedBaby)
+ffi.reentrant(repentogon.L_PlayerManager_TriggerRoomClear)
+
 local rngOut = ffi.new("struct RNG*[1]")
 
 local function ToPlayer(ptr)

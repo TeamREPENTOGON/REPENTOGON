@@ -86,6 +86,21 @@ ffi.cdef [[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_Level_AddCurse)
+ffi.reentrant(repentogon.L_Level_ChangeRoom)
+ffi.reentrant(repentogon.L_Level_GetPlanetariumChance)
+ffi.reentrant(repentogon.L_Level_GetRandomRoomIndex)
+ffi.reentrant(repentogon.L_Level_MakeRedRoomDoor)
+ffi.reentrant(repentogon.L_Level_PlaceRoom)
+ffi.reentrant(repentogon.L_Level_RemoveCurses)
+ffi.reentrant(repentogon.L_Level_SetNextStage)
+ffi.reentrant(repentogon.L_Level_SetStage)
+ffi.reentrant(repentogon.L_Level_ShowName)
+ffi.reentrant(repentogon.L_Level_TryPlaceRoom)
+ffi.reentrant(repentogon.L_Level_TryPlaceRoomAtDoor)
+ffi.reentrant(repentogon.L_Level_Update)
+ffi.reentrant(repentogon.L_Level_UpdateVisibility)
+
 local ROOMSHAPE_1x1 = 1
 local RoomDescriptorListT = ffi.typeof("struct RoomDescriptorList")
 local attemptedOut = ffi.new("bool[1]")

@@ -15,6 +15,8 @@ ffi.cdef[[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_GridEntityWeb_Update)
+
 local GridEntityWebMT
 GridEntityWebMT = {
     __type = "GridEntityWeb",

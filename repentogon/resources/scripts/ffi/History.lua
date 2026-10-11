@@ -23,6 +23,8 @@ ffi.cdef [[
 local repentogon = ffidll
 local ffi = ffi
 
+ffi.reentrant(repentogon.L_History_RemoveHistoryItemByIndex)
+
 local HistoryItemMT
 HistoryItemMT = {
     __type = "HistoryItem",

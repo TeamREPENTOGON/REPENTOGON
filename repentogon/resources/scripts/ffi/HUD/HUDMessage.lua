@@ -15,6 +15,8 @@ ffi.cdef [[
 local repentogon = ffidll
 local ffi = ffi
 
+ffi.reentrant(repentogon.L_HUDMessage_Show)
+
 local HUDMessageMT
 HUDMessageMT = {
     __type = "HUDMessage",

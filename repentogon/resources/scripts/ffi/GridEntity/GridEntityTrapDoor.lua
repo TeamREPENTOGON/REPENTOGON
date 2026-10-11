@@ -15,6 +15,8 @@ ffi.cdef[[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_GridEntityTrapDoor_Update)
+
 local GridEntityTrapDoorMT
 GridEntityTrapDoorMT = {
     __type = "GridEntityTrapDoor",

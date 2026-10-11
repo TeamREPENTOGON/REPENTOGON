@@ -7,6 +7,8 @@ ffi.cdef [[
 ]]
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_RoomTransition_StartBossIntro)
+
 RoomTransition = {
     GetPlayerExtraPortraitSprite = function(playerIndex)
         playerIndex = ffichecks.optnumber(playerIndex, 0)

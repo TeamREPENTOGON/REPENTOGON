@@ -57,6 +57,11 @@ ffi.cdef [[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_EntityLaser_AddToHitList)
+ffi.reentrant(repentogon.L_EntityLaser_InHitList)
+ffi.reentrant(repentogon.L_EntityLaser_RemoveFromHitList)
+ffi.reentrant(repentogon.L_EntityLaser_ShootAngle)
+
 local helpers = Entity.Helpers
 local Getter = helpers.Getter
 local VectorGetter = helpers.VectorGetter

@@ -13,6 +13,8 @@ ffi.cdef[[
 
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_SaveMenu_SetSlotSpritesheet)
+
 SaveMenu = {
     GetSaveSelectMenuSprite = function()
         ffichecks.checkmainmenu("SaveMenu")
