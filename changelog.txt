@@ -23,6 +23,11 @@ Added:
 		Only Fireplaces and Shopkeepers naturally call this function, so if you want to add/modify an NPC's LootList, you should call this once.
 * EntityPickup:
 	- ShouldIgnoreModifiers()
+* Input:
+	- GetActionButtons(int ButtonAction, int ControllerIndex)
+		Returns the button(s) assigned to the specified action for the specified input device (-1 for unmapped/invalid actions).
+	- GetButtonFrame(int button, int ControllerIndex)
+		Returns the animation frame in `(controls_)buttons.anm2` to use for the given button (-1 for invalid buttons).
 /newline/
 Modified:
 * ModCallbacks:

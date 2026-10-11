@@ -253,6 +253,7 @@ ffichecks.entityresults = function()
 	return results
 end
 
+loadmodule("Isaac")
 loadmodule("Vector")
 loadmodule("VectorList")
 loadmodule("GridEntityDesc")
@@ -414,7 +415,6 @@ loadmodule("Entity.EntityFamiliar")
 loadmodule("Entity.EntitySlot")
 loadmodule("Entity.EntityNPC")
 loadmodule("Entity.EntityDelirium")
-loadmodule("Isaac")
 loadmodule("Options")
 loadmodule("Entity.EntityPlayer")
 loadmodule("EntityPtr")

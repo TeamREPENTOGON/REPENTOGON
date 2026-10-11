@@ -3,12 +3,27 @@
 extern float WINMouseWheelMove_Vert;
 extern float WINMouseWheelMove_Hori;
 
+MOD_EXPORT void L_Input_GetActionButtons(int action, int controlleridx, int* out, int* out2) {
+	int buttons[2]{ -1, -1 };
+	g_InputManagerBase.GetActionButtons(action, controlleridx, buttons);
+	*out = buttons[0];
+	*out2 = buttons[1];
+}
+
 MOD_EXPORT float L_Input_GetActionValue(int action, int controllerId) {
 	return g_InputManagerBase.GetActionValue(action, controllerId, 0);
 }
 
 MOD_EXPORT float L_Input_GetButtonValue(int button, int controllerId) {
 	return LuaEngine::GetButtonValue(button, controllerId);
+}
+
+MOD_EXPORT int L_Input_GetButtonFrame(int button, int controllerId) {
+	if (controllerId == 0) {
+		return button;
+	} else {
+		return InputManager::GetControllerButtonFrame(button);
+	}
 }
 
 MOD_EXPORT char* L_Input_GetDeviceNameByIdx(int controllerId) {
