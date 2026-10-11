@@ -11,7 +11,7 @@ ffi.cdef("struct EntityEffect { " .. Entity.Fields .. [[
     int Timeout : 0x45c;
     int LifeSpan : 0x460;
     private bool IsFollowingValue : 0x464;
-    struct Vector ParentOffset : 0x468;
+    private struct Vector ParentOffsetValue : 0x468;
     int DamageSource : 0x470;
     float Rotation : 0x474;
     float Scale : 0x478;
@@ -55,6 +55,10 @@ end
 
 local getters = {
     IsFollowing = Getter("IsFollowingValue"),
+    ParentOffset = function(self)
+        local vector = ffi.getprivate(self, "ParentOffsetValue")
+        return Vector(vector.X, vector.Y)
+    end,
 }
 
 local setters = {
