@@ -1886,6 +1886,18 @@ rawset(Isaac, "RunAdditiveCallback", _RunAdditiveCallback)
 rawset(Isaac, "RunEntityTakeDmgCallback", _RunEntityTakeDmgCallback)
 rawset(Isaac, "RunTriggerPlayerDeathCallback", _RunTriggerPlayerDeathCallback)
 
+local function RunPreGenerateDungeonCallback(callbackID, param, dungeonGenerator, rng, dungeonType)
+	for callback in GetCallbackIterator(callbackID, param) do
+		local success = RunCallbackInternal(callbackID, callback, dungeonGenerator, rng, dungeonType)
+
+		if success and dungeonGenerator:Validate() then
+			return true
+		end
+
+		dungeonGenerator:Reset()
+	end
+end
+
 
 -- Defines non-default callback handling logic to be used for specific callbacks.
 -- If a callback is not specified here, "DefaultRunCallbackLogic" will be called.
@@ -1949,6 +1961,7 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PRE_PLAYERHUD_RENDER_CRAFTING_TABLE] = RunAdditiveSecondArgCallbackWithBreak,
 	[ModCallbacks.MC_POST_PLAYERHUD_RENDER_CRAFTING_TABLE] = RunNoReturnCallback,
 	[ModCallbacks.MC_POST_USE_ITEM] = RunNoReturnCallback,
+	[ModCallbacks.MC_PRE_GENERATE_DUNGEON] = RunPreGenerateDungeonCallback,
 }
 
 for _, callback in ipairs({
