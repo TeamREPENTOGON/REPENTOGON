@@ -2,6 +2,7 @@
 #include "LuaCore.h"
 #include "../../LuaClasses.h"
 #include "HookSystem.h"
+#include <algorithm>
 
 MOD_EXPORT int L_PlayerHUD_GetLayout(PlayerHUD* playerHUD) {
 	return g_Game->GetHUD()->GetPlayerHUDLayout(playerHUD->_playerHudIndex, playerHUD->_player);
