@@ -6874,4 +6874,3 @@ HOOK_METHOD(Level, generate_greed_dungeon, () -> void) {
 
 	super();
 }
->>>>>>> 20112cc8c (Implement custom dungeon generator system (MC_PRE_GENERATE_DUNGEON))
