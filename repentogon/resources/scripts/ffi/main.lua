@@ -183,6 +183,7 @@ lffi.cdef [[
 
 	const char* L_StdString_CStr(const struct StdString*);
 	void L_StdString_Assign(struct StdString*, const char*);
+	void L_Isaac_DebugString(const char*);
 ]]
 
 local repentogon = ffidll
@@ -197,7 +198,7 @@ end
 local function loadmodule(name)
 	local ok, err = pcall(require, "ffi." .. name)
 	if not ok then
-		Isaac.DebugString(string.format("[ERROR] Failed to load %s: %s\n", name, tostring(err)))
+		repentogon.L_Isaac_DebugString(string.format("[ERROR] Failed to load %s: %s\n", name, tostring(err)))
 	end
 end
 
