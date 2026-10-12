@@ -14,7 +14,6 @@ collectgarbage("setpause", 125)
 collectgarbage("setstepmul", 200)
 jit.opt.start('maxtrace=20000', 'maxmcode=32768')
 local builtinIpairs = ipairs
-local builtinPairs = pairs
 require("compat53.init")
 
 -- compat53 overrides ipairs with one that's Lua 5.3 compliant, which is all well and good,
@@ -36,17 +35,6 @@ do
 			return f, s, i
 		end
 		return ipairsIterator, t, 0
-	end
-	if pairs ~= builtinPairs then
-		pairs = function(t)
-			local mt = gmt(t)
-			if type(mt) == "table" and type(mt.__pairs) == "function" then
-				local f, s, k = mt.__pairs(t)
-				return f, s, k
-			end
-			local f, s, k = builtinPairs(t)
-			return f, s, k
-		end
 	end
 end
 

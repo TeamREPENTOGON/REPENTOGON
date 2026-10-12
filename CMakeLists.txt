@@ -16,6 +16,7 @@ endif ()
 project(RepExtender)
 add_compile_options("$<$<CONFIG:Release>:/Zi>")
 add_link_options("$<$<CONFIG:Release>:/DEBUG>")
+add_compile_definitions(_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR)
 
 find_package(OpenGL REQUIRED)
 
@@ -79,6 +80,7 @@ FILE(GLOB BUILDVM_SRC "${LUAJIT_SOURCE_DIR}/host/buildvm*.c")
 LIST(APPEND BUILDVM_SRC "${LUAJIT_SOURCE_DIR}/host/buildvm_arch.h")
 add_executable(buildvm ${BUILDVM_SRC})
 target_include_directories(buildvm PUBLIC ${LUAJIT_SOURCE_DIR})
+target_compile_definitions(buildvm PRIVATE LUAJIT_ENABLE_LUA52COMPAT)
 add_custom_command(TARGET buildvm PRE_BUILD COMMAND powershell "git show -s --format=%%ct | Out-File -encoding ASCII luajit_relver.txt" WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}")
 add_custom_command(TARGET buildvm PRE_BUILD COMMAND minilua "${LUAJIT_SOURCE_DIR}/host/genversion.lua" WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS minilua)	
 
