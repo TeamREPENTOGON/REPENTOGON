@@ -87,7 +87,6 @@ ffi.cdef [[
     void L_Isaac_GetCompletionMarks(int, int*);
     bool L_Isaac_GetCompletionMarkData(const char*, const char*, bool, int*);
 
-    void L_Isaac_DebugString(const char*);
     void* L_Isaac_GetPlayer(int);
     unsigned int L_Isaac_GetFrameCount();
     unsigned int L_Isaac_GetChallenge();

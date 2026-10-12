@@ -53,6 +53,12 @@ extern "C" {
 		room->FindFreeTilePosition(out, pos, distanceThreshold);
 	}
 	
+	__declspec(dllexport) int L_Room_GetBackdropType(Room* room) {
+		if (hookedbackdroptype != 0) {
+			return hookedbackdroptype;
+		}
+		return room->GetBackdrop()->backdropId;
+	}
 
 	__declspec(dllexport) unsigned int L_Room_GetBossVictoryJingle(Room* room) {
 		return room->GetBossVictoryJingle();

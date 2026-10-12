@@ -71,6 +71,7 @@ ffi.cdef [[
     bool L_Room_DestroyGridWithSource(struct Room*, int, int, bool, struct EntityRef*);
     void L_Room_FindFreePickupSpawnPosition(struct Room*, struct Vector*, float, bool, bool, struct Vector*);
     void L_Room_FindFreeTilePosition(struct Room*, struct Vector*, float, struct Vector*);
+    int L_Room_GetBackdropType(struct Room*);
     unsigned int L_Room_GetBossVictoryJingle(struct Room*);
     int L_Room_GetFrameCount(struct Room*);
     void L_Room_GetCenterPos(struct Room*, struct Vector*);
@@ -295,7 +296,7 @@ RoomMT = {
         local result = ffi.getprivate(self, "Backdrop") return result
     end,
     GetBackdropType = function(self)
-        local result = ffi.getprivate(ffi.getprivate(self, "Backdrop"), "Type") return result
+        local result = repentogon.L_Room_GetBackdropType(self) return result
     end,
     GetBossID = function(self)
         local result = ffi.getprivate(self, "BossID") return result
