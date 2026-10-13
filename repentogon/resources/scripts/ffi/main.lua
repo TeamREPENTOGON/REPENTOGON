@@ -409,6 +409,7 @@ loadmodule("Entity.EntityProjectile")
 loadmodule("Entity.EntityTear")
 loadmodule("Entity.EntityBomb")
 loadmodule("Entity.EntityKnife")
+loadmodule("HomingLaser")
 loadmodule("Entity.EntityLaser")
 loadmodule("Entity.EntityEffect")
 loadmodule("Entity.EntityPickup")
@@ -419,7 +420,6 @@ loadmodule("Entity.EntityDelirium")
 loadmodule("Options")
 loadmodule("Entity.EntityPlayer")
 loadmodule("EntityPtr")
-loadmodule("HomingLaser")
 
 lffi.metatype = ffi_metatype
 

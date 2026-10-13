@@ -14,11 +14,6 @@ MOD_EXPORT void L_EntityLaser_CalculateEndPoint(Vector* start, Vector* dir, Vect
 	Entity_Laser::CalculateEndPosition(result, start, dir, positionOffset, parent, margin);
 }
 
-// vanilla hands out a copy of the HomingLaser and copies on assignment
-MOD_EXPORT HomingLaser* L_EntityLaser_GetHomingLaser(Entity_Laser* laser) {
-	return new HomingLaser(laser->_homingLaser);
-}
-
 MOD_EXPORT void L_EntityLaser_SetHomingLaser(Entity_Laser* laser, HomingLaser* homingLaser) {
 	if (&laser->_homingLaser != homingLaser) {
 		laser->_homingLaser = *homingLaser;

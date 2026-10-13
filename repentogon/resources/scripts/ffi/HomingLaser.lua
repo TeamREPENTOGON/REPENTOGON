@@ -2,8 +2,6 @@ ffi.cdef[[
     struct HomingLaser {
         private char Storage[0x54];
     } : 0x54;
-
-    void L_HomingLaser_Delete(struct HomingLaser*);
 ]]
 
 local HomingLaserMT

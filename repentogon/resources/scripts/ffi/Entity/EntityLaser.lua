@@ -11,6 +11,8 @@ ffi.cdef("struct EntityLaser { " .. Entity.Fields .. [[
     private bool SampleLaserValue : 0x45d;
     private bool ShrinkValue : 0x45e;
     float LaserLength : 0x460;
+    private struct HomingLaser HomingLaserValue : 0x464;
+    // Samples and NonOptimizedSamples overlap HomingLaser but that's fine by FFI cdef convention, we can alias them if we ever properly implement HomingLaser
     private struct VectorList SamplesValue : 0x480;
     private struct VectorList NonOptimizedSamplesValue : 0x48c;
     float CurveStrength : 0x4b8;
@@ -47,7 +49,6 @@ ffi.cdef [[
     void L_EntityLaser_RecalculateSamplesNextUpdate(struct EntityLaser*);
     bool L_EntityLaser_SetInitSound(struct EntityLaser*, unsigned int);
     void L_EntityLaser_SetBounceLaser(struct EntityLaser*, void*);
-    struct HomingLaser* L_EntityLaser_GetHomingLaser(struct EntityLaser*);
     void L_EntityLaser_SetHomingLaser(struct EntityLaser*, struct HomingLaser*);
     unsigned int L_EntityLaser_GetHitListSize(struct EntityLaser*);
     unsigned int L_EntityLaser_GetHitListEntry(struct EntityLaser*, unsigned int);
@@ -103,9 +104,7 @@ local getters = {
     IsActiveRotating = Getter("IsActiveRotatingValue"),
     DisableFollowParent = Getter("DisableFollowParentValue"),
     BounceLaser = EntityGetter("BounceLaserValue"),
-    HomingLaser = function(self)
-        return ffi.gc(repentogon.L_EntityLaser_GetHomingLaser(self), repentogon.L_HomingLaser_Delete)
-    end,
+    HomingLaser = Getter("HomingLaserValue"),
     OneHit = Getter("OneHitValue"),
     GridHit = Getter("GridHitValue"),
 }
