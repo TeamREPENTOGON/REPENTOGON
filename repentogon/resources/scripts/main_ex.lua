@@ -1200,7 +1200,7 @@ local function GetCallbackList(callbackID, param, extraParam)
 	end
 
 	local key
-	if param == ALL_CALLBACKS_LIST then
+	if rawequal(param, ALL_CALLBACKS_LIST) then
 		key = ALL_CALLBACKS_LIST
 	elseif extraParam == nil then
 		if param == nil then key = false else key = param end
@@ -1234,14 +1234,14 @@ local function GetCallbackList(callbackID, param, extraParam)
 		end
 	end
 
-	local runAll = (param == ALL_CALLBACKS_LIST)
+	local runAll = rawequal(param, ALL_CALLBACKS_LIST)
 	local list = {}
 	local listIndex = 0
 	for i = 1, #callbackData.ALL do
 		local callback = callbackData.ALL[i]
 		if callback and not callback.Removed then
 			local callbackParam = callback.Param
-			if runAll or callbackParam == nil or callbackParam == -1 or callbackParam == param or (extraParam ~= nil and callbackParam == extraParam) then
+			if runAll or callbackParam == nil or callbackParam == -1 or rawequal(callbackParam, param) or (extraParam ~= nil and rawequal(callbackParam, extraParam)) then
 				listIndex = listIndex + 1
 				list[listIndex] = callback
 			end

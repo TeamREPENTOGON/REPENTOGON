@@ -295,6 +295,30 @@ static void fix_openal_attributes() {
 	sASMPatcher.PatchAt((void*)patchAddr, &patch);
 }
 
+static int __fastcall asm_door_update_get_secret_exit_type(GridEntity_Door* door)
+{
+	if ((int)g_Game->_currentRoomIdx == ROOM_SECRET_EXIT_IDX)
+	{
+		return 0;
+	}
+
+	return door->GetSecretExitType();
+}
+
+// Rep+ reopens the Mausoleum Mom's Heart door on every frame once it's unlocked.
+// This also applies to the other side of the door inside the Mom's Heart room, so that door never stays closed during the fight.
+// To work around this, make the check see no secret exit door while inside the secret exit room.
+static void fix_mausoleum_heart_door_forced_open()
+{
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::GridEntityDoor_Update_GetSecretExitType);
+	ZHL::Log("[REPENTOGON] Patching GridEntity_Door::Update Mausoleum Mom's Heart door bug %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddInternalCall(asm_door_update_get_secret_exit_type)
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -343,5 +367,6 @@ void ASMFixes()
 	fix_familiar_pathfinder_move_randomly_axis_aligned(&AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckB, &AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckB_JumpTarget, "\x85\xc0", 0x7);  // TEST EAX,EAX
 	fix_load_button_maps_crash();
 	fix_openal_attributes();
+	fix_mausoleum_heart_door_forced_open();
     patch_in_place_room_reset();
 }
