@@ -2194,12 +2194,14 @@ pcall(require, "repentogon_extras/mods_menu_tweaks")
 
 pcall(require, "repentogon_api/room_descriptor")
 
+local SSM = _GetModule("repentogon_extras.save_state_manager")
 local ESSM = _GetModule("repentogon_extras.entity_save_state_manager")
 
 local ESSM_OnNewEntity = ESSM._OnNewEntity
 local ESSM_OnDeleteEntity = ESSM._OnDeleteEntity
 
 ---@class REPENTOGON._LuaBindings
+---@field SSM REPENTOGON._LuaBindings.SSM
 ---@field ESSM REPENTOGON._LuaBindings.ESSM
 ---@field EntityManager REPENTOGON._LuaBindings.EntityManager
 
@@ -2211,6 +2213,13 @@ local ESSM_OnDeleteEntity = ESSM._OnDeleteEntity
 ---@field Serialize fun(idMap: table<integer, integer>, fileName: string, checksum: integer) -- first integer is the serializationId, second integer is the actualId
 ---@field PreDeserialize fun(mods: ModReference[], modIds: string[]) -- list mods that have data that could be deserialized
 ---@field Deserialize fun(serializedIds: integer[], destIds: integer[], fileName: string, checksum: integer) -- serializedIds and destIds must have the same size
+
+---@class REPENTOGON._LuaBindings.SSM
+---@field StoreGameState fun(gameStateId: integer)
+---@field RestoreGameState fun(gameStateId: integer)
+---@field ClearGameState fun(gameStateId: integer)
+---@field SerializeGameState fun(gameStateInfo: REPENTOGON.GameStateInfo)
+---@field DeserializeGameState fun(gameStateInfo: REPENTOGON.GameStateInfo)
 
 ---@class REPENTOGON._LuaBindings.EntityManager
 ---@field NewEntity fun(entityId: integer)
@@ -2224,6 +2233,17 @@ local _EntityManager = {
 	DeleteEntity = function (entityId)
 		ESSM_OnDeleteEntity(entityId)
 	end,
+}
+
+---@type REPENTOGON._LuaBindings.SSM
+local _SSM = {
+	StoreGameState = SSM._StoreGameState,
+	RestoreGameState = SSM._RestoreGameState,
+	ClearGameState = SSM._ClearGameState,
+	SerializeGameState = SSM._SerializeGameState,
+	DeserializeGameState = SSM._DeserializeGameState,
+	DeleteGameState = SSM._DeleteGameState,
+    CleanupState = SSM._CleanupState,
 }
 
 ---@type REPENTOGON._LuaBindings.ESSM
@@ -2241,9 +2261,20 @@ local _ESSM = {
 _LuaBindings = {
 	EntityManager = _EntityManager,
 	ESSM = _ESSM,
+	SSM = _SSM,
 }
 
-EntitySaveStateManager = {
+SaveStateManager = {
+	GetGameData = SSM.GetGameData,
+	ClearGameData = SSM.ClearGameData,
+	GetEntityData = ESSM.GetEntityData,
+	GetEntitySaveStateData = ESSM.GetEntitySaveStateData,
+	TryGetEntityData = ESSM.TryGetEntityData,
+	TryGetEntitySaveStateData = ESSM.TryGetEntitySaveStateData,
+}
+
+-- Backwards compatibility
+EntitySaveStateManager  = {
 	GetEntityData = ESSM.GetEntityData,
 	GetEntitySaveStateData = ESSM.GetEntitySaveStateData,
 	TryGetEntityData = ESSM.TryGetEntityData,
