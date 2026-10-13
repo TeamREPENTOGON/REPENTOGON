@@ -47,6 +47,8 @@ ffi.cdef [[
     void L_EntityLaser_RecalculateSamplesNextUpdate(struct EntityLaser*);
     bool L_EntityLaser_SetInitSound(struct EntityLaser*, unsigned int);
     void L_EntityLaser_SetBounceLaser(struct EntityLaser*, void*);
+    struct HomingLaser* L_EntityLaser_GetHomingLaser(struct EntityLaser*);
+    void L_EntityLaser_SetHomingLaser(struct EntityLaser*, struct HomingLaser*);
     unsigned int L_EntityLaser_GetHitListSize(struct EntityLaser*);
     unsigned int L_EntityLaser_GetHitListEntry(struct EntityLaser*, unsigned int);
     void L_EntityLaser_RemoveFromHitList(struct EntityLaser*, void*);
@@ -101,6 +103,9 @@ local getters = {
     IsActiveRotating = Getter("IsActiveRotatingValue"),
     DisableFollowParent = Getter("DisableFollowParentValue"),
     BounceLaser = EntityGetter("BounceLaserValue"),
+    HomingLaser = function(self)
+        return ffi.gc(repentogon.L_EntityLaser_GetHomingLaser(self), repentogon.L_HomingLaser_Delete)
+    end,
     OneHit = Getter("OneHitValue"),
     GridHit = Getter("GridHitValue"),
 }
@@ -123,6 +128,10 @@ local setters = {
     DisableFollowParent = AnyBooleanSetter("DisableFollowParentValue"),
     BounceLaser = function(self, value)
         repentogon.L_EntityLaser_SetBounceLaser(self, EntityToPointer(value))
+    end,
+    HomingLaser = function(self, value)
+        ffichecks.checkcdata(1, value, "HomingLaser")
+        repentogon.L_EntityLaser_SetHomingLaser(self, value)
     end,
     OneHit = AnyBooleanSetter("OneHitValue"),
     GridHit = AnyBooleanSetter("GridHitValue"),

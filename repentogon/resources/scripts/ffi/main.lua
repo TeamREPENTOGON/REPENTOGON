@@ -419,6 +419,7 @@ loadmodule("Entity.EntityDelirium")
 loadmodule("Options")
 loadmodule("Entity.EntityPlayer")
 loadmodule("EntityPtr")
+loadmodule("HomingLaser")
 
 lffi.metatype = ffi_metatype
 
