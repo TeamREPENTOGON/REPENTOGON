@@ -26,10 +26,10 @@ local LoadModData = _CBindings.LoadModData
 local RemoveModData = _CBindings.RemoveModData
 local RemoveAllData = _CBindings.RemoveAllData
 
----@param gameStateInfo REPENTOGON.GameStateInfo
+---@param fileName string
 ---@return string
-local function get_file_name(gameStateInfo)
-    return "SaveStateManager/" .. gameStateInfo.fileName
+local function get_file_name(fileName)
+    return "SaveStateManager/" .. fileName .. ".dat"
 end
 
 ---Tries to initialize mod's gameData and returns.
@@ -113,7 +113,7 @@ local function SerializeGameState(gameStateInfo)
             goto continue
         end
 
-        local fileName = get_file_name(gameStateInfo)
+        local fileName = get_file_name(gameStateInfo.fileName)
         local success = SaveModData(modReference, fileName, json.encode(saveData))
         if not success then
             Isaac.DebugString(string.format("[ERROR] [SSM] Unable to Save mod data for '%s'", tostring(modReference.Name)))
@@ -164,7 +164,7 @@ local function DeserializeGameState(gameStateInfo)
             goto continue
         end
 
-        local fileName = get_file_name(gameStateInfo)
+        local fileName = get_file_name(gameStateInfo.fileName)
         local noDataInit = not s_modData[modId] and not HasModData(modRef, fileName)
         if noDataInit then
             goto continue
@@ -191,10 +191,10 @@ local function DeserializeGameState(gameStateInfo)
     end
 end
 
----Delete all mod files for that filePath
----@param filePath string
-local function DeleteGameState(filePath)
-    RemoveAllData("SaveStateManager/" .. filePath)
+---Delete all mod files for that fileName
+---@param fileName string
+local function DeleteGameState(fileName)
+    RemoveAllData(get_file_name(fileName))
 end
 
 ---Reset game data for all mods
