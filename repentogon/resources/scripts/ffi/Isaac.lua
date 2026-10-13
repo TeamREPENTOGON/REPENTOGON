@@ -145,8 +145,6 @@ ffi.reentrant(repentogon.L_Isaac_SetCurrentFloorBackdrop)
 ffi.reentrant(repentogon.L_Isaac_SetCurrentFloorMusic)
 ffi.reentrant(repentogon.L_Isaac_Spawn)
 ffi.reentrant(repentogon.L_Isaac_SpawnBoss)
-local Game = Game
-
 local EntityToPointer = ffichecks.entitytopointer
 
 local weaponOut = ffi.new("struct Weapon*[1]")
