@@ -63,4 +63,4 @@ GridEntityTNTMT.__newindex = function(self, key, value)
 end
 
 local GridEntityTNTT = ffi.metatype("struct GridEntityTNT", GridEntityTNTMT)
-GridEntityTNT = setmetatable({}, {__class = GridEntityTNT})
+GridEntityTNT = setmetatable({}, {__class = GridEntityTNTMT})

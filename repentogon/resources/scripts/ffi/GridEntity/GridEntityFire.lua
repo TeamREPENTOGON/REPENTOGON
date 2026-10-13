@@ -64,4 +64,4 @@ GridEntityFireMT.__newindex = function(self, key, value)
 end
 
 local GridEntityFireT = ffi.metatype("struct GridEntityFire", GridEntityFireMT)
-GridEntityFire = setmetatable({}, {__class = GridEntityFire})
+GridEntityFire = setmetatable({}, {__class = GridEntityFireMT})
