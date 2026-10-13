@@ -9,7 +9,7 @@ ffi.cdef("struct EntityFamiliar { " .. Entity.Fields .. [[
     int ShootDirection : 0xd58;
     int LastDirection : 0xd5c;
     float OrbitAngleOffset : 0xd60;
-    struct Vector OrbitDistance : 0xd64;
+    private struct Vector OrbitDistanceValue : 0xd64;
     float OrbitSpeed : 0xd6c;
     int OrbitLayer : 0xd70;
     private bool IsFollowerValue : 0xd74;
@@ -90,6 +90,8 @@ ffi.reentrant(repentogon.L_EntityFamiliar_TriggerRoomClear)
 
 local helpers = Entity.Helpers
 local Getter = helpers.Getter
+local VectorGetter = helpers.VectorGetter
+local VectorSetter = helpers.VectorSetter
 local CopyStruct = helpers.CopyStruct
 
 local TYPE_FAMILIAR = 3
@@ -128,6 +130,7 @@ local getters = {
     end,
     IsDelayed = Getter("IsDelayedValue"),
     IsFollower = Getter("IsFollowerValue"),
+    OrbitDistance = VectorGetter("OrbitDistanceValue"),
 }
 
 local setters = {
@@ -140,6 +143,7 @@ local setters = {
     IsFollower = function(self, value)
         ffi.setprivate(self, "IsFollowerValue", not not value)
     end,
+    OrbitDistance = VectorSetter("OrbitDistanceValue"),
 }
 
 local methods = {

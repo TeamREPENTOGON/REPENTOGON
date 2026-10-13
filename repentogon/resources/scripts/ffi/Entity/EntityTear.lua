@@ -78,7 +78,7 @@ local getters = {
     StickTarget = EntityGetter("StickTargetValue"),
     StickDiff = VectorGetter("StickDiffValue"),
     CanTriggerStreakEnd = Getter("CanTriggerStreakEndValue"),
-    PosDisplacement = VectorGetter("PosDisplacementValue"),
+    PosDisplacement = Getter("PosDisplacementValue"),
     ParentOffset = VectorGetter("ParentOffsetValue"),
 }
 

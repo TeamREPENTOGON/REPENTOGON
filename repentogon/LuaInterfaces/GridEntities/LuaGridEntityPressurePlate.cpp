@@ -9,6 +9,14 @@ extern "C" {
 		plate->Reward();
 	}
 
+	__declspec(dllexport) void L_GridEntityPressurePlate_SetTimerPlate(GridEntity_PressurePlate* plate, ANM2* sprite) {
+		ANM2* timerPlate = (ANM2*)((char*)plate + 0x154);
+		if (timerPlate == sprite)
+			return;
+		timerPlate->destructor();
+		timerPlate->construct_from_copy(sprite);
+	}
+
 	__declspec(dllexport) void L_GridEntityPressurePlate_Update(GridEntity_PressurePlate* plate) {
 		plate->Update();
 	}

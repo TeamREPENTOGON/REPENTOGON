@@ -10,6 +10,7 @@ local ENTITY_FIELDS = [[
     uint32_t SpawnerVariant : 0x38;
     private struct Vector SpriteOffsetValue : 0xdc;
     private struct Vector SpriteScaleValue : 0xe4;
+    private struct Color SpriteColorValue : 0xf0;
     float SpriteRotation : 0xec;
     private bool FlipXValue : 0x148;
     private float ShadowSizeValue : 0x15c;
@@ -290,9 +291,7 @@ local getters = {
     Color = function(self)
         return CopyStruct("struct Color", ffi.getprivate(self, "ColorValue"))
     end,
-    SplatColor = function(self)
-        return CopyStruct("struct Color", ffi.getprivate(self, "SplatColorValue"))
-    end,
+    SplatColor = Getter("SplatColorValue"),
     Visible = Getter("VisibleValue"),
     FlipX = Getter("FlipXValue"),
     Size = Getter("SizeValue"),
@@ -550,9 +549,7 @@ Methods {
         repentogon.L_Entity_GetCollisionCapsule(self, offset or Vector(0, 0), capsule)
         return capsule
     end,
-    GetColor = function(self)
-        return CopyStruct("struct Color", ffi.getprivate(self, "ColorValue"))
-    end,
+    GetColor = Getter("SpriteColorValue"),
     GetColorParams = function(self)
         local result = {}
         for i = 0, repentogon.L_Entity_GetColorParamsCount(self) - 1 do
@@ -617,7 +614,10 @@ Methods {
         return offset
     end,
     GetPosVel = function(self)
-        return PosVel(getters.Position(self), getters.Velocity(self))
+        local result = ffi.new("struct PosVel")
+        ffi.setprivate(result, "PositionValue", ffi.getprivate(self, "PositionValue"))
+        ffi.setprivate(result, "VelocityValue", ffi.getprivate(self, "VelocityValue"))
+        return result
     end,
     GetPredictedTargetPosition = function(self, target, delay)
         delay = ffichecks.checknumber(2, delay)

@@ -1,20 +1,21 @@
 ffi.cdef[[
     struct GridEntityPressurePlate {
         padding void* vtable;
-        struct GridEntityDesc Desc;
+        private struct GridEntityDesc DescValue;
         private int GridIndex;
         private int SpawnFrame;
         private struct RNG RNG;
         int CollisionClass;
         struct Sprite Sprite;
-        struct Sprite TimerPlate;
+        private struct Sprite TimerPlateValue;
         const char* NextGreedAnimation;
-        struct RNG GreedModeRNG;
+        private struct RNG GreedModeRNGValue;
     };
     typedef struct GridEntityPressurePlate* GridEntityPressurePlatePtr;
     
     void L_GridEntityPressurePlate_Render(struct GridEntityPressurePlate*, struct Vector);
     void L_GridEntityPressurePlate_Reward(struct GridEntityPressurePlate*);
+    void L_GridEntityPressurePlate_SetTimerPlate(struct GridEntityPressurePlate*, struct Sprite*);
     void L_GridEntityPressurePlate_Update(struct GridEntityPressurePlate*);
 ]]
 local ffi = ffi
@@ -46,10 +47,28 @@ GridEntityPressurePlateMT.__index = function(self, key)
     if GridEntityPressurePlateMT[key] ~= nil then
         return GridEntityPressurePlateMT[key]
     end
+    if key == "TimerPlate" then
+        return ffi.getprivate(self, "TimerPlateValue"):Copy()
+    end
+    if key == "GreedModeRNG" then
+        local copy = ffi.new("struct RNG")
+        ffi.copy(copy, ffi.getprivate(self, "GreedModeRNGValue"), ffi.sizeof("struct RNG"))
+        return copy
+    end
     return baseIndex(self, key)
 end
 
 GridEntityPressurePlateMT.__newindex = function(self, key, value)
+    if key == "TimerPlate" then
+        ffichecks.checkcdata(1, value, "Sprite")
+        repentogon.L_GridEntityPressurePlate_SetTimerPlate(self, value)
+        return
+    end
+    if key == "GreedModeRNG" then
+        ffichecks.checkcdata(1, value, "RNG")
+        ffi.setprivate(self, "GreedModeRNGValue", value)
+        return
+    end
     baseNewindex(self, key, value)
 end
 

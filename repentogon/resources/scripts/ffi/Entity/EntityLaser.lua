@@ -93,7 +93,7 @@ local getters = {
     TearFlags = function(self)
         return CopyStruct("struct BitSet128", ffi.getprivate(self, "TearFlagsValue"))
     end,
-    ParentOffset = Getter("ParentOffsetValue"),
+    ParentOffset = VectorGetter("ParentOffsetValue"),
     EndPoint = VectorGetter("EndPointValue"),
     FirstUpdate = Getter("FirstUpdateValue"),
     SampleLaser = Getter("SampleLaserValue"),
@@ -141,7 +141,7 @@ local methods = {
     FireSplitTear = Entity.Helpers.FireSplitTear,
     GetDamageMultiplier = Getter("DamageMultiplierValue"),
     GetDisableFollowParent = Getter("DisableFollowParentValue"),
-    GetEndPoint = VectorGetter("EndPointValue"),
+    GetEndPoint = Getter("EndPointValue"),
     GetHitList = function(self)
         local result = {}
         for i = 1, repentogon.L_EntityLaser_GetHitListSize(self) do

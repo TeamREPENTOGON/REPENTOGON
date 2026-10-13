@@ -1,7 +1,7 @@
 ffi.cdef[[
     struct GridEntityRock {
         padding void* vtable;
-        struct GridEntityDesc Desc;
+        private struct GridEntityDesc DescValue;
         private int GridIndex;
         private int SpawnFrame;
         private struct RNG RNG;
@@ -60,10 +60,10 @@ GridEntityRockMT = {
         local result = repentogon.L_GridEntityRock_GetAltRockType(backdrop) return result
     end,
     GetBigRockFrame = function(self)
-        if self.Desc.Variant < 1000 then
+        if ffi.getprivate(self, "DescValue").Variant < 1000 then
             return -1
         end
-        return self.Desc.Variant - 1000
+        return ffi.getprivate(self, "DescValue").Variant - 1000
     end,
     GetRubbleAnim = function(self)
         return ffichecks.stdstring(ffi.getprivate(self, "RubbleAnimString"))
@@ -102,7 +102,7 @@ GridEntityRockMT = {
         repentogon.L_GridEntityRock_Update(self)
     end,
     UpdateAnimFrame = function(self)
-        if self.Desc.Variant < 1000 then
+        if ffi.getprivate(self, "DescValue").Variant < 1000 then
             return
         end
 
@@ -111,7 +111,7 @@ GridEntityRockMT = {
         local name = ffichecks.stdstring(ffi.getprivate(self, "AnimString"))
 
         if sprite:SetAnimation(name, true) and not ffichecks.isnullptr(animState.AnimData) then
-            animState:SetPosition(self.Desc.Variant - 1000)
+            animState:SetPosition(ffi.getprivate(self, "DescValue").Variant - 1000)
             if not ffichecks.isnullptr(animState.AnimData) then
                 animState.IsPlaying = false
             end

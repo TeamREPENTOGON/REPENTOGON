@@ -218,9 +218,7 @@ local getters = {
     BossRushParTime = Getter("BossRushParTimeValue"),
     Challenge = Getter("ChallengeValue"),
     Difficulty = Getter("DifficultyValue"),
-    ScreenShakeOffset = function(self)
-        return ffichecks.copyvector(ffi.getprivate(self, "ScreenShakeOffsetValue"))
-    end,
+    ScreenShakeOffset = Getter("ScreenShakeOffsetValue"),
     TimeCounter = Getter("TimeCounterValue"),
 }
 

@@ -831,7 +831,7 @@ local getters = {
     FireDelay = function(self)
         local result = repentogon.L_EntityPlayer_GetFireDelayNative(self) return result
     end,
-    TearsOffset = VectorGetter("TearsOffsetValue"),
+    TearsOffset = Getter("TearsOffsetValue"),
     SpriteScale = VectorGetter("PlayerSpriteScaleValue"),
     TearFlags = function(self)
         return CopyStruct("struct BitSet128", ffi.getprivate(self, "TearFlagsValue"))
@@ -1937,12 +1937,12 @@ local methods = {
     GetRUAWizardTimer = Getter("RUAWizardTimerValue"),
     SetRUAWizardTimer = IntegerSetter("RUAWizardTimerValue"),
     GetDeadEyeCharge = Getter("DeadEyeChargesValue"),
-    GetAimDirection = VectorGetter("AimDirectionValue"),
-    GetLastDirection = VectorGetter("LastDirectionValue"),
+    GetAimDirection = Getter("AimDirectionValue"),
+    GetLastDirection = Getter("LastDirectionValue"),
     GetMovementInput = VectorGetter("MovementInputValue"),
-    GetMovementVector = VectorGetter("MovementInputValue"),
-    GetRecentMovementVector = VectorGetter("RecentMovementVectorValue"),
-    GetVelocityBeforeUpdate = VectorGetter("VelocityBeforeUpdateValue"),
+    GetMovementVector = Getter("MovementInputValue"),
+    GetRecentMovementVector = Getter("RecentMovementVectorValue"),
+    GetVelocityBeforeUpdate = Getter("VelocityBeforeUpdateValue"),
     GetHeldEntity = Getter("HeldEntityValue"),
     GetFlippedForm = Getter("BackupPlayerValue"),
     GetImmaculateConceptionState = Getter("ImmaculateConceptionStateValue"),
@@ -1985,7 +1985,7 @@ local methods = {
         local result = repentogon.L_EntityPlayer_GetHeldSprite(self) return result
     end,
     GetLastDamageSource = function(self)
-        return CopyStruct("struct EntityRef", repentogon.L_EntityPlayer_GetLastDamageSource(self))
+        local result = repentogon.L_EntityPlayer_GetLastDamageSource(self) return result
     end,
     GetMovingBoxContents = function(self)
         local result = repentogon.L_EntityPlayer_GetMovingBoxContents(self) return result

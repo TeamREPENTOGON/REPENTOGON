@@ -1,7 +1,7 @@
 ffi.cdef[[
     struct GridEntityTeleporter {
         padding void* vtable;
-        struct GridEntityDesc Desc;
+        private struct GridEntityDesc DescValue;
         private int GridIndex;
         private int SpawnFrame;
         private struct RNG RNG;

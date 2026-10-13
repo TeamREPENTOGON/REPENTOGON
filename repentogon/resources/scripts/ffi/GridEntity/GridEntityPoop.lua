@@ -1,7 +1,7 @@
 ffi.cdef[[
     struct GridEntityPoop {
         padding void* vtable;
-        struct GridEntityDesc Desc;
+        private struct GridEntityDesc DescValue;
         private int GridIndex;
         private int SpawnFrame;
         private struct RNG RNG;
@@ -52,13 +52,13 @@ GridEntityPoopMT = {
         repentogon.L_GridEntityPoop_PostInit(self)
     end,
     ReduceSpawnRate = function(self)
-        self.Desc.VarData = 1
+        ffi.getprivate(self, "DescValue").VarData = 1
     end,
     RespawnRedPoop = function(self)
         -- Crazy that we're already at the point where we can just reimplement functions and they'll be close to C speed.
         -- Original C speed after 1,000,000 iters: {320ms}, direct C exposure {90 ms}, this reimplementation {150 ms}
-        if self.Desc.Variant == 1 then
-            self.Desc.State = 1000
+        if ffi.getprivate(self, "DescValue").Variant == 1 then
+            ffi.getprivate(self, "DescValue").State = 1000
             self.ReviveTimer = 120
             self.CollisionClass = 0
 

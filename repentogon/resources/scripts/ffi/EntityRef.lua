@@ -4,7 +4,7 @@ ffi.cdef [[
         int Variant;
         int SpawnerType;
         int SpawnerVariant;
-        struct Vector Position;
+        private struct Vector PositionValue;
         private struct Vector Velocity; // No idea why John Nicalis didn't expose this
         private int Flags;
         private struct Entity* EntityValue;
@@ -30,6 +30,9 @@ EntityRefMT.__index = function(self, key)
     if key == "Entity" then
         local result = ffi.getprivate(self, "EntityValue") return result
     end
+    if key == "Position" then
+        return ffichecks.copyvector(ffi.getprivate(self, "PositionValue"))
+    end
     if key == "IsCharmed" then
         return (ffi.getprivate(self, "Flags") & FLAG_CHARMED) ~= 0
     end
@@ -42,6 +45,11 @@ end
 EntityRefMT.__newindex = function(self, key, value)
     if key == "Entity" then
         ffi.setprivate(self, "EntityValue", ffichecks.entitytopointer(value))
+        return
+    end
+    if key == "Position" then
+        ffichecks.checkcdata(1, value, "Vector")
+        ffi.setprivate(self, "PositionValue", value)
         return
     end
     if key == "IsCharmed" then

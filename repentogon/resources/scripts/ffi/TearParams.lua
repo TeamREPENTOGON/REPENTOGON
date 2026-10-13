@@ -2,9 +2,9 @@ ffi.cdef[[
 struct TearParams {
     int TearVariant;
     int BombVariant;
-    struct Color TearColor;
+    private struct Color TearColorValue;
     padding char[0x04]; // Unused field internally.
-    struct BitSet128 TearFlags;
+    private struct BitSet128 TearFlagsValue;
     float TearDamage;
     float TearScale;
     float TearHeight;
@@ -17,6 +17,14 @@ struct TearParams {
 typedef struct TearParams* TearParamsPtr;
 ]]
 
+local ffi = ffi
+
+local function CopyStruct(ctype, reference)
+    local copy = ffi.new(ctype)
+    ffi.copy(copy, reference, ffi.sizeof(ctype))
+    return copy
+end
+
 local TearParamsMT
 TearParamsMT = {
     __type = "TearParams",
@@ -25,6 +33,12 @@ TearParamsMT = {
 TearParamsMT.__index = function(self, key)
     if key == "TearDisplacement" then
         local result = ffi.getprivate(self, "_TearDisplacement") return result
+    end
+    if key == "TearColor" then
+        return CopyStruct("struct Color", ffi.getprivate(self, "TearColorValue"))
+    end
+    if key == "TearFlags" then
+        return CopyStruct("struct BitSet128", ffi.getprivate(self, "TearFlagsValue"))
     end
 
     return TearParamsMT[key]
@@ -40,6 +54,17 @@ TearParamsMT.__newindex = function(self, key, value)
         end
 
         ffi.setprivate(self, "_TearDisplacement", value)
+        return
+    end
+    if key == "TearColor" then
+        ffichecks.checkcdata(1, value, "Color")
+        ffi.setprivate(self, "TearColorValue", value)
+        return
+    end
+    if key == "TearFlags" then
+        ffichecks.checkcdata(1, value, "BitSet128")
+        ffi.setprivate(self, "TearFlagsValue", value)
+        return
     end
 end
 
