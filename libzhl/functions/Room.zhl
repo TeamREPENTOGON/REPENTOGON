@@ -94,6 +94,9 @@ __thiscall void Room::MakeDoor(int slot);
 "558bec83ec0ca1????????53894d":
 __thiscall bool Room::TrySpawnSpecialQuestDoor();
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec83ec40807b??00":
+__thiscall bool Room::TrySpawnSecretExit(bool animate, bool force);
+
 "558bec6aff68????????64a1????????5081ec1801000056":
 __thiscall void Room::SaveState();
 

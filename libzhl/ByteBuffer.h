@@ -27,7 +27,7 @@ public:
 		T result = t;
 		if (endianConvert) {
 			if constexpr (sizeof(T) == 1)
-				return AddAny(t, 1);
+				return AddAny(&t, 1);
 			else if constexpr (sizeof(T) == 2) {
 				result = _byteswap_ushort(t);
 			} else if constexpr (sizeof(T) == 4) {

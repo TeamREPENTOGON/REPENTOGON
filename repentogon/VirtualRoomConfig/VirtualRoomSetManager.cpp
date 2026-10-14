@@ -54,6 +54,7 @@ struct Data
 	std::vector<_VirtualRoomSet> roomSets;
 	// { StbType, Mode, RoomType }
 	std::map<std::tuple<uint32_t, int, int>, RoomConfig_VariantSet> customVariantSets;
+	bool ignoreStageOverride = false;
 };
 
 static Data& GetData() {
@@ -1133,6 +1134,22 @@ void VirtualRoomSetManager::TryInitializeSet(uint32_t stageId)
 	}
 }
 
+RoomConfig_Room* VirtualRoomSetManager::GetRoomByStageTypeAndVariant_IgnoreStageOverride(uint32_t stage, uint32_t type, uint32_t variant, int mode)
+{
+	GetData().ignoreStageOverride = StageManager::GetCurrentOverride().IsOverridden(stage);
+	RoomConfig_Room* room = g_Game->GetRoomConfig()->GetRoomByStageTypeAndVariant(stage, type, variant, mode);
+	GetData().ignoreStageOverride = false;
+	return room;
+}
+
+RoomConfig_Room* VirtualRoomSetManager::GetRandomRoom_IgnoreStageOverride(uint32_t seed, bool reduceWeight, int stage, int roomType, int roomShape, uint32_t minVariant, int maxVariant, int minDifficulty, int maxDifficulty, uint32_t* requiredDoors, uint32_t roomSubtype, int mode)
+{
+	GetData().ignoreStageOverride = StageManager::GetCurrentOverride().IsOverridden(stage);
+	RoomConfig_Room* room = g_Game->GetRoomConfig()->GetRandomRoom(seed, reduceWeight, stage, roomType, roomShape, minVariant, maxVariant, minDifficulty, maxDifficulty, requiredDoors, roomSubtype, mode);
+	GetData().ignoreStageOverride = false;
+	return room;
+}
+
 RoomConfig_Room* VirtualRoomSet::operator[](size_t index)
 {
 	const _VirtualRoomSet& virtualSet = GetData().roomSets[this->m_id];
@@ -1354,11 +1371,12 @@ HOOK_METHOD(RoomConfig, LoadStageBinary, (uint32_t Stage, uint32_t Mode) -> void
 
 HOOK_METHOD(RoomConfig, GetRoomByStageTypeAndVariant, (unsigned int stage, unsigned int type, unsigned int variant, int mode) -> RoomConfig_Room*)
 {
-	//int originalStage = stage;
-	
-	if (auto& stageOverride = StageManager::GetCurrentOverride(); stageOverride.IsOverridden(stage))
+	if (!GetData().ignoreStageOverride)
 	{
-		stage = stageOverride.GetCustomStageID();
+		if (auto& stageOverride = StageManager::GetCurrentOverride(); stageOverride.IsOverridden(stage))
+		{
+			stage = stageOverride.GetCustomStageID();
+		}
 	}
 
 	RoomConfig_Room* room = nullptr;
@@ -1372,14 +1390,6 @@ HOOK_METHOD(RoomConfig, GetRoomByStageTypeAndVariant, (unsigned int stage, unsig
 		room = ::GetRoomById(stage, type, variant, mode);
 	}
 
-	// TODO: Custom variants of something like Home will crash if they don't either implement custom floor generation or include replacements for the usual Home elements.
-	// I do not think this is a good way to handle that, but leaving this commented out for now as a note for later.
-	// Unsure what all floors are affected by this. Blue Womb. Downpour mirror room seems to also apply. Maybe more? Need to think about how to best handle that.
-	//if (!room && stage != originalStage)
-	//{
-	//	room = super(originalStage, type, variant, mode);
-	//}
-
 	if (!room)
 	{
 		KAGE::_LogMessage(0, "[warn] StageID %d Room type %d, variant %d, mode %d not found!\n", stage, type, variant, mode);
@@ -1390,16 +1400,12 @@ HOOK_METHOD(RoomConfig, GetRoomByStageTypeAndVariant, (unsigned int stage, unsig
 
 HOOK_METHOD(RoomConfig, GetRooms, (int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* doors, unsigned int subtype, int mode) -> RoomConfigRoomPtrVector)
 {
-	//int originalStage = stage;
-
-	// TODO: This was the easiest way to apply the rooms for the custom stage, since we can't let the vanilla game throw around custom StbTypes much.
-	// However, this means that attempting to actually fetch the rooms from the overridden stage is impossible.
-	// I think this only really affects calls from lua, and only if you're specifically trying to fetch the rooms from the base stage of the current custom stage.
-	// Still, need to account for that somehow. Maybe just having some context that the call is coming from lua would be good enough.
-
-	if (auto& stageOverride = StageManager::GetCurrentOverride(); stageOverride.IsOverridden(stage))
+	if (!GetData().ignoreStageOverride)
 	{
-		stage = stageOverride.GetCustomStageID();
+		if (auto& stageOverride = StageManager::GetCurrentOverride(); stageOverride.IsOverridden(stage))
+		{
+			stage = stageOverride.GetCustomStageID();
+		}
 	}
 
 	RoomConfigRoomPtrVector rooms;
@@ -1411,11 +1417,15 @@ HOOK_METHOD(RoomConfig, GetRooms, (int stage, int type, int shape, int minVarian
 	_VirtualRoomSet& virtualSet = GetVirtualRoomSet(stage, mode);
 	FilterRooms(rooms, virtualSet, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, *doors, subtype);
 
-	//if (rooms.empty() && stage != originalStage) {
-	//	return super(originalStage, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode);
-	//}
-
 	return rooms;
+}
+
+HOOK_METHOD(RoomConfig, GetRandomRoomFromOptionalStage, (uint32_t seed, bool reduceWeight, int stage1, int stage2, int type, int shape, int unusedMinVariant, int unusedMaxVariant, int minDifficulty, int maxDifficulty, uint32_t* doors, int subtype, int unusedMode) -> RoomConfig_Room*) {
+	RoomConfig_Room* room = super(seed, reduceWeight, stage1, stage2, type, shape, unusedMinVariant, unusedMaxVariant, minDifficulty, maxDifficulty, doors, subtype, unusedMode);
+	if (!room && StageManager::GetCurrentOverride().IsOverridden(stage2)) {
+		return VirtualRoomSetManager::GetRandomRoom_IgnoreStageOverride(seed, reduceWeight, stage2, type, shape, 0, -1, minDifficulty, maxDifficulty, doors, subtype, -1);
+	}
+	return room;
 }
 
 HOOK_STATIC(Level, write_room_config, (RoomConfig_Room* roomConfig, GameStateRoomConfig* gameStateRoom, std_deque_RoomConfigRoom* deque) -> void, __stdcall)
