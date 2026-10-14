@@ -33,6 +33,18 @@ public:
 		XMLAttributes xmlData = XMLStuff.StageData->GetNodeById(stageId);
 		XMLAttributes baseXmlData = xmlData;
 
+		_baseStageId = _stageId;
+		_hidden = stageId == STB_MORTIS;
+		_disableQuests = false;
+
+		_isFlooded = stageId == STB_DOWNPOUR || stageId == STB_DROSS;
+		_isRainy = stageId == STB_DOWNPOUR || stageId == STB_DROSS;
+		_hasThunder = stageId == STB_DOWNPOUR;
+		_dripChance = 0.0f;  // Not bothering to deduce all the vanilla values for this, don't need it.
+		_emberChance = 0.0f;
+		_hasDustStorm = stageId == STB_ASHPIT;
+		_noBugs = false;
+
 		if (stageId >= NUM_STB) {
 			// Custom Stage
 			int baseStage = std::atoi(xmlData["basestage"].c_str());
@@ -47,6 +59,15 @@ public:
 			_baseStageId = baseStage;
 
 			_achievement = std::atoi(xmlData["achievement"].c_str());
+			_disableQuests = xmlData["noquests"] == "true";
+
+			_isFlooded = xmlData["flooded"] == "true";
+			_isRainy = xmlData["rain"] == "true";
+			_hasThunder = xmlData["thunder"] == "true";
+			_hasDustStorm = xmlData["duststorm"] == "true";
+			_noBugs = xmlData["nobugs"] == "true";
+			_dripChance = (float)std::clamp(std::atof(xmlData["dripchance"].c_str()), 0.0, 1.0);
+			_emberChance = (float)std::clamp(std::atof(xmlData["emberchance"].c_str()), 0.0, 1.0);
 
 			for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
 				std::string modid = mod->GetId() ? mod->GetId() : "";
@@ -60,9 +81,6 @@ public:
 			}
 		} else {
 			// Vanilla Stage
-			_baseStageId = _stageId;
-			_hidden = stageId == STB_MORTIS;
-
 			if (s_VanillaStageAchievements.count(stageId)) {
 				_achievement = s_VanillaStageAchievements.at(stageId);
 			} else {
@@ -172,6 +190,38 @@ public:
 		return _achievement;
 	}
 
+	inline bool DisableQuests() const {
+		return _disableQuests;
+	}
+
+	inline bool IsFlooded() const {
+		return _isFlooded;
+	}
+
+	inline bool HasDustStorm() const {
+		return _hasDustStorm;
+	}
+	
+	inline bool IsRainy() const {
+		return _isRainy;
+	}
+	
+	inline bool HasThunder() const {
+		return _hasThunder;
+	}
+	
+	inline bool NoBugs() const {
+		return _noBugs;
+	}
+	
+	inline float GetDripChance() const {
+		return _dripChance;
+	}
+
+	inline float GetEmberChance() const {
+		return _emberChance;
+	}
+
 	inline int GetStageType() const {
 		return _stageType;
 	}
@@ -217,7 +267,15 @@ private:
 
 	// Custom stage attributes
 	bool _hidden;
-	bool _achievement;
+	bool _disableQuests;
+	bool _noBugs;
+	bool _isFlooded;
+	bool _isRainy;
+	bool _hasThunder;
+	bool _hasDustStorm;
+	float _dripChance;
+	float _emberChance;
+	int _achievement;
 	ModEntry* _mod = nullptr;
 };
 
@@ -283,5 +341,7 @@ private:
 
 StageOverride& GetOverride(int slot);
 StageOverride& GetCurrentOverride();
+StageConfig* GetCurrentCustomStage();
+bool DisableVanillaQuests();
 
 }  // namespace StageManager

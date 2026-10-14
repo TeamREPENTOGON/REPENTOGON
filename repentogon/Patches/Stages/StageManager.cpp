@@ -142,6 +142,20 @@ StageOverride& GetCurrentOverride() {
 	return GetOverride(g_Manager->_currentSaveSlot);
 }
 
+StageConfig* GetCurrentCustomStage() {
+	if (Isaac::IsInGame() && GetCurrentOverride().HasOverride()) {
+		return GetStage(GetCurrentOverride().GetCustomStageID());
+	}
+	return nullptr;
+}
+
+bool DisableVanillaQuests() {
+	if (auto* stage = GetCurrentCustomStage()) {
+		return stage->DisableQuests();
+	}
+	return false;
+}
+
 static bool s_SettingNextStage = false;
 static uint32_t s_SettingCustomStage = 0;
 
