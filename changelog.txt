@@ -18,6 +18,10 @@ Added:
 	- MC_POST_GAME_STATE_SAVE
 	- MC_PRE_GAME_STATE_RESTORE
 	- MC_POST_GAME_STATE_RESTORE
+* Isaac:
+    - Added overloads for the ModData functions that accept a custom filename.
+* ModReference:
+    - Added overloads for the Data functions that accept a custom filename.
 * EntityNPC:
 	- GetLootList(bool ShouldAdvance = false)
 		Generic replacement for GetFireplaceLoot and GetShopkeeperLoot that enables LootList for all NPCs.

@@ -9,6 +9,11 @@ error("This file should not have been included")
 ---@field LoadModData fun(mod: ModReference, fileName: string): string?
 ---@field RemoveModData fun(mod: ModReference, fileName: string)
 ---@field RemoveAllData fun(fileName: string)
+---@field ModReference_HasModFile fun(mod: ModReference, fileName: string): boolean
+---@field ModReference_SaveModFile fun(mod: ModReference, fileName: string, data: string): boolean
+---@field ModReference_LoadModFile fun(mod: ModReference, fileName: string): string?
+---@field ModReference_RemoveModFile fun(mod: ModReference, fileName: string)
+
 
 ---@class REPENTOGON._CBindings.ESSM
 ---@field GetEntitySaveStateId fun(ess: EntitiesSaveState): integer

@@ -1995,6 +1995,48 @@ rawset(Isaac, "RunCallbackWithTwoParams", _RunCallbackWithTwoParams)
 ---- MISC STUFF
 -----------------------------------------------------------------------------------------------------
 
+local Original_HasModData = Isaac.HasModData
+local Original_SaveModData = Isaac.SaveModData
+local Original_LoadModData = Isaac.LoadModData
+local Original_RemoveModData = Isaac.RemoveModData
+
+local ModReference_HasModFile = _CBindings.ModReference_HasModFile
+local ModReference_SaveModFile = _CBindings.ModReference_SaveModFile
+local ModReference_LoadModFile = _CBindings.ModReference_LoadModFile
+local ModReference_RemoveModFile = _CBindings.ModReference_RemoveModFile
+
+rawset(Isaac, "HasModData", function(modRef, filename)
+    if filename ~= nil then
+        return ModReference_HasModFile(modRef, filename)
+    else
+        return Original_HasModData(modRef)
+    end
+end)
+
+rawset(Isaac, "SaveModData", function(modRef, data, filename)
+    if filename ~= nil then
+        return ModReference_SaveModFile(modRef, filename, data)
+    else
+        return Original_SaveModData(modRef, data)
+    end
+end)
+
+rawset(Isaac, "LoadModData", function(modRef, filename)
+    if filename ~= nil then
+        return ModReference_LoadModFile(modRef, filename)
+    else
+        return Original_LoadModData(modRef)
+    end
+end)
+
+rawset(Isaac, "RemoveModData", function(modRef, filename)
+    if filename ~= nil then
+        return ModReference_RemoveModFile(modRef, filename)
+    else
+        return Original_RemoveModData(modRef)
+    end
+end)
+
 --Menuman Hub
 MenuManager.MainMenu = MainMenu
 MenuManager.CharacterMenu = CharacterMenu
@@ -2040,6 +2082,11 @@ function RegisterMod(name, ver)
 	local out = oldregmod(name, ver)
 	out.Repentogon = REPENTOGON
 	ModManager.detail.RegisterMod(out)
+
+    out.SaveData = function(self, ...) return Isaac.SaveModData(self, ...) end
+    out.LoadData = function(self, ...) return Isaac.LoadModData(self, ...) end
+    out.HasData = function(self, ...) return Isaac.HasModData(self, ...) end
+    out.RemoveData = function(self, ...) Isaac.RemoveModData(self, ...) end
 
 	return out
 end
