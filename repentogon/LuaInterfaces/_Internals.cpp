@@ -1,5 +1,6 @@
 #include "_Internals.h"
 #include <fstream>
+#include <regex>
 
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
@@ -67,7 +68,7 @@ LUA_FUNCTION(Lua_GetModId)
 	return 1;
 }
 
-bool lua_save_mod_data(ModReference& mod, std::string_view fileName, std::string_view data)
+static bool save_mod_file(ModReference& mod, std::string_view fileName, std::string_view data)
 {
 	std::filesystem::path path = GetModDataPath(mod, fileName);
 	bool exists = REPENTOGON::EnsureParentPathExists(path);
@@ -88,7 +89,7 @@ bool lua_save_mod_data(ModReference& mod, std::string_view fileName, std::string
 	return true;
 }
 
-std::optional<std::string> lua_load_mod_data(ModReference& mod, std::string_view fileName)
+static std::optional<std::string> load_mod_file(ModReference& mod, std::string_view fileName)
 {
 	std::filesystem::path path = GetModDataPath(mod, fileName);
 	std::error_code errorCode;
@@ -122,7 +123,7 @@ std::optional<std::string> lua_load_mod_data(ModReference& mod, std::string_view
 	return data;
 }
 
-void remove_file(const std::filesystem::path& path)
+static void remove_mod_file(const std::filesystem::path& path)
 {
 	std::error_code errorCode;
 	if (!std::filesystem::exists(path, errorCode))
@@ -137,36 +138,75 @@ void remove_file(const std::filesystem::path& path)
 	}
 }
 
-LUA_FUNCTION(Lua_HasModData)
+static bool lua_check_valid_file_name(const std::string_view name, lua_State* L, int argIdx)
 {
-	ModReference& modReference = check_mod_reference(L, 1);
-	std::string_view fileName = check_string_view(L, 2);
+    static const std::regex validFilename(
+        R"re([^\x00-\x1F"*/:<>?\\|]+)re"
+    );
 
-	std::filesystem::path path = GetModDataPath(modReference, fileName);
-	std::error_code errorCode;
-	bool result = std::filesystem::exists(path, errorCode);
-	
-	lua_pushboolean(L, result);
-	return 1;
+    if (!std::regex_match(name.begin(), name.end(), validFilename))
+    {
+        luaL_argerror(L, argIdx, "invalid filename");
+        return false;
+    }
+
+    if (std::filesystem::path(name).extension() != ".dat") // this also covers "." and ".."
+    {
+        luaL_argerror(L, argIdx, "filename must be a .dat file");
+        return false;
+    }
+    
+    return true;
 }
 
-LUA_FUNCTION(Lua_SaveModData)
+template<bool isLuaAPI = false>
+static int HasModData(lua_State* L)
 {
-	ModReference& modReference = check_mod_reference(L, 1);
-	std::string_view fileName = check_string_view(L, 2);
-	std::string_view data = check_string_view(L, 3);
+    ModReference& modReference = check_mod_reference(L, 1);
+    std::string_view fileName = check_string_view(L, 2);
 
-	bool success = lua_save_mod_data(modReference, fileName, data);
-	lua_pushboolean(L, success);
-	return 1;
+    if constexpr (isLuaAPI)
+    {
+        lua_check_valid_file_name(fileName, L, 2);
+    }
+
+    std::filesystem::path path = GetModDataPath(modReference, fileName);
+    std::error_code errorCode;
+    bool result = std::filesystem::exists(path, errorCode);
+
+    lua_pushboolean(L, result);
+    return 1;
 }
 
-LUA_FUNCTION(Lua_LoadModData)
+template<bool isLuaAPI = false>
+static int SaveModData(lua_State* L)
+{
+    ModReference& modReference = check_mod_reference(L, 1);
+    std::string_view fileName = check_string_view(L, 2);
+    std::string_view data = check_string_view(L, 3);
+
+    if constexpr (isLuaAPI)
+    {
+        lua_check_valid_file_name(fileName, L, 2);
+    }
+
+    bool success = save_mod_file(modReference, fileName, data);
+    lua_pushboolean(L, success);
+    return 1;
+}
+
+template<bool isLuaAPI = false>
+static int LoadModData(lua_State* L)
 {
 	ModReference& modReference = check_mod_reference(L, 1);
 	std::string_view fileName = check_string_view(L, 2);
 
-	std::optional<std::string> result = lua_load_mod_data(modReference, fileName);
+    if constexpr (isLuaAPI)
+    {
+        lua_check_valid_file_name(fileName, L, 2);
+    }
+
+	std::optional<std::string> result = load_mod_file(modReference, fileName);
 	if (result.has_value())
 	{
 		const std::string& data = *result;
@@ -180,14 +220,40 @@ LUA_FUNCTION(Lua_LoadModData)
 	return 1;
 }
 
-LUA_FUNCTION(Lua_RemoveModData)
+template<bool isLuaAPI = false>
+static int RemoveModData(lua_State* L)
 {
 	ModReference& modReference = check_mod_reference(L, 1);
 	std::string_view fileName = check_string_view(L, 2);
 
+    if constexpr (isLuaAPI)
+    {
+        lua_check_valid_file_name(fileName, L, 2);
+    }
+
 	std::filesystem::path path = GetModDataPath(modReference, fileName);
-	remove_file(path);
+	remove_mod_file(path);
 	return 0;
+}
+
+LUA_FUNCTION(Lua_HasModData)
+{
+    return HasModData<false>(L);
+}
+
+LUA_FUNCTION(Lua_SaveModData)
+{
+	return SaveModData<false>(L);
+}
+
+LUA_FUNCTION(Lua_LoadModData)
+{
+	return LoadModData<false>(L);
+}
+
+LUA_FUNCTION(Lua_RemoveModData)
+{
+	return RemoveModData<false>(L);
 }
 
 LUA_FUNCTION(Lua_RemoveAllData)
@@ -207,7 +273,7 @@ LUA_FUNCTION(Lua_RemoveAllData)
 		if (it->is_directory(ec) && !ec)
 		{
 			const fs::path& path = it->path() / fileName;
-			remove_file(path);
+			remove_mod_file(path);
 		}
 		
 		ec.clear();
@@ -215,6 +281,26 @@ LUA_FUNCTION(Lua_RemoveAllData)
 	}
 
 	return 0;
+}
+
+LUA_FUNCTION(ModReference_HasModData)
+{
+    return HasModData<true>(L);
+}
+
+LUA_FUNCTION(ModReference_SaveModData)
+{
+    return SaveModData<true>(L);
+}
+
+LUA_FUNCTION(ModReference_LoadModData)
+{
+    return LoadModData<true>(L);
+}
+
+LUA_FUNCTION(ModReference_RemoveModData)
+{
+    return RemoveModData<true>(L);
 }
 
 void LuaInternals::RegisterInternals(lua_State *L)
@@ -226,6 +312,10 @@ void LuaInternals::RegisterInternals(lua_State *L)
 	lua::TableAssoc(L, "LoadModData", Lua_LoadModData);
 	lua::TableAssoc(L, "RemoveModData", Lua_RemoveModData);
 	lua::TableAssoc(L, "RemoveAllData", Lua_RemoveAllData);
+    lua::TableAssoc(L, "ModReference_HasModFile", ModReference_HasModData);
+    lua::TableAssoc(L, "ModReference_SaveModFile", ModReference_SaveModData);
+    lua::TableAssoc(L, "ModReference_LoadModFile", ModReference_LoadModData);
+    lua::TableAssoc(L, "ModReference_RemoveModFile", ModReference_RemoveModData);
 
 	lua_newtable(L);
 	{
