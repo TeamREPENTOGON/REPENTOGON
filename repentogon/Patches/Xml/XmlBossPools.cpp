@@ -406,40 +406,6 @@ void BuildXmlSourceText(char* sourceText)
     // reset
     s_sourceCache = std::string();
     rapidxml::print(std::back_inserter(s_sourceCache.value()), doc);
-
-    // OLD iterator
-    // std::string filePath = FILE_NAME;
-    // for (ModEntry* mod : g_Manager->GetModManager()->_mods)
-    // {
-    //     if (!mod->_loaded) continue;
-
-    //     std::string contentPath;
-    //     mod->GetContentPath(&contentPath, &filePath);
-    //     std::optional<std::string> expandedPath = g_ContentManager.GetMountedFilePath(contentPath.c_str());
-
-    //     if (!expandedPath)
-    //     {
-    //         continue;
-    //     }
-
-    //     std::unique_ptr<rapidxml::xml_document<char>> contentDocPtr = std::make_unique<rapidxml::xml_document<char>>();
-    //     rapidxml::xml_document<char>& contentDoc = *contentDocPtr.get();
-    //     std::string contentSourceText;
-    //     dump_source_text(contentSourceText, expandedPath.value());
-    //     if (!XML::ParseDoc(contentDoc, contentSourceText.data(), expandedPath.value()))
-    //     {
-    //         continue;
-    //     }
-
-    //     auto* contentRoot = contentDoc.first_node(NODE_ROOT);
-    //     if (!contentRoot)
-    //     {
-    //         continue;
-    //     }
-        
-    //     ctx.BeginNewDoc(&contentDoc, XML::GetModId(mod));
-    //     process_root(ctx, contentRoot);
-    // }
 }
 
 void XMLBossPools::BuildDefaultDoc(rapidxml::xml_document<char> &doc)

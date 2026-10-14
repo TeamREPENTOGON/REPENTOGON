@@ -7,7 +7,7 @@
 #include "../MiscFunctions.h"
 #include "ASMPatcher.hpp"
 #include "ASMPatches.h"
-#include "GameStateManagement.h"
+#include "../SaveStateManagement/GameStateManagement.h"
 #include "../Utils/EntitySaveStateUtils.h"
 
 #include "rapidxml.hpp"
