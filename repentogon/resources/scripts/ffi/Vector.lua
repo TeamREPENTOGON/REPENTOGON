@@ -199,10 +199,15 @@ Vector = setmetatable({
 		local radians = math.rad(angle)
 		local result = VectorT(math.cos(radians), math.sin(radians)) return result
 	end,
-    Zero = VectorT(0, 0),
-    One = VectorT(1, 1)
 }, {
     __call = function(_, X, Y) local v = VectorT(X or 0, Y or 0) return v end,
+    __index = function(_, key)
+        if key == "Zero" then
+            local result = VectorT(0, 0) return result
+        elseif key == "One" then
+            local result = VectorT(1, 1) return result
+        end
+    end,
     __class = VectorMT,
 })
 
