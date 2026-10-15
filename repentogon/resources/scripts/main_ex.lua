@@ -520,6 +520,9 @@ local typecheckFunctions = {
 	[ModCallbacks.MC_PRE_SELECT_GREED_WAVE] = {
 		["Room"] = true,
 	},
+    [ModCallbacks.MC_SHOULD_SAVE_ENTITY] = {
+        ["boolean"] = true,
+    }
 }
 
 local typecheckWarnFunctions = {

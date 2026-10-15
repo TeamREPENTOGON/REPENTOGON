@@ -31,4 +31,6 @@ namespace CustomCallbacks
     void POST_GLOWING_HOURGLASS_SAVE(size_t hourglassSlot);
     void PRE_GLOWING_HOURGLASS_LOAD(size_t hourglassSlot);
     void POST_GLOWING_HOURGLASS_LOAD(size_t hourglassSlot);
+
+    bool SHOULD_SAVE_ENTITY(Entity& entity, bool shouldSave, bool isRoomClear);
 }
