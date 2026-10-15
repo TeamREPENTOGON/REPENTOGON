@@ -18,8 +18,8 @@ Added:
 	- MC_POST_GAME_STATE_SAVE
 	- MC_PRE_GAME_STATE_RESTORE
 	- MC_POST_GAME_STATE_RESTORE
-    - POST_ENTITY_SAVE(Entity)
-    - POST_ENTITY_RESTORE(Entity)
+    - ENTITY_SAVE(Entity)
+    - ENTITY_RESTORE(Entity)
 * Isaac:
     - Added overloads for the ModData functions that accept a custom filename.
 * ModReference:
