@@ -40,6 +40,8 @@ end
 
 io = nil
 
+GetPtrHash = ffichecks.ptrhash(GetPtrHash)
+
 do
 	local _orig_getmetatable = getmetatable
 	local _dgmt = (type(debug) == "table" and debug.getmetatable) or nil

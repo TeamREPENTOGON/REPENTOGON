@@ -184,6 +184,7 @@ lffi.cdef [[
 	const char* L_StdString_CStr(const struct StdString*);
 	void L_StdString_Assign(struct StdString*, const char*);
 	void L_Isaac_DebugString(const char*);
+	const uint32_t* L_LuaEngine_GetPointerMask();
 ]]
 
 local repentogon = ffidll
@@ -512,6 +513,31 @@ for _, mt in ipairs(metatypes) do
 	end
 end
 
+
+ffichecks.ptrhash = function(CGetPtrHash)
+	local rawgetmetatable = getmetatable
+	local typeof, cast, tonumber = lffi.typeof, lffi.cast, tonumber
+	local uintptrT = typeof("uintptr_t")
+	local mask = repentogon.L_LuaEngine_GetPointerMask()
+	local pointerTypes = {}
+	for _, name in ipairs({
+		"Entity", "EntityBomb", "EntityDelirium", "EntityEffect", "EntityFamiliar", "EntityKnife", "EntityLaser",
+		"EntityNPC", "EntityPickup", "EntityPlayer", "EntityProjectile", "EntitySlot", "EntityTear",
+		"GridEntity", "GridEntityDecoration", "GridEntityDoor", "GridEntityFire", "GridEntityGravity", "GridEntityLock",
+		"GridEntityPit", "GridEntityPoop", "GridEntityPressurePlate", "GridEntityRock", "GridEntitySpikes",
+		"GridEntityStairs", "GridEntityStatue", "GridEntityTNT", "GridEntityTeleporter", "GridEntityTrapDoor",
+		"GridEntityWall", "GridEntityWeb",
+	}) do
+		local ok, ctype = pcall(typeof, "struct " .. name .. "*")
+		if ok then pointerTypes[tonumber(ctype)] = true end
+	end
+	return function(object)
+		if rawgetmetatable(object) == "ffi" and pointerTypes[tonumber(typeof(object))] then
+			local result = tonumber(cast(uintptrT, object)) ~ mask[0] return result
+		end
+		local result = CGetPtrHash(object) return result
+	end
+end
 
 ffi = nil
 ffidll = nil

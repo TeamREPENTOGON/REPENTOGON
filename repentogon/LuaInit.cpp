@@ -454,6 +454,10 @@ LUA_FUNCTION(Lua_GetPtrHash) {
 	return luaL_error(L, "The parameter is not a userdata or cdata!");
 }
 
+MOD_EXPORT const uint32_t* L_LuaEngine_GetPointerMask() {
+	return &g_LuaEngine->_pointerMask;
+}
+
 HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 100, () -> void) {
 	super();
 	ZHL::Log("[REPENTOGON] Registering Lua functions and metatables\n");
