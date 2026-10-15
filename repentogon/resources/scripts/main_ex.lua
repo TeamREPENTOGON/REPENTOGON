@@ -2293,10 +2293,26 @@ local _SSM = {
     CleanupState = SSM._CleanupState,
 }
 
+---@param entity Entity
+---@param entityId integer
+---@param saveStateId integer
+local function ESSM_StoreEntity(entity, entityId, saveStateId)
+    Isaac.RunCallback(ModCallbacks.MC_ENTITY_SAVE, entity)
+    ESSM._OnStoreEntity(entityId, saveStateId)
+end
+
+---@param entity Entity
+---@param entityId integer
+---@param saveStateId integer
+local function ESSM_RestoreEntity(entity, entityId, saveStateId)
+    ESSM._OnRestoreEntity(entityId, saveStateId)
+    Isaac.RunCallback(ModCallbacks.MC_ENTITY_RESTORE, entity)
+end
+
 ---@type REPENTOGON._LuaBindings.ESSM
 local _ESSM = {
-	StoreEntity = ESSM._OnStoreEntity,
-	RestoreEntity = ESSM._OnRestoreEntity,
+	StoreEntity = ESSM_StoreEntity,
+	RestoreEntity = ESSM_RestoreEntity,
 	ClearStates = ESSM._OnClearSaveStates,
 	CopyStates = ESSM._OnCopySaveStates,
 	Serialize = ESSM._Serialize,
