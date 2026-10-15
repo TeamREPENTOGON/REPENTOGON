@@ -14,7 +14,24 @@ collectgarbage("setpause", 125)
 collectgarbage("setstepmul", 200)
 jit.opt.start('maxtrace=20000', 'maxmcode=32768')
 local builtinIpairs = ipairs
+local string_find, string_gmatch, string_gsub, string_match = string.find, string.gmatch, string.gsub, string.match
 require("compat53.init")
+
+-- Use the original LuaJIT string.x functions unless a pattern contains NUL, at which point use compat53's.
+-- We're doing this because compat53's doesn't trace as efficiently, it rewrites NUL to %z which takes time!
+do
+	local type = type
+	local function fixPattern(pattern)
+		if type(pattern) ~= "string" or string_find(pattern, "\0", 1, true) then
+			return (string_gsub(pattern, "%z", "%%z"))
+		end
+		return pattern
+	end
+	string.find = function(s, pattern, ...) return string_find(s, fixPattern(pattern), ...) end
+	string.gmatch = function(s, pattern) return string_gmatch(s, fixPattern(pattern)) end
+	string.gsub = function(s, pattern, ...) return string_gsub(s, fixPattern(pattern), ...) end
+	string.match = function(s, pattern, ...) return string_match(s, fixPattern(pattern), ...) end
+end
 
 -- compat53 overrides ipairs with one that's Lua 5.3 compliant, which is all well and good,
 -- except it does pointer arithmetic on cdata! Not Good!
