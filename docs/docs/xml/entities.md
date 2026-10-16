@@ -54,6 +54,9 @@ Repentogon itself adds some tags that can be used to apply certain behaviours to
 | familiarcantakedamage | Familiars with baseHP above 0 will be able to take damage and die, such as from enemy contact, lasers or explosions. Note that they will only take damage from projectiles if they also have the "familiarblockprojectiles" tag. |
 | familiarblockprojectiles | The familiar automatically destroys enemy projectiles on contact. |
 | nocharm | Makes the familiar not be charmed by Siren. |
+| noerase | Prevents the entity from being erased by the Eraser effect, even if its Type+Variant has already been erased. |
+| norerollpickup | Pickups only. Prevents rerolls, Jera, Void, Ace cards, Moving Box, etc. |
+| nojera | Pickups only. Prevents duplication via Jera. Note that this tag is unnecessary if norerollpickup is also used. |
 
 ???+ note "More Info"
     For more information about this xml, check the original docs entry [here](https://wofsauge.github.io/IsaacDocs/rep/xml/entities2.html). 

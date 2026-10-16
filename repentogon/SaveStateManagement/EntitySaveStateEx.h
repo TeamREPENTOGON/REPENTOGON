@@ -85,6 +85,8 @@ class PickupSaveStateEx : public EntitySaveStateEx {
 	std::unique_ptr<EntitySaveStateEx> Copy() override {
 		return std::make_unique<PickupSaveStateEx>(*this);
 	}
+
+	std::optional<bool> _canRerollOverride = std::nullopt;
 };
 
 // Reset the states with the specified ESSM IDs.

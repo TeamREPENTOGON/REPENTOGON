@@ -1,4 +1,5 @@
 ---@alias REPENTOGON.ModId string
+---@class REPENTOGON.ModData
 
 --#region Data
 
@@ -71,12 +72,19 @@ local function GetModReferenceById(modId)
     end
 end
 
+---@return fun(table: table<REPENTOGON.ModId, ModReference[]>, index?: REPENTOGON.ModId): REPENTOGON.ModId, ModReference[]
+---@return table
+local function GetModIterator()
+    return pairs(s_modReferences)
+end
+
 ---@return boolean
 local function ModsLoaded()
     return s_modsLoaded
 end
 
-Module = {}
+---@class REPENTOGON.Scripts.ModManager
+local Module = {}
 Module.detail = {}
 
 Module.detail.RegisterMod = _RegisterMod
@@ -85,5 +93,6 @@ Module.detail.OnModsLoaded = _OnModsLoaded
 Module.GetModIdByReference = GetModIdByReference
 Module.GetModReferenceById = GetModReferenceById
 Module.ModsLoaded = ModsLoaded
+Module.GetModIterator = GetModIterator
 
 return Module

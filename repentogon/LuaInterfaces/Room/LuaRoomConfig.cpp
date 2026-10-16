@@ -120,7 +120,6 @@ LUA_FUNCTION(Lua_RoomConfig_GetStage) {
 	}
 
 	RoomConfig_Stage* configStage = &roomConfig->_stages[stage];
-	ZHL::Log("%p, %p, %d\n", roomConfig, configStage, configStage->_musicId);
 
 	RoomConfig_Stage** ud = (RoomConfig_Stage**)lua_newuserdata(L, sizeof(RoomConfig_Stage*));
 	*ud = configStage;

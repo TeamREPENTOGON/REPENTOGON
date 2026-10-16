@@ -64,6 +64,10 @@ ___
 #### [Vector](Vector.md) GetSize ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetSpritesheet () {: aria-label='Functions' }
+#### [Image](renderer/Image.md)? GetSpritesheet ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetSpritesheetPath () {: aria-label='Functions' }
 #### string GetSpritesheetPath ( ) {: .copyable aria-label='Functions' }
 
@@ -148,6 +152,10 @@ ___
 #### void SetSize ( [Vector](Vector.md) Size ) {: .copyable aria-label='Functions' }
 
 ___
+### SetSpritesheet () {: aria-label='Functions' }
+#### void SetSpritesheet ( [Image](renderer/Image.md) Spritesheet ) {: .copyable aria-label='Functions' }
+
+___
 ### SetVisible () {: aria-label='Functions' }
 #### void SetVisible ( boolean Visible ) {: .copyable aria-label='Functions' }
 
@@ -168,9 +176,3 @@ Sets the wrap mode for the `y` coordinate. See [this website](https://open.gl/te
     Enums for these are pending.
 
 ___
-### GetSpritesheet () {: aria-label='Functions' }
-#### [Image](renderer/Image.md)? GetSpritesheet ( ) {: .copyable aria-label='Functions' }
-
-___
-### SetSpritesheet () {: aria-label='Functions' }
-#### void SetSpritesheet ( [Image](renderer/Image.md) Spritesheet ) {: .copyable aria-label='Functions' }

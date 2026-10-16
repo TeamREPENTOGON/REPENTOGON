@@ -30,7 +30,7 @@ Will also trigger [MC_POST_APPLY_TEARFLAG_EFFECTS](enums/ModCallbacks.md#mc_post
 ___
 ### ClearFlyingOverride () {: aria-label='Functions' }
 #### void ClearFlyingOverride ( ) {: .copyable aria-label='Functions' }
-Removes any value set by [SetFlyingOverride](EntityNPC.md#setflyingoverride)
+Removes any value set by [SetFlyingOverride](EntityNPC.md#setflyingoverride).
 
 ___
 ### FireBossProjectilesEx () {: aria-label='Functions' }
@@ -117,7 +117,8 @@ ___
 
 ___
 ### ShootMaggotProjectile () {: aria-label='Functions' }
-#### static const [EntityNPC](EntityNPC.md) ShootMaggotProjectile ( [Vector](Vector.md) Position, [Vector](Vector.md) Target, float FallingSpeed = -8.0, float YOffset = -24.0 ) {: .copyable aria-label='Functions' }
+[ ](#){: .static .tooltip .badge }
+#### static [EntityNPC](EntityNPC.md) ShootMaggotProjectile ( [Vector](Vector.md) Position, [Vector](Vector.md) Target, float FallingSpeed = -8.0, float YOffset = -24.0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### SpawnBloodCloud () {: aria-label='Functions' }
@@ -129,23 +130,28 @@ ___
 
 ___
 ### ThrowLeech () {: aria-label='Functions' }
-#### static const [EntityNPC](EntityNPC.md) ThrowLeech ( [Vector](Vector.md) Position, [Entity](Entity.md) Source, [Vector](Vector.md) Target, float YPosOffset = -10.0, boolean Big = false ) {: .copyable aria-label='Functions' }
+[ ](#){: .static .tooltip .badge }
+#### static [EntityNPC](EntityNPC.md) ThrowLeech ( [Vector](Vector.md) Position, [Entity](Entity.md) Source, [Vector](Vector.md) Target, float YPosOffset = -10.0, boolean Big = false ) {: .copyable aria-label='Functions' }
 
 ___
 ### ThrowMaggot () {: aria-label='Functions' }
-#### static const [EntityNPC](EntityNPC.md) ThrowMaggot ( [Vector](Vector.md) Origin, [Vector](Vector.md) Velocity, float YOffset = -10.0, float FallSpeed = -8.0 ) {: .copyable aria-label='Functions' }
+[ ](#){: .static .tooltip .badge }
+#### static [EntityNPC](EntityNPC.md) ThrowMaggot ( [Vector](Vector.md) Origin, [Vector](Vector.md) Velocity, float YOffset = -10.0, float FallSpeed = -8.0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### ThrowMaggotAtPos () {: aria-label='Functions' }
-#### static const [EntityNPC](EntityNPC.md) ThrowMaggotAtPos ( [Vector](Vector.md) Origin, [Vector](Vector.md) Target, float YOffset = -8.0 ) {: .copyable aria-label='Functions' }
+[ ](#){: .static .tooltip .badge }
+#### static [EntityNPC](EntityNPC.md) ThrowMaggotAtPos ( [Vector](Vector.md) Origin, [Vector](Vector.md) Target, float YOffset = -8.0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### ThrowRockSpider () {: aria-label='Functions' }
-#### static const [EntityNPC](EntityNPC.md) ThrowRockSpider ( [Vector](Vector.md) Position, [Entity](Entity.md) Source, [Vector](Vector.md) Velocity, int Variant = 0, float YPosOffset = -10.0 ) {: .copyable aria-label='Functions' }
+[ ](#){: .static .tooltip .badge }
+#### static [EntityNPC](EntityNPC.md) ThrowRockSpider ( [Vector](Vector.md) Position, [Entity](Entity.md) Source, [Vector](Vector.md) Velocity, int Variant = 0, float YPosOffset = -10.0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### ThrowStrider () {: aria-label='Functions' }
-#### static const [EntityNPC](EntityNPC.md) ThrowStrider ( [Vector](Vector.md) Position, [Entity](Entity.md) Source, [Vector](Vector.md) Target ) {: .copyable aria-label='Functions' }
+[ ](#){: .static .tooltip .badge }
+#### static [EntityNPC](EntityNPC.md) ThrowStrider ( [Vector](Vector.md) Position, [Entity](Entity.md) Source, [Vector](Vector.md) Target ) {: .copyable aria-label='Functions' }
 
 ___
 ### TryForceTarget () {: aria-label='Functions' }

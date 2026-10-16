@@ -97,6 +97,9 @@ __thiscall void Entity_NPC::Hornfel_UpdateFrame();
 "558bec6aff68????????64a1????????5081ec2c010000":
 static __cdecl void Entity_NPC::moms_heart_mausoleum_death();
 
+"558bec6aff68????????64a1????????5083ec2c535657a1????????33c5508d45??64a3????????8bf18b0d":
+__thiscall void Entity_NPC::UpdatePickupGhosts();
+
 /*
 // Minecart functions
 "558bec51538bd98b8b":
@@ -150,6 +153,7 @@ struct Entity_NPC depends (Vector, NPCAI_Pathfinder, ColorMod) : public Entity {
 	std_vector_uint _hitList : 0xf00;
 	int32_t _controllerID : 0xf1c;
     Entity_Player* _sirenPlayerEntity : 0xf40;
+	Entity_Effect* _pickupGhostsEntity : 0xf50;
 	
     __vtable {
 		skip; // Free
@@ -166,7 +170,11 @@ struct Entity_NPC depends (Vector, NPCAI_Pathfinder, ColorMod) : public Entity {
 		skip; // PostRender
 		skip; // TakeDamage
 		skip; // Kill
-		skip; // Remove
+		
+		override
+		"568bf1817e??62030000":
+		void Remove();
+		
 		skip; // TriggerGlowingHourglass
 		skip; // ???
 		skip; // GetRenderZ

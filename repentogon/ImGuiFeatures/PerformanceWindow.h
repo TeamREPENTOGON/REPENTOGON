@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include "LuaCore.h"
+#include "MultiViewportEnhanced.h"
 
 extern int handleWindowFlags(int flags);
 
@@ -28,7 +29,6 @@ struct PerformanceWindow : ImGuiWindowObject {
 			return;
 		}
 		ImGui::SetNextWindowSize(ImVec2(450, 200), ImGuiCond_FirstUseEver);
-
 		if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
 			AddWindowContextMenu();
 

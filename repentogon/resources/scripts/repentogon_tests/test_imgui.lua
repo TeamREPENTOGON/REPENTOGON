@@ -60,7 +60,7 @@ ImGui.AddText("testWindow3", "", true, "mousePosText")
 ImGui.AddCallback("mousePosText", ImGuiCallback.Render, function(val)
     local mousePos = ImGui.GetMousePosition() -- this is already in imgui coordinates
     ImGui.UpdateText("mousePosText", "ImGui MousePos:\t" .. mousePos.X .. "\t" .. mousePos.Y)
-    ImGui.SetWindowPosition("testWindow3", inputMousepos.X,inputMousepos.Y)
+    ImGui.SetWindowPosition("testWindow3", mousePos.X,mousePos.Y)
 end)
 
 -- open popup via button

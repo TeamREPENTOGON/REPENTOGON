@@ -16,6 +16,7 @@ With REPENTOGON, some attributes have specially mod support capatibilites added 
 |startingitems|string|This now supports modded items by using the names of the items instead of the ids. Same format as in vanilla, a comma separated list of values|
 |startingitems2|string|This now supports modded items by using the names of the items instead of the ids. Same format as in vanilla, a comma separated list of values|
 |startingtrinkets|string|This now supports modded trinkets by using the names of the trinkets instead of the ids. Same format as in vanilla, a comma separated list of values|
+|startingcard|string|This now supports modded cards by using the names of the card instead of the id.|
 |playertype|string|This now supports modded characters by using the name of the character instead of an id. For a tainted character with the same name, append "-Tainted-" to the end of the name|
 |hidden|boolean|Anything but "false" would result in a hidden challenge that wont show up in the menu|
 |achievements|string|Same as vanilla, comma-separated list (without spaces) of achievements required to unlock the challenge, you can use achievement names for modded achievements|

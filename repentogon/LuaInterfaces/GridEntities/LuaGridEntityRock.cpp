@@ -48,6 +48,12 @@ LUA_FUNCTION(Lua_GridEntityRockGetAltRockType)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GridEntityRockGetAltRockType_Static) {
+	int backdrop = (int)luaL_optinteger(L, 1, 0);
+	lua_pushinteger(L, GridEntity_Rock::GetAltRockType(backdrop));
+	return 1;
+}
+
 LUA_FUNCTION(Lua_GridEntityRockRegisterRockDestroyed)
 {
 	GridEntity_Rock* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Rock*>(L, 1, lua::Metatables::GRID_ENTITY_ROCK, "GridEntityRock");
@@ -93,4 +99,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GRID_ENTITY_ROCK, functions);
 	lua::RegisterGlobalClassFunction(_state, "GridEntityRock", "SpawnDrops", Lua_GridEntityRockSpawnDrops);
+	lua::RegisterGlobalClassFunction(_state, "GridEntityRock", "GetAltRockType", Lua_GridEntityRockGetAltRockType_Static);
 }

@@ -10,7 +10,10 @@
 #include "Log.h"
 #include "../../Patches/MainMenuBlock.h"
 #include "../../Patches/EntityManager.h"
+#include "../../Patches/ItemConfigEx.h"
 #include "../XMLPlayerExtras.h"
+#include "../EntityConfigEx.h"
+#include "../../LuaInterfaces/CustomCallbacks.h"
 
 static inline void* get_sig_address(const char* signature, const char* location, const char* callbackName)
 {
@@ -701,14 +704,12 @@ void __stdcall TrySplitTrampoline(Entity_NPC* npc, bool result) {
 				}
 			}
 		}
-		XMLAttributes xmlData = XMLStuff.EntityData->GetNodesByTypeVarSub(npc->_type, npc->_variant, npc->_subtype, false);
-		const std::string nosplit = xmlData["nosplit"];
 
-		if (nosplit == "true") {
-			resSplit = true;
-		}
-		else if (nosplit == "false") {
-			resSplit = false;
+		if (auto* ex = EntityConfigEx::GetEntityEx(npc->_type, npc->_variant, npc->_subtype)) {
+			const auto& noSplit = ex->GetNoSplitOverride();
+			if (noSplit.has_value()) {
+				resSplit = *noSplit;
+			}
 		}
 	}
 }
@@ -1178,7 +1179,7 @@ bool __stdcall RunPickupUpdatePickupGhostsCallback(Entity_Pickup* pickup) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.pushnil()
+			.push(pickup->_variant)
 			.push(pickup, lua::Metatables::ENTITY_PICKUP)
 			.call(1);
 
@@ -1193,18 +1194,13 @@ bool __stdcall RunPickupUpdatePickupGhostsCallback(Entity_Pickup* pickup) {
 		((pickup->IsChest(pickup->_variant) && pickup->_subtype != 0) || (pickup->_variant == 69 && !pickup->_dead))
 			&& (pickup->_timeout < 1) );
 }
-
 void ASMPatchPickupUpdatePickupGhosts() {
-    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::Registers::EAX, true);
-    ASMPatch patch;
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPickup_UpdatePickupGhosts_ShouldShow);
 
-    SigScan signature("e8????????85c00f84????????8b4e2ce8????????");
-    signature.Scan();
+    ZHL::Log("[REPENTOGON] Patching EntityPickup::UpdatePickupGhosts at %p\n", addr);
 
-    void* addr = signature.GetAddress();
-
-    ZHL::Log("[REPENTOGON] Patching Pickup::UpdatePickupGhosts at %p\n", addr);
-
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch patch;
     patch.Pop(ASMPatch::Registers::EAX)
         .Pop(ASMPatch::Registers::EAX)
         .Pop(ASMPatch::Registers::EAX)  // Pop everything that was pushed onto the stack intended for the overwritten call to FirstCollectibleOwner.
@@ -1217,6 +1213,89 @@ void ASMPatchPickupUpdatePickupGhosts() {
         //.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))
         .AddRelativeJump((char*)addr + 0xCC);
     sASMPatcher.PatchAt(addr, &patch);
+}
+
+// Allow any NPC to potentially recieve a lootlist, not just shopkeepers (and fireplaces)
+void __stdcall GetNpcLootListTrampoline(Entity_NPC* npc, LootList* out) {
+	new (out) LootList(std::move(CustomCallbacks::GetNpcLootList(*npc, false)));
+}
+void ASMPatchNpcUpdatePickupGhosts_GetLootList() {
+	void* nopAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_UpdatePickupGhosts_ShopkeeperCheck);
+	ZHL::Log("[REPENTOGON] NOP'ing EntityNPC::UpdatePickupGhosts shopkeeper check at %p\n", nopAddr);
+	ASMPatch nopPatch(ByteBuffer().AddByte(0x90, 0x9));
+	sASMPatcher.FlatPatch(nopAddr, &nopPatch);
+
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_UpdatePickupGhosts_GetShopkeeperLoot);
+	ZHL::Log("[REPENTOGON] Patching EntityNPC::UpdatePickupGhosts shopkeeper_get_loot call at %p\n", addr);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.AddBytes("\x83\xC4\x08")  // add esp, 8 (clears inputs intended for shopkeeper_get_loot)
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX) // LootList* (uninitialized)
+		.Push(ASMPatch::Registers::ECX) // Entity_NPC*
+		.AddInternalCall(GetNpcLootListTrampoline)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+//MC_PRE_NPC_UPDATE_GHOST_PICKUPS (1338)
+bool __stdcall RunNpcUpdatePickupGhostsCallback(Entity_NPC* npc) {
+	if (npc->_type == ENTITY_FIREPLACE) {
+		if (npc->_health <= 1.0f) {
+			return false;
+		}
+	} else if (npc->_dead) {
+		return false;
+	}
+
+	const int callbackid = 1338;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(npc->_type)
+			.push(npc, lua::Metatables::ENTITY_NPC)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				return (bool)lua_toboolean(L, -1);
+			}
+		}
+	}
+
+	return g_Game->_playerManager.FirstCollectibleOwner(COLLECTIBLE_GUPPYS_EYE, nullptr, true) != nullptr;
+}
+void ASMPatchNpcUpdatePickupGhosts() {
+	ASMPatchNpcUpdatePickupGhosts_GetLootList();
+
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_UpdatePickupGhosts_ShouldShow);
+
+	ZHL::Log("[REPENTOGON] Patching EntityNPC::UpdatePickupGhosts at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI) // npc
+		.AddInternalCall(RunNpcUpdatePickupGhostsCallback)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes("\x84\xC0") // TEST AL, AL
+		.AddRelativeJump((char*)addr + 0x15);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// Prevent pickup ghosts from lingering after the npc is gone.
+// Pickups already handle this on remove, NPCs do not.
+// This means even in vanilla, Remove'ing a Shopkeeper will leave behind the loot preview.
+HOOK_METHOD(Entity_NPC, Remove, ()->void) {
+	if (this->_pickupGhostsEntity) {
+		this->_pickupGhostsEntity->Remove();
+	}
+	super();
 }
 
 // MC_POST_PROJECTILE_DEATH
@@ -2215,10 +2294,11 @@ const char* __stdcall ReplaceGFXPath(const char* gfxPath, PlayerHUD* hud, int sl
 
 	const int collectibleID = hud->_activeItem[slot].id;
 
-	const char* customGfxPath = XMLStuff.ItemData->GetCustomActiveGFX(collectibleID);
-
-	if (customGfxPath[0] != '\0') {
-		return customGfxPath;
+	if (ItemConfigEx::CollectibleEx* ex = ItemConfigEx::GetCollectibleEx(collectibleID)) {
+		const std::string& customGfxPath = ex->GetCustomActiveGfx();
+		if (!customGfxPath.empty()) {
+			return customGfxPath.c_str();
+		}
 	}
 
 	return gfxPath;
@@ -2390,6 +2470,98 @@ void ASMPatchPostBackwardsRoomRestore()
 	patch_post_backwards_treasure_restore("4883ea0c", "Level::place_rooms_backwards (Post Treasure Room Restore)", "MC_POST_BACKWARDS_ROOM_RESTORE");
 }
 
+static RoomConfig_Room* __stdcall RunWaveRoomCallback(RoomConfig_Room* room, bool isGreed) {
+	const int callbackid = isGreed ? 1059 : 1058;
+	const char* callbackName = isGreed ? "MC_PRE_SELECT_GREED_WAVE" : "MC_PRE_SELECT_AMBUSH_WAVE";
+
+	uint32_t seed = isGreed ? g_Game->_greedWaveSeed[std::clamp(g_Game->_greedModeWave, 0u, 11u)] : g_Game->GetAmbush()->rng._seed;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(room, lua::Metatables::ROOM_CONFIG_ROOM)
+			.push(seed)
+			.call(1);
+
+		if (!result && lua_isuserdata(L, -1)) {
+			auto opt = lua::TestUserdata<RoomConfig_Room*>(L, -1, lua::Metatables::ROOM_CONFIG_ROOM);
+
+			if (!opt.has_value()) {
+				KAGE::_LogMessage(2, "Invalid userdata returned in %s\n", callbackName);
+			} else {
+				RoomConfig_Room* newRoom = *opt;
+
+				if (newRoom == room) {
+					return room;
+				}
+
+				if (newRoom->Shape != room->Shape) {
+					KAGE::_LogMessage(2, "%s: Shape mismatch. Original = %d, override = %d\n", callbackName, room->Shape, newRoom->Shape);
+					return room;
+				}
+
+				return newRoom;
+			}
+		}
+	}
+
+	return room;
+}
+
+static void ASMPatchSpawnWave(const char* name, bool isGreed, const char* def) {
+	void* addr = sASMDefinitionHolder->GetDefinition(def);
+
+	printf("[REPENTOGON] Patching %s for RoomConfig_Room selection @ %p\n", name, addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::EAX, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(isGreed)
+		.Push(ASMPatch::Registers::EAX)
+		.AddInternalCall(RunWaveRoomCallback)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+static bool __stdcall asm_run_should_save_entity_callback(Entity* entity, bool shouldSave)
+{
+    Room* room = g_Game->GetCurrentRoom();
+    bool isRoomClear = (room->_descriptor->Flags & 1) != 0;
+
+    return CustomCallbacks::SHOULD_SAVE_ENTITY(*entity, shouldSave, isRoomClear);
+}
+
+static void Patch_RoomSaveEntity_CheckShouldSaveEntity()
+{
+    const size_t JZ_OFFSET = 2;
+    const size_t JZ_LENGTH = 6;
+
+    uintptr_t addr = (uintptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_save_entity_CheckShouldSaveEntity);
+    int32_t jz_rel32; memcpy(&jz_rel32, (void*)(addr + JZ_OFFSET + 2), sizeof(jz_rel32));
+
+    uintptr_t trueDestination = addr + JZ_OFFSET + JZ_LENGTH; // fallthrough
+    uintptr_t falseDestination = (addr + JZ_OFFSET + JZ_LENGTH) + jz_rel32;
+
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::EAX, true);
+    ASMPatch patch;
+    patch.PreserveRegisters(savedRegisters)
+        .Push(ASMPatch::Registers::EAX) // push shouldSave (current result)
+        .Push(ASMPatch::Registers::ESI) // push entity
+        .AddInternalCall(asm_run_should_save_entity_callback)
+        .RestoreRegisters(savedRegisters)
+        .AddBytes("\x84\xC0") // TEST AL, AL
+        .AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (void*)trueDestination)
+        .AddRelativeJump((void*)falseDestination);
+
+    sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
 void ASMCallbacks::detail::ApplyPatches()
 {
 	Patch_GameUpdate_MainUpdate();
@@ -2400,4 +2572,7 @@ void ASMCallbacks::detail::ApplyPatches()
 	ASMPatchRenderCustomCharacterMenu_Custom();
 	ASMPatchRenderCustomCharacterMenu_Default();
 	ASMPatchCharacterMenuPreSelectCharacter();
+	ASMPatchSpawnWave("Ambush:SpawnWave", false, &AsmDefinitions::Ambush_SpawnWave_PostGetRandomRoom);
+	ASMPatchSpawnWave("Room:SpawnGreedModeWave", true, &AsmDefinitions::Room_SpawnGreedModeWave_PostGetRandomRoom);
+    Patch_RoomSaveEntity_CheckShouldSaveEntity();
 }

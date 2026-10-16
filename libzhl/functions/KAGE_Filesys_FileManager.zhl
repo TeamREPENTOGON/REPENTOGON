@@ -4,6 +4,12 @@ static void KAGE_Filesys_FileManager::LoadArchiveFile(char *path, int unk1, unsi
 "558bec83e4f88b45??83ec0856":
 __thiscall KAGE_Filesys_IFile* KAGE_Filesys_FileManager::OpenRead(const char* filePath);
 
+"568bf185f675??33c05ec38a2e":
+static __fastcall uint32_t KAGE_Filesys_FileManager::GetPrimaryFilePathHash(const char* filePath);
+
+"568bf185f675??33c05ec353":
+static __fastcall uint32_t KAGE_Filesys_FileManager::GetSecondaryFilePathHash(const char* filePath);
+
 struct KAGE_Filesys_FileManager  {
 };
 

@@ -13,3 +13,4 @@ std::string GetLocalizedPlayerAnimationForAnm2(EntityConfig_Player* player, ANM2
 
 void ASMPatchRedirectToLocalizationFolders();
 void ASMPatchLocalizedPlayerAnimations();
+void ASMPatchLoadArchiveFile();

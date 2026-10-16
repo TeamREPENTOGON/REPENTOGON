@@ -23,6 +23,7 @@ void ASMPatchPrePickupComposted();
 void ASMPatchPostChampionRegenCallback();
 void ASMPatchTrinketRender();
 void ASMPatchPickupUpdatePickupGhosts();
+void ASMPatchNpcUpdatePickupGhosts();
 void ASMPatchProjectileDeath();
 void ASMPatchTearDeath();
 void ASMPatchPrePlayerGiveBirth();

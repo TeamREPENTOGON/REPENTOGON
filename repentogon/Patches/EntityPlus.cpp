@@ -84,6 +84,8 @@ HOOK_METHOD(Entity, Init, (unsigned int type, unsigned int variant, unsigned int
 		holder->data = std::make_unique<EntityFamiliarPlus>();
 	} else if (type == ENTITY_TEAR) {
 		holder->data = std::make_unique<EntityTearPlus>();
+	} else if (type == ENTITY_PICKUP) {
+		holder->data = std::make_unique<EntityPickupPlus>();
 	} else if (type == ENTITY_LASER) {
 		holder->data = std::make_unique<EntityLaserPlus>();
 	} else if (type == ENTITY_KNIFE) {
@@ -126,9 +128,12 @@ EntityFamiliarPlus* GetEntityFamiliarPlus(Entity_Familiar* familiar) {
 	return dynamic_cast<EntityFamiliarPlus*>(GetEntityPlusHolder(familiar, true)->data.get());
 }
 
-EntityTearPlus* GetEntityTearPlus(Entity_Tear* tear)
-{
+EntityTearPlus* GetEntityTearPlus(Entity_Tear* tear) {
     return dynamic_cast<EntityTearPlus*>(GetEntityPlusHolder(tear, true)->data.get());
+}
+
+EntityPickupPlus* GetEntityPickupPlus(Entity_Pickup* pickup) {
+	return dynamic_cast<EntityPickupPlus*>(GetEntityPlusHolder(pickup, true)->data.get());
 }
 
 EntityLaserPlus* GetEntityLaserPlus(Entity_Laser* laser) {
@@ -145,7 +150,7 @@ EntityKnifePlus* GetEntityKnifePlus(Entity_Knife* knife) {
 
 HOOK_METHOD(Entity, IsFlying, ()->bool) {
 	EntityPlus* entityPlus = GetEntityPlus(this);
-	if (entityPlus && entityPlus->isFlyingOverride) {
+	if (entityPlus && entityPlus->isFlyingOverride.has_value()) {
 		return *entityPlus->isFlyingOverride;
 	}
 	return super();
@@ -158,10 +163,25 @@ HOOK_METHOD(Entity, IsFlying, ()->bool) {
 HOOK_METHOD(Entity, GetWaterClipInfo, (WaterClipInfo* out) -> WaterClipInfo*) {
 	super(out);
 	EntityPlus* entityPlus = GetEntityPlus(this);
-	if (entityPlus && entityPlus->waterClipInfoFlagsOverride) {
+	if (entityPlus && entityPlus->waterClipInfoFlagsOverride.has_value()) {
 		out->bitFlags = *entityPlus->waterClipInfoFlagsOverride;
 	}
 	return out;
+}
+
+
+// ----------------------------------------------------------------------------------------------------
+// -- EntityPickupPlus::canRerollOverride
+
+HOOK_METHOD(Entity_Pickup, CanReroll, ()->bool) {
+	if (this->_dead) {
+		return false;
+	}
+	EntityPickupPlus* entityPlus = GetEntityPickupPlus(this);
+	if (entityPlus && entityPlus->canRerollOverride.has_value()) {
+		return *entityPlus->canRerollOverride;
+	}
+	return super();
 }
 
 

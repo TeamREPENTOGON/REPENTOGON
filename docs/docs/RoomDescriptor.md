@@ -30,6 +30,16 @@ ___
 #### void AddRestrictedGridIndex ( int GridIndex ) {: .copyable aria-label='Functions' }
 
 ___
+### CreateGroup () {: aria-label='Functions' }
+[ ](#){: .static .tooltip .badge }
+#### static int CreateGroup ( string groupName ) {: .copyable aria-label='Functions' }
+
+Creates a new unique group id for `SetGroup`
+
+???+ warning "Errors"
+    The function will error if a group with the specified name already exists.
+
+___
 ### GetDecoSaveState () {: aria-label='Functions' }
 #### [EntitiesSaveStateVector](EntitiesSaveStateVector.md) GetDecoSaveState ( ) {: .copyable aria-label='Functions' }
 
@@ -51,6 +61,25 @@ Note that this effect is based entirely on the [SpawnSeed](https://wofsauge.gith
 
 ### GetGridEntitiesSaveState () {: aria-label='Functions' }
 #### [GridEntitiesSaveStateVector](GridEntitiesSaveStateVector.md) GetGridEntitiesSaveState ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetGroup () {: aria-label='Functions' }
+#### int GetGroup ( ) {: .copyable aria-label='Functions' }
+
+???- "Usage"
+    `Group` is only used by effects that need to randomly select a room to warp to (e.g. Teleport, Gold Pill Teleport, etc.).
+    A room can only be selected if its group is either RoomGroup.GROUP_NONE or matches the current room's group.
+
+    By default, all rooms use `RoomGroup.GROUP_NONE`. The only exception is Ultra Secret Rooms, which are assigned a different group by the game during level generation.
+
+___
+### GetGroupByName () {: aria-label='Functions' }
+[ ](#){: .static .tooltip .badge }
+#### static int? GetGroupByName ( string groupName ) {: .copyable aria-label='Functions' }
+
+Returns the group id tied to the specified name.
+
+Returns `nil` if the name has not been registered.
 
 ___
 ### GetNeighboringRooms () {: aria-label='Functions' }
@@ -95,20 +124,6 @@ ___
 #### void InitSeeds ( [RNG](RNG.md) RNG ) {: .copyable aria-label='Functions' }
 
 ___
-### SetTaintedKeeperCoinSpawns () {: aria-label='Functions' }
-#### void SetTaintedKeeperCoinSpawns ( int Num ) {: .copyable aria-label='Functions' }
-
-___
-### GetGroup () {: aria-label='Functions' }
-#### int GetGroup () {: .copyable aria-label='Functions' }
-
-???- "Usage"
-    `Group` is only used by effects that need to randomly select a room to warp to (e.g. Teleport, Gold Pill Teleport, etc.).
-    A room can only be selected if its group is either RoomGroup.GROUP_NONE or matches the current room's group.
-
-    By default, all rooms use `RoomGroup.GROUP_NONE`. The only exception is Ultra Secret Rooms, which are assigned a different group by the game during level generation.
-
-___
 ### SetGroup () {: aria-label='Functions' }
 #### void SetGroup ( int group ) {: .copyable aria-label='Functions' }
 
@@ -121,23 +136,8 @@ It is suggested to use CreateGroup instead of setting an arbitrary group.
     By default, all rooms use `RoomGroup.GROUP_NONE`. The only exception is Ultra Secret Rooms, which are assigned a different group by the game during level generation.
 
 ___
-### CreateGroup () {: aria-label='Functions' }
-[ ](#){: .static .tooltip .badge }
-#### static int CreateGroup ( string groupName ) {: .copyable aria-label='Functions' }
-
-Creates a new unique group id for `SetGroup`
-
-???+ warning "Errors"
-    The function will error if a group with the specified name already exists.
-
-___
-### GetGroupByName () {: aria-label='Functions' }
-[ ](#){: .static .tooltip .badge }
-#### static int? GetGroupByName ( string groupName ) {: .copyable aria-label='Functions' }
-
-Returns the group id tied to the specified name.
-
-Returns `nil` if the name has not been registered.
+### SetTaintedKeeperCoinSpawns () {: aria-label='Functions' }
+#### void SetTaintedKeeperCoinSpawns ( int Num ) {: .copyable aria-label='Functions' }
 
 ___
 

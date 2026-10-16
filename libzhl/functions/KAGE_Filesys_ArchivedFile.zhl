@@ -1,0 +1,20 @@
+struct KAGE_Filesys_ArchivedFile {
+	KAGE_Filesys_ArchivedFile_ArchiveEntry* _archiveEntry : 0x4;
+	KAGE_Filesys_File* _file : 0x8;
+	KAGE_Filesys_ArchivedFile_FileEntry* _fileEntry : 0xc;
+} : 0xc2c;
+
+struct KAGE_Filesys_ArchivedFile_ArchiveEntry {
+	char* _filePath : 0x0;
+	int _compressionType : 0x4;
+} : 0x8;
+
+struct KAGE_Filesys_ArchivedFile_FileEntry {
+	uint32_t _archiveIndex : 0x0;
+	uint32_t _primaryHash : 0x4;
+	uint32_t _secondaryHash : 0x8;
+	uint32_t _archiveOffset : 0xc;
+	uint32_t _size : 0x10;
+	uint32_t _checksum : 0x14;
+	bool _valid : 0x18;
+} : 0x1c;

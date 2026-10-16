@@ -2,6 +2,7 @@
 #include "HookSystem.h"
 #include "LuaCore.h"
 #include "Log.h"
+#include "../REPENTOGONOptions.h"
 #include <filesystem>
 #include <algorithm>
 
@@ -242,21 +243,102 @@ HOOK_METHOD(ModEntry, WriteMetadata, () -> void) {
  * DoubleTrouble in a more proper way.
  */
 HOOK_METHOD(ModManager, UpdateRooms, (int id, int mode) -> void)
-{	
+{
+	super(id, mode);
+
 	assert(0 <= id && id < NUM_STB);
 	assert(0 <= mode && mode <= 1);
-	
+
 	bool isSpecialRoomsStb = id == eStbType::STB_SPECIAL_ROOMS && mode == 0;
-	if (isSpecialRoomsStb)
+	if (!isSpecialRoomsStb)
 	{
-		auto& roomSet = g_Game->GetRoomConfig()->_stages[id]._rooms[mode];
-		auto* variantSet = roomSet.GetVariantSet(eRoomType::ROOM_BOSS);
-		
-		for (size_t i = RoomConfig_Room::BOSS_DOUBLE_TROUBLE_START; i < RoomConfig_Room::BOSS_DOUBLE_TROUBLE_END; i++)
-		{
-			variantSet->Add(i);
-		}
+		return;
 	}
 
-	super(id, mode);
+	auto& roomSet = g_Game->GetRoomConfig()->_stages[id]._rooms[mode];
+	auto* variantSet = roomSet.GetVariantSet(eRoomType::ROOM_BOSS);
+
+	for (size_t i = RoomConfig_Room::BOSS_DOUBLE_TROUBLE_START; i < RoomConfig_Room::BOSS_DOUBLE_TROUBLE_END; i++)
+	{
+		variantSet->Add(i);
+	}
+}
+
+
+// Allow anything that would register as an "Unknown Device" to get blocked from being registered as a controller.
+HOOK_METHOD(InputDeviceBase, Initialize, (void* unk) -> bool) {
+	if (repentogonOptions.blockUnknownDevices && this->_deviceName && std::string(this->_deviceName) == "Unknown Device") {
+		return false;
+	}
+	return super(unk);
+}
+
+// SubType 1 knives crash during Update if the HomingLaser stuff isn't initialized (like if a mod spawns one).
+// This initializes it to a basic straight line solely to prevent crashes.
+// If something calls InitHomingPath again later on this gets cleanly overwritten.
+HOOK_STATIC(LuaEngine, PostKnifeInit, (Entity_Knife* knife) -> void, __stdcall) {
+	if (knife->_subtype == 1) {
+		// Source needs to be non-null
+		Entity* source = knife;
+		if (Entity* parent = knife->GetParent()) {
+			source = parent;
+		}
+		knife->InitHomingPath(knife->_velocity, source, knife->_pathOffset);
+	}
+	super(knife);
+}
+
+// Fix gold rocks not being considered crushable
+HOOK_METHOD(GridEntity, IsEasyCrushableOrWalkable, () -> bool) {
+	// gridpath > 0 check matches function logic
+	if (this->_gridIndex < 448 && g_Game->_room->_gridPaths[this->_gridIndex] > 0 && this->_desc._type == GRID_ROCK_GOLD) {
+		return true;
+	}
+	return super();
+}
+
+// Fix spiked rocks not being considered crushable
+HOOK_METHOD(GridEntity, IsDangerousCrushableOrWalkable, () -> bool) {
+	// gridpath > 999 check matches function logic
+	if (this->_gridIndex < 448 && g_Game->_room->_gridPaths[this->_gridIndex] > 999 && this->_desc._type == GRID_ROCK_SPIKED) {
+		return true;
+	}
+	return super();
+}
+
+/// Fixes the game returning the wrong entity config on a hash collision.
+/// This usually occurs when spawning an entity whose subtype represents entity state, rather than
+/// identity.
+///
+/// This is a reimplementation of GetEntity (it only does a hash lookup with fallbacks:
+/// (id, variant, subtype) -> (id, variant, 0) -> (id, 0, 0)) but we add a "key" verification
+/// step before returning the found config.
+///
+/// Low hook priority is used, as it's a reimplementation.
+HOOK_METHOD_PRIORITY(EntityConfig, GetEntity, 9999, (int id, int variant, int subtype) -> EntityConfig_Entity*)
+{
+    auto find_id = [](EntityConfig* config, uint32_t id, uint32_t variant, uint32_t subtype) -> EntityConfig_Entity*
+    {
+        uint32_t hash = (id << 0xc | variant) << 8 | subtype;
+        auto it = config->_entities.find(hash);
+        if (it == config->_entities.end())
+        {
+            return nullptr;
+        }
+
+        EntityConfig_Entity* entity = &it->second.entity;
+        if (entity->id != id || entity->variant != variant || entity->subtype != subtype)
+        {
+            return nullptr;
+        }
+
+        return entity;
+    };
+
+    if (auto* e = find_id(this, id, variant, subtype)) return e;
+    if (subtype != 0)
+        if (auto* e = find_id(this, id, variant, 0)) return e;
+    if (variant != 0)
+        if (auto* e = find_id(this, id, 0, 0)) return e;
+    return nullptr;
 }

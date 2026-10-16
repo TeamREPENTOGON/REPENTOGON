@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include "MultiViewportEnhanced.h"
 
 #ifdef max
 #undef max
@@ -200,7 +201,6 @@ struct LogViewer : ImGuiWindowObject {
             return;
         }
         ImGui::SetNextWindowSize(ImVec2(550, 300), ImGuiCond_FirstUseEver);
-
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
             AddWindowContextMenu();
 

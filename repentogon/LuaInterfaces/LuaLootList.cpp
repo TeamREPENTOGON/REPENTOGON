@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "CustomCallbacks.h"
 
 LUA_FUNCTION(Lua_LootListConstructor) {
     // Initializes a new LootList (std::deque) under lua ownership and pushes a reference to the stack.
@@ -25,6 +26,10 @@ LUA_FUNCTION(Lua_LootListPushEntry) {
 	return 0;
 }
 
+// Note for any future lookers, adding a function to erase entries from the list could potentially be unsafe,
+// due to potentially invalidating existing LootListEntry pointers, such as if iterating over GetEntries.
+// Adding the capability to modify LootListEntry in-place may be better.
+
 LUA_FUNCTION(Lua_PickupGetLootList) {
 	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	bool shouldAdvance = lua::luaL_optboolean(L, 2, false);
@@ -40,8 +45,20 @@ LUA_FUNCTION(Lua_PickupGetLootList) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_NPCGetFireplaceLoot) {
-	auto* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+LUA_FUNCTION(Lua_NPCGetLootList) {
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	bool shouldAdvance = lua::luaL_optboolean(L, 2, false);
+
+	LootList* toLua = (LootList*)lua_newuserdata(L, sizeof(LootList));
+	luaL_setmetatable(L, lua::metatables::LootListMT);
+	new (toLua) LootList(std::move(CustomCallbacks::GetNpcLootList(*npc, shouldAdvance)));
+
+	return 1;
+}
+
+// Deprecated in favor of generic GetLootList
+LUA_FUNCTION(Lua_NPCGetFireplaceLoot_DEPRECATED) {
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	bool shouldAdvance = lua::luaL_optboolean(L, 2, false);
 
     LootList* toLua = (LootList*)lua_newuserdata(L, sizeof(LootList));
@@ -50,9 +67,8 @@ LUA_FUNCTION(Lua_NPCGetFireplaceLoot) {
 
 	return 1;
 }
-
-LUA_FUNCTION(Lua_NPCGetShopkeeperLoot) {
-	auto* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+LUA_FUNCTION(Lua_NPCGetShopkeeperLoot_DEPRECATED) {
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	bool shouldAdvance = lua::luaL_optboolean(L, 2, false);
 
     LootList* toLua = (LootList*)lua_newuserdata(L, sizeof(LootList));
@@ -89,9 +105,11 @@ LUA_FUNCTION(Lua_LootList__gc) {
 static void RegisterLootList(lua_State* L) {
 
 	lua::RegisterFunction(L, lua::Metatables::ENTITY_PICKUP, "GetLootList", Lua_PickupGetLootList);
+	lua::RegisterFunction(L, lua::Metatables::ENTITY_NPC, "GetLootList", Lua_NPCGetLootList);
 
-	lua::RegisterFunction(L, lua::Metatables::ENTITY_NPC, "GetFireplaceLoot", Lua_NPCGetFireplaceLoot);
-	lua::RegisterFunction(L, lua::Metatables::ENTITY_NPC, "GetShopkeeperLoot", Lua_NPCGetShopkeeperLoot);
+	// Deprecated
+	lua::RegisterFunction(L, lua::Metatables::ENTITY_NPC, "GetFireplaceLoot", Lua_NPCGetFireplaceLoot_DEPRECATED);
+	lua::RegisterFunction(L, lua::Metatables::ENTITY_NPC, "GetShopkeeperLoot", Lua_NPCGetShopkeeperLoot_DEPRECATED);
 
 	luaL_Reg functions[] = {
 		{ "GetEntries", Lua_LootListGetEntries },

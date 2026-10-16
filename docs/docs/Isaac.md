@@ -88,30 +88,6 @@ ___
 Destroys the provided [Weapon](Weapon.md) object.
 
 ___
-### RenderToWorld () {: aria-label='Functions' }
-#### [Vector](Vector.md) RenderToWorld ( [Vector](Vector.md) Pos ) {: .copyable aria-label='Functions' }
-Transfers Render coordinates into World coordinates.
-
-Unlike [Isaac.ScreenToWorld](https://wofsauge.github.io/IsaacDocs/rep/Isaac.html#screentoworld) (which transfers Window coordinates into World coordinates), this is the true inverse of [Isaac.WorldToScreen](https://wofsauge.github.io/IsaacDocs/rep/Isaac.html#worldtoscreen) (which transfers World coordinates into Render coordinates).
-
-???- info "Screen coordinate systems"
-	The game uses 2 distinct coordinate systems when interacting with the Screen:
-
-	- "Window" coordinates: the actual pixel position within the game window (OS-level).
-	- "Render" coordinates: an abstract coordinate system independent of window size or scaling.
-
-	Almost all functions that are used to interact with the screen use or return a position in **Render** coordinates.
-	The only 2 exceptions are:
-
-	- `Isaac.ScreenToWorld`: which converts **Window** coordinates into World coordinates.
-	- `Input.GetMousePosition(false)`: which returns the mouse position in **Window** coordinates.
-
-???- info "Pixel snapping behavior"
-	Alongside converting the World coordinates into Render coordinates, `Isaac.WorldToScreen` snaps the render coordinates to the closest pixel perfect position.
-	This means that converting Render coordinates into World coordinates, then back into Render coordinates is not guaranteed to return the original result; unless
-	it is in a pixel perfect position.
-
-___
 ### DrawLine () {: aria-label='Functions' }
 #### void DrawLine ( [Vector](Vector.md) StartPos, [Vector](Vector.md) EndPos, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor) StartColor, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor) EndColor, int Thickness ) {: .copyable aria-label='Functions' }
 Draws a line between the two given positions this render frame.
@@ -147,6 +123,10 @@ ___
 #### [Vector](Vector.md) GetAxisAlignedUnitVectorFromDir ( [Direction](https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html) Direction = -1 ) {: .copyable aria-label='Functions' }
 
 ___
+### GetBabyIdByName () {: aria-label='Functions' }
+#### int GetBabyIdByName ( string CoopBabyName ) {: .copyable aria-label='Functions' }
+
+___
 ### GetBackdropIdByName () {: aria-label='Functions' }
 #### int GetBackdropIdByName ( string BackdropName ) {: .copyable aria-label='Functions' }
 
@@ -155,7 +135,7 @@ ___
 #### int GetBossColorIdxByName ( string Name ) {: .copyable aria-label='Functions' }
 Gets the boss color idx By Name, the idx is usually the subtype the boss needs to become the desired color. Granted, you actually need to give your color entry a name on the xml for this to work (suffix wont work usually, since its not mandatory).
 ___
-### GetButtonsSprite () {: aria-label='Modified Functions' }
+### GetButtonsSprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetButtonsSprite ( ) {: .copyable aria-label='Functions' }
 Controllers buttons sprite
 
@@ -171,6 +151,15 @@ ___
 ### GetCompletionMark () {: aria-label='Functions' }
 #### int GetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character, [CompletionType](enums/CompletionType.md) Mark) {: .copyable aria-label='Functions' }
 Gets a completion mark value for a specific character, value from `0` to `2` (0 = not accomplished, 1 = normal, 2 = hard).
+
+___
+### GetCompletionMarkData () {: aria-label='Functions' }
+#### table GetCompletionMarkData ( string ModId, string PlayerName ) {: .copyable aria-label='Functions' }
+Returns a table containing all the marks for a character like `GetCompletionMarks`, but allows you to get the saved marked for a character that doesn't currently map to a `PlayerType`.
+
+Can be used to obtain marks for a character from a disabled mod, OR to assist in tranferring marks if a character needed to be renamed.
+
+"ModId" is usually the workshop ID of the mod as a string, or the mod's `directory` attribute for non-workshop mods.
 
 ___
 ### GetCompletionMarks () {: aria-label='Functions' }
@@ -250,6 +239,13 @@ ___
 #### int GetModChallengeClearCount ( int challengeid ) {: .copyable aria-label='Functions' }
 Returns the number of times a custom challenge was cleared. It resets if its ever set as not Done.
 ___
+### GetModChallengeCompletionData () {: aria-label='Functions' }
+#### boolean GetModChallengeCompletionData ( string ModId, string ChallengeName ) {: .copyable aria-label='Functions' }
+Allows checking if a specific modded challenge has been completed by name. Works for challenges from mods that are not currently enabled, or have been renamed.
+
+"ModId" is usually the workshop ID of the mod as a string, or the mod's `directory` attribute for non-workshop mods.
+
+___
 ### GetNanoTime () {: aria-label='Functions'}
 #### int GetNanoTime ( ) {: .copyable aria-label='Functions' }
 Returns a high-resolution timestamp in nanoseconds. Useful for evaluating the performance cost of functions in a non-test environment or for high-precision clocks.
@@ -305,9 +301,9 @@ ___
 Similar to [LoadModData](https://wofsauge.github.io/IsaacDocs/rep/Isaac.html#loadmoddata), but lets you read the saveX.dat file from any existing mod data folder, even if that mod is not currently enabled.
 
 ___
-### MarkChallengeAsNotDone () {: aria-label='Functions' }
-#### void MarkChallengeAsNotDone ( int challengeid ) {: .copyable aria-label='Functions' }
-Sets the challenge as not done.
+### OpenConsole () {: aria-label='Functions' }
+#### void OpenConsole ( ) {: .copyable aria-label='Functions' }
+Opens the Imgui interface which pops up the console by default, similar functionality as hitting the Open Console key (idem ImGui.Show()).
 
 ___
 ### PlayCutscene () {: aria-label='Functions' }
@@ -318,6 +314,30 @@ ___
 ### RenderCollectionItem () {: aria-label='Functions' }
 #### void RenderCollectionItem ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, [Vector](Vector.md) Position, [Vector](Vector.md) Scale = Vector.One, [Color](Color.md) Color = Color.Default ) {: .copyable aria-label='Functions' }
 Renders item collection sprite from collection menu/death screen. 
+___
+### RenderToWorld () {: aria-label='Functions' }
+#### [Vector](Vector.md) RenderToWorld ( [Vector](Vector.md) Pos ) {: .copyable aria-label='Functions' }
+Transfers Render coordinates into World coordinates.
+
+Unlike [Isaac.ScreenToWorld](https://wofsauge.github.io/IsaacDocs/rep/Isaac.html#screentoworld) (which transfers Window coordinates into World coordinates), this is the true inverse of [Isaac.WorldToScreen](https://wofsauge.github.io/IsaacDocs/rep/Isaac.html#worldtoscreen) (which transfers World coordinates into Render coordinates).
+
+???- info "Screen coordinate systems"
+	The game uses 2 distinct coordinate systems when interacting with the Screen:
+
+	- "Window" coordinates: the actual pixel position within the game window (OS-level).
+	- "Render" coordinates: an abstract coordinate system independent of window size or scaling.
+
+	Almost all functions that are used to interact with the screen use or return a position in **Render** coordinates.
+	The only 2 exceptions are:
+
+	- `Isaac.ScreenToWorld`: which converts **Window** coordinates into World coordinates.
+	- `Input.GetMousePosition(false)`: which returns the mouse position in **Window** coordinates.
+
+???- info "Pixel snapping behavior"
+	Alongside converting the World coordinates into Render coordinates, `Isaac.WorldToScreen` snaps the render coordinates to the closest pixel perfect position.
+	This means that converting Render coordinates into World coordinates, then back into Render coordinates is not guaranteed to return the original result; unless
+	it is in a pixel perfect position.
+
 ___
 ### ReworkBirthright () {: aria-label='Functions' }
 #### void ReworkBirthright ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playerType ) {: .copyable aria-label='Functions' }
@@ -336,6 +356,13 @@ ___
 #### void ReworkTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) trinket ) {: .copyable aria-label='Functions' }
 Marks the trinket as reworked, making the game not execute the trinket's original passive logic.
 Can only be set during mod load.
+
+___
+### SetChallengeCompletion () {: aria-label='Functions' }
+#### void SetChallengeCompletion ( int challengeid, boolean completed ) {: .copyable aria-label='Functions' }
+Allows setting whether a challenge has been completed.
+
+While setting completion to `false` does work with vanilla challenges, it is not recommended to use it on those, as there are no instances of challenges being uncompleted in vanilla, so it could lead to unexpected behaviour in specific scenarios. 
 
 ___
 ### SetClipboard () {: aria-label='Functions' }
@@ -435,11 +462,6 @@ ___
 ### TriggerWindowResize () {: aria-label='Functions' }
 #### void TriggerWindowResize ( ) {: .copyable aria-label='Functions' }
 Simulates a window resize, useful to refresh some option changes like `MaxRenderScale`.
-
-___
-### UnClearChallenge () {: aria-label='Functions' }
-#### void UnClearChallenge ( int challengeid) {: .copyable aria-label='Functions' }
-Sets the challenge of the corresponding `challengeid` to not completed. While it does work with vanilla challenges, it is not recommended to use it on those, as there are no instances of challenges being uncompleted in vanilla, so it could lead to unexpected behaviour in specific scenarios. 
 
 ___
 ### WorldToMenuPosition () {: aria-label='Functions' }

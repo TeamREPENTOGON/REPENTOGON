@@ -4,12 +4,36 @@
 #include "Log.h"
 
 #include <filesystem>
-#include "ItemPoolManager.h"
+#include "../Patches/ItemPoolManager.h"
+#include "../LuaInterfaces/_Internals.h"
+#include "../LuaInterfaces/CustomCallbacks.h"
 #include "../VirtualRoomConfig/VirtualRoomSetManager.h"
 
-#include "../SaveStateManagement/EntitySaveStateManagement.h"
+#include "EntitySaveStateManagement.h"
 
 namespace ESSM = EntitySaveStateManagement;
+
+#define LOG_ERROR_HEADER "[ERROR] [SSM] - "
+
+#pragma region Data
+
+namespace
+{
+struct LuaCallbacks
+{
+	int storeGameState = LUA_NOREF;
+    int restoreGameState = LUA_NOREF;
+	int clearGameState = LUA_NOREF;
+	int serializeGameState = LUA_NOREF;
+	int deserializeGameState = LUA_NOREF;
+	int deleteGameState = LUA_NOREF;
+    int cleanupState = LUA_NOREF;
+};
+} // end namespace
+
+static LuaCallbacks s_luaCallbacks;
+
+#pragma endregion
 
 #pragma region Helpers
 
@@ -162,6 +186,108 @@ static bool is_file_name_valid(const std::string& fileName)
 
 #pragma endregion
 
+#pragma region Lua
+
+static void lua_call_game_state_slot_callback(int fnIdx, int slot);
+static void lua_call_mod_data_callback(int fnIdx, const GameStateSaveInfo& gameStateInfo, int checksum);
+static void LuaStoreGameState(int slot);
+static void LuaRestoreGameState(int slot);
+static void LuaClearGameState(int slot);
+static void LuaSerializeGameState(const GameStateSaveInfo& gameStateInfo, int checksum);
+static void LuaDeserializeGameState(const GameStateSaveInfo& gameStateInfo, int checksum);
+static void LuaGameStateDelete(const GameStateSaveInfo& gameStateInfo);
+static void LuaCleanupState();
+
+static void lua_call_game_state_slot_callback(int fnIdx, int slot)
+{
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, fnIdx);
+	lua_pushinteger(L, slot);
+
+	if (lua_pcall(L, 1, 0, 0) != LUA_OK)
+	{
+		ZHL::Log(LOG_ERROR_HEADER "%s\n", lua_tostring(L, -1));
+		lua_pop(L, 1);
+	}
+}
+
+static void lua_call_mod_data_callback(int fnIdx, const GameStateSaveInfo& gameStateInfo, int checksum)
+{
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, fnIdx);
+
+	lua_createtable(L, 0, 2);
+	{
+		lua_pushinteger(L, checksum);
+		lua_setfield(L, -2, "checksum");	
+	
+		lua_pushlstring(L, gameStateInfo.fileName.c_str(), gameStateInfo.fileName.size());
+		lua_setfield(L, -2, "fileName");
+	}
+
+	if (lua_pcall(L, 1, 0, 0) != LUA_OK)
+	{
+		ZHL::Log(LOG_ERROR_HEADER "%s\n", lua_tostring(L, -1));
+		lua_pop(L, 1);
+	}
+}
+
+static void LuaStoreGameState(int slot)
+{
+	lua_call_game_state_slot_callback(s_luaCallbacks.storeGameState, slot);
+}
+
+static void LuaRestoreGameState(int slot)
+{
+	lua_call_game_state_slot_callback(s_luaCallbacks.restoreGameState, slot);
+}
+
+static void LuaClearGameState(int slot)
+{
+	lua_call_game_state_slot_callback(s_luaCallbacks.clearGameState, slot);
+}
+
+static void LuaSerializeGameState(const GameStateSaveInfo& gameStateInfo, int checksum)
+{
+	lua_call_mod_data_callback(s_luaCallbacks.serializeGameState, gameStateInfo, checksum);
+}
+
+static void LuaDeserializeGameState(const GameStateSaveInfo& gameStateInfo, int checksum)
+{
+	lua_call_mod_data_callback(s_luaCallbacks.deserializeGameState, gameStateInfo, checksum);
+}
+
+static void LuaGameStateDelete(const GameStateSaveInfo& gameStateInfo)
+{
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, s_luaCallbacks.deleteGameState);
+	lua_pushlstring(L, gameStateInfo.fileName.c_str(), gameStateInfo.fileName.size());
+
+	if (lua_pcall(L, 1, 0, 0) != LUA_OK)
+	{
+		ZHL::Log(LOG_ERROR_HEADER "%s\n", lua_tostring(L, -1));
+		lua_pop(L, 1);
+	}
+}
+
+static void LuaCleanupState()
+{
+    lua_State* L = g_LuaEngine->_state;
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, s_luaCallbacks.cleanupState);
+
+    if (lua_pcall(L, 0, 0, 0) != LUA_OK)
+    {
+        ZHL::Log(LOG_ERROR_HEADER "%s\n", lua_tostring(L, -1));
+        lua_pop(L, 1);
+    }
+}
+
+#pragma endregion
+
 static inline void save_game_state(uint32_t slot)
 {
 	ItemPoolManager::__SaveState(slot);
@@ -214,34 +340,108 @@ static inline void delete_save(const GameStateSaveInfo& info, bool isRerun)
 	ESSM::detail::SaveData::DeleteGameState(fileName);
 }
 
+void SaveStateManager::detail::BindLuaCallbacks(lua_State *L, int tbl)
+{
+	assert(L == g_LuaEngine->_state);
+
+    int tblIdx = lua_absindex(L, tbl);
+    if (!lua_istable(L, tblIdx))
+    {
+        ZHL::Log(LOG_ERROR_HEADER "BindLuaCallbacks: expected a table\n");
+        LuaInternals::RaiseInitError();
+        assert(false);
+        return;
+    }
+
+    auto BindCallback = [](lua_State* L, int tblIdx, const char* fieldName, int& outRef)
+    {
+        // reset ref
+        luaL_unref(L, LUA_REGISTRYINDEX, outRef);
+        outRef = LUA_NOREF;
+
+        // bind callback to ref
+        lua_getfield(L, tblIdx, fieldName);
+        if (!lua_isfunction(L, -1))
+        {
+            ZHL::Log(LOG_ERROR_HEADER "BindLuaCallbacks: Expected '%s' to be a function\n", fieldName);
+            LuaInternals::RaiseInitError();
+            lua_pop(L, 1);
+            assert(false);
+            return;
+        }
+
+        outRef = luaL_ref(L, LUA_REGISTRYINDEX);
+    };
+
+    BindCallback(L, tblIdx, "StoreGameState", s_luaCallbacks.storeGameState);
+    BindCallback(L, tblIdx, "RestoreGameState", s_luaCallbacks.restoreGameState);
+    BindCallback(L, tblIdx, "ClearGameState", s_luaCallbacks.clearGameState);
+    BindCallback(L, tblIdx, "SerializeGameState", s_luaCallbacks.serializeGameState);
+    BindCallback(L, tblIdx, "DeserializeGameState", s_luaCallbacks.deserializeGameState);
+    BindCallback(L, tblIdx, "DeleteGameState", s_luaCallbacks.deleteGameState);
+    BindCallback(L, tblIdx, "CleanupState", s_luaCallbacks.cleanupState);
+}
+
 #pragma region Hooks
 
 HOOK_METHOD(Game, SaveState, (GameState* state) -> void)
 {
-	super(state);
-
 	auto slot = get_game_state_slot(state);
 	if (slot == GameStateSlot::NULL_SLOT)
 	{
+		super(state);
 		ZHL::Log("[INFO] [GameStateManagement] could not determine Game State slot, skipping save.\n");
 		return;
 	}
 
+	bool isGlowingHourglass = IsGlowingHourglassSlot(slot);
+
+	CustomCallbacks::PRE_GAME_STATE_SAVE();
+	if (isGlowingHourglass)
+	{
+		CustomCallbacks::PRE_GLOWING_HOURGLASS_SAVE(slot - GameStateSlot::GLOWING_HOURGLASS_1);
+	}
+
+	super(state);
 	save_game_state(slot);
+
+	CustomCallbacks::POST_GAME_STATE_SAVE();
+	if (isGlowingHourglass)
+	{
+		CustomCallbacks::POST_GLOWING_HOURGLASS_SAVE(slot - GameStateSlot::GLOWING_HOURGLASS_1);
+	}
+
+	LuaStoreGameState(slot);
 }
 
 HOOK_METHOD(Game, RestoreState, (GameState* state, bool startGame) -> void)
 {
-	super(state, startGame);
-
 	auto slot = get_game_state_slot(state);
 	if (slot == GameStateSlot::NULL_SLOT)
 	{
 		ZHL::Log("[INFO] [GameStateManagement] could not determine Game State slot, skipping restore.\n");
+		super(state, startGame);
 		return;
 	}
 
+	LuaRestoreGameState(slot);
+
+	bool isGlowingHourglass = IsGlowingHourglassSlot(slot);
+
+	CustomCallbacks::PRE_GAME_STATE_RESTORE();
+	if (isGlowingHourglass)
+	{
+		CustomCallbacks::PRE_GLOWING_HOURGLASS_LOAD(slot - GameStateSlot::GLOWING_HOURGLASS_1);
+	}
+
+	super(state, startGame);
 	restore_game_state(slot, startGame);
+
+	CustomCallbacks::POST_GAME_STATE_RESTORE();
+	if (isGlowingHourglass)
+	{
+		CustomCallbacks::POST_GLOWING_HOURGLASS_LOAD(slot - GameStateSlot::GLOWING_HOURGLASS_1);
+	}
 }
 
 HOOK_METHOD(GameState, Clear, () -> void)
@@ -256,6 +456,7 @@ HOOK_METHOD(GameState, Clear, () -> void)
 	}
 
 	clear_game_state(slot);
+	LuaClearGameState(slot);
 }
 
 HOOK_METHOD(GameState, write, (GameStateIO** io) -> bool)
@@ -283,7 +484,15 @@ HOOK_METHOD(GameState, write, (GameStateIO** io) -> bool)
 
 	const std::string& fileName = info.fileName;
 	ESSM::detail::SaveData::Serialize(fileName, state);
-	return write_save(*this, info, isRerun);
+	success = write_save(*this, info, isRerun);
+	if (!success)
+	{
+		return false;
+	}
+
+	int checksum = g_Manager->_gamestate._checksum;
+	LuaSerializeGameState(info, checksum);
+	return success;
 }
 
 HOOK_METHOD(GameState, write_rerun, (GameStateIO** io) -> bool)
@@ -310,7 +519,15 @@ HOOK_METHOD(GameState, write_rerun, (GameStateIO** io) -> bool)
 	}
 
 	ESSM::detail::SaveData::Serialize(info.fileName, state);
-	return write_save(*this, info, isRerun);
+	success = write_save(*this, info, isRerun);
+	if (!success)
+	{
+		return false;
+	}
+
+	int checksum = g_Manager->_gamestate._checksum;
+	LuaSerializeGameState(info, checksum);
+	return success;
 }
 
 HOOK_METHOD(GameState, read, (GameStateIO** io, bool isLocalRun) -> bool)
@@ -351,7 +568,15 @@ HOOK_METHOD(GameState, read, (GameStateIO** io, bool isLocalRun) -> bool)
 		return false;
 	}
 
-	return read_save(*this, info, isRerun);
+	success = read_save(*this, info, isRerun);
+	if (!success)
+	{
+		return false;
+	}
+
+	int checksum = g_Manager->_gamestate._checksum;
+	LuaDeserializeGameState(info, checksum);
+	return success;
 }
 
 HOOK_METHOD(GameState, read_rerun, (GameStateIO** io) -> bool)
@@ -384,7 +609,15 @@ HOOK_METHOD(GameState, read_rerun, (GameStateIO** io) -> bool)
 		return false;
 	}
 
-	return read_save(*this, info, isRerun);
+	success = read_save(*this, info, isRerun);
+	if (!success)
+	{
+		return false;
+	}
+
+	int checksum = g_Manager->_gamestate._checksum;
+	LuaDeserializeGameState(info, checksum);
+	return success;
 }
 
 HOOK_METHOD(GameState, Delete, () -> void)
@@ -401,6 +634,7 @@ HOOK_METHOD(GameState, Delete, () -> void)
 	}
 
 	delete_save(info, isRerun);
+	LuaGameStateDelete(info);
 }
 
 HOOK_METHOD(GameState, DeleteRerun, () -> void)
@@ -417,5 +651,13 @@ HOOK_METHOD(GameState, DeleteRerun, () -> void)
 	}
 
 	delete_save(info, isRerun);
+	LuaGameStateDelete(info);
 }
+
+HOOK_METHOD(Manager, cleanup_current_state, () -> void)
+{
+    super();
+    LuaCleanupState();
+}
+
 #pragma endregion

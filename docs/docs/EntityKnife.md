@@ -33,6 +33,13 @@ ___
 #### boolean GetIsSwinging ( ) {: .copyable aria-label='Functions' }
 
 ___
+### InitHomingPath () {: aria-label='Functions' }
+#### void InitHomingPath ( [Vector](Vector.md) Direction, [Entity](Entity.md) Source = nil ) {: .copyable aria-label='Functions' }
+(Re)calculates the path used for homing knives or "projectile" knives (subtype 1; `KnifeSubType.PROJECTILE`).
+
+If not specified, the `Source` will default to the knife's `Parent`, though this is primarily only used to make sure that the knife does not try to home in on its source.
+
+___
 ### IsMultidimensionalTouched () {: aria-label='Functions' }
 #### boolean IsMultidimensionalTouched ( ) {: .copyable aria-label='Functions' }
 Returns if the knife was created through the Multi Dimensional Baby effect.

@@ -511,6 +511,18 @@ local typecheckFunctions = {
 		["number"] = checkInteger,
 		["boolean"] = true,
 	},
+	[ModCallbacks.MC_PRE_LEVEL_PLACE_ROOM] = {
+		["Room"] = true,
+	},
+	[ModCallbacks.MC_PRE_SELECT_AMBUSH_WAVE] = {
+		["Room"] = true,
+	},
+	[ModCallbacks.MC_PRE_SELECT_GREED_WAVE] = {
+		["Room"] = true,
+	},
+    [ModCallbacks.MC_SHOULD_SAVE_ENTITY] = {
+        ["boolean"] = true,
+    }
 }
 
 local typecheckWarnFunctions = {
@@ -626,10 +638,13 @@ local typecheckWarnFunctions = {
 	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE] = {
 		["number"] = checkNumberGreaterOrEqualFunction(0),
 	},
+	[ModCallbacks.MC_PRE_USE_ITEM] = {
+		["boolean"] = true,
+		["table"] = checkTableIndexes({ Discharge="boolean" }),
+	},
 }
 
 local boolCallbacks = {
-	ModCallbacks.MC_PRE_USE_ITEM,
 	ModCallbacks.MC_PRE_LASER_COLLISION,
 	ModCallbacks.MC_PRE_NPC_UPDATE,
 	ModCallbacks.MC_PRE_ENTITY_DEVOLVE,
@@ -975,6 +990,7 @@ end
 local RUN_CALLBACK_MINUS_ONE_PARAM_BLACKLIST = {
 	[ModCallbacks.MC_PRE_USE_ITEM] = true,
 	[ModCallbacks.MC_USE_ITEM] = true,
+	[ModCallbacks.MC_POST_USE_ITEM] = true,
 	[ModCallbacks.MC_PRE_ADD_COLLECTIBLE] = true,
 	[ModCallbacks.MC_POST_ADD_COLLECTIBLE] = true,
 	[ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_ADDED] = true,
@@ -1924,6 +1940,18 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PRE_GRID_HURT] = RunAdditiveSecondArgCallbackWithBreak,
 	[ModCallbacks.MC_POST_GRID_HURT] = RunNoReturnCallback,
 	[ModCallbacks.MC_POST_MODS_LOADED] = RunPostModsLoadedCallback,
+	[ModCallbacks.MC_PRE_RENDER_PLAYER_BODY] = RunAdditiveSecondArgCallbackWithBreak,
+	[ModCallbacks.MC_PRE_RENDER_PLAYER_HEAD] = RunAdditiveSecondArgCallbackWithBreak,
+	[ModCallbacks.MC_PRE_LEVEL_PLACE_ROOM] = RunAdditiveSecondArgCallback,
+	[ModCallbacks.MC_PRE_SELECT_AMBUSH_WAVE] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_PRE_SELECT_GREED_WAVE] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_PRE_PLAYERHUD_RENDER_INVENTORY] = RunAdditiveSecondArgCallbackWithBreak,
+	[ModCallbacks.MC_POST_PLAYERHUD_RENDER_INVENTORY] = RunNoReturnCallback,
+	[ModCallbacks.MC_PRE_PLAYERHUD_RENDER_POOP_SPELL_QUEUE] = RunAdditiveSecondArgCallbackWithBreak,
+	[ModCallbacks.MC_POST_PLAYERHUD_RENDER_POOP_SPELL_QUEUE] = RunNoReturnCallback,
+	[ModCallbacks.MC_PRE_PLAYERHUD_RENDER_CRAFTING_TABLE] = RunAdditiveSecondArgCallbackWithBreak,
+	[ModCallbacks.MC_POST_PLAYERHUD_RENDER_CRAFTING_TABLE] = RunNoReturnCallback,
+	[ModCallbacks.MC_POST_USE_ITEM] = RunNoReturnCallback,
 }
 
 for _, callback in ipairs({
@@ -1970,6 +1998,48 @@ rawset(Isaac, "RunCallbackWithTwoParams", _RunCallbackWithTwoParams)
 ---- MISC STUFF
 -----------------------------------------------------------------------------------------------------
 
+local Original_HasModData = Isaac.HasModData
+local Original_SaveModData = Isaac.SaveModData
+local Original_LoadModData = Isaac.LoadModData
+local Original_RemoveModData = Isaac.RemoveModData
+
+local ModReference_HasModFile = _CBindings.ModReference_HasModFile
+local ModReference_SaveModFile = _CBindings.ModReference_SaveModFile
+local ModReference_LoadModFile = _CBindings.ModReference_LoadModFile
+local ModReference_RemoveModFile = _CBindings.ModReference_RemoveModFile
+
+rawset(Isaac, "HasModData", function(modRef, filename)
+    if filename ~= nil then
+        return ModReference_HasModFile(modRef, filename)
+    else
+        return Original_HasModData(modRef)
+    end
+end)
+
+rawset(Isaac, "SaveModData", function(modRef, data, filename)
+    if filename ~= nil then
+        return ModReference_SaveModFile(modRef, filename, data)
+    else
+        return Original_SaveModData(modRef, data)
+    end
+end)
+
+rawset(Isaac, "LoadModData", function(modRef, filename)
+    if filename ~= nil then
+        return ModReference_LoadModFile(modRef, filename)
+    else
+        return Original_LoadModData(modRef)
+    end
+end)
+
+rawset(Isaac, "RemoveModData", function(modRef, filename)
+    if filename ~= nil then
+        return ModReference_RemoveModFile(modRef, filename)
+    else
+        return Original_RemoveModData(modRef)
+    end
+end)
+
 --Menuman Hub
 MenuManager.MainMenu = MainMenu
 MenuManager.CharacterMenu = CharacterMenu
@@ -1977,8 +2047,16 @@ MenuManager.StatsMenu = StatsMenu
 
 -- ImGui alias functions
 --local ImGui = Isaac.GetImGui()
-ImGui.ImGuiToWorld = function (position) return Isaac.ScreenToWorld(position) end
-ImGui.WorldToImGui = function (position) return Isaac.WorldToScreen(position) * Isaac.GetScreenPointScale() end
+ImGui.WorldToImGui = function (world_pos) 
+	local scr_xy = Isaac.WorldToScreen(world_pos)
+	-- scale the screen xy to the window rectangle
+	local _, imgui_wh = ImGui.GetGameWindowRect()
+	return Vector(scr_xy.X  * imgui_wh.X / Isaac.GetScreenWidth(), scr_xy.Y * imgui_wh.Y / Isaac.GetScreenHeight())
+end
+ImGui.ImGuiToWorld = function (imgui_pos) 
+	local _, imgui_wh = ImGui.GetGameWindowRect()
+	return Isaac.RenderToWorld(Vector(imgui_pos.X * Isaac.GetScreenWidth() / imgui_wh.X, imgui_pos.Y * Isaac.GetScreenHeight() / imgui_wh.Y))
+end
 
 if not _LUADEBUG then
 	debug = nil
@@ -2007,6 +2085,11 @@ function RegisterMod(name, ver)
 	local out = oldregmod(name, ver)
 	out.Repentogon = REPENTOGON
 	ModManager.detail.RegisterMod(out)
+
+    out.SaveData = function(self, ...) return Isaac.SaveModData(self, ...) end
+    out.LoadData = function(self, ...) return Isaac.LoadModData(self, ...) end
+    out.HasData = function(self, ...) return Isaac.HasModData(self, ...) end
+    out.RemoveData = function(self, ...) Isaac.RemoveModData(self, ...) end
 
 	return out
 end
@@ -2161,12 +2244,14 @@ pcall(require, "repentogon_extras/mods_menu_tweaks")
 
 pcall(require, "repentogon_api/room_descriptor")
 
+local SSM = _GetModule("repentogon_extras.save_state_manager")
 local ESSM = _GetModule("repentogon_extras.entity_save_state_manager")
 
 local ESSM_OnNewEntity = ESSM._OnNewEntity
 local ESSM_OnDeleteEntity = ESSM._OnDeleteEntity
 
 ---@class REPENTOGON._LuaBindings
+---@field SSM REPENTOGON._LuaBindings.SSM
 ---@field ESSM REPENTOGON._LuaBindings.ESSM
 ---@field EntityManager REPENTOGON._LuaBindings.EntityManager
 
@@ -2178,6 +2263,13 @@ local ESSM_OnDeleteEntity = ESSM._OnDeleteEntity
 ---@field Serialize fun(idMap: table<integer, integer>, fileName: string, checksum: integer) -- first integer is the serializationId, second integer is the actualId
 ---@field PreDeserialize fun(mods: ModReference[], modIds: string[]) -- list mods that have data that could be deserialized
 ---@field Deserialize fun(serializedIds: integer[], destIds: integer[], fileName: string, checksum: integer) -- serializedIds and destIds must have the same size
+
+---@class REPENTOGON._LuaBindings.SSM
+---@field StoreGameState fun(gameStateId: integer)
+---@field RestoreGameState fun(gameStateId: integer)
+---@field ClearGameState fun(gameStateId: integer)
+---@field SerializeGameState fun(gameStateInfo: REPENTOGON.GameStateInfo)
+---@field DeserializeGameState fun(gameStateInfo: REPENTOGON.GameStateInfo)
 
 ---@class REPENTOGON._LuaBindings.EntityManager
 ---@field NewEntity fun(entityId: integer)
@@ -2193,10 +2285,37 @@ local _EntityManager = {
 	end,
 }
 
+---@type REPENTOGON._LuaBindings.SSM
+local _SSM = {
+	StoreGameState = SSM._StoreGameState,
+	RestoreGameState = SSM._RestoreGameState,
+	ClearGameState = SSM._ClearGameState,
+	SerializeGameState = SSM._SerializeGameState,
+	DeserializeGameState = SSM._DeserializeGameState,
+	DeleteGameState = SSM._DeleteGameState,
+    CleanupState = SSM._CleanupState,
+}
+
+---@param entity Entity
+---@param entityId integer
+---@param saveStateId integer
+local function ESSM_StoreEntity(entity, entityId, saveStateId)
+    Isaac.RunCallback(ModCallbacks.MC_ENTITY_SAVE, entity)
+    ESSM._OnStoreEntity(entityId, saveStateId)
+end
+
+---@param entity Entity
+---@param entityId integer
+---@param saveStateId integer
+local function ESSM_RestoreEntity(entity, entityId, saveStateId)
+    ESSM._OnRestoreEntity(entityId, saveStateId)
+    Isaac.RunCallback(ModCallbacks.MC_ENTITY_RESTORE, entity)
+end
+
 ---@type REPENTOGON._LuaBindings.ESSM
 local _ESSM = {
-	StoreEntity = ESSM._OnStoreEntity,
-	RestoreEntity = ESSM._OnRestoreEntity,
+	StoreEntity = ESSM_StoreEntity,
+	RestoreEntity = ESSM_RestoreEntity,
 	ClearStates = ESSM._OnClearSaveStates,
 	CopyStates = ESSM._OnCopySaveStates,
 	Serialize = ESSM._Serialize,
@@ -2208,9 +2327,20 @@ local _ESSM = {
 _LuaBindings = {
 	EntityManager = _EntityManager,
 	ESSM = _ESSM,
+	SSM = _SSM,
 }
 
-EntitySaveStateManager = {
+SaveStateManager = {
+	GetGameData = SSM.GetGameData,
+	ClearGameData = SSM.ClearGameData,
+	GetEntityData = ESSM.GetEntityData,
+	GetEntitySaveStateData = ESSM.GetEntitySaveStateData,
+	TryGetEntityData = ESSM.TryGetEntityData,
+	TryGetEntitySaveStateData = ESSM.TryGetEntitySaveStateData,
+}
+
+-- Backwards compatibility
+EntitySaveStateManager  = {
 	GetEntityData = ESSM.GetEntityData,
 	GetEntitySaveStateData = ESSM.GetEntitySaveStateData,
 	TryGetEntityData = ESSM.TryGetEntityData,

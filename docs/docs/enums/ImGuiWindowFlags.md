@@ -25,6 +25,7 @@ tags:
 |1 << 16 |NoNavInputs {: .copyable } | No gamepad/keyboard navigation within the window |
 |1 << 17 |NoNavFocus {: .copyable } | No focusing toward this window with gamepad/keyboard navigation (e.g. skipped by CTRL+TAB) |
 |1 << 18 |UnsavedDocument {: .copyable } | Display a dot next to the title. When used in a tab/docking context, tab is selected when clicking the X + closure is not assumed (will wait for user to stop submitting the tab). Otherwise closure is assumed |
+|1 << 19 |NoDocking {: .copyable } | Disable docking of this window |
 |(1 << 16) | (1 << 17) |NoNav {: .copyable } | ImGuiWindowFlags.NoNavInputs &#124; ImGuiWindowFlags.NoNavFocus |
 |(1 << 0) | (1 << 1) | (1 << 3) | (1 << 5) |NoDecoration {: .copyable } | ImGuiWindowFlags.NoTitleBar &#124; ImGuiWindowFlags.NoResize &#124; ImGuiWindowFlags.NoScrollbar &#124; ImGuiWindowFlags.NoCollapse |
 |(1 << 9) | (1 << 16) | (1 << 17) |NoInputs {: .copyable } | ImGuiWindowFlags.NoMouseInputs &#124; ImGuiWindowFlags.NoNavInputs &#124; ImGuiWindowFlags.NoNavFocus |

@@ -90,7 +90,8 @@ unordered_map<string, int> getxmlnodeidbyname = {
 	 {"translations.xml", -1},
 	 {"recipes.xml", -1},
 	 {"pocketitems.xml", -1},
-	 {"items_metadata.xml", -1}
+	 {"items_metadata.xml", -1},
+	 {"babies.xml", 35},
 };
 
 vector <XMLDataHolder*> xmlnodetypetodata = {
@@ -129,7 +130,7 @@ vector <XMLDataHolder*> xmlnodetypetodata = {
 	XMLStuff.FxLayerData,       // 32
 	XMLStuff.FxParamData,        // 33
 	XMLStuff.FxRayData,        // 34
-	NULL,//reserved for missing vanilla xmls //35
+	XMLStuff.BabyData,         // 35
 	NULL,//reserved for missing vanilla xmls //36
 	NULL,//reserved for missing vanilla xmls //37
 	NULL,//reserved for missing vanilla xmls //38
@@ -896,114 +897,6 @@ HOOK_METHOD(Level, SetStage, (int a, int b)-> void) {
 }
 */
 
-
-// Converts a string of space-separated tags to lowercase, parses each individual tag, and inserts them into the provided set.
-// Ex: "tag1 tag2 tag3"
-// For tag-like attributes like 'customtags' and 'customcache'.
-void ParseTagsString(const string& str, set<string>& out) {
-	const string tagsstr = stringlower(str.c_str());
-	if (!tagsstr.empty()) {
-		stringstream tagstream(tagsstr);
-		string tag;
-		while (getline(tagstream, tag, ' ')) {
-			if (!tag.empty()) {
-				out.insert(tag);
-			}
-		}
-	}
-}
-
-static const unordered_map<string, int> bagOfCraftingTags = {
-	{"-1", 0},
-	{"none", 0},
-	{"false", 0},
-	{"redheart", 1},
-	{"heart", 1},
-	{"soulheart", 2},
-	{"blackheart", 3},
-	{"eternalheart", 4},
-	{"goldheart", 5},
-	{"boneheart", 6},
-	{"rottenheart", 7},
-	{"penny", 8},
-	{"nickel", 9},
-	{"dime", 10},
-	{"luckypenny", 11},
-	{"key", 12},
-	{"goldkey", 13},
-	{"chargedkey", 14},
-	{"bomb", 15},
-	{"goldbomb", 16},
-	{"gigabomb", 17},
-	{"minibattery", 18},
-	{"battery", 19},
-	{"megabattery", 20},
-	{"card", 21},
-	{"pill", 22},
-	{"rune", 23},
-	{"diceshard", 24},
-	{"crackedkey", 25},
-	{"goldpenny", 26},
-	{"goldpill", 27},
-	{"goldbattery", 28},
-	{"poop", 29}
-};
-
-void ParseBagOfCraftingAttribute(const string& str, vector<int>& out) {
-	const string tagsstr = stringlower(str.c_str());
-	if (!tagsstr.empty()) {
-		stringstream tagstream(tagsstr);
-		string tag;
-		while (getline(tagstream, tag, ' ')) {
-			if (out.size() >= 8)
-				break;
-			if (!tag.empty() && bagOfCraftingTags.find(tag) != bagOfCraftingTags.end()) {
-				const int n = bagOfCraftingTags.at(tag);
-				if (n > 0 || out.empty())
-					out.push_back(n);
-				if (n == 0)
-					break;
-			} else {
-				break;
-			}
-		}
-	}
-}
-
-// If the item has the appropriate customtags, adds it to the customreviveitems map
-// to make it more efficient to check if the player has any of them later.
-void CheckCustomRevive(const int id, XMLItem* data) {
-	const bool hasReviveTag = data->HasCustomTag(id, "revive");
-	const bool hasReviveEffectTag = data->HasCustomTag(id, "reviveeffect");
-	if (hasReviveTag || hasReviveEffectTag) {
-		CustomReviveInfo* info = &data->customreviveitems[id];
-		info->item = hasReviveTag;
-		info->effect = hasReviveEffectTag;
-		info->hidden = data->HasCustomTag(id, "hiddenrevive");
-		info->chance = data->HasCustomTag(id, "chancerevive");
-	}
-}
-
-// Parses xml-defined item stats.
-void ParseXmlItemStats(const int id, XMLAttributes* xmlAttributes, XMLItem* data, const bool isNullItem) {
-	for (const auto& [stat, tag] : EvaluateStats::evaluteStatXmlTags) {
-		if (xmlAttributes->find(tag) != xmlAttributes->end()) {
-			float value = stof(xmlAttributes->at(tag));
-			if (isNullItem) {
-				data->effectstatups[stat][id] = value;
-			} else {
-				data->statups[stat][id] = value;
-			}
-		}
-
-		const string effecttag = "effect" + tag;
-		if (xmlAttributes->find(effecttag) != xmlAttributes->end()) {
-			data->effectstatups[stat][id] = stof(xmlAttributes->at(effecttag));
-		}
-	}
-}
-
-
 // XMLDataHolder base logic ----------
 // Overrides defined below.
 
@@ -1025,7 +918,10 @@ XMLAttributes XMLDataHolder::CreateNode(const xml_node<char>& auxnode, xml_node<
 		inheritdaddyatts(daddy, &node);
 	}
 
-	node["sourceid"] = modid;
+	// sourceid may be pre-populated
+	if (node.count("sourceid") == 0) {
+		node["sourceid"] = modid;
+	}
 
 	return node;
 }
@@ -1103,32 +999,8 @@ void XMLItem::ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& it
 		item["type"] = "null";
 	}
 
-	if (item.count("customtags")) {
-		ParseTagsString(item["customtags"], this->customtags[id]);
-		CheckCustomRevive(id, this);
-	}
-	if (item.count("customcache")) {
-		ParseTagsString(item["customcache"], this->customcache[id]);
-		ParseTagsString(item["customcache"], XMLStuff.AllCustomCaches);
-	}
-	ParseXmlItemStats(id, &item, this, item["type"] == "null");
-
 	if (item.count("achievement") && toint(item["achievement"]) > (static_cast<int>(eAchievement::NUM_ACHIEVEMENTS) - 1)) {
 		this->customachievitems.push_back(item);
-	}
-}
-
-void XMLCollectible::ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& item, int id) {
-	XMLItem::ProcessAttributes(auxnode, item, id);
-
-	if (id == COLLECTIBLE_BFFS || id == COLLECTIBLE_HIVE_MIND) {
-		this->customcache[id].insert("familiarmultiplier");
-	} else if (id == COLLECTIBLE_DEEP_POCKETS) {
-		this->customcache[id].insert("maxcoins");
-	}
-
-	if (item["type"] == "active" && item.count("activegfx")) {
-		this->customActiveGFX[id] = item["gfxroot"] + "collectibles/" + item["activegfx"];
 	}
 }
 
@@ -1274,6 +1146,12 @@ void XMLGiantBook::ProcessAttributes(const xml_node<char>& auxnode, XMLAttribute
 	if (!giantbook.count("name") && giantbook.count("gfx")) {
 		giantbook["name"] = getFileName(giantbook["gfx"]);
 	}
+}
+
+// XMLChallenge ----------
+
+void XMLChallenge::ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& challenge, int id) {
+	CheckTranslatedAttribute(challenge, "lockeddesc");
 }
 
 // XMLRecipe ----------
@@ -1451,12 +1329,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			entity["variant"] = to_string(var);
 			entity["sourceid"] = lastmodid;
 			XMLDataHolder::CheckTranslatedAttribute(entity, "name", "Entities");
-			if (entity.find("customtags") != entity.end()) {
-				ParseTagsString(entity["customtags"], XMLStuff.EntityData->customtags[idx]);
-			}
-			if (type == ENTITY_PICKUP && entity.find("bagofcrafting") != entity.end()) {
-				ParseBagOfCraftingAttribute(entity["bagofcrafting"], XMLStuff.EntityData->bagofcraftingpickups[idx]);
-			}
+
 			if (iscontent && (entity["boss"] == "1")) {
 				tuple<int, int> clridx = { toint(entity["id"]), toint(entity["variant"]) };
 				if (XMLStuff.BossColorData->bytypevar.find(clridx) != XMLStuff.BossColorData->bytypevar.end()) {
@@ -1477,6 +1350,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			}
 			XMLStuff.EntityData->bytype[entity["id"]] = idx;
 			XMLStuff.EntityData->bybossid[entity["bossid"]] = idx;
+			XMLStuff.EntityData->bymod[lastmodid].push_back(idx);
 		}
 	break;
 	case 2: //player 
@@ -1947,45 +1821,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 		}
 		break;
 	case 21://bosspools
-		lastmodid = "BaseGame"; //no mods supported yet
-		id = -1;
-		daddy = node;
-		babee = node->first_node();
-		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
-			XMLAttributes bosspool;
-			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
-			{
-				bosspool[stringlower(attr->name())] = string(attr->value());
-			}
-			if ((XMLStuff.BossPoolData->byname[bosspool["name"]] != NULL) && (lastmodid == "BaseGame")) { //its loading both the rep and AB+ files, kill me!
-				XMLStuff.BossPoolData->Clear();
-			}
-			if (XMLStuff.BossPoolData->byname[bosspool["name"]] == NULL) {
-				XMLStuff.BossPoolData->maxid = XMLStuff.BossPoolData->maxid + 1;
-				id = XMLStuff.BossPoolData->maxid;
-			}
-			else {
-				id = XMLStuff.BossPoolData->byname[bosspool["name"]];
-			}
-
-			if (bosspool.count("sourceid") <= 0) { bosspool["sourceid"] = "BaseGame"; }
-			XMLStuff.BossPoolData->ProcessChilds(auxnode, id);
-
-			if ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent) {
-				XMLStuff.BossPoolData->bynamemod[bosspool["name"] + lastmodid] = id;
-				// XMLStuff.BossPoolData->bynamemod[bosspool["untranslatedname"] + lastmodid] = id;
-				XMLStuff.BossPoolData->bymod[lastmodid].push_back(id);
-				XMLStuff.BossPoolData->byfilepathmulti.tab[currpath].push_back(id);
-				XMLStuff.BossPoolData->byname[bosspool["name"]] = id;
-				// XMLStuff.BossPoolData->byname[bosspool["untranslatedname"]] = id;
-				XMLStuff.BossPoolData->nodes[id] = bosspool;
-				XMLStuff.BossPoolData->byorder[XMLStuff.BossPoolData->nodes.size()] = id;
-			}
-			//XMLStuff.ModData->bosspools[lastmodid] += 1;
-			//ZHL::Log("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
-		}
-		xmlsloaded = true; //this is the last xml to load after the game fucking started! (on game::start)
-	break;
+	    break;
 	case 22: //giantbook
 		id = 1;
 		daddy = node;
@@ -2173,6 +2009,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 	case 28: //fxrays
 		LoadGenericXMLData(XMLStuff.FxRayData, node, iscontent, currpath, lastmodid);
 		UpdateRelEntTracker(XMLStuff.FxRayData, &XMLStuff.BackdropData->relfxrays, "backdrop");
+		break;
+	case 29: //babies
+		for (xml_node<char>* auxnode = node->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+			XMLStuff.BabyData->CreateAndAddNode(*auxnode, node, currpath, iscontent, lastmodid);
+		}
 		break;
 	}
 	//ZHL::Log("Time taken: %.20fs in %s\n", (double)(clock() - tStart) / CLOCKS_PER_SEC, nodename);
@@ -2366,6 +2207,13 @@ HOOK_METHOD(EntityConfig, LoadPlayers, (char* xmlpath, ModEntry* modentry)->void
 	currpath = "";
 }
 
+HOOK_METHOD(EntityConfig, LoadBabies, (char* xmlpath)->void) {
+	if (xmlsloaded) { return super(xmlpath); }
+	currpath = string(xmlpath);
+	ProcessModEntry(xmlpath, nullptr);
+	super(xmlpath);
+	currpath = "";
+}
 
 bool Lua_PushXMLSubNodes(lua_State* L, vector<XMLAttributes> node)
 {
@@ -3255,7 +3103,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 	}
 	//resources
 	//maxnodes
-	if (xmlmaxnode.find(filename) != xmlmaxnode.end()) {
+	if (xmlmaxnode.find(filename) != xmlmaxnode.end() || filename == "babies.xml") {
 		xml_document<char>* xmldoc = new xml_document<char>();
 		if (XMLParse(xmldoc, xml, filename)) {
 			int newmax = GetMaxIdFromChilds(xmldoc->first_node());
@@ -3309,7 +3157,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 				xml_document<char>* resourcesdoc = new xml_document<char>();
 				if (GetContent(contentsdir, resourcesdoc)) {
 					xml_node<char>* resourcescroot = resourcesdoc->first_node();
-						if (strcmp(filename.c_str(), "bosspools.xml") == 0) {
+						if (filename == "bosspools.xml") {
 							for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 								XMLAttributes node;
 								for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
@@ -3333,7 +3181,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 									}
 								}
 							}
-						} else if (strcmp(filename.c_str(), "stringtable.sta") == 0) {
+						} else if (filename == "stringtable.sta") {
 							for (xml_node<char>* auxnode = resourcescroot->first_node("category"); auxnode; auxnode = auxnode->next_sibling()) {
 								XMLAttributes node;
 								for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
@@ -3357,7 +3205,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 									}
 								}
 							}
-					}else if (strcmp(filename.c_str(), "bossportraits.xml") == 0) {
+					}else if (filename == "bossportraits.xml") {
 						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
 							xml_attribute<char>* sourceid = new xml_attribute<char>();sourceid->name("sourceid");sourceid->value(lastmodid.c_str());clonedNode->append_attribute(sourceid);
@@ -3365,7 +3213,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 							root->append_node(clonedNode);
 						}
 					}
-					else if (strcmp(filename.c_str(), "achievements.xml") == 0) {
+					else if (filename == "achievements.xml") {
 						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
 							xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
@@ -3373,7 +3221,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 							root->append_node(clonedNode);
 						}
 					}
-					else if (strcmp(filename.c_str(), "fxlayers.xml") == 0) {
+					else if (filename == "fxlayers.xml") {
 						//fxlayers
 						resourcescroot = resourcesdoc->first_node("fxLayers"); 
 						root = xmldoc->first_node("fxLayers");
@@ -3434,7 +3282,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 						}
 						//end of fxParams
 					}
-					else if (strcmp(filename.c_str(), "backdrops.xml") == 0) {
+					else if (filename == "backdrops.xml") {
 						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
 							xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
@@ -3460,7 +3308,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 							root->append_node(clonedNode);
 						}
 					}
-					else if (strcmp(filename.c_str(), "stages.xml") == 0) {
+					else if (filename == "stages.xml") {
 						//ZHL::Log("1");
 						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 							XMLAttributes node;
@@ -3481,7 +3329,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 							root->append_node(clonedNode);
 						}
 					}
-					else if (strcmp(filename.c_str(), "ambush.xml") == 0) {
+					else if (filename == "ambush.xml") {
 						resourcescroot = resourcesdoc->first_node("bossrush"); //only bossrush works anyway, the rest was deprecated in rpeentance, so why bother?
 						root = xmldoc->first_node("bossrush");
 						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
@@ -3590,30 +3438,28 @@ char* ParseModdedXMLAttributes(char* xml, const string& filename) {
 	xml_document<char>* xmldoc = new xml_document<char>();
 	if (XMLParse(xmldoc, xml, filename)) {
 		xml_node<char>* root = xmldoc->first_node();
-			if (strcmp(filename.c_str(), "players.xml") == 0) {
+			if (filename == "players.xml") {
 				for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.ItemData, "items");
 					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.ItemData, "pocketActive");
 					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.TrinketData, "trinket");
 					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.CardData, "card");
 				}
-			}else if (strcmp(filename.c_str(), "challenges.xml") == 0) {
+			} else if (filename == "challenges.xml") {
 				for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.PlayerData, "playertype");
 					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.ItemData, "startingitems");
 					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.ItemData, "startingitems2");
 					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.TrinketData, "startingtrinkets");
-					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.CardData, "startingcard");
+					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.CardData, "startingcard");
 					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.AchievementData, "achievements");
 					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.AchievementData, "unlockachievement");
 				}
-			}
-			else if (strcmp(filename.c_str(), "pocketitems.xml") == 0) {
+			} else if (filename == "pocketitems.xml") {
 				for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.AchievementData, "achievement");
 				}
-			}
-			else if (strcmp(filename.c_str(), "items.xml") == 0) {
+			} else if (filename == "items.xml") {
 				for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.AchievementData, "achievement");
 				}
@@ -3698,18 +3544,6 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 
 	super();
 
-	EvaluateStats::UpdateItemConfig();
-
-	// _collectibleNameMap is pretty much exclusively used for mod-related stuff.
-	// Ofc the basegame does not account for translation string support. It puts only the TRANSLATED names in the map.
-	// Here we shove all of the raw, untranslated strings into the map too.
-	// This fixes putting mod items into item pools, and GetItemIdByName.
-	for (ItemConfig_Item* item : *g_Manager->GetItemConfig()->GetCollectibles()) {
-		if (item && !item->name.empty() && item->id > 0) {
-			g_Manager->GetItemConfig()->_collectibleNameMap[item->name] = item->id;
-		}
-	}
-
 	//retroactively patch playertype for challenges because the game sucks ass and loads modded challenges before players
 	for (int i = 46; i<=XMLStuff.ChallengeData->maxid; i++) {
 		ChallengeParam* chalpram = g_Manager->GetChallengeParams(i);
@@ -3744,10 +3578,9 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 	}
 	if (xmlsloaded) {
 		//ZHL::Log("XML: %s", xmldata);
-		if ((bosspoolsxml != NULL) && (charfind(xmldata, "<bosspool", 50))) {
-			char* x = new char[strlen(bosspoolsxml)];
-			strcpy(x, bosspoolsxml);
-			super(x);
+		if ((charfind(xmldata, "<bosspool", 50))) {
+			std::string& sourceText = XMLStuff.BossPoolData->GetXmlSourceText(xmldata);
+			super(sourceText.data());
 			return;
 		}
 		else if (charfind(xmldata, "<cuts", 50)) {
@@ -3774,38 +3607,30 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		}
 
 		if (charfind(xmldata, "<bosspool", 50)) {
-			if (bosspoolsxml != NULL) {
-				char* x = new char[strlen(bosspoolsxml)];
-				strcpy(x, bosspoolsxml);
-				super(x);
-			}
-			else {
-				char* x = BuildModdedXML(xmldata, "bosspools.xml", true);
-				bosspoolsxml = new char[strlen(x) + 1];
-				strcpy(bosspoolsxml, x);
-				super(x);
-			}
+            std::string& sourceText = XMLStuff.BossPoolData->GetXmlSourceText(xmldata);
+			xmldata = sourceText.data(); // change xmldata to point to the redirected text, to avoid crashes if there's an error.
+			xmlsloaded = true; //this is the last xml to load after the game fucking started! (on game::start)
 		}else if (charfind(xmldata, "<backd", 50)) {
-				super(BuildModdedXML(xmldata, "backdrops.xml", false));
+				xmldata = BuildModdedXML(xmldata, "backdrops.xml", false);
 		}else if (charfind(xmldata, "<bosse", 50)) {
-			super(BuildModdedXML(xmldata, "bossportraits.xml", false));
+			xmldata = BuildModdedXML(xmldata, "bossportraits.xml", false);
 		}
 		else if (charfind(xmldata, "<bossc", 50)) {
-			super(BuildModdedXML(xmldata, "bosscolors.xml", false));
+			xmldata = BuildModdedXML(xmldata, "bosscolors.xml", false);
 		}
 		else if (charfind(xmldata, "<playerfo", 50)) {
-			super(BuildModdedXML(xmldata, "playerforms.xml", false));
+			xmldata = BuildModdedXML(xmldata, "playerforms.xml", false);
 		}else if (charfind(xmldata, "<playe", 50)) {
-			super(ParseModdedXMLAttributes(xmldata, "players.xml"));
+			xmldata = ParseModdedXMLAttributes(xmldata, "players.xml");
 		}
 		else if (charfind(xmldata, "<chal", 50)) {
-			super(ParseModdedXMLAttributes(xmldata, "challenges.xml"));
+			xmldata = ParseModdedXMLAttributes(xmldata, "challenges.xml");
 		}
 		else if (charfind(xmldata, "<item", 50)) {
-			super(ParseModdedXMLAttributes(xmldata, "items.xml"));
+			xmldata = ParseModdedXMLAttributes(xmldata, "items.xml");
 		}
 		else if (charfind(xmldata, "<pock", 50)) {
-			super(ParseModdedXMLAttributes(xmldata, "pocketitems.xml"));
+			xmldata = ParseModdedXMLAttributes(xmldata, "pocketitems.xml");
 		}
 		else if (charfind(xmldata, "<ach", 50)) {
 			XMLStuff.AchievementData->Clear();
@@ -3815,26 +3640,29 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 				achievsloaded = true;
 				achieveemntsxmlpreload = new char[strlen(xmldata) + 1];
 				strcpy(achieveemntsxmlpreload, xmldata);
-				super(xmldata);
 			}
 			else {
-				super(BuildModdedXML(xmldata, "achievements.xml", false));
+				xmldata = BuildModdedXML(xmldata, "achievements.xml", false);
 			}
 		}else if (charfind(xmldata, "<cuts", 50)) {
-			super(BuildModdedXML(xmldata, "cutscenes.xml", false));
+			xmldata = BuildModdedXML(xmldata, "cutscenes.xml", false);
 		}
 		else if (charfind(xmldata, "<giantb", 50)) {
-			super(BuildModdedXML(xmldata, "giantbook.xml", false));
+			xmldata = BuildModdedXML(xmldata, "giantbook.xml", false);
 		}
 		else if ((charfind(xmldata, "<ambush", 50)) || (charfind(xmldata, "<bossru", 50)) || (charfind(xmldata, "<bossamb", 50))) {
-			super(BuildModdedXML(xmldata, "ambush.xml", false));
+			xmldata = BuildModdedXML(xmldata, "ambush.xml", false);
 		}
 		else if (charfind(xmldata, "<stages", 50)) {
-			super(BuildModdedXML(xmldata, "stages.xml", false));
+			xmldata = BuildModdedXML(xmldata, "stages.xml", false);
+		}
+		else if (charfind(xmldata, "<babies ", 50)) {
+			xmldata = BuildModdedXML(xmldata, "babies.xml", false);
 		}
 		else if (charfind(xmldata, "<stringtab", 50)) {
-			super(BuildModdedSta(xmldata));
-		}else if (charfind(xmldata, "<reci",  50)) {
+            xmldata = BuildModdedSta(xmldata);
+		}
+		else if (charfind(xmldata, "<reci",  50)) {
 			string xml = string(xmldata);
 			regex regexPattern(R"(\boutput\s*=\s*["']([^"']+)["'])");
 			smatch match;
@@ -3857,10 +3685,10 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 			}
 			char* s = new char[xml.length() + 1];
 			std::strcpy(s, xml.c_str());
-			super(s);
-		}else{
-			super(xmldata);
-		}
+            xmldata = s;
+        }
+
+        super(xmldata);
 	}
 	catch (rapidxml::parse_error err) {
 		int lineNumber = getLineNumber(xmldata, err.where<char>());

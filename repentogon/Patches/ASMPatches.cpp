@@ -187,6 +187,7 @@ void PerformASMPatches() {
 	ASMPatchPostChampionRegenCallback();
 	ASMPatchTrinketRender();
 	ASMPatchPickupUpdatePickupGhosts();
+	ASMPatchNpcUpdatePickupGhosts();
 	ASMPatchProjectileDeath();
 	ASMPatchTearDeath();
 	ASMPatchPrePlayerGiveBirth();
@@ -248,7 +249,6 @@ void PerformASMPatches() {
 
 	// Player
 	ASMPatchCheckFamiliar();
-	ASMPatchPlayerStats();
 	ASMPatchesForPlayerCustomTags();
 	ASMPatchesForExtraLives();
 	ASMPatchMarsDoubleTapWindow();
@@ -262,6 +262,8 @@ void PerformASMPatches() {
 	ASMPatchPlayerDeathSoundLost();
 	ASMPatchPlayerDeathSoundAstralProjection();
 	ASMPatchPlayerLostSoulSkipPeePuddle();
+	ASMPatchGetTearParamsAddBloodyTears();
+	ASMPatchGetTearParamsDisableBloodyTears();
 
 	// Status Effects
 	PatchInlinedGetStatusEffectTarget();
@@ -300,6 +302,12 @@ void PerformASMPatches() {
 	ASMPatchesForCustomModManager();
 	ASMPatchRedirectToLocalizationFolders();
 	ASMPatchLocalizedPlayerAnimations();
+
+	if (!ASMPatches::SkipArchiveChecksums()) {	//want to run this one before localization patch to have bytes patched ahead of time
+		ZHL::Log("[ERROR] Error while applying an archive checksum skip\n");
+	};
+
+	ASMPatchLoadArchiveFile();
 	ASMFixes();
 	HookImGui();
 
@@ -315,10 +323,6 @@ void PerformASMPatches() {
 	if (!ASMPatches::FixTearDetonatorEntityList()) {
 		ZHL::Log("[ERROR] Unable to find signature for Tear Detonator EntityList_EL in UseActiveItem\n");
 	}
-
-	if (!ASMPatches::SkipArchiveChecksums()) {
-		ZHL::Log("[ERROR] Error while applying an archive checksum skip\n");
-	};
 
 	//patch disabled, due to bugged steam details
 	/*if (!ASMPatches::LeaderboarEntryCheckerUpdate()) {
@@ -342,6 +346,10 @@ void PerformASMPatches() {
 	if (!ASMPatches::SkipWombAchievementBlock()) {
 		ZHL::Log("[ERROR] Error while skipping womb achievement block\n");
 	}
+
+	if (!ASMPatches::FixGridDebugInfo()) {
+		ZHL::Log("[ERROR] Error while patching grid debug info font\n");
+	};
 
 	ASMPatches::DisableExitPrompt();
 	ASMPatches::PatchLeaderboardGoalSprite();

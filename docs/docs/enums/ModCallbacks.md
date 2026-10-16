@@ -11,6 +11,13 @@ Accepts no return parameters.
 |:--|:--|:--|:--|:--|
 |10 |MC_USE_PILL {: .copyable } | ([PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) Effect, [EntityPlayer](../EntityPlayer.md) Player, [UseFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/UseFlags.html) Flags, [PillColor](https://wofsauge.github.io/IsaacDocs/rep/enums/PillColor.html) Color) | [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) | void |
 
+### MC_PRE_USE_ITEM {: .copyable }
+Now allows you to `return { Discharge=false }` to cancel the activation without discharging the item.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|23 |MC_PRE_USE_ITEM {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html), [RNG](../RNG.md), [EntityPlayer](../EntityPlayer.md), [UseFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/UseFlags.html), [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html), int CustomVarData) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | boolean or table |
+
 ### MC_POST_PICKUP_SELECTION
 
 MC_POST_PICKUP_COLLISION now passes the **Requested Variant** and **Requested SubType**, as well as **RNG**.  
@@ -199,6 +206,17 @@ Return `false` to cancel, or a different [TrinketType](https://wofsauge.github.i
 |:--|:--|:--|:--|:--|
 |1014 |MC_PRE_ADD_TRINKET {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, boolean FirstTime) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | boolean or [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) |
 
+### MC_POST_USE_ITEM {: .copyable }
+More reliable callback for after an active item has been used, since `MC_USE_ITEM` is intended for modded active logic and is often terminated early.
+
+Note that the game usually hasn't actually discharged the item yet in most cases, but if `Discharge` is true and this was a "real" active item use, it will be discharged afterwards.
+
+If `Remove` is true, the game will have already attempted to remove the item.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1003 |MC_POST_USE_ITEM {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html), [RNG](../RNG.md), [EntityPlayer](../EntityPlayer.md), [UseFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/UseFlags.html), [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html), int CustomVarData, boolean Discharge, boolean Remove) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | void |
+
 ### MC_POST_BACKDROP_PRE_RENDER_WALLS {: .copyable }
 
 |ID|Name|Function Args|Optional Args|Return Type|
@@ -273,7 +291,15 @@ Called after a challenge is marked as completed.
 |1472 | MC_POST_CHALLENGE_DONE {: .copyable } | ([Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html)) | [Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html) | void |
 
 ### MC_PRE_CHANGE_ROOM {: .copyable }
-Accepts a table of parameters: `{TargetRoomIdx, Dimension}`
+Called every time a player is about to change room.
+The callback receives as parameters the index of the room and the index of the dimension in which the player is targeted to be sent to.
+
+The callback can return a table to override the room to which is sent.
+The table **must** contain exactly two integer-indexed fields. The first is interpreted as the index of the target room. The second is interpreted as the index of the target dimension.
+
+If there is no room at the selected index in the selected dimension, the return value is discarded and the callback has no effect.
+If the table does not contain exactly two fields, as if by calling the `rawlen` function on it, the return value is discarded and the callback has no effect.
+If the return value is not a table, the return value is discarded and the callback has no effect.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -1716,6 +1742,54 @@ Alternative accepts `true`, which cancels trinket rendering.
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1264 |MC_PRE_PLAYERHUD_TRINKET_RENDER {: .copyable } | (int Slot, <br>[Vector](../Vector.md) Position, <br>float Scale, <br>[EntityPlayer](../EntityPlayer.md) Player, <br>[Vector](../Vector.md) CropOffset) | int Slot | table or boolean |
+
+### MC_PRE_PLAYERHUD_RENDER_INVENTORY {: .copyable }
+Render callback for Tainted Isaac's inventory.
+
+Return `false` to cancel rendering, or a [Vector](../Vector.md) to modify the Offset.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1293 |MC_PRE_PLAYERHUD_RENDER_INVENTORY {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[Vector](../Vector.md) Offset, <br>float Scale) | - | boolean or [Vector](../Vector.md) |
+
+### MC_POST_PLAYERHUD_RENDER_INVENTORY {: .copyable }
+Render callback for Tainted Isaac's inventory.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1294 |MC_POST_PLAYERHUD_RENDER_INVENTORY {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[Vector](../Vector.md) Offset, <br>float Scale) | - | void |
+
+### MC_PRE_PLAYERHUD_RENDER_POOP_SPELL_QUEUE {: .copyable }
+Render callback for Tainted ???'s poop spell queue.
+
+Return `false` to cancel rendering, or a [Vector](../Vector.md) to modify the Offset.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1295 |MC_PRE_PLAYERHUD_RENDER_POOP_SPELL_QUEUE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[Vector](../Vector.md) Offset, <br>float Scale) | - | boolean or [Vector](../Vector.md) |
+
+### MC_POST_PLAYERHUD_RENDER_POOP_SPELL_QUEUE {: .copyable }
+Render callback for Tainted ???'s poop spell queue.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1296 |MC_POST_PLAYERHUD_RENDER_POOP_SPELL_QUEUE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[Vector](../Vector.md) Offset, <br>float Scale) | - | void |
+
+### MC_PRE_PLAYERHUD_RENDER_CRAFTING_TABLE {: .copyable }
+Render callback for Tainted Cain's Bag of Crafting HUD.
+
+Return `false` to cancel rendering, or a [Vector](../Vector.md) to modify the Offset.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1297 |MC_PRE_PLAYERHUD_RENDER_CRAFTING_TABLE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[Vector](../Vector.md) Offset, <br>float Scale) | - | boolean or [Vector](../Vector.md) |
+
+### MC_POST_PLAYERHUD_RENDER_CRAFTING_TABLE {: .copyable }
+Render callback for Tainted Cain's Bag of Crafting HUD.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1298 |MC_POST_PLAYERHUD_RENDER_CRAFTING_TABLE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[Vector](../Vector.md) Offset, <br>float Scale) | - | void |
 
 ### MC_POST_PLAYER_COLLISION {: .copyable }
 Runs after the on-collision code of this entity, assuming it wasn't skipped.

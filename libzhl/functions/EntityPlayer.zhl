@@ -593,7 +593,7 @@ __thiscall bool Entity_Player::CanRerollCollectible(int id, bool unk);
 __thiscall bool Entity_Player::HasInvincibility(uint64_t damageFlags, EntityRef* source);
 
 "558bec6aff68????????64a1????????50b8dc190000":
-__thiscall void Entity_Player::UseActiveItem(short* resultFlags, CollectibleType collectible, unsigned int useFlags, int activeSlot, int varData);
+__thiscall void Entity_Player::UseActiveItem(short* resultFlags, int collectible, unsigned int useFlags, int activeSlot, int varData);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec800000005657a1????????33c5508d45??64a3????????8bf9":
 __thiscall void Entity_Player::StoreGameState(GameStatePlayer* saveState, bool saveTemporaryFamiliars);
