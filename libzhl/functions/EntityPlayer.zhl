@@ -620,7 +620,7 @@ __thiscall Entity* Entity_Player::AddBlueSpider(Vector* position);
 __thiscall Entity_Familiar* Entity_Player::AddFriendlyDip(int subtype, Vector* position);
 
 "558bec83ec40a1????????33c58945??53568bc1":
-__thiscall Entity_Familiar* Entity_Player::AddItemWisp(CollectibleType collectible, Vector position, bool adjustOrbitLayer);
+__thiscall Entity_Familiar* Entity_Player::AddItemWisp(CollectibleType collectible, Vector* position, bool adjustOrbitLayer);
 
 "558bec83e4f881ec8c000000a1????????33c4898424????????538a5d":
 __thiscall Entity_Familiar* Entity_Player::AddMinisaac(Vector* position, bool playAnim);

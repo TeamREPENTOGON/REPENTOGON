@@ -475,7 +475,7 @@ MOD_EXPORT Entity_Familiar* L_EntityPlayer_AddFriendlyDip(Entity_Player* player,
 }
 
 MOD_EXPORT Entity_Familiar* L_EntityPlayer_AddItemWisp(Entity_Player* player, int collectible, Vector* position, bool adjustOrbitLayer) {
-	return player->AddItemWisp((CollectibleType)collectible, *position, adjustOrbitLayer);
+	return player->AddItemWisp((CollectibleType)collectible, position, adjustOrbitLayer);
 }
 
 MOD_EXPORT Entity_Familiar* L_EntityPlayer_AddMinisaac(Entity_Player* player, Vector* position, bool playAnim) {
