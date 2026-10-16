@@ -67,6 +67,7 @@
 #include "../LuaInterfaces/_Internals.h"
 #include "../ImGuiFeatures/CustomImGui.h"
 #include "../Patches/ExtraRenderSteps.h"
+#include "../LuaClasses.h"
 
 #include <fstream>
 #include <algorithm>
@@ -181,8 +182,8 @@ namespace ESSM
 
     public:
         void BindLuaCallbacks(lua_State* L, int tblIdx);
-        void StoreEntity(const Entity& entity, uint32_t saveStateId);
-        void RestoreEntity(const Entity& entity, uint32_t saveStateId);
+        void StoreEntity(Entity& entity, uint32_t saveStateId);
+        void RestoreEntity(Entity& entity, uint32_t saveStateId);
         void ClearStates(const std::vector<uint32_t>& saveStateIds);
         void CopyStates(const std::vector<std::pair<uint32_t, uint32_t>>& copyIds);
         void Serialize(const detail::SaveData::_WriteState& writeState, const std::string& filename, uint32_t checksum);
@@ -858,7 +859,7 @@ namespace ESSM
         BindCallback(L, tblIdx, "Deserialize", this->m_deserialize);
     }
     
-    void LuaCallbacks::StoreEntity(const Entity& entity, uint32_t saveStateId)
+    void LuaCallbacks::StoreEntity(Entity& entity, uint32_t saveStateId)
     {
         LuaEngine* lua = g_LuaEngine;
         lua_State* L = lua->_state;
@@ -866,17 +867,18 @@ namespace ESSM
         uint32_t entityId = lua->GetMaskedPointer((uintptr_t)&entity);
     
         lua_rawgeti(L, LUA_REGISTRYINDEX, this->m_storeEntity);
+        LuaEntity::PushPtr(L, &entity);
         lua_pushinteger(L, entityId);
         lua_pushinteger(L, saveStateId + 1); // Use 1-based indexing for Lua.
     
-        if (lua_pcall(L, 2, 0, 0) != LUA_OK)
+        if (lua_pcall(L, 3, 0, 0) != LUA_OK)
         {
             ZHL::Log(LOG_ERROR_HEADER "LuaCallbacks::StoreEntity: %s\n", lua_tostring(L, -1));
             lua_pop(L, 1);
         }
     }
     
-    void LuaCallbacks::RestoreEntity(const Entity& entity, uint32_t saveStateId)
+    void LuaCallbacks::RestoreEntity(Entity& entity, uint32_t saveStateId)
     {
         LuaEngine* lua = g_LuaEngine;
         lua_State* L = lua->_state;
@@ -884,10 +886,11 @@ namespace ESSM
         uint32_t entityId = lua->GetMaskedPointer((uintptr_t)&entity);
     
         lua_rawgeti(L, LUA_REGISTRYINDEX, this->m_restoreEntity);
+        LuaEntity::PushPtr(L, &entity);
         lua_pushinteger(L, entityId);
         lua_pushinteger(L, saveStateId + 1); // Use 1-based indexing for Lua.
     
-        if (lua_pcall(L, 2, 0, 0) != LUA_OK)
+        if (lua_pcall(L, 3, 0, 0) != LUA_OK)
         {
             ZHL::Log(LOG_ERROR_HEADER "LuaCallbacks::RestoreEntity: %s\n", lua_tostring(L, -1));
             lua_pop(L, 1);

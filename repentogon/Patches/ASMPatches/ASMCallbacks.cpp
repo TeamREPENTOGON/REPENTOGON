@@ -2552,6 +2552,39 @@ static void ASMPatchSpawnWave(const char* name, bool isGreed, const char* def) {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static bool __stdcall asm_run_should_save_entity_callback(Entity* entity, bool shouldSave)
+{
+    Room* room = g_Game->GetCurrentRoom();
+    bool isRoomClear = (room->_descriptor->Flags & 1) != 0;
+
+    return CustomCallbacks::SHOULD_SAVE_ENTITY(*entity, shouldSave, isRoomClear);
+}
+
+static void Patch_RoomSaveEntity_CheckShouldSaveEntity()
+{
+    const size_t JZ_OFFSET = 2;
+    const size_t JZ_LENGTH = 6;
+
+    uintptr_t addr = (uintptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_save_entity_CheckShouldSaveEntity);
+    int32_t jz_rel32; memcpy(&jz_rel32, (void*)(addr + JZ_OFFSET + 2), sizeof(jz_rel32));
+
+    uintptr_t trueDestination = addr + JZ_OFFSET + JZ_LENGTH; // fallthrough
+    uintptr_t falseDestination = (addr + JZ_OFFSET + JZ_LENGTH) + jz_rel32;
+
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::EAX, true);
+    ASMPatch patch;
+    patch.PreserveRegisters(savedRegisters)
+        .Push(ASMPatch::Registers::EAX) // push shouldSave (current result)
+        .Push(ASMPatch::Registers::ESI) // push entity
+        .AddInternalCall(asm_run_should_save_entity_callback)
+        .RestoreRegisters(savedRegisters)
+        .AddBytes("\x84\xC0") // TEST AL, AL
+        .AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (void*)trueDestination)
+        .AddRelativeJump((void*)falseDestination);
+
+    sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
 void ASMCallbacks::detail::ApplyPatches()
 {
 	Patch_GameUpdate_MainUpdate();
@@ -2564,4 +2597,5 @@ void ASMCallbacks::detail::ApplyPatches()
 	ASMPatchCharacterMenuPreSelectCharacter();
 	ASMPatchSpawnWave("Ambush:SpawnWave", false, &AsmDefinitions::Ambush_SpawnWave_PostGetRandomRoom);
 	ASMPatchSpawnWave("Room:SpawnGreedModeWave", true, &AsmDefinitions::Room_SpawnGreedModeWave_PostGetRandomRoom);
+    Patch_RoomSaveEntity_CheckShouldSaveEntity();
 }

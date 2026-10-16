@@ -18,6 +18,10 @@ Added:
 	- MC_POST_GAME_STATE_SAVE
 	- MC_PRE_GAME_STATE_RESTORE
 	- MC_POST_GAME_STATE_RESTORE
+    - MC_SHOULD_SAVE_ENTITY(Entity, bool isRoomClear)
+        Can be used to override whether or not the entity should be saved.
+    - MC_ENTITY_SAVE(Entity)
+    - MC_ENTITY_RESTORE(Entity)
 * Isaac:
     - Added overloads for the ModData functions that accept a custom filename.
 * ModReference:

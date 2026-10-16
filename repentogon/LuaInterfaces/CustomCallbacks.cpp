@@ -5438,6 +5438,35 @@ void CustomCallbacks::POST_GLOWING_HOURGLASS_LOAD(size_t currentSlot)
 		.call(0);
 }
 
+bool CustomCallbacks::SHOULD_SAVE_ENTITY(Entity& entity, bool shouldSave, bool isRoomClear)
+{
+    const int CALLBACK_ID = 1313;
+    if (!CallbackState.test(CALLBACK_ID - 1000)) {
+        return shouldSave;
+    }
+
+    lua_State* L = g_LuaEngine->_state;
+    lua::LuaStackProtector protector(L);
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+    lua::LuaResults result = lua::LuaCaller(L).push(CALLBACK_ID)
+        .pushnil()
+        .push(&entity, lua::Metatables::ENTITY)
+        .push(isRoomClear)
+        .call(1);
+
+    if (result.getResultCode() != LUA_OK) {
+        return shouldSave;
+    }
+
+    if (lua_isboolean(L, -1)) {
+        shouldSave = lua_toboolean(L, -1);
+    }
+
+    return shouldSave;
+}
+
 // POST_ROOM_SAVE_STATE (1304)
 HOOK_METHOD(Room, SaveState, () -> void) {
 	super();
