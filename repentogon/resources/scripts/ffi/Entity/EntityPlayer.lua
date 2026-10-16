@@ -1939,7 +1939,6 @@ local methods = {
     GetDeadEyeCharge = Getter("DeadEyeChargesValue"),
     GetAimDirection = Getter("AimDirectionValue"),
     GetLastDirection = Getter("LastDirectionValue"),
-    GetMovementInput = VectorGetter("MovementInputValue"),
     GetMovementVector = Getter("MovementInputValue"),
     GetRecentMovementVector = Getter("RecentMovementVectorValue"),
     GetVelocityBeforeUpdate = Getter("VelocityBeforeUpdateValue"),
@@ -2775,6 +2774,7 @@ local methods = {
     end,
 }
 
+methods.GetMovementInput = methods.GetMovementJoystick
 methods.GetShootingInput = methods.GetShootingJoystick
 methods.GetMaxPoketItems = methods.GetMaxPocketItems
 methods.DropPoketItem = methods.DropPocketItem
