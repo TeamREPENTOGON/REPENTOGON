@@ -5452,7 +5452,7 @@ bool CustomCallbacks::SHOULD_SAVE_ENTITY(Entity& entity, bool shouldSave, bool i
 
     lua::LuaResults result = lua::LuaCaller(L).push(CALLBACK_ID)
         .pushnil()
-        .push(&entity, lua::Metatables::ENTITY)
+		.pushClassPtr<LuaEntity>(&entity)
         .push(isRoomClear)
         .call(1);
 
