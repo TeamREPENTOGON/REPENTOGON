@@ -24,6 +24,7 @@
 #include "imgui_impl_opengl2.h"
 #include "imgui_impl_win32.h"
 #include "../MiscFunctions.h"
+#include "../Patches/LoadingScreen.h"
 #include "../REPENTOGONOptions.h"
 #include "MultiViewportEnhanced.h"
 #include "RepentogonImGuiHook.h"
@@ -388,7 +389,9 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	if (menuShown) {
 		// Block the game's WndProc on input related uMsgs but allow any others through
 		if (std::find(blockedMsgs.begin(), blockedMsgs.end(), uMsg) == blockedMsgs.end()) {
-			CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
+			LRESULT procRet = CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
+			ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
+			return procRet;
 		}
 
 		ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
@@ -552,6 +555,10 @@ void LoadImGuiFont() {
 void ImGuiDrawMultiViewports();
 std::optional<HDC> drawImGuiAt = std::nullopt;
 void __stdcall RunImGui(HDC hdc) {
+	if (LoadingScreen::IsActive()) {
+		return;
+	}
+
 	static std::map<int, ImFont*> fonts;
 
 	static float unifont_global_scale = 1;

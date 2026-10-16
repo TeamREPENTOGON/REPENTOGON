@@ -25,6 +25,12 @@ __thiscall void Entity_Tear::SetHeight(float height);
 "558becf30f1045??f30f5f05":
 __thiscall void Entity_Tear::SetScale(float scale);
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec48a1????????33c58945??5657508d45??64a3????????8bf98b87":
+__thiscall void Entity_Tear::ChangeVariant(int variant);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec48a1????????33c58945??5657508d45??64a3????????8bf9f30f104b":
+__thiscall void Entity_Tear::SetDeadEyeIntensity(float intensity);
+
 "558bec6aff68????????64a1????????5081ec94010000":
 static cleanup void Entity_Tear::ApplyTearFlagEffects(Entity* entity<ecx>, Vector* position<edx>, BitSet128 flags, Entity* source, float damage);
 
@@ -61,7 +67,7 @@ struct Entity_Tear depends (ANM2, BitSet128, Vector) : public Entity {
 		skip; // ResetColor
 		skip; // LoadEntityConfig
 	};
-	
+
 	float _height : 0x410;
 	float _fallingSpeed : 0x414;
 	float _fallingAccel : 0x418;
@@ -80,8 +86,11 @@ struct Entity_Tear depends (ANM2, BitSet128, Vector) : public Entity {
 	float _deadEyeIntensity : 0x464;
 	bool _multidimensionalTouched : 0x468;
 	bool _prismTouched : 0x469;
+	Vector _stickDiff : 0x47c;
 	ANM2 _tearHaloANM2 : 0x4ac;
 	ANM2 _tearEffectANM2 : 0x5c0;
 	ANM2 _deadEyeANM2 : 0x6d4;
+	Vector _posDisplacement : 0x7ec;
+	Vector _parentOffset : 0x7f4;
 	float _tearRange : 0x820;
 } : 0x848;

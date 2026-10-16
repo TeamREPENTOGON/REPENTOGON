@@ -1,0 +1,165 @@
+ffi.cdef[[
+    struct GridEntityRock {
+        padding void* vtable;
+        private struct GridEntityDesc DescValue;
+        private int GridIndex;
+        private int SpawnFrame;
+        private struct RNG RNG;
+        int CollisionClass;
+        struct Sprite Sprite;
+        private struct StdString AnimString;
+        private struct StdString RubbleAnimString;
+        padding char[0xc];
+        int FrameCnt;
+        padding char[0x4];
+    };
+    typedef struct GridEntityRock* GridEntityRockPtr;
+    
+    bool L_GridEntityRock_Destroy(struct GridEntityRock*, int, struct EntityRef*);
+    int L_GridEntityRock_GetAltRockType(int);
+    void L_GridEntityRock_PlayBreakSound(struct GridEntityRock*, int, int);
+    void L_GridEntityRock_PostInit(struct GridEntityRock*);
+    void L_GridEntityRock_RegisterRocksDestroyed(struct GridEntityRock*, int);
+    void L_GridEntityRock_Render(struct GridEntityRock*, struct Vector);
+    void L_GridEntityRock_RenderTop(struct GridEntityRock*, struct Vector);
+    void L_GridEntityRock_SetBigRockFrame(struct GridEntityRock*, int);
+    void L_GridEntityRock_SpawnDrops(struct Vector, int, int, unsigned int, bool, int);
+    void L_GridEntityRock_TrySpawnLadder(struct GridEntityRock*);
+    void L_GridEntityRock_TrySpawnWorms(struct GridEntityRock*);
+    void L_GridEntityRock_Update(struct GridEntityRock*);
+    void L_GridEntityRock_UpdateCollision(struct GridEntityRock*);  
+    void L_GridEntityRock_UpdateNeighbors(struct GridEntityRock*);
+]]
+local ffi = ffi
+local repentogon = ffidll
+
+ffi.reentrant(repentogon.L_GridEntityRock_RegisterRocksDestroyed)
+ffi.reentrant(repentogon.L_GridEntityRock_PlayBreakSound)
+ffi.reentrant(repentogon.L_GridEntityRock_SpawnDrops)
+ffi.reentrant(repentogon.L_GridEntityRock_TrySpawnLadder)
+ffi.reentrant(repentogon.L_GridEntityRock_TrySpawnWorms)
+ffi.reentrant(repentogon.L_GridEntityRock_Destroy)
+ffi.reentrant(repentogon.L_GridEntityRock_Render)
+ffi.reentrant(repentogon.L_GridEntityRock_Update)
+
+local GridEntityRockMT
+GridEntityRockMT = {
+    __type = "GridEntityRock",
+    Destroy = function(self, immediate)
+        immediate = ffichecks.optboolean(immediate, false)
+        local result = repentogon.L_GridEntityRock_Destroy(self, immediate, EntityRef()) return result
+    end,
+    DestroyWithSource = function(self, immediate, source)
+        immediate = ffichecks.checkboolean(1, immediate)
+        ffichecks.checkcdata(2, source, "EntityRef")
+        local result = repentogon.L_GridEntityRock_Destroy(self, immediate, source) return result
+    end,
+    GetAltRockType = function(_, backdrop)
+        backdrop = backdrop or 0
+        backdrop = ffichecks.checkinteger(1, backdrop)
+        local result = repentogon.L_GridEntityRock_GetAltRockType(backdrop) return result
+    end,
+    GetBigRockFrame = function(self)
+        if ffi.getprivate(self, "DescValue").Variant < 1000 then
+            return -1
+        end
+        return ffi.getprivate(self, "DescValue").Variant - 1000
+    end,
+    GetRubbleAnim = function(self)
+        return ffichecks.stdstring(ffi.getprivate(self, "RubbleAnimString"))
+    end,
+    PlayBreakSound = function(self, gridType, backdrop)
+        gridType = ffichecks.checkinteger(1, gridType)
+        backdrop = ffichecks.optnumber(backdrop, 0)
+        repentogon.L_GridEntityRock_PlayBreakSound(self, gridType, backdrop)
+    end,
+    PostInit = function(self)
+        repentogon.L_GridEntityRock_PostInit(self)
+    end,
+    RegisterRockDestroyed = function(self, gridType)
+        gridType = ffichecks.checkinteger(1, gridType)
+        repentogon.L_GridEntityRock_RegisterRocksDestroyed(self, gridType)
+    end,
+    Render = function(self, offset)
+        ffichecks.checkcdata(1, offset, "Vector")
+        repentogon.L_GridEntityRock_Render(self, offset)
+    end,
+    RenderTop = function(self, offset)
+        ffichecks.checkcdata(1, offset, "Vector")
+        repentogon.L_GridEntityRock_RenderTop(self, offset)
+    end,
+    SetBigRockFrame = function(self, frame)
+        frame = ffichecks.checkinteger(1, frame)
+        repentogon.L_GridEntityRock_SetBigRockFrame(self, frame)
+    end,
+    TrySpawnLadder = function(self)
+        repentogon.L_GridEntityRock_TrySpawnLadder(self)
+    end,
+    TrySpawnWorms = function(self)
+        repentogon.L_GridEntityRock_TrySpawnWorms(self)
+    end,
+    Update = function(self)
+        repentogon.L_GridEntityRock_Update(self)
+    end,
+    UpdateAnimFrame = function(self)
+        if ffi.getprivate(self, "DescValue").Variant < 1000 then
+            return
+        end
+
+        local sprite = ffi.getprivate(self, "Sprite")
+        local animState = ffi.getprivate(sprite, "AnimState")
+        local name = ffichecks.stdstring(ffi.getprivate(self, "AnimString"))
+
+        if sprite:SetAnimation(name, true) and not ffichecks.isnullptr(animState.AnimData) then
+            animState:SetPosition(ffi.getprivate(self, "DescValue").Variant - 1000)
+            if not ffichecks.isnullptr(animState.AnimData) then
+                animState.IsPlaying = false
+            end
+        end
+    end,
+
+    UpdateCollision = function(self)
+        repentogon.L_GridEntityRock_UpdateCollision(self)
+    end,
+    UpdateNeighbors = function(self)
+        repentogon.L_GridEntityRock_UpdateNeighbors(self)
+    end,
+
+}
+
+local baseIndex = getmetatable(GridEntity).__class.__index
+local baseNewindex = getmetatable(GridEntity).__class.__newindex
+
+GridEntityRockMT.__index = function(self, key)
+    if key == "Anim" then
+        return ffichecks.stdstring(ffi.getprivate(self, "AnimString"));
+    end
+    if key == "RubbleAnim" then
+        return ffichecks.stdstring(ffi.getprivate(self, "RubbleAnimString"));
+    end
+    if GridEntityRockMT[key] ~= nil then
+        return GridEntityRockMT[key]
+    end
+    return baseIndex(self, key)
+end
+
+GridEntityRockMT.__newindex = function(self, key, value)
+    baseNewindex(self, key, value)
+end
+
+local GridEntityRockT = ffi.metatype("struct GridEntityRock", GridEntityRockMT)
+GridEntityRock = setmetatable({
+    SpawnDrops = function(position, gridType, gridVariant, seed, unk, backdrop)
+        ffichecks.checkcdata(1, position, "Vector")
+        gridType = ffichecks.checkinteger(2, gridType)
+        gridVariant = ffichecks.checkinteger(3, gridVariant)
+        seed = ffichecks.checkinteger(4, seed)
+        unk = ffichecks.checkboolean(5, unk)
+        repentogon.L_GridEntityRock_SpawnDrops(position, gridType, gridVariant, seed, unk, backdrop)
+    end,
+    GetAltRockType = function(backdrop)
+        backdrop = backdrop or 0
+        backdrop = ffichecks.checkinteger(1, backdrop)
+        local result = repentogon.L_GridEntityRock_GetAltRockType(backdrop) return result
+    end,
+}, {__class = GridEntityRockMT})

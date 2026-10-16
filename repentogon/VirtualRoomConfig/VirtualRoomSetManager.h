@@ -42,18 +42,20 @@ public:
 		/// @brief Deletes the restored rooms DB file, also clears the DB itself.
 		static void DeleteSave(const GameStateSaveInfo& saveInfo, bool isRerun);
 
-		// The lua functions are placed here since they are just details for the LUA API
-		// rather than functionality of a VirtualRoomSet
 
-		/// @brief Adds the rooms stored in the passed table to the specified set.
-		/// Places the return table on the Lua stack.
-		/// @return number of return Lua values the function has pushed on the stack.
-		static int Lua_AddLuaRooms(lua_State* L, VirtualRoomSet& virtualSet, int tableIdx);
+		/// @brief Loads the vanilla set if needed. Returns the set index the added rooms start at.
+		static size_t BeginAddRooms(VirtualRoomSet& virtualSet);
+		/// @brief Adds a copy of the room to the room holder and the set.
+		static RoomConfig_Room* AddRoom(VirtualRoomSet& virtualSet, const RoomConfig_Room& room);
+		/// @brief Commits the rooms added since BeginAddRooms to the vanilla RoomConfig system.
+		static void EndAddRooms(VirtualRoomSet& virtualSet, size_t begin);
 		/// @brief Adds the rooms stored in the .stb to the specified set.
-		/// Places the return table on the Lua stack.
 		/// @param fileName is expected to correspond to file(s) found @ `<mod root>/content/rooms/<filename>`
-		/// @return number of return Lua values the function has pushed on the stack.
-		static int Lua_AddStbRooms(lua_State* L, VirtualRoomSet& virtualSet, const std::string& fileName);
+		/// @return the set index the added rooms start at; they run to the end of the set.
+		static size_t AddStbRooms(VirtualRoomSet& virtualSet, const std::string& fileName);
+
+		static VirtualRoomSet FromId(size_t id);
+		static size_t GetId(const VirtualRoomSet& virtualSet);
 	};
 
 public:

@@ -517,7 +517,7 @@ HOOK_METHOD_PRIORITY(ItemConfig, Load, -1, (char* xmlpath, ModEntry* modentry)->
 	PostLoadItems(GetXMLDataLastModId());
 }
 
-HOOK_METHOD_PRIORITY(SFXManager, LoadConfig, -1, (char* xmlpath, bool ismod)->void) {
+HOOK_METHOD_PRIORITY(SoundEffects, LoadConfig, -1, (char* xmlpath, bool ismod)->void) {
 	super(xmlpath, ismod);
 	PostLoadSounds(GetXMLDataLastModId());
 }

@@ -3,6 +3,7 @@
 #include "IsaacRepentance.h"
 #include "ASMDefinition.h"
 #include "ASMPatcher.hpp"
+#include "HookSystem.h"
 #include "Log.h"
 
 #pragma region Fix incorrect last transparent batch invalidation
@@ -112,6 +113,44 @@ static void patch_try_find_reusable_transparent_batch()
         .AddRelativeJump((void*)jmpSuccessTarget);
     
     sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
+#pragma endregion
+
+#pragma region LuaJIT 0xc0000409 workaround
+
+/** Now that we're on LuaJIT we are much closer to the game's actual memory. This Causes Problems.
+ *  At shutdown, when the game tries to call DecrementReference() on a ReferenceCount that LuaJIT 
+ *  has already freed during its shutdown process, the game crashes with an 0xc0000409 error. 
+ *  By draining the image cache ourselves, before the game does, we work around the crash.
+ */
+HOOK_METHOD(KAGE_Graphics_ImageManager, ReleaseImageCache, () -> void) {
+    if (this->_imageCache) {
+        uint32_t released = 0;
+
+        for (uint32_t bucket = 0; bucket < KAGE_Graphics_ImageManager::IMAGE_CACHE_BUCKETS; ++bucket) {
+            ImageCacheBucket& entries = this->_imageCache[bucket];
+
+            while (entries._last != entries._first) {
+                KAGE_SmartPointer_ImageBase* entry = entries._last - 1;
+                entries._last = entry;
+
+                if (entry->counter) {
+                    entry->DecrRef();
+                    ++released;
+                }
+
+                entry->image = nullptr;
+                entry->counter = nullptr;
+            }
+        }
+
+        if (released > 0) {
+            ZHL::Log("[REPENTOGON] Released %u image(s) still in the image cache at shutdown\n", released);
+        }
+    }
+
+    super();
 }
 
 #pragma endregion

@@ -10,6 +10,7 @@
 #include <sstream>
 #include <optional>
 #include "document.h" // rapidjson
+#include "Patches/LoadingScreen.h"
 #include <type_traits>
 #include <array>
 #include <string_view>
@@ -92,12 +93,16 @@ namespace REPENTOGON {
 	extern char moddedtitle[256];
 
 	static void ChangeWindowTitle(const char* text) {
-		sprintf(stocktitle, "The Binding of Isaac: Repentance+ %s (REPENTOGON %s)%s", &g_GameVersionString, CMAKE_REPENTOGON_VERSION, text);
-		SetWindowTextA(GetActiveWindow(), stocktitle);
+		sprintf(stocktitle, "The Binding of Isaac: Repentance+ %s (+ REPENTOGON %s)%s", &g_GameVersionString, CMAKE_REPENTOGON_VERSION, text);
+		if (_GLFWwindow* window = g_KAGE_Graphics_Manager._window) {
+			SetWindowTextA((HWND)window->HWND, stocktitle);
+		}
 	}
 
 	static void SetStockWindowTitle() {
-		SetWindowTextA(GetActiveWindow(), stocktitle);
+		if (_GLFWwindow* window = g_KAGE_Graphics_Manager._window) {
+			SetWindowTextA((HWND)window->HWND, stocktitle);
+		}
 	};
 
 	template <typename T>
@@ -237,6 +242,7 @@ namespace REPENTOGON {
 		char newText[128];
 		sprintf(newText, " - %s (cur startup time: %s s)", text, formattedDiff.c_str());
 		ChangeWindowTitle(newText);
+		LoadingScreen::SetStatus(text);
 	}
 
 	static std::string GetRGONGfxAbsolutePath(const char* relpath) {
@@ -474,7 +480,7 @@ namespace REPENTOGON {
 					return false;
 				}
 
-				lua_Unsigned luaInteger = lua_tointeger(L, index);
+				lua_Unsigned luaInteger = (lua_Unsigned)lua_tointeger(L, index);
 				T value = DynamicNumberCast<T>(luaInteger, error);
 				if (error)
 				{
