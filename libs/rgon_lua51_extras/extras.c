@@ -63,25 +63,6 @@ LUA_API int lua_compare(lua_State* L, int idx1, int idx2, int op) {
 
 #undef luaL_requiref
 LUA_API void luaL_requiref(lua_State* L, const char* modname, lua_CFunction openf, int glb) {
- 
-    // Luabridge gonna Luabridge, it needs package loaded already. Let's keep it happy and well fed :)
-    lua_getglobal(L, "package");
-    if (lua_isnil(L, -1)) {
-        lua_pop(L, 1);
-        lua_newtable(L);
-        lua_pushvalue(L, -1);
-        lua_setglobal(L, "package");
-    }
-
-    lua_getfield(L, -1, "loaded");
-    if (lua_isnil(L, -1)) {
-        lua_pop(L, 1);
-        lua_newtable(L);
-        lua_pushvalue(L, -1);
-        lua_setfield(L, -3, "loaded");
-    }
-    lua_remove(L, -2);
-
     compat53L_requiref_53(L, modname, openf, glb);
 }
 
