@@ -924,17 +924,6 @@ MOD_EXPORT unsigned int L_Isaac_GetTime() {
 	return timeGetTime();
 }
 
-MOD_EXPORT const char* L_Isaac_ExecuteCommand(const char* command) {
-	static std::string result;
-	std::string cmd(command);
-
-	alignas(std::string) char buffer[sizeof(std::string)];
-	std::string* out = (std::string*)LuaEngine::Isaac_ExecuteCommand((std::string*)buffer, &cmd);
-	result = *out;
-	out->~basic_string();
-	return result.c_str();
-}
-
 MOD_EXPORT void L_Isaac_ConsoleOutput(const char* text) {
 	if (g_Game) {
 		std::string str(text);
@@ -1004,6 +993,16 @@ MOD_EXPORT bool L_Isaac_GetBuiltInCallbackState(int callbackId) {
 	return Isaac::GetBuiltInCallbackState(callbackId);
 }
 
+LUA_FUNCTION(Lua_IsaacExecuteCommand) {
+	std::string command = luaL_checkstring(L, 1);
+
+	std::string out;
+	g_LuaEngine->Isaac_ExecuteCommand(&out, &command);
+	lua_pushlstring(L, out.c_str(), out.size());
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -1012,5 +1011,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_newtable(_state);
 	timerFnTable = luaL_ref(_state, LUA_REGISTRYINDEX);
 
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ExecuteCommand", Lua_IsaacExecuteCommand);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CreateTimer", Lua_CreateTimer);
 }

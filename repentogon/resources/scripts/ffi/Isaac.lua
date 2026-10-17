@@ -105,7 +105,6 @@ ffi.cdef [[
     int L_Isaac_GetSoundIdByName(const char*);
     int L_Isaac_GetMusicIdByName(const char*);
     unsigned int L_Isaac_GetTime();
-    const char* L_Isaac_ExecuteCommand(const char*);
     void L_Isaac_ConsoleOutput(const char*);
     int L_Isaac_CountEntities(void*, int, int, int);
     float L_Isaac_GetScreenWidth();
@@ -131,7 +130,6 @@ ffi.reentrant(repentogon.L_Isaac_AddPillEffectToPool)
 ffi.reentrant(repentogon.L_Isaac_ClearBossHazards)
 ffi.reentrant(repentogon.L_Isaac_ClearChallenge)
 ffi.reentrant(repentogon.L_Isaac_ClearCompletionMarks)
-ffi.reentrant(repentogon.L_Isaac_ExecuteCommand)
 ffi.reentrant(repentogon.L_Isaac_Explode)
 ffi.reentrant(repentogon.L_Isaac_FillCompletionMarks)
 ffi.reentrant(repentogon.L_Isaac_GridSpawn)
@@ -325,10 +323,6 @@ local isaac = {
         ffichecks.checkcdata(4, bottomRight, "Vector")
         ffichecks.checkcdata(5, color, "KColor")
         repentogon.L_Isaac_DrawQuad(topLeft, topRight, bottomLeft, bottomRight, color, ffichecks.optnumber(thickness, 1))
-    end,
-    ExecuteCommand = function(command)
-        command = ffichecks.checkstring(1, command)
-        local result = ffi.string(repentogon.L_Isaac_ExecuteCommand(command)) return result
     end,
     Explode = function(position, source, damage)
         ffichecks.checkcdata(1, position, "Vector")
