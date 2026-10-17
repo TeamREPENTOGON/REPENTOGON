@@ -44,6 +44,7 @@ public:
 		_emberChance = 0.0f;
 		_hasDustStorm = stageId == STB_ASHPIT;
 		_noBugs = false;
+		_isVoidLike = stageId == STB_THE_VOID;
 
 		if (stageId >= NUM_STB) {
 			// Custom Stage
@@ -66,6 +67,7 @@ public:
 			_hasThunder = xmlData["thunder"] == "true";
 			_hasDustStorm = xmlData["duststorm"] == "true";
 			_noBugs = xmlData["nobugs"] == "true";
+			_isVoidLike = false;  // _baseStageId == STB_THE_VOID && xmlData["mimicvoid"] == "true";
 			_dripChance = (float)std::clamp(std::atof(xmlData["dripchance"].c_str()), 0.0, 1.0);
 			_emberChance = (float)std::clamp(std::atof(xmlData["emberchance"].c_str()), 0.0, 1.0);
 
@@ -213,6 +215,10 @@ public:
 	inline bool NoBugs() const {
 		return _noBugs;
 	}
+
+	inline bool IsVoidLike() const {
+		return _isVoidLike;
+	}
 	
 	inline float GetDripChance() const {
 		return _dripChance;
@@ -273,6 +279,7 @@ private:
 	bool _isRainy;
 	bool _hasThunder;
 	bool _hasDustStorm;
+	bool _isVoidLike;
 	float _dripChance;
 	float _emberChance;
 	int _achievement;
