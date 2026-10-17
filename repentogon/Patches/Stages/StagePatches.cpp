@@ -59,6 +59,18 @@ HOOK_METHOD(Level, IsAshpitStageID, () -> bool) {
 	return super();
 }
 
+// Avoids a couple potential out of bounds reads if the ID is obtained from the roomdesc and used for the RoomConfig_Stage vector.
+HOOK_STATIC(Level, GetStageID, () -> int, _stdcall) {
+	int result = super();
+	if (result >= NUM_STB) {
+		if (auto* stage = StageManager::GetStage(result)) {
+			return stage->GetBaseStageId();
+		}
+		return g_Game->GetRoomConfig()->GetStageID(g_Game->_stage, g_Game->_stageType, DIMENSION_CURRENT);
+	}
+	return result;
+}
+
 // Use the actual stage ID of custom stages for the purposes of FXLayers
 // Since custom stage IDs and the LevelStage-esque values used by vanilla will never overlap, this is fine.
 void __stdcall EnableCustomStageFxLayers(FXLayers* fxlayers) {
@@ -394,6 +406,132 @@ void ASMPatchRoomUpdateDrips() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Prevent the special handling of backdrops for custom stages based on void/home, unless that is desired.
+bool __stdcall UsingCustomStageBackdrop() {
+	if (auto* stage = StageManager::GetCurrentCustomStage()) {
+		return !stage->IsVoidLike();
+	}
+	return false;
+}
+void PatchLoadBackdropGraphicsCustomStages() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LoadBackdropGraphics_IsCustomStage);
+	void* isCustomStageAddr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LoadBackdropGraphics_VoidCustomStages) - 0x6;
+
+	ZHL::Log("[REPENTOGON] Patching Room::LoadBackdropGraphics for custom stage backdrops @ %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, 0x3))
+		.PreserveRegisters(savedRegisters)
+		.AddInternalCall(UsingCustomStageBackdrop)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, isCustomStageAddr)
+		.AddBytes(ByteBuffer().AddAny((char*)addr + 0x3, 0x3))
+		.AddRelativeJump((char*)addr + 0x6);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// Patches over access into the RoomConfig_Stage array to obtain the BackdropType.
+// The stageId could already be one of a custom stage, due to roomdesc->_data->_stageId.
+// This prevents reading out of bounds due to the above, and also enables custom stage backdrops in void.
+int __stdcall GetBackdropTypeIncludingCustomStages(uint32_t stageId) {
+	if (StageManager::GetCurrentOverride().IsOverridden(stageId)) {
+		stageId = StageManager::GetCurrentOverride().GetCustomStageID();
+	}
+	if (auto* stage = StageManager::GetStage(stageId)) {
+		return stage->GetBackdropType();
+	}
+	return 0;
+}
+void PatchLoadBackdropGraphicsCustomStagesVoid() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LoadBackdropGraphics_VoidCustomStages);
+
+	ZHL::Log("[REPENTOGON] Patching Room::LoadBackdropGraphics for custom stage backdrops in void @ %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX)
+		.AddInternalCall(GetBackdropTypeIncludingCustomStages)
+		.RestoreRegisters(savedRegisters)
+		.CopyRegister(ASMPatch::Registers::ESI, ASMPatch::Registers::EAX)
+		.AddRelativeJump((char*)addr + 0xD);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// Disables custom room selection logic for custom void alts, unless desired.
+bool __stdcall CheckIsVoid() {
+	if (g_Game->_stage != STAGE7) {
+		return false;
+	}
+	if (auto* stage = StageManager::GetCurrentCustomStage()) {
+		return stage->IsVoidLike();
+	}
+	return true;
+}
+void ASMPatchCheckIsVoid(const char* def, int size, const char* comment) {
+	void* addr = sASMDefinitionHolder->GetDefinition(def);
+
+	printf("[REPENTOGON] Patching %s for custom void alts at %p\n", comment, addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, size))
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + size)
+		.PreserveRegisters(savedRegisters)
+		.AddInternalCall(CheckIsVoid)
+		.AddBytes("\x3C\x01") // cmp al,0x1
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + size);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+void ASMPatchCheckIsVoidWithJump(const char* def, const char* comment) {
+	void* addr = sASMDefinitionHolder->GetDefinition(def);
+	int8_t jumpOffset = 0x5 + *(int8_t*)((char*)addr + 0x4);
+
+	printf("[REPENTOGON] Patching %s for custom void alts at %p\n", comment, addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, 0x3))
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + jumpOffset)
+		.PreserveRegisters(savedRegisters)
+		.AddInternalCall(CheckIsVoid)
+		.AddBytes("\x3C\x01") // cmp al,0x1
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + jumpOffset)
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+/*
+void CheckCustomNumLoops(int* numLoops) {
+	if (auto* stage = StageManager::GetCurrentCustomStage()) {
+		*numLoops = stage->LevelGenNumLoops();
+	}
+}
+void ASMPatchGenerateDungeonNumLoops() {
+	void* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::GenerateDungeon_NumLoops) + 0x6;
+	int numLoopsOffset = *(int*)((char*)addr - 0x4);
+	int8_t jumpOffset = 0x5 + *(int8_t*)((char*)addr + 0x4);
+
+	printf("[REPENTOGON] Patching Level::generate_dungeon (3) for custom void alts at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		//.LoadEffectiveAddress(ASMPatch::Registers::EBP, numLoopsOffset, ASMPatch::Registers::EAX).Push(ASMPatch::Registers::EAX)
+		//.AddInternalCall(CheckCustomNumLoops)
+		.AddInternalCall(CheckIsVoid)
+		.AddBytes("\x3C\x01") // cmp al,0x1
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + jumpOffset)
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+*/
+
 /*
 void ASMPatchSetStageAlt() {
 	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::NightmareScene_SetStageAlt_VoidThing);
@@ -421,6 +559,16 @@ void ApplyPatches() {
 	ASMPatchRoomUpdateThunder();
 	ASMPatchRoomInitEmbers();
 	ASMPatchRoomUpdateDrips();
+	PatchLoadBackdropGraphicsCustomStages();
+	PatchLoadBackdropGraphicsCustomStagesVoid();
+	ASMPatchCheckIsVoid(&AsmDefinitions::GenerateDungeon_VoidCheck1, 0x7, "Level::generate_dungeon (1)");
+	ASMPatchCheckIsVoid(&AsmDefinitions::GenerateDungeon_VoidCheck2, 0xA, "Level::generate_dungeon (2)");
+	ASMPatchCheckIsVoid(&AsmDefinitions::Level_PlaceRooms_VoidCheck, 0x9, "Level::place_rooms");
+	ASMPatchCheckIsVoid(&AsmDefinitions::GetRandomRoom_VoidCheck, 0x6, "RoomConfig::GetRandomRoom");
+	ASMPatchCheckIsVoid(&AsmDefinitions::EntityNPC_LoadEntityConfig_VoidCheck, 0x9, "EntityNPC::LoadEntityConfig");
+	ASMPatchCheckIsVoid(&AsmDefinitions::EntityNPC_DeathSpawnChampion_VoidCheck, 0x7, "EntityNPC::DeathSpawnChampion");
+	ASMPatchCheckIsVoidWithJump(&AsmDefinitions::GenerateDungeon_Void_NumLoops, "Level::generate_dungeon (3)");
+	ASMPatchCheckIsVoidWithJump(&AsmDefinitions::EntityPlayer_Update_VoidHallucination, "EntityPlayer::Update");
 	//ASMPatchSetStageAlt();
 }
 
