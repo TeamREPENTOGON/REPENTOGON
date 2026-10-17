@@ -116,6 +116,20 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	luaL_requiref(L, "io", luaopen_io, 1);
 	lua_pop(L, 1);
 
+	// 53compat also needs package.loaded
+	lua_getglobal(L, "package");
+	if (lua_isnil(L, -1)) {
+		lua_newtable(L);
+		lua_getfield(L, LUA_REGISTRYINDEX, "_LOADED");
+		if (lua_isnil(L, -1)) {
+			lua_pop(L, 1);
+			lua_newtable(L);
+		}
+		lua_setfield(L, -2, "loaded");
+		lua_setglobal(L, "package");
+	}
+	lua_pop(L, 1);
+
 	lua_newtable(L);
 	LuaInternals::RegisterInternals(L);
 	lua_setglobal(L, C_BINDINGS_NAME);
