@@ -1,0 +1,4 @@
+struct EntityConfig_EntityEntry depends (EntityConfig_Entity) {
+	unsigned int unk : 0x0;
+    EntityConfig_Entity entity : 0x4;
+} : 0x16c;

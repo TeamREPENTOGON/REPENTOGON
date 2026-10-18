@@ -2939,7 +2939,7 @@ local ModReference_LoadModFile = _CBindings.ModReference_LoadModFile
 local ModReference_RemoveModFile = _CBindings.ModReference_RemoveModFile
 
 rawset(Isaac, "HasModData", function(modRef, filename)
-    if filename ~= nil then
+    if type(filename) == "string" then
         return ModReference_HasModFile(modRef, filename)
     else
         return Original_HasModData(modRef)
@@ -2947,7 +2947,7 @@ rawset(Isaac, "HasModData", function(modRef, filename)
 end)
 
 rawset(Isaac, "SaveModData", function(modRef, data, filename)
-    if filename ~= nil then
+    if type(filename) == "string" then
         return ModReference_SaveModFile(modRef, filename, data)
     else
         return Original_SaveModData(modRef, data)
@@ -2955,7 +2955,7 @@ rawset(Isaac, "SaveModData", function(modRef, data, filename)
 end)
 
 rawset(Isaac, "LoadModData", function(modRef, filename)
-    if filename ~= nil then
+    if type(filename) == "string" then
         return ModReference_LoadModFile(modRef, filename)
     else
         return Original_LoadModData(modRef)
@@ -2963,7 +2963,7 @@ rawset(Isaac, "LoadModData", function(modRef, filename)
 end)
 
 rawset(Isaac, "RemoveModData", function(modRef, filename)
-    if filename ~= nil then
+    if type(filename) == "string" then
         return ModReference_RemoveModFile(modRef, filename)
     else
         return Original_RemoveModData(modRef)
