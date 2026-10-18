@@ -192,7 +192,7 @@ RoomDescriptorMT.__index = function(self, key)
     if key == "Doors" then
         local result = {}
         for i = 0, DOOR_COUNT - 1 do
-            result[i + 1] = ffi.getprivate(self, "_Doors")[i]
+            result[i] = ffi.getprivate(self, "_Doors")[i]
         end
         return result
     end
