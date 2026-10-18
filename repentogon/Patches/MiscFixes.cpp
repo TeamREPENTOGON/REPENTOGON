@@ -304,3 +304,40 @@ HOOK_METHOD(GridEntity, IsDangerousCrushableOrWalkable, () -> bool) {
 	}
 	return super();
 }
+
+/// Fixes the game returning the wrong entity config on a hash collision.
+/// This usually occurs when spawning an entity whose subtype represents entity state, rather than
+/// identity.
+///
+/// This is a reimplementation of GetEntity (it only does a hash lookup with fallbacks:
+/// (id, variant, subtype) -> (id, variant, 0) -> (id, 0, 0)) but we add a "key" verification
+/// step before returning the found config.
+///
+/// Low hook priority is used, as it's a reimplementation.
+HOOK_METHOD_PRIORITY(EntityConfig, GetEntity, 9999, (int id, int variant, int subtype) -> EntityConfig_Entity*)
+{
+    auto find_id = [](EntityConfig* config, uint32_t id, uint32_t variant, uint32_t subtype) -> EntityConfig_Entity*
+    {
+        uint32_t hash = (id << 0xc | variant) << 8 | subtype;
+        auto it = config->_entities.find(hash);
+        if (it == config->_entities.end())
+        {
+            return nullptr;
+        }
+
+        EntityConfig_Entity* entity = &it->second.entity;
+        if (entity->id != id || entity->variant != variant || entity->subtype != subtype)
+        {
+            return nullptr;
+        }
+
+        return entity;
+    };
+
+    if (auto* e = find_id(this, id, variant, subtype)) return e;
+    if (subtype != 0)
+        if (auto* e = find_id(this, id, variant, 0)) return e;
+    if (variant != 0)
+        if (auto* e = find_id(this, id, 0, 0)) return e;
+    return nullptr;
+}

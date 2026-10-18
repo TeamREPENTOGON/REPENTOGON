@@ -37,4 +37,4 @@ struct EntityConfig_Entity depends (Vector, ModEntry, Devolve) {
 	int bestiaryParentType : 0x158;
 	int bestiaryParentVariant : 0x15C;
 	ModEntry* modEntry : 0x160;
-} : 0x198;
+} : 0x168;
