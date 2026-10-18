@@ -88,6 +88,7 @@ HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, INT_MAX, () -> void) {
 static size_t luaArenaSize = 0;
 static size_t forceCollectAt = 0;
 static int forceCollectPercentage = 80;
+static double gcFrameBudgetMs = 3.0;
 
 HOOK_GLOBAL(mi_reserve_os_memory_ex, (unsigned int size, bool commit, bool allowLarge, bool exclusive, int* arenaId) -> int, __cdecl) {
 	const int result = super(size, commit, allowLarge, exclusive, arenaId);
@@ -103,6 +104,7 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	super(Debug);
 	lua_State* L = g_LuaEngine->_state;
 	luaJIT_setapifatal([](const char* msg) { ZHL::Log("[ERROR] %s", msg); });
+	luaJIT_setgcframebudget(L, gcFrameBudgetMs);
 	forceCollectAt = luaArenaSize / 100 * forceCollectPercentage;
 	if (luaArenaSize)
 		ZHL::Log("[REPENTOGON] Armed Lua heap emergency collection at %u of %u MB\n", forceCollectAt >> 20, luaArenaSize >> 20);
@@ -542,4 +544,11 @@ HOOK_STATIC(LuaEngine, main_func, () -> void, __stdcall) {
 HOOK_STATIC(LuaEngine, PostGameStart, (unsigned int state) -> void, __stdcall) {
 	super(state);
 	lua_gc(g_LuaEngine->_state, LUA_GCCOLLECT, 0);
+}
+
+// Tell LuaJIT the frame has finished rendering (for frame budgeting).
+HOOK_METHOD(Manager, Render, () -> void) {
+	super();
+	if (g_LuaEngine && g_LuaEngine->_state)
+		luaJIT_gcframe(g_LuaEngine->_state);
 }
