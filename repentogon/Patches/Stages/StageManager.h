@@ -28,6 +28,8 @@ public:
 
 	StageConfig() = delete;
 
+	// Note that the constructor does not currently populate _stageType, _levelStage, or _greedLevelStage (and _mode for vanilla stages).
+	// These are computed in PostLoadStages.
 	StageConfig(uint32_t stageId) {
 		_stageId = stageId;
 		XMLAttributes xmlData = XMLStuff.StageData->GetNodeById(stageId);
@@ -45,6 +47,7 @@ public:
 		_hasDustStorm = stageId == STB_ASHPIT;
 		_noBugs = false;
 		_isVoidLike = stageId == STB_THE_VOID;
+		_mode = -1;
 
 		if (stageId >= NUM_STB) {
 			// Custom Stage
@@ -70,6 +73,12 @@ public:
 			_isVoidLike = false;  // _baseStageId == STB_THE_VOID && xmlData["mimicvoid"] == "true";
 			_dripChance = (float)std::clamp(std::atof(xmlData["dripchance"].c_str()), 0.0, 1.0);
 			_emberChance = (float)std::clamp(std::atof(xmlData["emberchance"].c_str()), 0.0, 1.0);
+
+			if (xmlData["mode"] == "0") {
+				_mode = 0;  // No greed mode
+			} else if (xmlData["mode"] == "1") {
+				_mode = 1;  // Greed mode only
+			}
 
 			for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
 				std::string modid = mod->GetId() ? mod->GetId() : "";
@@ -228,6 +237,34 @@ public:
 		return _emberChance;
 	}
 
+	inline bool IsAvailableInMode(int mode) const {
+		assert(mode == 0 || mode == 1);
+		if (_mode > -1 && _mode != mode) {
+			return false;
+		}
+		if (IsCustom()) {
+			// Validate that there are actually rooms available.
+			return VirtualRoomSetManager::GetSet(_stageId, mode).size() > 0;
+		}
+		return true;
+	}
+
+	inline bool IsAvailableInCurrentMode() const {
+		return IsAvailableInMode(g_Game->GetMode());
+	}
+
+	inline bool CanSpawnNaturally() const {
+		if (_hidden) {
+			return false;
+		}
+
+		if (_achievement > 0 && !g_Manager->GetPersistentGameData()->Unlocked(_achievement)) {
+			return false;
+		}
+
+		return IsAvailableInCurrentMode();
+	}
+
 	inline int GetStageType() const {
 		return _stageType;
 	}
@@ -294,13 +331,14 @@ private:
 	float _dripChance;
 	float _emberChance;
 	int _achievement;
+	int _mode;
 	ModEntry* _mod = nullptr;
 };
 
 size_t GetNumStages();
 StageConfig* GetStage(uint32_t id);
 StageConfig* GetStageByName(std::string name);
-std::vector<StageConfig*> GetStagesByLevel(int levelStage, bool greedMode);
+std::vector<StageConfig*> GetStagesByLevel(int levelStage);
 
 class StageOverride {
 public:

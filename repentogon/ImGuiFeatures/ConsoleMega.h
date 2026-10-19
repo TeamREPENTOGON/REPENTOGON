@@ -771,7 +771,7 @@ struct ConsoleMega : ImGuiWindowObject {
 							for (int levelStage = STAGE1_1; levelStage <= (g_Game->IsGreedMode() ? STAGE7_GREED : STAGE8); levelStage++) {
 								std::string levelStr = std::to_string(levelStage);
 								std::string letter = "";
-								for (const StageManager::StageConfig* stage : StageManager::GetStagesByLevel(levelStage, g_Game->IsGreedMode())) {
+								for (const StageManager::StageConfig* stage : StageManager::GetStagesByLevel(levelStage)) {
 									std::string suffix = "";
 									if (!g_Game->IsGreedMode() && levelStage < STAGE4_3) {
 										if (levelStage % 2 == 0) {
