@@ -773,7 +773,7 @@ struct ConsoleMega : ImGuiWindowObject {
 								std::string letter = "";
 								for (const StageManager::StageConfig* stage : StageManager::GetStagesByLevel(levelStage)) {
 									std::string suffix = "";
-									if (!g_Game->IsGreedMode() && levelStage < STAGE4_3) {
+									if (!g_Game->IsGreedMode() && levelStage < STAGE4_3 && !stage->IsSingleFloor()) {
 										if (levelStage % 2 == 0) {
 											suffix = " II";
 										} else {

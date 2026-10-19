@@ -48,6 +48,8 @@ public:
 		_noBugs = false;
 		_isVoidLike = stageId == STB_THE_VOID;
 		_mode = -1;
+		_singleFloor = false;  // Special behaviour, for custom stages only
+		_singleSecondFloor = false;
 
 		if (stageId >= NUM_STB) {
 			// Custom Stage
@@ -64,6 +66,9 @@ public:
 
 			_achievement = std::atoi(xmlData["achievement"].c_str());
 			_disableQuests = xmlData["noquests"] == "true";
+
+			_singleSecondFloor = xmlData["singlefloor"] == "second";
+			_singleFloor = _singleSecondFloor || xmlData["singlefloor"] == "true" || xmlData["singlefloor"] == "first";
 
 			_isFlooded = xmlData["flooded"] == "true";
 			_isRainy = xmlData["rain"] == "true";
@@ -228,6 +233,10 @@ public:
 	inline bool IsVoidLike() const {
 		return _isVoidLike;
 	}
+
+	inline bool IsSingleFloor() const {
+		return _singleFloor;
+	}
 	
 	inline float GetDripChance() const {
 		return _dripChance;
@@ -273,17 +282,20 @@ public:
 		return _stageType == STAGETYPE_REPENTANCE || _stageType == STAGETYPE_REPENTANCE_B;
 	}
 
-	inline int GetLevelStage(bool second, bool greedMode) const {
-		if (greedMode) {
+	inline int GetLevelStage(bool second, int mode) const {
+		assert(mode == 0 || mode == 1);
+		if (mode == 1) {
 			return _greedLevelStage;
-		} else if (second && _levelStage > 0 && _levelStage < STAGE4_2) {
-			return _levelStage + 1;
+		} else if (_levelStage <= 0 || _levelStage >= STAGE4_2) {
+			return _levelStage;
+		} else if (_singleFloor) {
+			return _levelStage + _singleSecondFloor;
 		}
-		return _levelStage;
+		return _levelStage + second;
 	}
 
 	inline int GetLevelStage(bool second) const {
-		return GetLevelStage(second, g_Game->IsGreedMode());
+		return GetLevelStage(second, g_Game->GetMode());
 	}
 
 	inline int GetFloor(const int levelStage) const {
@@ -321,6 +333,8 @@ private:
 
 	// Custom stage attributes
 	bool _hidden;
+	bool _singleFloor;
+	bool _singleSecondFloor;
 	bool _disableQuests;
 	bool _noBugs;
 	bool _isFlooded;
