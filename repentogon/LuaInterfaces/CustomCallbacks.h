@@ -23,4 +23,16 @@ namespace CustomCallbacks
 	LootList GetNpcLootList(Entity_NPC& npc, bool shouldAdvance);
 
     void PRE_ROOM_COLLISION_PASS();
+
+    void PRE_GAME_STATE_SAVE();
+    void POST_GAME_STATE_SAVE();
+    void PRE_GAME_STATE_RESTORE();
+    void POST_GAME_STATE_RESTORE();
+
+    void PRE_GLOWING_HOURGLASS_SAVE(size_t hourglassSlot);
+    void POST_GLOWING_HOURGLASS_SAVE(size_t hourglassSlot);
+    void PRE_GLOWING_HOURGLASS_LOAD(size_t hourglassSlot);
+    void POST_GLOWING_HOURGLASS_LOAD(size_t hourglassSlot);
+
+    bool SHOULD_SAVE_ENTITY(Entity& entity, bool shouldSave, bool isRoomClear);
 }

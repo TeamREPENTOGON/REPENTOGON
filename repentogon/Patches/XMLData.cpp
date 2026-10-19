@@ -1810,8 +1810,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 		}
 		break;
 	case 21://bosspools
-		xmlsloaded = true; //this is the last xml to load after the game fucking started! (on game::start)
-	break;
+	    break;
 	case 22: //giantbook
 		id = 1;
 		daddy = node;
@@ -3616,30 +3615,30 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		}
 
 		if (charfind(xmldata, "<bosspool", 50)) {
-			std::string& sourceText = XMLStuff.BossPoolData->GetXmlSourceText(xmldata);
-			super(sourceText.data());
-			return;
+            std::string& sourceText = XMLStuff.BossPoolData->GetXmlSourceText(xmldata);
+			xmldata = sourceText.data(); // change xmldata to point to the redirected text, to avoid crashes if there's an error.
+			xmlsloaded = true; //this is the last xml to load after the game fucking started! (on game::start)
 		}else if (charfind(xmldata, "<backd", 50)) {
-				super(BuildModdedXML(xmldata, "backdrops.xml", false));
+				xmldata = BuildModdedXML(xmldata, "backdrops.xml", false);
 		}else if (charfind(xmldata, "<bosse", 50)) {
-			super(BuildModdedXML(xmldata, "bossportraits.xml", false));
+			xmldata = BuildModdedXML(xmldata, "bossportraits.xml", false);
 		}
 		else if (charfind(xmldata, "<bossc", 50)) {
-			super(BuildModdedXML(xmldata, "bosscolors.xml", false));
+			xmldata = BuildModdedXML(xmldata, "bosscolors.xml", false);
 		}
 		else if (charfind(xmldata, "<playerfo", 50)) {
-			super(BuildModdedXML(xmldata, "playerforms.xml", false));
+			xmldata = BuildModdedXML(xmldata, "playerforms.xml", false);
 		}else if (charfind(xmldata, "<playe", 50)) {
-			super(ParseModdedXMLAttributes(xmldata, "players.xml"));
+			xmldata = ParseModdedXMLAttributes(xmldata, "players.xml");
 		}
 		else if (charfind(xmldata, "<chal", 50)) {
-			super(ParseModdedXMLAttributes(xmldata, "challenges.xml"));
+			xmldata = ParseModdedXMLAttributes(xmldata, "challenges.xml");
 		}
 		else if (charfind(xmldata, "<item", 50)) {
-			super(ParseModdedXMLAttributes(xmldata, "items.xml"));
+			xmldata = ParseModdedXMLAttributes(xmldata, "items.xml");
 		}
 		else if (charfind(xmldata, "<pock", 50)) {
-			super(ParseModdedXMLAttributes(xmldata, "pocketitems.xml"));
+			xmldata = ParseModdedXMLAttributes(xmldata, "pocketitems.xml");
 		}
 		else if (charfind(xmldata, "<ach", 50)) {
 			XMLStuff.AchievementData->Clear();
@@ -3649,28 +3648,27 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 				achievsloaded = true;
 				achieveemntsxmlpreload = new char[strlen(xmldata) + 1];
 				strcpy(achieveemntsxmlpreload, xmldata);
-				super(xmldata);
 			}
 			else {
-				super(BuildModdedXML(xmldata, "achievements.xml", false));
+				xmldata = BuildModdedXML(xmldata, "achievements.xml", false);
 			}
 		}else if (charfind(xmldata, "<cuts", 50)) {
-			super(BuildModdedXML(xmldata, "cutscenes.xml", false));
+			xmldata = BuildModdedXML(xmldata, "cutscenes.xml", false);
 		}
 		else if (charfind(xmldata, "<giantb", 50)) {
-			super(BuildModdedXML(xmldata, "giantbook.xml", false));
+			xmldata = BuildModdedXML(xmldata, "giantbook.xml", false);
 		}
 		else if ((charfind(xmldata, "<ambush", 50)) || (charfind(xmldata, "<bossru", 50)) || (charfind(xmldata, "<bossamb", 50))) {
-			super(BuildModdedXML(xmldata, "ambush.xml", false));
+			xmldata = BuildModdedXML(xmldata, "ambush.xml", false);
 		}
 		else if (charfind(xmldata, "<stages", 50)) {
-			super(BuildModdedXML(xmldata, "stages.xml", false));
+			xmldata = BuildModdedXML(xmldata, "stages.xml", false);
 		}
 		else if (charfind(xmldata, "<babies ", 50)) {
-			super(BuildModdedXML(xmldata, "babies.xml", false));
+			xmldata = BuildModdedXML(xmldata, "babies.xml", false);
 		}
 		else if (charfind(xmldata, "<stringtab", 50)) {
-			super(BuildModdedSta(xmldata));
+            xmldata = BuildModdedSta(xmldata);
 		}
 		else if (charfind(xmldata, "<reci",  50)) {
 			string xml = string(xmldata);
@@ -3695,10 +3693,10 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 			}
 			char* s = new char[xml.length() + 1];
 			std::strcpy(s, xml.c_str());
-			super(s);
-		}else{
-			super(xmldata);
-		}
+            xmldata = s;
+        }
+
+        super(xmldata);
 	}
 	catch (rapidxml::parse_error err) {
 		int lineNumber = getLineNumber(xmldata, err.where<char>());

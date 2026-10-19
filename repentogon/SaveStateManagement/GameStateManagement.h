@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "LuaCore.h"
 
 enum GameStateSlot
 {
@@ -25,3 +26,16 @@ inline bool GameStateSaveInfo::IsUnknown() const
 {
 	return this->saveSlot < 1;
 }
+
+inline bool IsGlowingHourglassSlot(GameStateSlot slot)
+{
+	return slot == GameStateSlot::GLOWING_HOURGLASS_1 || slot == GameStateSlot::GLOWING_HOURGLASS_2;
+};
+
+namespace SaveStateManager
+{
+	namespace detail
+	{
+		void BindLuaCallbacks(lua_State* L, int tbl);
+	}
+};

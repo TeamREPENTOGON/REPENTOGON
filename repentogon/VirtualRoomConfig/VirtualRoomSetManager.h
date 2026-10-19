@@ -5,7 +5,7 @@
 #include "../RoomConfigUtility.h"
 #include "../LogUtility.h"
 #include "LuaCore.h"
-#include "../Patches/GameStateManagement.h"
+#include "../SaveStateManagement/GameStateManagement.h"
 
 #include <string>
 #include <vector>

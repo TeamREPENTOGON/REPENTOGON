@@ -164,7 +164,7 @@ bool RoomConfig_Room::IsValidGridIndex(int index, bool includeWalls) const {
      * |*** *** *** *** xxx                     xxx *** *** *** ***|
      * |*** *** *** *** xxx                     xxx *** *** *** ***|
      * |*** *** *** *** xxx                     xxx *** *** *** ***|
-     * |*** *** *** *** xxx                 214 xxx *** *** *** ***|
+     * |*** *** *** *** xxx                 219 xxx *** *** *** ***|
      * |*** *** *** *** xxx xxx xxx xxx xxx xxx xxx *** *** *** ***|
      * |-----------------------------------------------------------|
      */
@@ -174,7 +174,7 @@ bool RoomConfig_Room::IsValidGridIndex(int index, bool includeWalls) const {
 			index >= 4 && index <= 230;
 		} else {
 		  return index % 15 <= 5 && index % 15 <= 9 && 
-			index >= 20 && index <= 214;
+			index >= 20 && index <= 219;
 		}
 
     /* |---------------------------------------------------------------------------------------------------------------|

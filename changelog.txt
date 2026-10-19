@@ -14,6 +14,18 @@ Added:
 	- MC_PRE_NPC_UPDATE_GHOST_PICKUPS(EntityNPC)
 		Return true to force a loot preview to appear, false to prevent it.
 		Optional param: EntityType
+	- MC_PRE_GAME_STATE_SAVE
+	- MC_POST_GAME_STATE_SAVE
+	- MC_PRE_GAME_STATE_RESTORE
+	- MC_POST_GAME_STATE_RESTORE
+    - MC_SHOULD_SAVE_ENTITY(Entity, bool isRoomClear)
+        Can be used to override whether or not the entity should be saved.
+    - MC_ENTITY_SAVE(Entity)
+    - MC_ENTITY_RESTORE(Entity)
+* Isaac:
+    - Added overloads for the ModData functions that accept a custom filename.
+* ModReference:
+    - Added overloads for the Data functions that accept a custom filename.
 * EntityNPC:
 	- GetLootList(bool ShouldAdvance = false)
 		Generic replacement for GetFireplaceLoot and GetShopkeeperLoot that enables LootList for all NPCs.
@@ -28,6 +40,8 @@ Added:
 		Returns the button(s) assigned to the specified action for the specified input device (-1 for unmapped/invalid actions).
 	- GetButtonFrame(int button, int ControllerIndex)
 		Returns the animation frame in `(controls_)buttons.anm2` to use for the given button (-1 for invalid buttons).
+* Added SaveStateManager class to automatically manage modded save data for the current run.
+
 /newline/
 Modified:
 * ModCallbacks:

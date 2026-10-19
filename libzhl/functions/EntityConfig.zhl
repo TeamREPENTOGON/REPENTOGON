@@ -13,7 +13,7 @@ __thiscall EntityConfig_Entity* EntityConfig::GetEntity(int id, int variant, int
 "558bec83ec0c536a00":
 __thiscall EntityConfig_Entity* EntityConfig::GetBestiaryConfig(int id, int variant);
 
-struct EntityConfig depends (EntityConfig_Entity, EntityConfig_Player, EntityConfig_Boss, EntityConfig_Baby) {
+struct EntityConfig depends (EntityConfig_Entity, EntityConfig_Player, EntityConfig_Boss, EntityConfig_Baby, EntityConfig_EntityEntry) {
     // The EntityConfig_Entity's might be stored in some kind of tree structure?
     {{
         inline std::vector<EntityConfig_Player>* GetPlayers() { return (std::vector<EntityConfig_Player>*)((char*)this + 0x8); }
@@ -33,6 +33,7 @@ struct EntityConfig depends (EntityConfig_Entity, EntityConfig_Player, EntityCon
         inline std::vector<EntityConfig_Boss>* GetBosses() { return &this->_bosses; }
     }}
 
+    std_map_uint_EntityConfigEntityEntry _entities: 0x0;
     vector_EntityConfig_Boss _bosses : 0x20;
     vector_string _edenHair : 0x2c;
 } : 0x50;

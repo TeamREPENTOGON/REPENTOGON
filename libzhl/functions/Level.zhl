@@ -32,7 +32,7 @@ __thiscall bool Level::HasPhotoDoor();
 __thiscall std_string Level::GetName();
 
 "538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505383ec70a1????????33c58945ec5657508d45f464a3000000008bc28945888bf9":
-cleanup void GetLevelName(std_string* result<ecx>, uint32_t levelStage<edx>, uint32_t stageType, uint32_t curseMask, uint32_t unk, uint32_t unk2, bool unk3);
+cleanup void GetLevelName(std_string* result<ecx>, uint32_t levelStage<edx>, uint32_t stageType, uint32_t curseMask, int BASEMENTnum, bool jumble, int mode);
 
 "558bec83ec148b15":
 __thiscall void Level::SetNextStage();

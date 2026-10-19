@@ -5224,95 +5224,173 @@ HOOK_METHOD(ItemPool, ForceAddPillEffect, (int32_t ID)->int) {
 	return ret;
 };
 
-static int get_glowing_hourglass_slot(GameState* gameState) { //g_Game->_currentGlowingHourglassSlot should always contain the slot that is currently being saved/restored, but I'm doing this just to be safe.
-	if (gameState == &g_Game->_glowingHourglassStates[0]._gameState) {
-		return 0;
-	}
-
-	if (gameState == &g_Game->_glowingHourglassStates[1]._gameState) {
-		return 1;
-	}
-
-	return -1;
-}
-
-//PRE/POST_GLOWING_HOURGLASS_SAVE (1300 - 1302)
-HOOK_METHOD_PRIORITY(Game, SaveState, -100, (GameState* gameState) -> void) {
-	int currentSlot = get_glowing_hourglass_slot(gameState);
-
-	const int preCallbackId = 1302;
-	if (CallbackState.test(preCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults result = lua::LuaCaller(L).push(preCallbackId)
-			.pushnil()
-			.push(currentSlot)
-			.call(1);
-	}
-
-	super(gameState);
-
-	if (currentSlot == -1) {
+void CustomCallbacks::PRE_GAME_STATE_SAVE()
+{
+	const int CALLBACK_ID = 1309;
+	if (!CallbackState.test(CALLBACK_ID - 1000)) {
 		return;
 	}
 
-	const int postCallbackId = 1300;
-	if (CallbackState.test(postCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackId)
-			.pushnil()
-			.push(currentSlot)
-			.call(1);
-	}
-	return;
+	lua::LuaResults result = lua::LuaCaller(L).push(CALLBACK_ID)
+		.pushnil()
+		.call(0);
 }
 
-//PRE/POST_GLOWING_HOURGLASS_LOAD (1301 - 1303)
-HOOK_METHOD_PRIORITY(Game, RestoreState, -100, (GameState* gameState, bool startGame) -> void) {
-	int currentSlot = get_glowing_hourglass_slot(gameState);
-
-	if (currentSlot != -1)
-	{
-		const int preCallbackId = 1303;
-		if (CallbackState.test(preCallbackId - 1000)) {
-			lua_State* L = g_LuaEngine->_state;
-			lua::LuaStackProtector protector(L);
-
-			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-			lua::LuaResults result = lua::LuaCaller(L).push(preCallbackId)
-				.pushnil()
-				.push(currentSlot)
-				.call(1);
-		}
-	}
-
-	super(gameState, startGame);
-
-	if (currentSlot == -1) {
+void CustomCallbacks::POST_GAME_STATE_SAVE()
+{
+	const int CALLBACK_ID = 1310;
+	if (!CallbackState.test(CALLBACK_ID - 1000)) {
 		return;
 	}
 
-	const int postCallbackId = 1301;
-	if (CallbackState.test(postCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackId)
-			.pushnil()
-			.push(currentSlot)
-			.call(1);
+	lua::LuaResults result = lua::LuaCaller(L).push(CALLBACK_ID)
+		.pushnil()
+		.call(0);
+}
+
+void CustomCallbacks::PRE_GAME_STATE_RESTORE()
+{
+	const int CALLBACK_ID = 1311;
+	if (!CallbackState.test(CALLBACK_ID - 1000)) {
+		return;
 	}
-	return;
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults result = lua::LuaCaller(L).push(CALLBACK_ID)
+		.pushnil()
+		.call(0);
+}
+
+void CustomCallbacks::POST_GAME_STATE_RESTORE()
+{
+	const int CALLBACK_ID = 1312;
+	if (!CallbackState.test(CALLBACK_ID - 1000)) {
+		return;
+	}
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults result = lua::LuaCaller(L).push(CALLBACK_ID)
+		.pushnil()
+		.call(0);
+}
+
+void CustomCallbacks::PRE_GLOWING_HOURGLASS_SAVE(size_t currentSlot)
+{
+	const int CALLBACK_ID = 1302;
+	if (!CallbackState.test(CALLBACK_ID - 1000)) {
+		return;
+	}
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults result = lua::LuaCaller(L).push(CALLBACK_ID)
+		.pushnil()
+		.push(currentSlot)
+		.call(0);
+}
+
+void CustomCallbacks::POST_GLOWING_HOURGLASS_SAVE(size_t currentSlot)
+{
+	const int CALLBACK_ID = 1300;
+	if (!CallbackState.test(CALLBACK_ID - 1000)) {
+		return;
+	}
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults result = lua::LuaCaller(L).push(CALLBACK_ID)
+		.pushnil()
+		.push(currentSlot)
+		.call(0);
+}
+
+void CustomCallbacks::PRE_GLOWING_HOURGLASS_LOAD(size_t currentSlot)
+{
+	const int CALLBACK_ID = 1303;
+	if (!CallbackState.test(CALLBACK_ID - 1000)) {
+		return;
+	}
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults result = lua::LuaCaller(L).push(CALLBACK_ID)
+		.pushnil()
+		.push(currentSlot)
+		.call(0);
+}
+
+void CustomCallbacks::POST_GLOWING_HOURGLASS_LOAD(size_t currentSlot)
+{
+	const int CALLBACK_ID = 1301;
+	if (!CallbackState.test(CALLBACK_ID - 1000)) {
+		return;
+	}
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults result = lua::LuaCaller(L).push(CALLBACK_ID)
+		.pushnil()
+		.push(currentSlot)
+		.call(0);
+}
+
+bool CustomCallbacks::SHOULD_SAVE_ENTITY(Entity& entity, bool shouldSave, bool isRoomClear)
+{
+    const int CALLBACK_ID = 1313;
+    if (!CallbackState.test(CALLBACK_ID - 1000)) {
+        return shouldSave;
+    }
+
+    lua_State* L = g_LuaEngine->_state;
+    lua::LuaStackProtector protector(L);
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+    lua::LuaResults result = lua::LuaCaller(L).push(CALLBACK_ID)
+        .pushnil()
+        .push(&entity, lua::Metatables::ENTITY)
+        .push(isRoomClear)
+        .call(1);
+
+    if (result.getResultCode() != LUA_OK) {
+        return shouldSave;
+    }
+
+    if (lua_isboolean(L, -1)) {
+        shouldSave = lua_toboolean(L, -1);
+    }
+
+    return shouldSave;
 }
 
 // POST_ROOM_SAVE_STATE (1304)

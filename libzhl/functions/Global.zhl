@@ -89,6 +89,7 @@ typedef std::vector<EntityConfig_Boss> vector_EntityConfig_Boss;
 typedef std::vector<EntityConfig_Boss_Alt> vector_EntityConfig_Boss_Alt;
 typedef std::vector<float> std_vector_float;
 typedef std::map<uint32_t, RoomConfig_VariantSet*> std_map_uint_VariantSetPtr;
+typedef std::map<uint32_t, EntityConfig_EntityEntry> std_map_uint_EntityConfigEntityEntry;
 typedef std::vector<Devolve> vector_Devolve;
 typedef std::bitset<8> DoorsBitSet;
 typedef std::bitset<8> RoomConfigFlags;
