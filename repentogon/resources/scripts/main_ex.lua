@@ -2990,6 +2990,7 @@ end
 
 if not _LUADEBUG then
 	debug = nil
+	package = nil
 	os = {
 		date = os.date,
 		time = os.time,
