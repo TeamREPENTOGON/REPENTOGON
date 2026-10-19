@@ -4,6 +4,8 @@
 
 #include <string>
 
+extern std::bitset<500> CallbackState;
+
 namespace CustomCallbacks
 {
     namespace detail
