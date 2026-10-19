@@ -48,6 +48,8 @@ void StageConfig::PostLoadStages() {
 		s_Stages[id] = new StageConfig(id);
 	}
 
+	// Compute the StageType, LevelStage and Mode values for vanilla stages (and in turn, their custom alts).
+
 	for (int stageType = STAGETYPE_ORIGINAL; stageType <= STAGETYPE_REPENTANCE_B; stageType++) {
 		if (stageType == STAGETYPE_GREEDMODE) continue;
 		for (int levelStage = STAGE1_1; levelStage < NUM_STAGES; levelStage++) {
@@ -62,12 +64,14 @@ void StageConfig::PostLoadStages() {
 				}
 			}
 		}
-		for (int levelStage = STAGE1_GREED; levelStage <= STAGE7_GREED; levelStage++) {
-			if (levelStage >= STAGE6_GREED && stageType > STAGETYPE_ORIGINAL) break;
-			uint32_t stageid = g_Game->GetRoomConfig()->GetStageID(levelStage, stageType, 1);
-			if (StageConfig* stage = GetStage(stageid)) {
-				if (stage->_greedLevelStage == -1) {
-					stage->_greedLevelStage = levelStage;
+		if (stageType < STAGETYPE_REPENTANCE) {
+			for (int levelStage = STAGE1_GREED; levelStage <= STAGE7_GREED; levelStage++) {
+				if (levelStage >= STAGE6_GREED && stageType > STAGETYPE_ORIGINAL) break;
+				uint32_t stageid = g_Game->GetRoomConfig()->GetStageID(levelStage, stageType, 1);
+				if (StageConfig* stage = GetStage(stageid)) {
+					if (stage->_greedLevelStage == -1) {
+						stage->_greedLevelStage = levelStage;
+					}
 				}
 			}
 		}
@@ -88,14 +92,26 @@ void StageConfig::PostLoadStages() {
 			stage->_levelStage = 0;
 		if (stage->_greedLevelStage == -1)
 			stage->_greedLevelStage = 0;
+
+		// Vanilla stages that are not available in greed mode.
+		if (stage->IsVanilla()) {
+			if (stage->_greedLevelStage == 0) {
+				stage->_mode = 0;
+			} else if (stage->GetStageId() == STB_THE_SHOP || stage->GetStageId() == STB_ULTRA_GREED) {
+				stage->_mode = 1;
+			}
+		}
+
+		// ZHL::Log("%s -> %d\n", stage->GetEnglishName().c_str(), stage->_mode);
 	}
 }
 
-std::vector<StageConfig*> StageManager::GetStagesByLevel(int levelStage, bool greedMode) {
+std::vector<StageConfig*> GetStagesByLevel(int levelStage) {
 	std::vector<StageConfig*> stages;
 	for (StageConfig* stage : s_Stages) {
-		if (!stage) continue;
-		if (stage->GetLevelStage(false, greedMode) == levelStage || stage->GetLevelStage(true, greedMode) == levelStage) {
+		if (!stage || !stage->IsAvailableInCurrentMode()) continue;
+
+		if (stage->GetLevelStage(false) == levelStage || stage->GetLevelStage(true) == levelStage) {
 			stages.push_back(stage);
 		}
 	}
@@ -106,12 +122,7 @@ std::vector<StageConfig*> GetEligibleAltStages(int levelStage, int stageType) {
 	bool greedMode = g_Game->IsGreedMode();
 	std::vector<StageConfig*> stages;
 	for (StageConfig* stage : s_Stages) {
-		if (!stage) continue;
-
-		int achievement = stage->GetAchievement();
-		if (achievement > 0 && !g_Manager->GetPersistentGameData()->Unlocked(achievement)) {
-			continue;
-		}
+		if (!stage || !stage->CanSpawnNaturally()) continue;
 
 		// Repentance (alt path) StageTypes cannot mix with non-Repentance StageTypes.
 		bool altPath = stageType == STAGETYPE_REPENTANCE || stageType == STAGETYPE_REPENTANCE_B;

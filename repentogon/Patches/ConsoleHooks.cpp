@@ -397,7 +397,7 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
 					idx--;
 				}
 
-				auto stages = StageManager::GetStagesByLevel(levelStage, g_Game->GetMode());
+				auto stages = StageManager::GetStagesByLevel(levelStage);
 				if (idx < stages.size()) {
 					StageManager::StageConfig* stage = stages[idx];
 					if (stage->IsCustom()) {
