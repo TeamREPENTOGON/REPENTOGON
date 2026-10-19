@@ -245,6 +245,17 @@ public:
 		return _levelStage;
 	}
 
+	inline int GetLevelStage(bool second) const {
+		return GetLevelStage(second, g_Game->IsGreedMode());
+	}
+
+	inline int GetFloor(const int levelStage) const {
+		if (levelStage >= GetLevelStage(/*second=*/true)) {
+			return 2;
+		}
+		return 1;
+	}
+
 	ModEntry* GetMod() const {
 		return _mod;
 	}

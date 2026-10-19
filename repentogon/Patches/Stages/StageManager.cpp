@@ -4,6 +4,7 @@
 
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
+#include "../../LuaInterfaces/CustomCallbacks.h"
 
 namespace StageManager {
 
@@ -178,14 +179,86 @@ void StageConfig::GotoStage(bool second) const {
 	g_Game->GetPlayerManager()->TriggerNewRoom_TemporaryEffects();
 }
 
-// TODO: Tie this into the MC_PRE_LEVEL_SELECT callback.
+// TODO: Consider moving validations to lualand
+void ProcessLevelSelectCallbackResult(lua_State* L, lua::LuaResults& results, int& levelStageOut, int& stageTypeOut, uint32_t& customStageOut) {
+	if (!results && lua_istable(L, -1)) {
+		lua_getfield(L, -1, "StageID");
+		uint32_t stageID = (uint32_t)lua_tointeger(L, -1);
+		lua_pop(L, 1);
+
+		if (stageID > 0) {
+			// New StageID+Floor# format, supports custom stages.
+
+			lua_getfield(L, -1, "Floor");
+			int floor = (int)lua_tointeger(L, -1);
+			lua_pop(L, 1);
+
+			if (StageConfig* stage = GetStage(stageID)) {
+				levelStageOut = stage->GetLevelStage(floor >= 2);
+				stageTypeOut = stage->GetStageType();
+				if (stage->IsCustom()) {
+					customStageOut = stageID;
+				} else {
+					customStageOut = 0;
+				}
+				return;
+			}
+			g_Game->GetConsole()->PrintError(REPENTOGON::StringFormat("MC_PRE_LEVEL_SELECT: Invalid return value, %u is not a valid Stage ID!\n", stageID));
+			return;
+		}
+		
+		// Original (vanilla only) LevelStage+StageType format.
+
+		lua_len(L, -1);
+		int len = (int)lua_tointeger(L, -1);
+		lua_pop(L, 1);
+
+		if (len != 2) {
+			g_Game->GetConsole()->PrintError(REPENTOGON::StringFormat("MC_PRE_LEVEL_SELECT: Invalid return value, table contains %d elements, expected 2\n", len));
+			return;
+		}
+
+		lua_rawgeti(L, -1, 1);
+		int levelStage = (int)lua_tointeger(L, -1);
+		lua_pop(L, 1);
+
+		if (g_Game->IsGreedMode()) {
+			if (levelStage < 1 || levelStage > 7) {
+				g_Game->GetConsole()->PrintError(REPENTOGON::StringFormat("MC_PRE_LEVEL_SELECT: Invalid level stage, received %d, should be in range [1; 7] (detected greed(ier) mode)\n", levelStage));
+				return;
+			}
+		} else {
+			if (levelStage < 1 || levelStage > 14) {
+				g_Game->GetConsole()->PrintError(REPENTOGON::StringFormat("MC_PRE_LEVEL_SELECT: Invalid level stage, received %d, should be in range [1; 14] (detected normal/hard mode)\n", levelStage));
+				return;
+			}
+		}
+
+		lua_rawgeti(L, -1, 2);
+		int stageType = (int)lua_tointeger(L, -1);
+		lua_pop(L, 1);
+
+		if (stageType < 0 || stageType == 3 || stageType > 5) {
+			g_Game->GetConsole()->PrintError(REPENTOGON::StringFormat("MC_PRE_LEVEL_SELECT: Invalid stage type, received value %d, expected 0, 1, 2, 4 or 5\n", stageType));
+			return;
+		}
+
+		// Passed validations
+		levelStageOut = levelStage;
+		stageTypeOut = stageType;
+	}
+}
+
 HOOK_METHOD(Level, SetStage, (int levelStage, int stageType)-> void) {
 	uint32_t vanillaStageId = g_Game->GetRoomConfig()->GetStageID(levelStage, stageType, g_Game->GetMode());
 	uint32_t customStageId = s_SettingCustomStage;
 	s_SettingCustomStage = 0;
 
+	bool isNatural = false;
+
 	if (s_SettingNextStage) {
 		s_SettingNextStage = false;
+		isNatural = true;
 
 		// This selection logic might not be perfect but should be good enough for now.
 		// The game has called SetNextStage and made a decision (for example, STAGE3_2+STAGETYPE_WOTL for Necropolis II)
@@ -216,6 +289,33 @@ HOOK_METHOD(Level, SetStage, (int levelStage, int stageType)-> void) {
 				KAGE::_LogMessage(0, "[StageManager] Selected vanilla stage. Ignoring and going with vanilla SetNextStage's choice instead.\n");
 			}
 		}
+	}
+
+	// TODO: Finalize updates to MC_PRE_LEVEL_SELECT (ie, new return format to support custom stages), decide whether to introduce a separate callback for "natural" selections.
+
+	// MC_PRE_LEVEL_SELECT (1104)
+	const int callbackId = 1104;
+	if (CallbackState.test(callbackId - 1000)) {
+		int stageid = customStageId > 0 ? customStageId : vanillaStageId;
+		int floor = 1;
+		if (StageConfig* stage = GetStage(stageid)) {
+			floor = stage->GetFloor(levelStage);
+		}
+
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(callbackId)
+			.pushnil()
+			.push(levelStage)
+			.push(stageType)
+			.push(stageid)
+			.push(floor)
+			.push(isNatural)
+			.call(1);
+
+		ProcessLevelSelectCallbackResult(L, results, levelStage, stageType, customStageId);
 	}
 
 	if (customStageId > 0) {
