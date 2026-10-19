@@ -119,7 +119,6 @@ std::vector<StageConfig*> GetStagesByLevel(int levelStage) {
 }
 
 std::vector<StageConfig*> GetEligibleAltStages(int levelStage, int stageType) {
-	bool greedMode = g_Game->IsGreedMode();
 	std::vector<StageConfig*> stages;
 	for (StageConfig* stage : s_Stages) {
 		if (!stage || !stage->CanSpawnNaturally()) continue;
@@ -136,7 +135,7 @@ std::vector<StageConfig*> GetEligibleAltStages(int levelStage, int stageType) {
 		}
 
 		// Check if this LevelStage matches this stage (as either I or II)
-		if (stage->GetLevelStage(false, greedMode) == levelStage || stage->GetLevelStage(true, greedMode) == levelStage) {
+		if (stage->GetLevelStage(false) == levelStage || stage->GetLevelStage(true) == levelStage) {
 			stages.push_back(stage);
 		}
 	}
@@ -357,6 +356,31 @@ HOOK_METHOD(Manager, SetSaveSlot, (uint32_t slot)->void) {
 	super(slot);
 	if (GetCurrentOverride().HasOverride()) {
 		s_Stages[GetCurrentOverride().GetCustomStageID()]->Load();
+	}
+}
+
+// If the stage is a single, standalone custom floor that normally has I and II variants, remove the suffix from the name.
+// Doing it after the fact saves on an ASM patch.
+HOOK_GLOBAL(GetLevelName, (std_string* result, uint32_t levelStage, uint32_t stageType, uint32_t curseMask, int BASEMENTnum, bool jumble, int mode) -> void, __cdecl) {
+	super(result, levelStage, stageType, curseMask, BASEMENTnum, jumble, mode);
+	
+	bool isXL = curseMask & 2;
+	if (!isXL && levelStage > 0 && levelStage < STAGE4_2 && BASEMENTnum == 0 && !jumble && mode != 1 && g_Game->GetChallenge() != CHALLENGE_RED_REDEMPTION) {
+		int vanillaStageID = g_Game->GetRoomConfig()->GetStageID(levelStage, stageType, mode);
+		if (GetCurrentOverride().IsOverridden(vanillaStageID)) {
+			if (StageConfig* stage = GetStage(GetCurrentOverride().GetCustomStageID())) {
+				if (stage->IsSingleFloor()) {
+					// Chop the suffix off of the name (" I" or " II")
+					size_t lastSpacePos = result->find_last_of(' ');
+					if (lastSpacePos != std::string::npos) {
+						std::string suffix = result->substr(lastSpacePos);
+						if (suffix == " I" || suffix == " II") {
+							result->erase(lastSpacePos);
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
