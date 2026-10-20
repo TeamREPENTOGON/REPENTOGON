@@ -14,8 +14,8 @@ extern "C" {
 		item->gfxFilename = name;
 	}
 
-	__declspec(dllexport) bool L_ItemConfigItem_IsAvailable(ItemConfig_Item* item) {
-		return item->IsAvailable(0);
+	__declspec(dllexport) bool L_ItemConfigItem_IsAvailable(ItemConfig_Item* item, bool flag) {
+		return item->IsAvailable(flag);
 	}
 
 	__declspec(dllexport) int L_ItemConfigItem_GetCustomTags(ItemConfig_Item* item, const char** out) {

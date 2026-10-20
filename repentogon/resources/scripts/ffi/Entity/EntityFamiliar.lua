@@ -47,7 +47,7 @@ ffi.cdef [[
     void L_EntityFamiliar_RemoveFromOrbit(struct EntityFamiliar*);
     void L_EntityFamiliar_GetOrbitDistance(int, struct Vector*);
     void L_EntityFamiliar_GetOrbitPosition(struct EntityFamiliar*, struct Vector*, struct Vector*);
-    struct EntityTear* L_EntityFamiliar_FireProjectile(struct EntityFamiliar*, struct Vector*);
+    struct EntityTear* L_EntityFamiliar_FireProjectile(struct EntityFamiliar*, struct Vector*, bool);
     void L_EntityFamiliar_PickEnemyTarget(struct EntityFamiliar*, float, int, int, struct Vector*, float);
     int L_EntityFamiliar_GetFollowerPriority(struct EntityFamiliar*);
     struct PathFinder* L_EntityFamiliar_GetPathfinder(struct EntityFamiliar*);
@@ -164,9 +164,9 @@ local methods = {
     CanBeDamagedByProjectiles = BoolMethod(repentogon.L_EntityFamiliar_CanBeDamagedByProjectiles),
     CanBlockProjectiles = BoolMethod(repentogon.L_EntityFamiliar_CanBlockProjectiles),
     CanCharm = BoolMethod(repentogon.L_EntityFamiliar_CanCharm),
-    FireProjectile = function(self, direction)
+    FireProjectile = function(self, direction, unk)
         ffichecks.checkcdata(1, direction, "Vector")
-        local result = repentogon.L_EntityFamiliar_FireProjectile(self, direction) return result
+        local result = repentogon.L_EntityFamiliar_FireProjectile(self, direction, not not unk) return result
     end,
     FollowParent = VoidMethod(repentogon.L_EntityFamiliar_FollowParent),
     FollowPosition = function(self, position)

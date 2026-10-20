@@ -554,8 +554,8 @@ MOD_EXPORT void L_EntityPlayer_GetShootingJoystick(Entity_Player* player, Vector
 	player->GetShootingJoystick(out);
 }
 
-MOD_EXPORT void L_EntityPlayer_GetTearMovementInheritance(Entity_Player* player, Vector* shotDirection, Vector* out) {
-	player->GetTearMovementInheritance(out, shotDirection, false);
+MOD_EXPORT void L_EntityPlayer_GetTearMovementInheritance(Entity_Player* player, Vector* shotDirection, Vector* out, bool unkFlag) {
+	player->GetTearMovementInheritance(out, shotDirection, unkFlag);
 }
 
 MOD_EXPORT void L_EntityPlayer_GetBodyMoveDirection(Entity_Player* player, Vector* out) {

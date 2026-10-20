@@ -155,6 +155,11 @@ GridEntityRock = setmetatable({
         gridVariant = ffichecks.checkinteger(3, gridVariant)
         seed = ffichecks.checkinteger(4, seed)
         unk = ffichecks.checkboolean(5, unk)
+        if backdrop == nil then
+            backdrop = 0
+        else
+            backdrop = ffichecks.checkinteger(6, backdrop)
+        end
         repentogon.L_GridEntityRock_SpawnDrops(position, gridType, gridVariant, seed, unk, backdrop)
     end,
     GetAltRockType = function(backdrop)

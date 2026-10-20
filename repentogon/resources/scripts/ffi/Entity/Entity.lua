@@ -91,7 +91,7 @@ ffi.cdef [[
     bool L_Entity_IsBoss(void*);
     void L_Entity_SetCollisionDamage(void*, float);
     void L_Entity_SetColor(void*, struct Color*, int, int, bool, bool);
-    void L_Entity_AddVelocity(void*, struct Vector*);
+    void L_Entity_AddVelocity(void*, struct Vector*, bool);
     void L_Entity_SetSize(void*, float, struct Vector*, int);
     void L_Entity_SetSizeKeepingMulti(void*, float);
     bool L_Entity_TryThrow(void*, struct EntityRef*, struct Vector*, float);
@@ -511,9 +511,9 @@ Methods {
         ffichecks.checkcdata(4, color, "Color")
         repentogon.L_Entity_AddSlowing(self, source, duration, amount, color, ffichecks.optboolean(ignoreBosses, false))
     end,
-    AddVelocity = function(self, velocity)
+    AddVelocity = function(self, velocity, ignoreTimeScale)
         ffichecks.checkcdata(1, velocity, "Vector")
-        repentogon.L_Entity_AddVelocity(self, velocity)
+        repentogon.L_Entity_AddVelocity(self, velocity, not not ignoreTimeScale)
     end,
     AddWeakness = DurationEffect(repentogon.L_Entity_AddWeakness),
     BloodExplode = VoidMethod(repentogon.L_Entity_BloodExplode),

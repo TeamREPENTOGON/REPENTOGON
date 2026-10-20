@@ -10,7 +10,7 @@ ffi.cdef("struct EntityPickup { " .. Entity.Fields .. [[
     int Timeout : 0x540;
     int Wait : 0x544;
     private int DropDelayValue : 0x554;
-    int State : 0x584;
+    unsigned int State : 0x584;
     private struct EntityEffect* PickupGhostValue : 0x590;
     private struct EntityPickup* MegaChestLeftValue : 0x594;
     private struct EntityPickup* MegaChestRightValue : 0x598;

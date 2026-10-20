@@ -223,8 +223,8 @@ SpriteMT = {
     GetTexel = function(self, samplePos, renderPos, alphaThreshold, layerId)
         ffichecks.checkcdata(1, samplePos, "Vector")
         ffichecks.checkcdata(2, renderPos, "Vector")
-        alphaThreshold = ffichecks.checknumber(3, alphaThreshold)
-        layerId = ffichecks.optnumber(layerId, 0)
+        alphaThreshold = ffichecks.optnumber(alphaThreshold, 0.01)
+        layerId = ffichecks.optnumber(layerId, -1)
         local result = ffi.new("struct KColor")
         if repentogon.L_Sprite_GetTexel(self, result, samplePos, renderPos, alphaThreshold, layerId) == nil then
             return nil
@@ -302,7 +302,11 @@ SpriteMT = {
         repentogon.L_Sprite_PlayOverlay(self, animationName, force)
     end,
     PlayRandom = function(self, seed)
-        seed = ffichecks.checkinteger(1, seed)
+        if seed == nil then
+            seed = Random()
+        else
+            seed = ffichecks.checkinteger(1, seed)
+        end
         repentogon.L_Sprite_PlayRandom(self, seed)
     end,
     Reload = function(self)

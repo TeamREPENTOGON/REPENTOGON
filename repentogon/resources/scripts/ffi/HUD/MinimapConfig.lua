@@ -40,7 +40,7 @@ MinimapConfigMT = {
         local result = ffi.getprivate(self, "PosOffsetX") return result
     end,
     GetSprite = function(self)
-        local result = ffi.getprivate(self, "Sprite") return result
+        local result = ffi.getprivate(self, "Sprite"):Copy() return result
     end,
     GetVec1 = function(self)
         return GetVector(self, "Vec1")

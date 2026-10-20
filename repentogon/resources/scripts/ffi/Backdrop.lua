@@ -10,6 +10,13 @@ ffi.cdef [[
     } : 0x5278;
 ]]
 local ffi = ffi
+local repentogon = ffidll
+
+local function CopyImage(image)
+    local result = ffi.new("struct Image")
+    repentogon.L_Image_CopyConstruct(result, image)
+    return result
+end
     
 local BackdropMT
 BackdropMT = {
@@ -27,10 +34,10 @@ BackdropMT = {
         local result = ffi.getprivate(self, "FloorANM2") return result
     end,
     GetFloorImage = function(self)
-        local result = ffi.getprivate(self, "FloorImage") return result
+        return CopyImage(ffi.getprivate(self, "FloorImage"))
     end,
     GetWallImage = function(self)
-        local result = ffi.getprivate(self, "WallImage") return result
+        return CopyImage(ffi.getprivate(self, "WallImage"))
     end,
 }
 

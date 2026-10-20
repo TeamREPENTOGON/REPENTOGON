@@ -10,6 +10,10 @@ extern "C" {
 		imageBase->DecrRef();
 	}
 
+	__declspec(dllexport) void L_Image_CopyConstruct(KAGE_SmartPointer_ImageBase* dest, const KAGE_SmartPointer_ImageBase* src) {
+		new (dest) KAGE_SmartPointer_ImageBase(*src);
+	}
+
 	__declspec(dllexport) int L_Image_GetHeight(KAGE_SmartPointer_ImageBase* imageBase) {
 		return imageBase->image->GetHeight();
 	}

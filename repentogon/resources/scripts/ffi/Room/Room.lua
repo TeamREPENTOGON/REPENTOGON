@@ -251,7 +251,7 @@ RoomMT = {
         local result = repentogon.L_Room_DestroyGridWithSource(self, index, damage and 1 or 0, immediate, source) return result
     end,
     DoLightningStrike = function(self, seed)
-        seed = math.floor(ffichecks.optnumber(seed, math.random(1, 4294967295)))
+        seed = math.floor(ffichecks.optnumber(seed, Random()))
         local rng = RNG(seed, 35)
         ffi.setprivate(repentogon.L_Game_Get(), "LightningIntensity", 1.3 + rng:RandomFloat() * 0.6)
         repentogon.L_SFXManager_Play(SoundEffect.SOUND_THUNDER, 1, 90, false, 0.9 + rng:RandomFloat() * 0.2, 0)
@@ -457,7 +457,7 @@ RoomMT = {
         local result = ffi.getprivate(self, "GridWidth") return result
     end,
     GetItemPool = function(self, seed, raw)
-        seed = ffichecks.optnumber(seed, math.random(1, 4294967295))
+        seed = ffichecks.optnumber(seed, Random())
         if seed == 0 then seed = 1 end
         raw = ffichecks.optboolean(raw, false)
         local result = repentogon.L_Room_GetItemPool(self, seed, raw) return result
@@ -887,17 +887,17 @@ RoomMT = {
     end,
     TrySpawnBlueWombDoor = function(self, firstTime, ignoreTime, force)
         firstTime = ffichecks.optboolean(firstTime, true)
-        ignoreTime = ffichecks.optboolean(ignoreTime, true)
+        ignoreTime = ffichecks.optboolean(ignoreTime, false)
         force = ffichecks.optboolean(force, false)
         local result = repentogon.L_Room_TrySpawnBlueWombDoor(self, firstTime, ignoreTime, force) return result
     end,
     TrySpawnBossRushDoor = function(self, ignoreTime, force)
-        ignoreTime = ffichecks.optboolean(ignoreTime, true)
+        ignoreTime = ffichecks.optboolean(ignoreTime, false)
         force = ffichecks.optboolean(force, false)
         local result = repentogon.L_Room_TrySpawnBossRushDoor(self, ignoreTime, force) return result
     end,
     TrySpawnDevilRoomDoor = function(self, animate, force)
-        animate = ffichecks.optboolean(animate, true)
+        animate = ffichecks.optboolean(animate, false)
         force = ffichecks.optboolean(force, false)
         local result = repentogon.L_Room_TrySpawnDevilRoomDoor(self, animate, force) return result
     end,
@@ -906,7 +906,7 @@ RoomMT = {
         local result = repentogon.L_Room_TrySpawnMegaSatanRoomDoor(self, force) return result
     end,
     TrySpawnSecretExit = function(self, animate, force)
-        animate = ffichecks.optboolean(animate, true)
+        animate = ffichecks.optboolean(animate, false)
         force = ffichecks.optboolean(force, false)
         local result = repentogon.L_Room_TrySpawnSecretExit(self, animate, force) return result
     end,

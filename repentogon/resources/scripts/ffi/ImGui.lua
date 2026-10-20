@@ -430,7 +430,10 @@ ImGui = {
         end
         return flags[0]
     end,
-    GetWindowPinned = function(id)
+    GetWindowPinned = function(id, colonId)
+        if id == ImGui then
+            id = colonId
+        end
         id = ffichecks.checkstring(1, id)
         local pinned = repentogon.L_ImGui_GetWindowPinned(id)
         if pinned < 0 then

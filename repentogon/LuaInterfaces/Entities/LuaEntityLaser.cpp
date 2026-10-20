@@ -6,8 +6,8 @@
 #include "HookSystem.h"
 #include "../../Patches/EntityPlus.h"
 
-MOD_EXPORT Entity_Laser* L_EntityLaser_ShootAngle(int variant, Vector* sourcePos, float angleDegrees, int timeout, Vector* posOffset, Entity* source) {
-	return Entity_Laser::ShootAngle(variant, sourcePos, angleDegrees, timeout, posOffset, source, false);
+MOD_EXPORT Entity_Laser* L_EntityLaser_ShootAngle(int variant, Vector* sourcePos, float angleDegrees, int timeout, Vector* posOffset, Entity* source, bool force) {
+	return Entity_Laser::ShootAngle(variant, sourcePos, angleDegrees, timeout, posOffset, source, force);
 }
 
 MOD_EXPORT void L_EntityLaser_CalculateEndPoint(Vector* start, Vector* dir, Vector* positionOffset, Entity* parent, float margin, Vector* result) {

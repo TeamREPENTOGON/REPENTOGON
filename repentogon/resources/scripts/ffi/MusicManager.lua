@@ -57,7 +57,11 @@ MusicManagerMT = {
         repentogon.L_MusicManager_Disable();
     end,
     DisableLayer = function(self, id)
-        id = ffichecks.checkinteger(1, id)
+        if id == nil then
+            id = 0
+        else
+            id = ffichecks.checkinteger(1, id)
+        end
         repentogon.L_MusicManager_DisableLayer(id)
     end,
     Enable = function(self)
@@ -108,7 +112,7 @@ MusicManagerMT = {
     Play = function(self, id, volume)
         id = ffichecks.checkinteger(1, id)
         ValidateMusicId(1, id)
-        volume = ffichecks.optnumber(volume, -1)
+        volume = ffichecks.optnumber(volume, 1)
         repentogon.L_MusicManager_Play(id, volume)
     end,
     PlayJingle = function(self, id, duration)

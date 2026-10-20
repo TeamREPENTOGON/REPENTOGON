@@ -307,7 +307,7 @@ ffi.cdef [[
     void L_EntityPlayer_GetLaserOffset(struct EntityPlayer*, int, struct Vector*, struct Vector*);
     void L_EntityPlayer_GetMovementJoystick(struct EntityPlayer*, struct Vector*);
     void L_EntityPlayer_GetShootingJoystick(struct EntityPlayer*, struct Vector*);
-    void L_EntityPlayer_GetTearMovementInheritance(struct EntityPlayer*, struct Vector*, struct Vector*);
+    void L_EntityPlayer_GetTearMovementInheritance(struct EntityPlayer*, struct Vector*, struct Vector*, bool);
     void L_EntityPlayer_GetBodyMoveDirection(struct EntityPlayer*, struct Vector*);
     void L_EntityPlayer_GetEnterPosition(struct EntityPlayer*, struct Vector*);
     bool L_EntityPlayer_IsPosInSpotLight(struct EntityPlayer*, struct Vector*);
@@ -1368,7 +1368,7 @@ local methods = {
         ffichecks.checkcdata(1, position, "Vector")
         offsetID = ffichecks.checkinteger(2, offsetID)
         ffichecks.checkcdata(3, direction, "Vector")
-        leftEye = ffichecks.optboolean(leftEye, true)
+        leftEye = ffichecks.optboolean(leftEye, false)
         oneHit = ffichecks.optboolean(oneHit, false)
         source = EntityToPointer(source)
         if damageMultiplier == nil then damageMultiplier = 1 else damageMultiplier = ffichecks.checknumber(7, damageMultiplier) end
@@ -1413,10 +1413,10 @@ local methods = {
         repentogon.L_EntityPlayer_GetShootingJoystick(self, result)
         return result
     end,
-    GetTearMovementInheritance = function(self, shotDirection)
+    GetTearMovementInheritance = function(self, shotDirection, unkFlag)
         ffichecks.checkcdata(1, shotDirection, "Vector")
         local result = Vector(0, 0)
-        repentogon.L_EntityPlayer_GetTearMovementInheritance(self, shotDirection, result)
+        repentogon.L_EntityPlayer_GetTearMovementInheritance(self, shotDirection, result, not not unkFlag)
         return result
     end,
     GetBodyMoveDirection = function(self)
@@ -2097,7 +2097,7 @@ local methods = {
         noTractorBeam = ffichecks.optboolean(noTractorBeam, false)
         canTriggerStreakEnd = ffichecks.optboolean(canTriggerStreakEnd, true)
         damageMultiplier = ffichecks.optnumber(damageMultiplier, 1)
-        local flags = (canBeEye and 0x4 or 0) | (noTractorBeam and 0x2 or 0) | (canTriggerStreakEnd and 0x1 or 0)
+        local flags = (canBeEye and 0 or 0x1) | (noTractorBeam and 0x2 or 0) | (canTriggerStreakEnd and 0 or 0x4)
         local result = repentogon.L_EntityPlayer_FireTearEx(self, position, velocity, flags, EntityToPointer(source), damageMultiplier) return result
     end,
     ShootRedCandle = function(self, direction)

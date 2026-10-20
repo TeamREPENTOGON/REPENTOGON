@@ -81,8 +81,8 @@ MOD_EXPORT void L_EntityFamiliar_GetOrbitPosition(Entity_Familiar* familiar, Vec
 	familiar->GetOrbitPosition(result, offset);
 }
 
-MOD_EXPORT Entity_Tear* L_EntityFamiliar_FireProjectile(Entity_Familiar* familiar, Vector* direction) {
-	return familiar->FireProjectile(*direction, false);
+MOD_EXPORT Entity_Tear* L_EntityFamiliar_FireProjectile(Entity_Familiar* familiar, Vector* direction, bool unk) {
+	return familiar->FireProjectile(*direction, unk);
 }
 
 MOD_EXPORT void L_EntityFamiliar_PickEnemyTarget(Entity_Familiar* familiar, float maxDistance, int frameInterval, int flags, Vector* coneDirection, float coneAngle) {

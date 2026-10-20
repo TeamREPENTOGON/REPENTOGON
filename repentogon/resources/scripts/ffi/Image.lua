@@ -7,6 +7,7 @@ struct Image {
 typedef struct Image* ImagePtr;
 
 void L_Image_DecrRef(struct Image*);
+void L_Image_CopyConstruct(struct Image*, const struct Image*);
 int L_Image_GetHeight(struct Image*);
 const char* L_Image_GetName(struct Image*);
 int L_Image_GetPaddedWidth(struct Image*);

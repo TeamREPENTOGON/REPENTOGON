@@ -25,10 +25,10 @@ local AnimationFrameMT
 AnimationFrameMT = {
     __type = "AnimationFrame",
     GetColor = function(self) 
-        local result = ffi.getprivate(self, "Color") return result
+        local result = ffi.new("struct Color", ffi.getprivate(self, "Color")) return result
     end,
     GetCrop = function(self) 
-        local result = ffi.getprivate(self, "Crop") return result
+        return ffichecks.copyvector(ffi.getprivate(self, "Crop"))
     end,
     GetEndFrame = function(self) 
         local result = ffi.getprivate(self, "EndFrame") return result
@@ -37,16 +37,16 @@ AnimationFrameMT = {
         local result = ffi.getprivate(self, "Height") return result
     end,
     GetPivot = function(self) 
-        local result = ffi.getprivate(self, "Pivot") return result
+        return ffichecks.copyvector(ffi.getprivate(self, "Pivot"))
     end,
     GetPos = function(self) 
-        local result = ffi.getprivate(self, "Pos") return result
+        return ffichecks.copyvector(ffi.getprivate(self, "Pos"))
     end,
     GetRotation = function(self) 
         local result = ffi.getprivate(self, "Rotation") return result
     end,
     GetScale = function(self) 
-        local result = ffi.getprivate(self, "Scale") return result
+        return ffichecks.copyvector(ffi.getprivate(self, "Scale"))
     end,
     GetStartFrame = function(self) 
         local result = ffi.getprivate(self, "StartFrame") return result

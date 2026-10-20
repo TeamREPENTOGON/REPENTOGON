@@ -179,8 +179,8 @@ MOD_EXPORT void L_Entity_SetColor(Entity* entity, ColorMod* color, int duration,
 	entity->SetColor(color, duration, priority, fadeout, share);
 }
 
-MOD_EXPORT void L_Entity_AddVelocity(Entity* entity, Vector* velocity) {
-	entity->AddVelocity(velocity, false);
+MOD_EXPORT void L_Entity_AddVelocity(Entity* entity, Vector* velocity, bool ignoreTimeScale) {
+	entity->AddVelocity(velocity, ignoreTimeScale);
 }
 
 MOD_EXPORT void L_Entity_SetSize(Entity* entity, float size, Vector* sizeMulti, int numGridCollisionPoints) {

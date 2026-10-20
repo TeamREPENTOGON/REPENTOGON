@@ -18,7 +18,7 @@ ffi.cdef("struct EntityLaser { " .. Entity.Fields .. [[
     float CurveStrength : 0x4b8;
     float Radius : 0x4bc;
     private bool IsActiveRotatingValue : 0x4c0;
-    int RotationDelay : 0x4c4;
+    unsigned int RotationDelay : 0x4c4;
     float RotationDegrees : 0x4c8;
     float RotationSpd : 0x4cc;
     float MaxDistance : 0x4d0;
@@ -39,7 +39,7 @@ typedef struct EntityLaser* EntityLaserPtr;
 ]])
 
 ffi.cdef [[
-    struct EntityLaser* L_EntityLaser_ShootAngle(int, struct Vector*, float, int, struct Vector*, void*);
+    struct EntityLaser* L_EntityLaser_ShootAngle(int, struct Vector*, float, int, struct Vector*, void*, bool);
     void L_EntityLaser_CalculateEndPoint(struct Vector*, struct Vector*, struct Vector*, void*, float, struct Vector*);
     void L_EntityLaser_SetAngle(struct EntityLaser*, float);
     void L_EntityLaser_SetActiveRotation(struct EntityLaser*, int, float, float, bool);
@@ -245,13 +245,13 @@ ffi.metatype("struct EntityLaser", LaserMT)
 Entity.SetClassType(TYPE_LASER, ffi.typeof("struct EntityLaser*"))
 
 EntityLaser = setmetatable({
-    ShootAngle = function(variant, sourcePosition, angleDegrees, timeout, positionOffset, source)
+    ShootAngle = function(variant, sourcePosition, angleDegrees, timeout, positionOffset, source, force)
         variant = ffichecks.checkinteger(1, variant)
         ffichecks.checkcdata(2, sourcePosition, "Vector")
         angleDegrees = ffichecks.checknumber(3, angleDegrees)
         timeout = ffichecks.checkinteger(4, timeout)
         ffichecks.checkcdata(5, positionOffset, "Vector")
-        local result = repentogon.L_EntityLaser_ShootAngle(variant, sourcePosition, angleDegrees, timeout, positionOffset, EntityToPointer(source)) return result
+        local result = repentogon.L_EntityLaser_ShootAngle(variant, sourcePosition, angleDegrees, timeout, positionOffset, EntityToPointer(source), not not force) return result
     end,
     CalculateEndPoint = function(start, direction, positionOffset, parent, margin)
         ffichecks.checkcdata(1, start, "Vector")

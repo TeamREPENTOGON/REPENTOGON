@@ -6,7 +6,7 @@ struct ActiveItemDesc {
     int BatteryCharge;
     int SubCharge;
     int TimedRechargeCooldown;
-    int PartialCharge;
+    float PartialCharge;
     int VarData;
 };
 

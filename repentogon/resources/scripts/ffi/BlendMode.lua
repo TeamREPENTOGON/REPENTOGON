@@ -2,9 +2,9 @@ ffi.cdef [[
     struct BlendMode {
         unsigned int Equation;
         unsigned int RGBSourceFactor;
-        unsigned int RGBDestFactor;
+        unsigned int RGBDestinationFactor;
         unsigned int AlphaSourceFactor;
-        unsigned int AlphaDestFactor;
+        unsigned int AlphaDestinationFactor;
     };
 ]];
 
@@ -47,17 +47,17 @@ BlendModeMT = {
             first = ffichecks.checknumber(1, first)
             local preset = blendModes[math.floor(first) + 1]
             if preset then
-                self.RGBSourceFactor, self.RGBDestFactor = preset[1], preset[2]
-                self.AlphaSourceFactor, self.AlphaDestFactor = preset[3], preset[4]
+                self.RGBSourceFactor, self.RGBDestinationFactor = preset[1], preset[2]
+                self.AlphaSourceFactor, self.AlphaDestinationFactor = preset[3], preset[4]
                 self.Equation = preset[5]
             end
             return
         end
 
         local rgbSrc = ffichecks.optnumber(parts[1], self.RGBSourceFactor)
-        local rgbDst = ffichecks.optnumber(parts[2], self.RGBDestFactor)
+        local rgbDst = ffichecks.optnumber(parts[2], self.RGBDestinationFactor)
         local alphaSrc = ffichecks.optnumber(parts[3], self.AlphaSourceFactor)
-        local alphaDst = ffichecks.optnumber(parts[4], self.AlphaDestFactor)
+        local alphaDst = ffichecks.optnumber(parts[4], self.AlphaDestinationFactor)
         local equation = ffichecks.optnumber(parts[5], self.Equation)
         checkValidBlendFactor(1, rgbSrc)
         checkValidBlendFactor(2, rgbDst)
@@ -65,8 +65,8 @@ BlendModeMT = {
         checkValidBlendFactor(4, alphaDst)
         checkValidBlendEquation(5, equation)
 
-        self.RGBSourceFactor, self.RGBDestFactor = rgbSrc, rgbDst
-        self.AlphaSourceFactor, self.AlphaDestFactor = alphaSrc, alphaDst
+        self.RGBSourceFactor, self.RGBDestinationFactor = rgbSrc, rgbDst
+        self.AlphaSourceFactor, self.AlphaDestinationFactor = alphaSrc, alphaDst
         self.Equation = equation
     end,
 }
@@ -76,13 +76,13 @@ BlendModeMT.__index = function(self, key)
         return self.RGBSourceFactor
     end
     if key == "Flag2" then
-        return self.RGBDestFactor
+        return self.RGBDestinationFactor
     end
     if key == "Flag3" then
         return self.AlphaSourceFactor
     end
     if key == "Flag4" then
-        return self.AlphaDestFactor
+        return self.AlphaDestinationFactor
     end
     return BlendModeMT[key]
 end
@@ -94,7 +94,7 @@ BlendModeMT.__newindex = function(self, key, value)
     end
     if key == "Flag2" then
         checkValidBlendFactor(1, value)
-        self.RGBDestFactor = value
+        self.RGBDestinationFactor = value
     end
     if key == "Flag3" then
         checkValidBlendFactor(1, value)
@@ -102,7 +102,7 @@ BlendModeMT.__newindex = function(self, key, value)
     end
     if key == "Flag4" then
         checkValidBlendFactor(1, value)
-        self.AlphaDestFactor = value
+        self.AlphaDestinationFactor = value
     end
 end
 

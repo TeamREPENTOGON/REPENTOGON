@@ -3,7 +3,7 @@ ffi.cdef [[
         int Type;
         int Variant;
         int SpawnerType;
-        int SpawnerVariant;
+        unsigned int SpawnerVariant;
         private struct Vector PositionValue;
         private struct Vector Velocity; // No idea why John Nicalis didn't expose this
         private int Flags;

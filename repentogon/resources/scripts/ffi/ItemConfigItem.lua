@@ -7,7 +7,7 @@ struct ItemConfigItem
     private struct StdString DescriptionString;
     private struct StdString GfxFileNameString;
     int AchievementID;
-    int CacheFlags;
+    unsigned int CacheFlags;
     int AddMaxHearts;
     int AddHearts;
     int AddSoulHearts;
@@ -39,7 +39,7 @@ typedef struct ItemConfigItem* ItemConfigItemPtr;
 void L_ItemConfigItem_SetName(struct ItemConfigItem*, const char*);
 void L_ItemConfigItem_SetDesc(struct ItemConfigItem*, const char*);
 void L_ItemConfigItem_SetGfxFileName(struct ItemConfigItem*, const char*);
-bool L_ItemConfigItem_IsAvailable(struct ItemConfigItem*);
+bool L_ItemConfigItem_IsAvailable(struct ItemConfigItem*, bool);
 int L_ItemConfigItem_GetCustomTags(struct ItemConfigItem*, const char**);   
 bool L_ItemConfigItem_HasCustomTag(struct ItemConfigItem*, const char*);
 void L_ItemConfigItem_AddCustomTag(struct ItemConfigItem*, const char*);
@@ -134,8 +134,8 @@ ItemConfigItemMT = {
         end
         return false
     end,
-    IsAvailable = function(self)
-        local result = repentogon.L_ItemConfigItem_IsAvailable(self) return result
+    IsAvailable = function(self, flag)
+        local result = repentogon.L_ItemConfigItem_IsAvailable(self, not not flag) return result
     end,
     IsCollectible = function(self)
         local type = self.Type

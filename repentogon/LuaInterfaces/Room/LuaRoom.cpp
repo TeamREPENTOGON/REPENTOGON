@@ -46,7 +46,7 @@ extern "C" {
 	}
 
 	__declspec(dllexport) void L_Room_FindFreePickupSpawnPosition(Room* room, Vector* pos, float initialStep, bool avoidActiveEntities, bool allowPits, Vector* out) {
-		room->FindFreePickupSpawnPosition(out, pos, initialStep, avoidActiveEntities, allowPits, false);
+		room->FindFreePickupSpawnPosition(out, pos, initialStep, avoidActiveEntities, allowPits, true);
 	}
 
 	__declspec(dllexport) void L_Room_FindFreeTilePosition(Room* room, Vector* pos, float distanceThreshold, Vector* out) {

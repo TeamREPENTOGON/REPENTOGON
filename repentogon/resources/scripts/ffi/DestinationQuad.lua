@@ -42,16 +42,16 @@ DestinationQuadMT = {
         local result = DestinationQuadT(self) return result
     end,
     GetTopLeft = function(self) 
-        local result = ffi.getprivate(self, "TopLeft") return result
+        return ffichecks.copyvector(ffi.getprivate(self, "TopLeft"))
     end,
     GetTopRight = function(self) 
-        local result = ffi.getprivate(self, "TopRight") return result
+        return ffichecks.copyvector(ffi.getprivate(self, "TopRight"))
     end,
     GetBottomLeft = function(self) 
-        local result = ffi.getprivate(self, "BottomLeft") return result
+        return ffichecks.copyvector(ffi.getprivate(self, "BottomLeft"))
     end,
     GetBottomRight = function(self) 
-        local result = ffi.getprivate(self, "BottomRight") return result
+        return ffichecks.copyvector(ffi.getprivate(self, "BottomRight"))
     end,
     SetTopLeft = function(self, v) 
         ffichecks.checkcdata(1, v, "Vector")

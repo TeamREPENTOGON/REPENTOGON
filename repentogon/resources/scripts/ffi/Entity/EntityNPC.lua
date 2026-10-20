@@ -3,7 +3,7 @@ local Entity = require("ffi.Entity.Entity")
 local NPC_FIELDS = [[
     int StateFrame : 0x410;
     private struct PathFinder PathfinderValue : 0x414;
-    int State : 0xb64;
+    unsigned int State : 0xb64;
     int ProjectileCooldown : 0xba0;
     int ProjectileDelay : 0xba4;
     private struct Vector V1Value : 0xbb0;
