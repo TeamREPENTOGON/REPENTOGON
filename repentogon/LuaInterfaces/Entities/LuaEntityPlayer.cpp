@@ -498,8 +498,8 @@ MOD_EXPORT void L_EntityPlayer_DropPocketItem(Entity_Player* player, int slot, V
 	player->DropPocketItem(slot, position);
 }
 
-MOD_EXPORT void L_EntityPlayer_DropTrinket(Entity_Player* player, Vector* position, bool replaceTick) {
-	player->DropTrinket(position, replaceTick);
+MOD_EXPORT Entity_Pickup* L_EntityPlayer_DropTrinket(Entity_Player* player, Vector* position, bool replaceTick) {
+	return player->DropTrinket(position, replaceTick);
 }
 
 MOD_EXPORT Entity_Bomb* L_EntityPlayer_FireBomb(Entity_Player* player, Vector* position, Vector* velocity, Entity* source) {

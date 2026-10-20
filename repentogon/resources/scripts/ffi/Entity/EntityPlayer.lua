@@ -293,7 +293,7 @@ ffi.cdef [[
     struct EntityFamiliar* L_EntityPlayer_AddWisp(struct EntityPlayer*, int, struct Vector*, bool, bool);
     void L_EntityPlayer_DoZitEffect(struct EntityPlayer*, struct Vector*);
     void L_EntityPlayer_DropPocketItem(struct EntityPlayer*, int, struct Vector*);
-    void L_EntityPlayer_DropTrinket(struct EntityPlayer*, struct Vector*, bool);
+    struct EntityPickup* L_EntityPlayer_DropTrinket(struct EntityPlayer*, struct Vector*, bool);
     struct EntityBomb* L_EntityPlayer_FireBomb(struct EntityPlayer*, struct Vector*, struct Vector*, void*);
     struct EntityKnife* L_EntityPlayer_FireKnife(struct EntityPlayer*, void*, float, bool, int, int);
     struct EntityLaser* L_EntityPlayer_FireDelayedBrimstone(struct EntityPlayer*, float, void*);
@@ -1331,7 +1331,7 @@ local methods = {
     DropTrinket = function(self, position, replaceTick)
         ffichecks.checkcdata(1, position, "Vector")
         replaceTick = ffichecks.optboolean(replaceTick, false)
-        repentogon.L_EntityPlayer_DropTrinket(self, position, replaceTick)
+        local result = repentogon.L_EntityPlayer_DropTrinket(self, position, replaceTick) return result
     end,
     FireBomb = function(self, position, velocity, source)
         ffichecks.checkcdata(1, position, "Vector")
