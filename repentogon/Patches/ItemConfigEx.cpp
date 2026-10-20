@@ -269,7 +269,9 @@ bool HasCustomChanceRevive(Entity_Player* player) {
 	}
 	for (const int id : s_NullCustomTagsLookup[CustomTags::REVIVE_EFFECT]) {
 		if (NullItemEx* ex = GetNullItemEx(id); ex && ex->ShouldCountReviveEffect(false) && ex->IsChanceRevive()) {
-			return true;
+			if (effects.HasNullEffect(id)) {
+				return true;
+			}
 		}
 	}
 	return false;
