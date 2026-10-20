@@ -19,7 +19,7 @@ typedef struct TemporaryEffects* TemporaryEffectsPtr;
 void L_TemporaryEffects_AddCollectibleEffect(struct TemporaryEffects*, int, bool, int);
 void L_TemporaryEffects_AddNullEffect(struct TemporaryEffects*, int, bool, int);
 void L_TemporaryEffects_AddTrinketEffect(struct TemporaryEffects*, int, bool, int);
-void L_TemporaryEffects_ClearEffects(struct TemporaryEffects*);
+void L_TemporaryEffects_ClearEffects(struct TemporaryEffects*, bool);
 const struct TemporaryEffect* L_TemporaryEffects_GetCollectibleEffect(struct TemporaryEffects*, int);
 int  L_TemporaryEffects_GetCollectibleEffectNum(struct TemporaryEffects*, int);
 const struct TemporaryEffect* L_TemporaryEffects_GetNullEffect(struct TemporaryEffects*, int);
@@ -94,8 +94,8 @@ TemporaryEffectsMT = {
 
         repentogon.L_TemporaryEffects_AddTrinketEffect(self, TrinketType, AddCostume, Count)
     end,
-    ClearEffects = function(self)
-        repentogon.L_TemporaryEffects_ClearEffects(self)
+    ClearEffects = function(self, force)
+        repentogon.L_TemporaryEffects_ClearEffects(self, not not force)
     end,
     GetCollectibleEffect = function(self, CollectibleType)
         CollectibleType = ffichecks.checkinteger(1, CollectibleType)

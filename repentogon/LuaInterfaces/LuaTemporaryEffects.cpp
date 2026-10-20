@@ -13,8 +13,8 @@ extern "C" {
         effects->AddTrinketEffect(trinketType, addCostume, count);
     }
 
-    __declspec(dllexport) void L_TemporaryEffects_ClearEffects(TemporaryEffects* effects) {
-        effects->ClearEffects(false);
+    __declspec(dllexport) void L_TemporaryEffects_ClearEffects(TemporaryEffects* effects, bool force) {
+        effects->ClearEffects(force);
     }
 
     __declspec(dllexport) const TemporaryEffect* L_TemporaryEffects_GetCollectibleEffect(TemporaryEffects* effects, int collectibleType) {
