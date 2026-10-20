@@ -854,10 +854,11 @@ MOD_EXPORT Font* L_Isaac_GetTextFont() {
 	return &g_Manager->_font5_terminus8;
 }
 
-MOD_EXPORT void L_Isaac_AddPillEffectToPool(int effect) {
+MOD_EXPORT int L_Isaac_AddPillEffectToPool(int effect) {
 	if (g_Game) {
-		g_Game->_itemPool.ForceAddPillEffect(effect);
+		return g_Game->_itemPool.ForceAddPillEffect(effect);
 	}
+	return 0;
 }
 
 MOD_EXPORT int L_Isaac_GetEntityTypeByName(const char* name) {

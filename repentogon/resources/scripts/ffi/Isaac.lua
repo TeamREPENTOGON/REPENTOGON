@@ -91,7 +91,7 @@ ffi.cdef [[
     unsigned int L_Isaac_GetFrameCount();
     unsigned int L_Isaac_GetChallenge();
     struct Font* L_Isaac_GetTextFont();
-    void L_Isaac_AddPillEffectToPool(int);
+    int L_Isaac_AddPillEffectToPool(int);
     int L_Isaac_GetEntityTypeByName(const char*);
     int L_Isaac_GetEntityVariantByName(const char*);
     int L_Isaac_GetItemIdByName(const char*);
@@ -226,7 +226,7 @@ end
 local isaac = {
     AddPillEffectToPool = function(effect)
         effect = ffichecks.checkinteger(1, effect)
-        repentogon.L_Isaac_AddPillEffectToPool(effect)
+        local result = repentogon.L_Isaac_AddPillEffectToPool(effect) return result
     end,
     AllMarksFilled = function(playerType)
         if not repentogon.L_Isaac_CompletionMarksInitialized() then
