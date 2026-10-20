@@ -236,6 +236,9 @@ __thiscall void Game::AddDevilRoomDeal();
 "558beca1????????568bf18b90":
 __thiscall void Game::SetChallenge(int challenge);
 
+"558bec5657e8????????8b75":
+__thiscall Entity_NPC* Game::SpawnEntityDesc(const EntityDesc& desc, const Vector& position, Entity* spawner);
+
 struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, GlowingHourglassState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge, Vector, EntityFactory, StageTransition, Minimap, ColorMod, HUD, PauseScreen, BackwardsStageDesc, RNG) { {{
 	Game()
 	{

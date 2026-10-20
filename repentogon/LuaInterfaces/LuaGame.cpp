@@ -188,6 +188,10 @@ MOD_EXPORT void L_Game_UpdateStrangeAttractor(Game* game, Vector* pos, float for
 	game->UpdateStrangeAttractor(pos, nullptr, 0, force, radius);
 }
 
+MOD_EXPORT Entity_NPC* L_Game_SpawnEntityDesc(Game* game, EntityDesc* desc, Vector* pos, Entity* spawner) {
+	return game->SpawnEntityDesc(*desc, *pos, spawner);
+}
+
 MOD_EXPORT Entity* L_Game_SpawnBombCrater(Game* game, Vector* pos, float radius) {
 	return game->SpawnBombCrater(pos, radius);
 }

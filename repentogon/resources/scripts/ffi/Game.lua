@@ -75,6 +75,7 @@ ffi.cdef [[
     void L_Game_SetChallenge(struct Game*, int);
     void L_Game_ShakeScreen(struct Game*, int);
     void* L_Game_Spawn(struct Game*, int, int, struct Vector*, struct Vector*, void*, int, int);
+    void* L_Game_SpawnEntityDesc(struct Game*, struct EntityDesc*, struct Vector*, void*);
     void L_Game_BombDamage(struct Game*, struct Vector*, float, float, bool, void*, struct BitSet128*, unsigned long long, bool);
     void L_Game_BombExplosionEffects(struct Game*, struct Vector*, float, struct BitSet128*, struct Color*, void*, float, bool, unsigned long long, bool);
     void L_Game_BombTearflagEffects(struct Game*, struct Vector*, float, struct BitSet128*, void*, float);
@@ -134,6 +135,7 @@ ffi.reentrant(repentogon.L_Game_ShowFortune)
 ffi.reentrant(repentogon.L_Game_ShowHallucination)
 ffi.reentrant(repentogon.L_Game_ShowRule)
 ffi.reentrant(repentogon.L_Game_Spawn)
+ffi.reentrant(repentogon.L_Game_SpawnEntityDesc)
 ffi.reentrant(repentogon.L_Game_SpawnBombCrater)
 ffi.reentrant(repentogon.L_Game_SpawnParticles)
 ffi.reentrant(repentogon.L_Game_StartRoomTransition)
@@ -599,6 +601,11 @@ GameMT = {
         subtype = ffichecks.checkinteger(6, subtype)
         seed = ffichecks.checkinteger(7, seed)
         return ffichecks.pointertoentity(repentogon.L_Game_Spawn(self, type, variant, position, velocity, EntityToPointer(spawner), subtype, seed))
+    end,
+    SpawnEntityDesc = function(self, desc, position, spawner)
+        ffichecks.checkcdata(1, desc, "EntityDesc")
+        ffichecks.checkcdata(2, position, "Vector")
+        return ffichecks.pointertoentity(repentogon.L_Game_SpawnEntityDesc(self, desc, position, EntityToPointer(spawner)))
     end,
     SpawnBombCrater = function(self, position, radius)
         ffichecks.checkcdata(1, position, "Vector")
