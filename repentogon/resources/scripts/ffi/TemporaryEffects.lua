@@ -20,11 +20,11 @@ void L_TemporaryEffects_AddCollectibleEffect(struct TemporaryEffects*, int, bool
 void L_TemporaryEffects_AddNullEffect(struct TemporaryEffects*, int, bool, int);
 void L_TemporaryEffects_AddTrinketEffect(struct TemporaryEffects*, int, bool, int);
 void L_TemporaryEffects_ClearEffects(struct TemporaryEffects*, bool);
-const struct TemporaryEffect* L_TemporaryEffects_GetCollectibleEffect(struct TemporaryEffects*, int);
+struct TemporaryEffect* L_TemporaryEffects_GetCollectibleEffect(struct TemporaryEffects*, int);
 int  L_TemporaryEffects_GetCollectibleEffectNum(struct TemporaryEffects*, int);
-const struct TemporaryEffect* L_TemporaryEffects_GetNullEffect(struct TemporaryEffects*, int);
+struct TemporaryEffect* L_TemporaryEffects_GetNullEffect(struct TemporaryEffects*, int);
 int   L_TemporaryEffects_GetNullEffectNum(struct TemporaryEffects*, int);
-const struct TemporaryEffect* L_TemporaryEffects_GetTrinketEffect(struct TemporaryEffects*, int);
+struct TemporaryEffect* L_TemporaryEffects_GetTrinketEffect(struct TemporaryEffects*, int);
 int   L_TemporaryEffects_GetTrinketEffectNum(struct TemporaryEffects*, int);
 bool  L_TemporaryEffects_HasCollectibleEffect(struct TemporaryEffects*, int);
 bool  L_TemporaryEffects_HasNullEffect(struct TemporaryEffects*, int);
@@ -62,7 +62,7 @@ function EffectListMT:Get(idx)
     idx = ffichecks.checknumber(2, idx)
     local n = el_size(self)
     if idx < 0 or idx >= n then return nil end
-    local result = ffi.cast("ConstTemporaryEffect*", ffi.getprivate(self, "_begin") + idx) return result
+    local result = ffi.getprivate(self, "_begin") + idx return result
 end
 
 ffi.metatype("struct EffectList", EffectListMT)

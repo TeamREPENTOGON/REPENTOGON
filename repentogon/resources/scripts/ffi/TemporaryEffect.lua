@@ -7,7 +7,6 @@ struct TemporaryEffect {
 };
 
 typedef struct TemporaryEffect* TemporaryEffectPtr;
-typedef struct const TemporaryEffect ConstTemporaryEffect;
 ]]
 
 local TemporaryEffectMT

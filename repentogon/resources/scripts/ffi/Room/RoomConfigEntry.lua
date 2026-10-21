@@ -1,9 +1,9 @@
 ffi.cdef [[
     struct RoomConfigEntry {
-        const uint32_t Type : 0x0;
-        const uint16_t Variant : 0x4;
-        const uint16_t Subtype : 0x6;
-        const float Weight : 0x8;
+        uint32_t Type : 0x0;
+        uint16_t Variant : 0x4;
+        uint16_t Subtype : 0x6;
+        float Weight : 0x8;
     } : 0xc;
 
     struct RoomConfigEntries {
