@@ -783,7 +783,7 @@ Methods {
     TakeDamage = function(self, damage, flags, source, damageCountdown)
         damage = ffichecks.checknumber(1, damage)
         flags = ffichecks.checkinteger64(2, flags)
-        ffichecks.checkcdata(3, source, "EntityRef", true)
+        ffichecks.checkcdata(3, source, "EntityRef")
         damageCountdown = ffichecks.checkinteger(4, damageCountdown)
         local result = repentogon.L_Entity_TakeDamage(self, damage, flags, source, damageCountdown) return result
     end,

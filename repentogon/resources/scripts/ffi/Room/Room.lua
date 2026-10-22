@@ -246,7 +246,7 @@ RoomMT = {
         index = ffichecks.checkinteger(1, index)
         damage = ffichecks.checkboolean(2, damage)
         immediate = ffichecks.checkboolean(3, immediate)
-        ffichecks.checkcdata(4, source, "EntityRef", true)
+        ffichecks.checkcdata(4, source, "EntityRef")
 
         local result = repentogon.L_Room_DestroyGridWithSource(self, index, damage and 1 or 0, immediate, source) return result
     end,
