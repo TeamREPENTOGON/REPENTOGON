@@ -561,9 +561,9 @@ namespace lua {
 		}
 	}
 
-	bool luaL_optboolean(lua_State* L, int idx, bool default) {
+	bool luaL_optboolean(lua_State* L, int idx, bool default_) {
 		if (lua_gettop(L) < idx) {
-			return default;
+			return default_;
 		}
 		else {
 			return lua_toboolean(L, idx);

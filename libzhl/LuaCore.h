@@ -553,7 +553,7 @@ namespace lua {
         BOOL_CHECK_MODE_STRICT
     };
 
-    LIBZHL_API bool luaL_optboolean(lua_State* L, int idx, bool default);
+    LIBZHL_API bool luaL_optboolean(lua_State* L, int idx, bool default_);
     LIBZHL_API bool luaL_checkboolean(lua_State* L, int idx, BoolCheckModes mode = BOOL_CHECK_MODE_NOT_NIL);
 
     template<typename T, typename... Args>
