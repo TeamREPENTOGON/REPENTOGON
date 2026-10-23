@@ -152,6 +152,16 @@ LUA_FUNCTION(Lua_TearSetInitSound) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_SetTearIndex) {
+	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	int tearIndex = luaL_checkinteger(L, 2);
+	if (tearIndex >= 0) {
+		tear->_tearIdx = tearIndex;
+	}
+
+	return 0;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -179,4 +189,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_TEAR, functions);
+
+	lua::RegisterVariableSetter(_state, lua::Metatables::ENTITY_TEAR, "TearIndex", Lua_SetTearIndex);
 }
