@@ -4,7 +4,6 @@
 #include "CodeEmitter.h"
 #include "ParserCore.h"
 
-#include <codecvt>
 #include <fstream>
 #include <iostream>
 
@@ -37,12 +36,15 @@ std::string CodeEmitter::TypeGenerator::operator()(T const& t) {
 }
 
 CodeEmitter::CodeEmitter(TypeMap* types, AsmDefMap* asmDefs, std::string const& outputHeader,
+    std::string const& outputHeaderBase,
     std::string const& outputImpl, std::string const& outputHooks,
     std::optional<std::string> outputAsmImpl, std::string const& asmLibFile,
-    std::string const& genLibCmd, std::string const& genLibTc) :
+    std::string const& genLibCmd, std::string const& genLibTc,
+    std::string const& stubObj) :
     _types(types), _asmDefs(asmDefs), _emitAssembly(outputAsmImpl),
-    _outputHeaderFilename(outputHeader), _asmLibFile(asmLibFile),
-    _genLibCmd(genLibCmd), _genLibTc(genLibTc) {
+    _outputHeaderFilename(outputHeader), _outputHeaderBasename(outputHeaderBase),
+    _asmLibFile(asmLibFile),
+    _genLibCmd(genLibCmd), _genLibTc(genLibTc), _stubObj(stubObj) {
     _decls.open(outputHeader);
     _impl.open(outputImpl);
     _json.open(outputHooks);
@@ -1559,6 +1561,16 @@ void CodeEmitter::EmitStub(FILE* f, SigOrFunc const& fn) {
 }
 
 void CodeEmitter::ComputeMangledNames() {
+    GenerateStubLibrary();
+    DWORD clExitCode = CompileStubLibrary();
+    if (clExitCode != 0) {
+	fprintf(stderr, "[FATAL] Unable to compile the base ZHLgen library: %lu\n", clExitCode);
+	exit(-1);
+    }
+    ExtractMangledNames();
+}
+
+void CodeEmitter::GenerateStubLibrary() {
     FILE* f = fopen(_asmLibFile.c_str(), "w");
     if (!f) {
 	fprintf(stderr, "[FATAL] Unable to open base file to create dynamic "
@@ -1566,7 +1578,7 @@ void CodeEmitter::ComputeMangledNames() {
 	exit(-1);
     }
 
-    fprintf(f, "#include \"%s\"\n", _outputHeaderFilename.c_str());
+    fprintf(f, "#include \"%s\"\n", _outputHeaderBasename.c_str());
 
     for (auto const& [_, type]: *_types) {
 	if (type->IsStruct() && !type->_pending) {
@@ -1599,22 +1611,50 @@ void CodeEmitter::ComputeMangledNames() {
     }
 
     fclose(f);
+}
 
+static void SetupStartupInfo(STARTUPINFOW* startupInfo) {
+    memset(startupInfo, 0, sizeof(*startupInfo));
+    startupInfo->cb = sizeof(*startupInfo);
+    startupInfo->hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+    startupInfo->hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+    startupInfo->hStdError = GetStdHandle(STD_ERROR_HANDLE);
+}
+
+static std::wstring Quote(std::wstring const& src) {
+  return L"\"" + src + L"\"";
+}
+
+static std::wstring NarrowUTF8ToWide(std::string const& s) {
+    if (s.empty())
+      return std::wstring();
+
+    int len = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
+	s.c_str(), -1, NULL, 0);
+    DWORD lastError = GetLastError();
+    if (len == 0 && lastError != 0) {
+	fprintf(stderr, "[ERROR] Unable to convert %s to a wide char (%lu)\n",
+	    s.c_str(), lastError);
+	throw std::runtime_error("Unable to convert");
+    }
+
+    wchar_t* wide = (wchar_t*)calloc(len + 1, sizeof(wchar_t));
+    MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, s.c_str(), -1,
+	wide, len);
+    std::wstring w(wide);
+    return w;
+}
+
+DWORD CodeEmitter::CompileStubLibrary() {
     STARTUPINFOW startupInfo;
+    SetupStartupInfo(&startupInfo);
     PROCESS_INFORMATION processInfo;
-    memset(&startupInfo, 0, sizeof(startupInfo));
-    startupInfo.cb = sizeof(startupInfo);
-    startupInfo.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
-    startupInfo.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-    startupInfo.hStdError = GetStdHandle(STD_ERROR_HANDLE);
 
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
-    std::wstring tc = cvt.from_bytes(_genLibTc);
+    std::wstring tc = NarrowUTF8ToWide(_genLibTc);
     std::wstring cl = tc + L"\\cl.exe";
-    std::wstring dumpbin = tc + L"\\dumbin.exe";
 
-    std::wstring cmd = cvt.from_bytes(_genLibCmd);
-    cmd = tc + L" " + cmd;
+    std::wstring cmd = NarrowUTF8ToWide(_genLibCmd);
+    cmd = Quote(cl) + L" " + cmd;
     wchar_t cmdStr[32767];
     wcscpy(cmdStr, cmd.c_str());
     wchar_t* cmdPtr = cmdStr;
@@ -1645,8 +1685,82 @@ void CodeEmitter::ComputeMangledNames() {
     CloseHandle(processInfo.hProcess);
     CloseHandle(processInfo.hThread);
 
-    if (clExitCode != 0) {
-	fprintf(stderr, "[FATAL] Unable to compile the base ZHLgen library: %lu\n", clExitCode);
+    return clExitCode;
+}
+
+void CodeEmitter::ExtractMangledNames() {
+    STARTUPINFOW startupInfo;
+    PROCESS_INFORMATION processInfo;
+    memset(&processInfo, 0, sizeof(processInfo));
+    SetupStartupInfo(&startupInfo);
+
+    SECURITY_ATTRIBUTES sa;
+    sa.nLength = sizeof(sa);
+    sa.lpSecurityDescriptor = NULL;
+    sa.bInheritHandle = true;
+
+    HANDLE readPipe, writePipe;
+    if (CreatePipe(&readPipe, &writePipe, &sa, 0) == 0) {
+	fprintf(stderr, "[FATAL] Error while creating pipe between parser and dumpbin: %lu\n",
+	    GetLastError());
 	exit(-1);
     }
+    SetHandleInformation(readPipe, HANDLE_FLAG_INHERIT, 0);
+
+    startupInfo.dwFlags |= STARTF_USESTDHANDLES;
+    startupInfo.hStdOutput = writePipe;
+    startupInfo.hStdError = writePipe;
+
+    std::wstring tc = NarrowUTF8ToWide(_genLibTc);
+    std::wstring dumpbin = tc + L"\\dumpbin.exe";
+    std::wstring cmd = Quote(dumpbin) + L" /SYMBOLS " + Quote(NarrowUTF8ToWide(_stubObj));
+
+    wchar_t cmdStr[32767];
+    wcscpy(cmdStr, cmd.c_str());
+    printf("Running dumpbin as %ls with params %ls\n", dumpbin.c_str(), cmdStr);
+    BOOL ok = CreateProcessW(dumpbin.c_str(), cmdStr, NULL, NULL, TRUE,
+			     0, NULL, NULL, &startupInfo, &processInfo);
+    CloseHandle(writePipe);
+    if (!ok) {
+	CloseHandle(readPipe);
+	fprintf(stderr, "[FATAL] Unable to invoke dumpbin for the base ZHLgen library: %lu\n",
+	    GetLastError());
+	exit(-1);
+    }
+
+    std::string out;
+    char buf[4096];
+    DWORD n = 0;
+
+    while (ReadFile(readPipe, buf, sizeof(buf), &n, NULL) && n > 0) {
+	out.append(buf, n);
+    }
+
+    WaitForSingleObject(processInfo.hProcess, INFINITE);
+    DWORD dumpbinExitCode = -1;
+    GetExitCodeProcess(processInfo.hProcess, &dumpbinExitCode);
+    CloseHandle(processInfo.hProcess);
+    CloseHandle(processInfo.hThread);
+    CloseHandle(readPipe);
+
+    if (dumpbinExitCode != 0) {
+	fprintf(stderr, "[FATAL] Error while invoking dumpbin: %lu\n", dumpbinExitCode);
+	exit(-1);
+    }
+
+    _ExtractMangledNames(out);
+}
+
+void CodeEmitter::_ExtractMangledNames(std::string const& s) {
+    printf("Raw mangled lines: %s\n", s.c_str());
+    char* ptr = (char*)malloc(s.size() + 1);
+    char* orig = ptr;
+    strcpy(ptr, s.c_str());
+    char* current = ptr;
+    while (current = strpbrk(ptr, "\n")) {
+	*current = '\0';
+	printf("Read mangled line %s\n", ptr);
+	ptr = current + 1;
+    }
+    free(orig);
 }

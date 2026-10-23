@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Windows.h>
+#undef ERROR
+
 #include <fstream>
 #include <filesystem>
 #include <map>
@@ -13,11 +16,16 @@ namespace fs = std::filesystem;
 
 class CodeEmitter {
 public:
+	/* outputHeader is the full path to the header to be created.
+	 * outputHeaderBase is the short path to include in the #include at
+	 * the top of the implementation library.
+	 */
 	CodeEmitter(TypeMap* types, AsmDefMap* asmDefs, std::string const& outputHeader,
+		std::string const& outputHeaderBase,
 		std::string const& outputImpl, std::string const& outputHooks,
 		std::optional<std::string> outputAsmImpl,
 		std::string const& asmLibFile, std::string const& genLibCmd,
-		std::string const& genLibTc);
+		std::string const& genLibTc, std::string const& stubObj);
 
 	bool ProcessZHLFiles(fs::path const& base);
 	bool ProcessFile(fs::path const& path);
@@ -177,6 +185,7 @@ private:
 	uint32_t _emitDepth = 0;
 	bool _emitAssembly = false;
 	std::string _outputHeaderFilename;
+	std::string _outputHeaderBasename;
 
 	struct FunctionJsonData {
 	    bool canHook;
@@ -187,9 +196,14 @@ private:
 	std::string _asmLibFile;
 	std::string _genLibCmd;
 	std::string _genLibTc;
+	std::string _stubObj;
 	void EmitJson(FunctionJsonData const& data);
 	Function const* FunctionFromSigOrFunc(SigOrFunc const& fn);
 	void ComputeMangledNames();
+	void GenerateStubLibrary();
+	DWORD CompileStubLibrary();
+	void ExtractMangledNames();
+	void _ExtractMangledNames(std::string const& raw);
 	void EmitStub(FILE* f, SigOrFunc const& fn);
 };
 

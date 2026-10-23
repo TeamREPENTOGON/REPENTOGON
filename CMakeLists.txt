@@ -9,24 +9,34 @@ endfunction ()
 
 if (CMAKE_SYSTEM_NAME MATCHES Windows)
   if (CMAKE_HOST_SYSTEM_NAME MATCHES Linux)
+    set (CLANG_CL_XCC 1)
     message (STATUS "Cross-compiling from Linux to Windows (assuming clang-cl)")
     set (ZHLPARSER_RUNNER "wine")
     set (ZHLPARSER_EXEC "zhlparser.exe")
     set (ZHLGEN_ASM_FILE "${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.asm")
     set (ZHLGEN_ASM "--output-asm=${ZHLGEN_ASM_FILE}")
-    set (ZHLGEN_LIB_FILE "${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance_lib.cpp")
+    set (ZHLGEN_LIB_FILE "${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance_stub.cpp")
     set (ZHLGEN_LIB_FLAG "--output-gen-lib=${ZHLGEN_LIB_FILE}")
+    set (ZHLGEN_STUB_LIBRARY_OBJ "${CMAKE_CURRENT_BINARY_DIR}/IsaacRepentance_stub.obj")
     set (ZHLGEN_NEED_ASM 1)
     linux_to_wine_path("${CMAKE_SOURCE_DIR}/libs/rapidxml" RAPIDXML_WINE_PATH)
     linux_to_wine_path("${CMAKE_SOURCE_DIR}/libs/lua" LUA_WINE_PATH)
     linux_to_wine_path("${ZHLGEN_LIB_FILE}" ZHLGEN_LIB_FILE_WINE_PATH)
-    set (ZHLGEN_LIB_CMD "--gen-lib-cmd=\"/LD /std:c++17 /I${RAPIDXML_WINE_PATH} /I${LUA_WINE_PATH} ${ZHLGEN_LIB_FILE_WINE_PATH}\"")
+    linux_to_wine_path("${CMAKE_SOURCE_DIR}/include" ZHLGEN_INCLUDE_DIR_WINE_PATH)
+    linux_to_wine_path("${ZHLGEN_STUB_LIBRARY_OBJ}" ZHLGEN_STUB_LIBRARY_OBJ_WINE_PATH)
+    # Add libzhl to the include path as it it where we generate the header of
+    # the implementation lib. This avoids the need to convert the path from
+    # Linux to Wine.
+    set (ZHLGEN_LIB_CMD "--gen-lib-cmd=\"/LD /I${ZHLGEN_INCLUDE_DIR_WINE_PATH} /std:c++17 /I${RAPIDXML_WINE_PATH} /I${LUA_WINE_PATH} /Fo:${ZHLGEN_STUB_LIBRARY_OBJ_WINE_PATH} ${ZHLGEN_LIB_FILE_WINE_PATH}\"")
     if (NOT ZHLGEN_TC)
       message (FATAL_ERROR "ZHLGEN_TC is unset, compiling the base library for IsaacRepentance.asm is impossible")
     endif ()
-    set (ZHLGEN_LIB_TC "--gen-lib-tc=${ZHLGEN_TC}")
+    linux_to_wine_path("${ZHLGEN_TC}" ZHLGEN_TC_WINE)
+    set (ZHLGEN_LIB_TC "--gen-lib-tc=${ZHLGEN_TC_WINE}")
+    set (ZHLGEN_STUB_FLAG "--stub-obj=${ZHLGEN_STUB_LIBRARY_OBJ_WINE_PATH}")
   else ()
     message (STATUS "Building natively on Windows")
+    set (CLANG_CL_XCC 0)
     set (ZHLPARSER_RUNNER "")
     set (ZHLPARSER_EXEC "zhlparser")
     set (ZHLGEN_ASM "")
@@ -35,6 +45,7 @@ if (CMAKE_SYSTEM_NAME MATCHES Windows)
     set (ZHLGEN_LIB_FLAG "")
     set (ZHLGEN_LIB_CMD "")
     set (ZHLGEN_LIB_TC "")
+    set (ZHLGEN_STUB_FLAG "")
   endif ()
 else ()
   message (FATAL_ERROR "Unknown system configuration, CMAKE_SYSTEM_NAME = ${CMAKE_SYSTEM_NAME}, CMAKE_HOST_SYSTEM_NAME = ${CMAKE_HOST_SYSTEM_NAME}")
@@ -113,12 +124,14 @@ add_custom_command(
   COMMAND
   ${ZHLPARSER_RUNNER} "$<TARGET_FILE_DIR:zhlparser>/${ZHLPARSER_EXEC}"
 	    --output-header="${CMAKE_SOURCE_DIR}/include/IsaacRepentance.h"
+	    --output-header-base="IsaacRepentance.h"
 	    --output-impl="${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp"
             --output-hooks="${CMAKE_SOURCE_DIR}/libzhl/hooks.json"
 	    "${ZHLGEN_ASM}"
 	    "${ZHLGEN_LIB_FLAG}"
 	    "${ZHLGEN_LIB_CMD}"
 	    "${ZHLGEN_LIB_TC}"
+	    "${ZHLGEN_STUB_FLAG}"
             --folder="${CMAKE_SOURCE_DIR}/libzhl/functions"
             --file="${CMAKE_SOURCE_DIR}/libzhl/functions/ExtraTypes"
             WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/libzhlgen" DEPENDS ${ZHL_FILES} zhlparser
@@ -137,6 +150,12 @@ add_library(libzhl SHARED ${ZHL_SRC})
 target_compile_options(libzhl PUBLIC "/MD" "/wd4251" "/wd4996")
 target_compile_options(libzhl PRIVATE "/EHs")
 target_compile_definitions(libzhl PRIVATE CMAKE_ZHL_VERSION="${CMAKE_ZHL_VERSION}")
+
+if (CLANG_CL_XCC EQUAL 1)
+  message(STATUS "Forcing C1XX_FORCEINCLUDE for ehdata_forceinclude.h alternate defines")
+  # target_compile_definitions(libzhl PRIVATE BUILDING_C1XX_FORCEINCLUDE)
+endif ()
+
 add_custom_command(TARGET libzhl POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/libzhl/hooks.json" "$<TARGET_FILE_DIR:zhlparser>")
 # wd4251 ignore warning C4251: 'type' : class 'type1' needs to have dll-interface to be used by clients of class 'type2'
 # wd4996 ignores warning C4996: using a depricated function

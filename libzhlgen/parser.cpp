@@ -99,6 +99,8 @@ static const std::string OutputAsm = "output-asm";
 static const std::string OutputGenLib = "output-gen-lib";
 static const std::string GenLibCmd = "gen-lib-cmd";
 static const std::string GenLibTc = "gen-lib-tc";
+static const std::string OutputHeaderBase = "output-header-base";
+static const std::string StubObj = "stub-obj";
 
 int main(int argc, char** argv) {
     Args args;
@@ -107,29 +109,33 @@ int main(int argc, char** argv) {
     ParseArguments(argc, argv, args, freeArgs);
 
     std::string outputHeader = "ZHLInterface.h";
+    std::string outputHeaderBase = "ZHLInterface.h";
     std::string outputImpl = "ZHLInterface.cpp";
     std::string outputAsm = "ZHLInterface.asm";
     std::string outputHooks = "ZHLHooks.json";
     std::string outputGenLib = "ZHLGenLib.cpp";
     std::string genLibCmd = "/LD /std:c++17 ZHLGenLib.cpp";
     std::string genLibTc;
+    std::string stubObj;
 
     ReadOneArgument(args, OutputHeader, outputHeader);
+    ReadOneArgument(args, OutputHeaderBase, outputHeaderBase);
     ReadOneArgument(args, OutputImpl, outputImpl);
     ReadOneArgument(args, OutputHooks, outputHooks);
     ReadOneArgument(args, OutputAsm, outputAsm);
     ReadOneArgument(args, OutputGenLib, outputGenLib);
     ReadOneArgument(args, GenLibCmd, genLibCmd);
     ReadOneArgument(args, GenLibTc, genLibTc);
+    ReadOneArgument(args, StubObj, stubObj);
 
     bool shouldOutputAsm = args.find(OutputAsm) != args.end();
 
     try {
         TypeMap types;
         AsmDefMap asmDefs;
-        CodeEmitter emitter(&types, &asmDefs, outputHeader, outputImpl,
+        CodeEmitter emitter(&types, &asmDefs, outputHeader, outputHeaderBase, outputImpl,
 	    outputHooks, shouldOutputAsm ? std::make_optional(outputAsm) : std::nullopt,
-	    outputGenLib, genLibCmd, genLibTc);
+	    outputGenLib, genLibCmd, genLibTc, stubObj);
         bool ok = true;
         for (std::string const& path : args[Folder]) {
             if (!emitter.ProcessZHLFiles(path)) {
