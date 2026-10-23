@@ -179,5 +179,5 @@ constexpr bool IsInPackV = IsInPack<T, Types...>::value;
 #endif
 
 #if LIBZHL_COMPILER == LIBZHL_CLANG_CL
-#define _ThrowInfo void*
+  struct _ThrowInfo;
 #endif
