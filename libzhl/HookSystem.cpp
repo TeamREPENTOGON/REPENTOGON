@@ -164,7 +164,7 @@ Definition *Definition::Find(const char *name)
 		return NULL;
 }
 
-void Definition::Add(const char *name, char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN],
+void Definition::Add(const char *name, const char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN],
 	Definition *def)
 {
 	Defs().push_back(def);
@@ -232,7 +232,7 @@ bool VariableDefinition::IsFunction() const {
 // FunctionDefinition
 
 FunctionDefinition::FunctionDefinition(const char *name,
-	char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN], const type_info &type,
+	const char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN], const type_info &type,
 	const char *sig, const HookSystem::ArgData *argdata, int nArgs,
 	unsigned int flags, void **outfunc, bool canHook) :
 	Definition(sig),
@@ -248,7 +248,7 @@ FunctionDefinition::FunctionDefinition(const char *name,
 }
 
 FunctionDefinition::FunctionDefinition(const char* name,
-	char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN], const type_info& type,
+	const char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN], const type_info& type,
 	void* addr, const HookSystem::ArgData* argdata, int nArgs,
 	unsigned int flags, void** outfunc, bool canHook) :
 	Definition(""),

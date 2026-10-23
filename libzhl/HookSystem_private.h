@@ -80,7 +80,7 @@ public:
 	Definition(const char* sig);
 
 protected:
-	static void Add(const char *name, char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN],
+	static void Add(const char *name, const char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN],
 		Definition *def);
 	const char* _sig;
 
@@ -114,10 +114,10 @@ private:
 	void SetName(const char *name, const char *type);
 
 public:
-	FunctionDefinition(const char* name, char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN],
+	FunctionDefinition(const char* name, const char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN],
 		const type_info& type, const char* sig, const HookSystem::ArgData* argdata,
 		int nArgs, unsigned int flags, void** outfunc, bool canHook);
-	FunctionDefinition(const char* name, char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN],
+	FunctionDefinition(const char* name, const char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN],
 		const type_info& type, void* addr, const HookSystem::ArgData* argdata,
 		int nArgs, unsigned int flags, void** outfunc, bool canHook);
 
