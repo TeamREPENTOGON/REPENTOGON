@@ -63,6 +63,7 @@
 #include "ASMDefinition.h"
 #include "Log.h"
 #include "../MiscFunctions.h"
+#include "../Utils/StringUtils.h"
 #include "../LuaInterfaces/LuaEntitySaveState.h"
 #include "../LuaInterfaces/_Internals.h"
 #include "../ImGuiFeatures/CustomImGui.h"

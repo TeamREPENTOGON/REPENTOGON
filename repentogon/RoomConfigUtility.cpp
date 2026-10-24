@@ -14,6 +14,8 @@
 
 #undef ERROR
 
+#define LOG_INFO_HEADER "[INFO] - "
+
 typedef RoomConfigUtility::Error Error;
 typedef RoomConfigUtility::LogContext LogContext;
 
@@ -800,6 +802,48 @@ std::optional<RoomEntry> RoomConfigUtility::DeserializeRoomSpawnEntry(const rapi
 }
 
 #pragma endregion
+
+std::optional<RoomConfigUtility::StbRoomSet> RoomConfigUtility::ParseStb(const std::string& filepath, int stageId)
+{
+    KAGE_Filesys_IFile* file = g_FileManager.OpenRead(filepath.c_str());
+    if (!file)
+    {
+        return std::nullopt;
+    }
+
+    // Read & validate the 4-byte header from the stb like the game expects.
+    char header[5];
+    file->Read(&header, 1, 4);
+    header[4] = '\0';
+    if (strcmp(header, "STB1") != 0)
+    {
+        ZHL::Log(LOG_INFO_HEADER "Invalid room file header '%s' in '%s'\n", header, filepath.c_str());
+        file->Free(true);
+        return std::nullopt;
+    }
+    
+    // Read the number of rooms from the file.
+    int numRooms = 0;
+    file->Read(&numRooms, 4, 1);
+
+    ZHL::Log(LOG_INFO_HEADER "Reading %d Rooms from '%s'\n", numRooms, filepath.c_str());
+
+    // The game's logic to load a RoomConfig_Room from a .stb file is tied to the RoomSet class.
+    // Additionally, we can run into issues if we try to move/destroy a RoomConfig_Room/RoomSpawns allocated by the game.
+    // Read all rooms from the file into this RoomSet, then copy the room data into our own vector.
+    std::optional<StbRoomSet> result = std::make_optional<StbRoomSet>();
+    RoomSet& bufferRoomSet = result->roomSet;
+    bufferRoomSet._configs = new RoomConfig_Room[numRooms];
+    bufferRoomSet._count = numRooms;
+
+    for (int i = 0; i < numRooms; i++)
+    {
+        RoomConfig::read_room(&bufferRoomSet, i, stageId, file);
+    }
+    
+    file->Free(true);
+    return result;
+}
 
 #ifndef NDEBUG
 

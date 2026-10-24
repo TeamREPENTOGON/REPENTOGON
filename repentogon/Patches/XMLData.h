@@ -16,6 +16,7 @@
 #include "rapidxml.hpp"
 #include "EvaluateStats.h"
 #include "../MiscFunctions.h"
+#include "../Utils/StringUtils.h"
 
 using namespace std;
 
@@ -884,6 +885,9 @@ inline int getLineNumber(const char* data, const char* errorOffset) {
 
 namespace XML
 {
+    constexpr const char* ATTRIBUTE_SOURCE_ID = "sourceid";
+    constexpr const char* ATTRIBUTE_RELATIVE_ID = "relativeid";
+    constexpr const char* ATTRIBUTE_SOURCE_PATH = "sourcepath";
 	constexpr const char* BASE_GAME_ID = "BaseGame";
 
 	struct Document
@@ -912,6 +916,7 @@ namespace XML
 	{
 		Document document;
 		ModEntry* mod;
+        std::string xmlPath;
 
 		rapidxml::xml_document<char>* GetDocument() { return this->document.GetDocument(); }
 	};
@@ -965,7 +970,8 @@ namespace XML
 			ContentIterator end() { return ContentIterator( m_manager->_mods.end(), m_manager->_mods.end(), m_filePath.c_str()); }
 		};
 
-		static int get_error_line(const char* sourceText, const char* errorPoint, std::size_t sourceTextSize);
+		static int get_error_line(std::string_view sourceText, const char* errorPoint);
+        static void print_parse_error(std::string_view sourceText, const rapidxml::parse_error& err, std::string_view filePath);
 	}
 
 	/// @brief Returns the node's name as a string_view, ensuring that string operations are safe even when parsing using rapidxml::parse_no_destructive
@@ -1014,12 +1020,13 @@ namespace XML
 	ParsedAttributes ParseAttributes(rapidxml::xml_node<char>* node, const std::unordered_map<std::string_view, size_t>& attributeMap);
 	/// @brief Returns all attributes in the node, alongside the xml_attributes specified in the map.
 	XMLAttributes ParseAttributes(rapidxml::xml_node<char>* node);
+    void InheritAttributes(rapidxml::xml_node<char>* node, XMLAttributes& attributes);
 }
 
-int XML::detail::get_error_line(const char* sourceText, const char* errorPoint, std::size_t sourceTextSize)
+int XML::detail::get_error_line(std::string_view sourceText, const char* errorPoint)
 {
-	const char* start = sourceText;
-	const char* end = sourceText + sourceTextSize;
+	const char* start = sourceText.data();
+	const char* end = &sourceText.back();
 
 	bool inBounds = start <= errorPoint && errorPoint <= end;
 	if (!inBounds)
@@ -1028,6 +1035,21 @@ int XML::detail::get_error_line(const char* sourceText, const char* errorPoint, 
 	}
 
     return std::count(start, errorPoint, '\n') + 1;
+}
+
+void XML::detail::print_parse_error(std::string_view sourceText, const rapidxml::parse_error& err, std::string_view filePath)
+{
+    int lineNumber = detail::get_error_line(sourceText, err.where<char>());
+    std::string error = REPENTOGON::StringConcat("[XMLError] ", err.what(), " at line ", std::to_string(lineNumber), " in ", filePath, "\n");
+    if(g_Game && g_Game->GetConsole())
+    {
+        // console does not need newline
+        error.back() = '\0';
+        g_Game->GetConsole()->PrintError(error);
+        error.back() = '\n';
+    }
+
+    KAGE::SafeLogMessage(3, error.c_str());
 }
 
 inline std::string& XML::Document::LoadSourceText(const std::filesystem::path &path)
@@ -1070,7 +1092,7 @@ inline void XML::detail::ContentIterator::advance()
 			return false;
 		}
 
-		it.m_currentDocument = ContentDocument{ std::move(document), mod };
+		it.m_currentDocument = ContentDocument{ std::move(document), mod, std::move(*expandedPath) };
 		return true;
 	};
 
@@ -1099,17 +1121,7 @@ inline bool XML::ParseDoc(rapidxml::xml_document<char>& doc, char* sourceText, s
 		return true;
 	}
 	catch (rapidxml::parse_error err) {
-		int lineNumber = detail::get_error_line(sourceTextView.data(), err.where<char>(), sourceTextView.size());
-		std::string error = REPENTOGON::StringConcat("[XMLError] ", err.what(), " at line ", std::to_string(lineNumber), " in ", filePath, "\n");
-		if(g_Game && g_Game->GetConsole())
-		{
-			// console does not need newline
-			error.back() = '\0';
-			g_Game->GetConsole()->PrintError(error);
-			error.back() = '\n';
-		}
-	
-		KAGE::SafeLogMessage(3, error.c_str());
+		detail::print_parse_error(sourceTextView, err, filePath);
 		doc.clear();
 	}
 	return false;
@@ -1192,6 +1204,16 @@ inline XMLAttributes XML::ParseAttributes(rapidxml::xml_node<char>* node)
 	}
 
 	return attributes;
+}
+
+inline void XML::InheritAttributes(rapidxml::xml_node<char>* node, XMLAttributes& attributes)
+{
+    for (auto* attribute = node->first_attribute(); attribute; attribute = attribute->next_attribute())
+    {
+        std::string_view name = XML::GetName(attribute);
+        std::string_view value = XML::GetValue(attribute);
+        attributes.try_emplace(stringlower(name), value);
+    }
 }
 
 inline const char* XML::SetValueCopy(rapidxml::xml_document<char>& doc, rapidxml::xml_attribute<char>* attribute, std::string_view value)

@@ -8,7 +8,7 @@
 #include "ASMPatcher.hpp"
 #include "ASMDefinition.h"
 #include "Log.h"
-#include "../MiscFunctions.h"
+#include "../Utils/StringUtils.h"
 
 // ----------------------------------------------------------------------------------------------------
 // -- EntityPlusHolder

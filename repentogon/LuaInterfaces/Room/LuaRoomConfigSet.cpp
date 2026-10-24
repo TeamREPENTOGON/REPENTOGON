@@ -6,7 +6,7 @@
 
 LuaRoomConfigSet::Userdata::Userdata(RoomConfig_Stage& stage, int mode)
 	: vanillaSet(&stage._rooms[mode]),
-	  virtualSet(VirtualRoomSetManager::GetVanillaSet(stage._id, mode))
+	  virtualSet(VirtualRoomSetManager::GetSet(stage._id, mode))
 {}
 
 LUA_FUNCTION(Lua_RoomConfigSetGetRoom)

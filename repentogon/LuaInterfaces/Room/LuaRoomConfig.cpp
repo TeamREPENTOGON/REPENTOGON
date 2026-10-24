@@ -147,7 +147,7 @@ LUA_FUNCTION(Lua_RoomConfig_AddRooms)
 		return luaL_argerror(L, 3, REPENTOGON::Lua::GenerateInvalidTypeMessage(L, 3, "table").c_str());
 	}
 
-	VirtualRoomSet virtualSet = VirtualRoomSetManager::GetVanillaSet(stageId, mode);
+	VirtualRoomSet virtualSet = VirtualRoomSetManager::GetSet(stageId, mode);
 	int returnParameters = VirtualRoomSetManager::detail::Lua_AddLuaRooms(L, virtualSet, 3);
 	return returnParameters;
 }
@@ -167,7 +167,7 @@ LUA_FUNCTION(Lua_RoomConfig_LoadStb)
 
 	const char* filename = luaL_checkstring(L, 3);
 
-	VirtualRoomSet virtualSet = VirtualRoomSetManager::GetVanillaSet(stageId, mode);
+	VirtualRoomSet virtualSet = VirtualRoomSetManager::GetSet(stageId, mode);
 	int returnParameters = VirtualRoomSetManager::detail::Lua_AddStbRooms(L, virtualSet, filename);
 	return returnParameters;
 }

@@ -152,6 +152,33 @@ LUA_FUNCTION(Lua_TearSetInitSound) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_TearSetBackdropType) {
+	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	int backdrop = luaL_checkinteger(L, 2);
+	
+	// Tear variant 40 is a grid entity tear
+	if (backdrop >= 0 && tear->_variant == 40) {
+		tear->_tearIdx = backdrop;
+	}
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_TearGetBackdropType) {
+	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+
+	// Tear variant 40 is a grid entity tear
+	if (tear->_variant == 40) {
+		lua_pushinteger(L, tear->_tearIdx);
+	}
+	else {
+		// Return 0 (BACKDROP_NULL) as it's not a grid entity tear
+		lua_pushinteger(L, 0);
+	}
+
+	return 1;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -176,6 +203,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "AddToHitList", Lua_TearAddToHitList },
 		{ "InHitList", Lua_TearInHitList },
 		{ "SetInitSound", Lua_TearSetInitSound },
+		{ "SetBackdropType", Lua_TearSetBackdropType },
+		{ "GetBackdropType", Lua_TearGetBackdropType },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_TEAR, functions);

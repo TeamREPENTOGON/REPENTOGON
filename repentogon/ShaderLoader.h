@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IsaacRepentance.h"
-#include "MiscFunctions.h"
+#include "Utils/Result.h"
 
 namespace ShaderLoader
 {

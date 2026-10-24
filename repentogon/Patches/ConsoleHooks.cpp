@@ -7,6 +7,7 @@
 #include "../REPENTOGONFileMap.h"
 #include "../ShaderLoader.h"
 #include "Anm2Extras.h"
+#include "../Utils/StringUtils.h"
 
 #include <filesystem>
 #include <iostream>

@@ -15,6 +15,7 @@
 #include "LuaCore.h"
 #include "LuaRender.h"
 #include "LuaBlendMode.h"
+#include "../Utils/StringUtils.h"
 #include "../ShaderLoader.h"
 #include "../Utils/ImageUtils.h"
 #include "../Utils/ShaderUtils.h"
