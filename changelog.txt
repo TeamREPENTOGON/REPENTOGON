@@ -28,6 +28,8 @@ Added:
 	- RecomputeRoomBounds()
 * ModReference:
     - Added overloads for the Data functions that accept a custom filename.
+* EntityPlayer:
+	- Get/SetFallingSpeed
 * EntityNPC:
 	- GetLootList(bool ShouldAdvance = false)
 		Generic replacement for GetFireplaceLoot and GetShopkeeperLoot that enables LootList for all NPCs.

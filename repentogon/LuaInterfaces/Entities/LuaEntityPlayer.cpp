@@ -3543,6 +3543,18 @@ LUA_FUNCTION(Lua_PlayerGetMaxInventorySize) {
 	return 1;
 };
 
+LUA_FUNCTION(Lua_PlayerGetFallingSpeed) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, player->_posOffsetYSpeed);
+	return 1;
+};
+
+LUA_FUNCTION(Lua_PlayerSetFallingSpeed) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_posOffsetYSpeed = (float)luaL_checknumber(L, 2);
+	return 0;
+};
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -3866,6 +3878,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetMaxInventorySize", Lua_PlayerGetMaxInventorySize },
 		{ "GetInventoryHistoryIndex", Lua_PlayerGetInventoryHistoryIndex },
 		{ "GetInventoryCollectible", Lua_PlayerGetInventoryCollectible },
+		{ "GetFallingSpeed", Lua_PlayerGetFallingSpeed },
+		{ "SetFallingSpeed", Lua_PlayerSetFallingSpeed },
 
 		{ NULL, NULL }
 	};
