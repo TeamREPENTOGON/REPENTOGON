@@ -2,581 +2,391 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "Room.h"
-#include "Log.h"
+#include "../../LuaClasses.h"
 
 #include "../../Patches/ItemPoolManager.h"
 
 RoomASM roomASM;
 extern uint32_t hookedbackdroptype;
 
-LUA_FUNCTION(Lua_RoomSetRedHeartDamage_Override)
-{
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	bool flag = true;
+// TODO: see what we can reimplement in Lualand
+extern "C" {
 
-	if (!lua_isboolean(L, 2))
-	{
-		if (!lua_isnoneornil(L, 2))
-		{
-			luaL_typeerror(L, 2, lua_typename(L, LUA_TBOOLEAN));
+	__declspec(dllexport) bool L_Room_CanPickupGridEntity(Room* room, int gridIndex) {
+		return room->CanPickupGridEntity(gridIndex);
+	}
+
+	__declspec(dllexport) bool L_Room_CanSpawnObstacleAtPosition(Room* room, int gridIndex, bool force) {
+		return room->CanSpawnObstacleAtPosition(gridIndex, force);
+	}
+
+	__declspec(dllexport) bool L_Room_CheckLine(Room* room, Vector* pos1, Vector* pos2, int mode, int gridPathThreshold, bool ignoreWalls, bool ignoreCrushable, Vector* hitPos) {
+		return room->CheckLine(pos1, pos2, mode, gridPathThreshold, ignoreWalls, ignoreCrushable, hitPos);
+	}
+
+	__declspec(dllexport) void L_Room_ClearBossHazards(Room* room, bool excludeNPCs, Entity* source) {
+		// this function only uses [this] to create an EntityRef, and the constructor cleanly handles cases where Entity is nullptr
+		source->ClearBossHazards(excludeNPCs);
+	}
+
+	__declspec(dllexport) bool L_Room_DamageGrid(Room* room, int index, float damage) {
+		return room->DamageGrid(index, damage);
+	}
+
+	__declspec(dllexport) bool L_Room_DamageGridWithSource(Room* room, int index, float damage, EntityRef* source) {
+		return room->DamageGrid(index, damage, source);
+	}
+
+	__declspec(dllexport) bool L_Room_DestroyGrid(Room* room, int index, int damage, bool immediate) {
+		return room->DestroyGrid(index, damage, immediate);
+	}
+
+	__declspec(dllexport) bool L_Room_DestroyGridWithSource(Room* room, int index, int damage, bool immediate, EntityRef* source) {
+		return room->DestroyGrid(index, damage, immediate, source);
+	}
+
+	__declspec(dllexport) void L_Room_FindFreePickupSpawnPosition(Room* room, Vector* pos, float initialStep, bool avoidActiveEntities, bool allowPits, Vector* out) {
+		room->FindFreePickupSpawnPosition(out, pos, initialStep, avoidActiveEntities, allowPits, true);
+	}
+
+	__declspec(dllexport) void L_Room_FindFreeTilePosition(Room* room, Vector* pos, float distanceThreshold, Vector* out) {
+		room->FindFreeTilePosition(out, pos, distanceThreshold);
+	}
+	
+	__declspec(dllexport) int L_Room_GetBackdropType(Room* room) {
+		if (hookedbackdroptype != 0) {
+			return hookedbackdroptype;
 		}
-	}
-	else
-	{
-		flag = lua_toboolean(L, 2);
+		return room->GetBackdrop()->backdropId;
 	}
 
-	room->_redHeartDamage = flag;
-	return 0;
-}
-
-LUA_FUNCTION(Lua_SpawnGridEntity) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	bool ret = false;
-	int GridIndex = (int)luaL_checkinteger(L, 2);
-	if (GridIndex < 0 || GridIndex > 447) {
-		return luaL_error(L, "Grid index %d invalid", GridIndex);
+	__declspec(dllexport) unsigned int L_Room_GetBossVictoryJingle(Room* room) {
+		return room->GetBossVictoryJingle();
 	}
-	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		GridEntityDesc* desc = lua::GetLuabridgeUserdata<GridEntityDesc*>(L, 3, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
-		ret = room->SpawnGridEntityDesc(GridIndex, desc);
+
+	//ditto
+	__declspec(dllexport) int L_Room_GetFrameCount(Room* room) {
+		return room->GetFrameCount();
 	}
-	else
-	{
-		int Type = (int)luaL_checkinteger(L, 3);
-		int Variant = (int)luaL_optinteger(L, 4, 0);
-		unsigned int Seed = (unsigned int)luaL_optinteger(L, 5, GridIndex + g_Game->_frameCount + 1);
-		int VarData = (int)luaL_optinteger(L, 6, 0);
-		ret = room->SpawnGridEntity(GridIndex, Type, Variant, Seed, VarData);
+
+	__declspec(dllexport) void L_Room_GetCenterPos(Room* room, Vector* out) {
+		room->GetCenterPos(out);
 	}
-	lua_pushboolean(L, ret);
-	return 1;
-}
 
-LUA_FUNCTION(Lua_RemoveGridEntityImmediate) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	int GridIndex = (int)luaL_checkinteger(L, 2);
-	int PathTrail = (int)luaL_checkinteger(L, 3);
-	bool KeepDecoration = lua_toboolean(L, 4);
-	room->RemoveGridEntityImmediate(GridIndex, PathTrail, KeepDecoration);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_RoomGetShopItemPrice) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	unsigned int entVariant = (unsigned int)luaL_checkinteger(L, 2);
-	unsigned int entSubtype = (unsigned int)luaL_checkinteger(L, 3);
-	int shopItemID = (int)luaL_checkinteger(L, 4);
-
-	lua_pushinteger(L, room->GetShopItemPrice(entVariant, entSubtype, shopItemID));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_RoomSetBackdrop) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	lua_Integer id = luaL_checkinteger(L, 2);
-	if (id < 0) {
-		luaL_error(L, "Invalid backdrop id %d", id);
+	__declspec(dllexport) float L_Room_GetChampionBossChance(Room* room) {
+		return room->GetChampionBossChance();
 	}
-	lua_Integer changeDecoration = luaL_checkinteger(L, 3);
-	Backdrop* backdrop = room->GetBackdrop();
-	// custom ids above 61 get handled by the hook in Patches/XMLData.cpp
-	backdrop->Init((unsigned int)id, (bool)changeDecoration);
-	return 0;
-}
 
-LUA_FUNCTION(Lua_RoomCanSpawnObstacleAtPosition) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	int GridIndex = (int)luaL_checkinteger(L, 2);
-	bool Force = lua_toboolean(L, 3);
-	lua_pushboolean(L, room->CanSpawnObstacleAtPosition(GridIndex, Force));
-	return 1;
-}
+	__declspec(dllexport) int L_Room_GetClampedGridIndex(Room* room, Vector* pos) {
+		return room->GetClampedGridIndex(pos);
+	}
 
-LUA_FUNCTION(Lua_RoomGetWaterAmount)
-{
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	lua_pushnumber(L, *room->GetWaterAmount());
+	__declspec(dllexport) void L_Room_GetClampedPosition(Room* room, Vector* pos, float margin, Vector* out) {
+		room->GetClampedPosition(out, pos, margin, margin, margin, margin);
+	}
 
-	return 1;
-}
+	__declspec(dllexport) float L_Room_GetDevilRoomChance(Room* room) {
+		return room->GetDevilRoomChance();
+	}
 
-LUA_FUNCTION(Lua_RoomSetWaterAmount)
-{
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	float amount = (float)luaL_checknumber(L, 2);
-	*room->GetWaterAmount() = amount;
+	__declspec(dllexport) GridEntity_Door* L_Room_GetDoor(Room* room, int slot) {
+		return room->GetDoor(slot);
+	}
 
-	return 0;
-}
+	__declspec(dllexport) void L_Room_GetDoorSlotPosition(Room* room, int slot, Vector* out) {
+		room->GetDoorSlotPosition(out, slot);
+	}
 
-LUA_FUNCTION(Lua_RoomGetFloorColor)
-{
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	__declspec(dllexport) unsigned int L_Room_GetGridCollision(Room* room, int index) {
+		return room->GetGridCollision(index);
+	}
 
-	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
-	*toLua = *room->GetFloorColor();
+	__declspec(dllexport) int L_Room_GetGridCollisionAtPos(Room* room, Vector* pos) {
+		return room->GetGridCollisionAtPos(*pos);
+	}
 
-	return 1;
-}
+	__declspec(dllexport) GridEntity* L_Room_GetGridEntity(Room* room, int index) {
+		return room->GetGridEntity(index);
+	}
 
-//[get/set] not actual color
-LUA_FUNCTION(Lua_RoomGetWaterColor)
-{
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	__declspec(dllexport) GridEntity* L_Room_GetGridEntityFromPos(Room* room, Vector* pos) {
+		return room->GetGridEntityFromPos(pos);
+	}
 
-	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
-	*toLua = *room->GetWaterColor();
+	__declspec(dllexport) int L_Room_GetGridIndex(Room* room, Vector* pos) {
+		return room->GetGridIndex(pos);
+	}
 
-	return 1;
-}
+	__declspec(dllexport) int L_Room_GetGridIndexByTile(Room* room, int gridRow, int gridColumn) {
+		return room->GetGridIndexByTile(gridRow, gridColumn);
+	}
 
-LUA_FUNCTION(Lua_RoomSetWaterColor)
-{
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	KColor* color = lua::GetLuabridgeUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
-	*room->GetWaterLerpColorMultiplier() = 1; // See Room.zhl for more info
-	room->_waterLerpTargetColor = *color;
+	__declspec(dllexport) int L_Room_GetGridPathFromPos(Room* room, Vector* pos) {
+		return room->GetGridPathFromPos(pos);
+	}
 
-	return 0;
-}
+	__declspec(dllexport) void L_Room_GetGridPosition(Room* room, int index, Vector* out) {
+		room->GetGridPosition(out, index);
+	}
 
-//[get/set] not actual color mult
-LUA_FUNCTION(Lua_RoomGetWaterColorMultiplier)
-{
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	__declspec(dllexport) int L_Room_GetItemPool(Room* room, unsigned int seed, bool raw) {
+		if (raw) {
+			return roomASM.ItemPool;
+		}
+		return Room::GetItemPool(seed, room->_descriptor, 0);
+	}
 
-	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
-	*toLua = *room->GetWaterColorMultiplier();
+	__declspec(dllexport) void L_Room_GetLaserTarget(Room* room, Vector* pos, Vector* dir, Vector* out) {
+		room->GetLaserTarget(out, pos, dir);
+	}
 
-	return 1;
-}
+	__declspec(dllexport) float L_Room_GetLightingAlpha(Room* room) {
+		return room->GetLightingAlpha();
+	}
 
-LUA_FUNCTION(Lua_RoomSetWaterColorMultiplier)
-{
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	KColor* color = lua::GetLuabridgeUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
-	*room->GetWaterLerpColorMultiplier() = 1;
-	room->_waterLerpTargetColorMult = *color;
+	__declspec(dllexport) void L_Room_GetLRoomAreaDesc(Room* room, LRoomAreaDesc* out) {
+		room->GetLRoomAreaDesc(out);
+	}
 
-	return 0;
-}
+	__declspec(dllexport) void L_Room_GetLRoomTileDesc(Room* room, LRoomTileDesc* out) {
+		room->GetLRoomTileDesc(out);
+	}
 
-LUA_FUNCTION(Lua_RoomSetWaterCurrent)
-{
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	Vector* vector = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	*room->GetWaterCurrent() = *vector;
+	__declspec(dllexport) int L_Room_GetRail(Room* room, int index) {
 
-	return 0;
-}
-
-LUA_FUNCTION(Lua_RoomGetEffects)
-{
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-
-	TemporaryEffects* effects = room->GetTemporaryEffects();
-	lua::luabridge::UserdataPtr::push(L, effects, lua::GetMetatableKey(lua::Metatables::_TEMPORARY_EFFECTS));
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_RoomGetRail) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	int index = (int)luaL_checkinteger(L, 2);
-
-	if (!room->_descriptor->Data->IsAllowedGridIndex(index)) {
-		// return luaL_error(L, "Invalid grid index %I\n", index);
-		lua_pushnil(L);
-	} else {
-		uint8_t railType = room->GetRailType((uint8_t)index);
-		if (railType == 255) {
-			lua_pushnil(L);
+		if (!room->_descriptor->Data->IsAllowedGridIndex(index)) {
+			return -1;
 		}
 		else {
-			lua_pushinteger(L, railType);
+			uint8_t railType = room->GetRailType((uint8_t)index);
+			if (railType == 255) {
+				return -1;
+			}
+			else {
+				return railType;
+			}
 		}
 	}
 
-	return 1;
-}
-
-LUA_FUNCTION(Lua_RoomTriggerRestock) {
-	Room* room= lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	int gridIdx = (int)luaL_checkinteger(L, 2);
-	int shopIdx = (int)luaL_checkinteger(L, 3);
-	room->TriggerRestock(gridIdx, shopIdx);
-	return 0;
-};
-
-LUA_FUNCTION(lua_RoomSetRail) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	int index = (int)luaL_checkinteger(L, 2);
-
-	/* if (!room->IsValidGridIndex(index, false)) {
-		return luaL_error(L, "Invalid grid index %d\n", index);
-	} */
-	if (index < 0 || (index >= (room->_gridHeight * room->_gridWidth))) {
-		return luaL_error(L, "Invalid grid index %d\n", index);
+	__declspec(dllexport) void L_Room_GetRandomPosition(Room* room, float margin, Vector* out) {
+		room->GetRandomPosition(out, margin);
 	}
 
-	int rail = (int)luaL_checkinteger(L, 3);
-	if (!Room::IsValidRailType(rail)) {
-		return luaL_error(L, "Invalid rail type %d\n", rail);
+	__declspec(dllexport) int L_Room_GetRandomTileIndex(Room* room, unsigned int seed) {
+		return room->GetRandomTileIndex(seed);
 	}
 
-	room->SetRailType(index, (RailType)rail);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_RoomCanPickupGridEntity) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	int gridIndex = (int)luaL_checkinteger(L, 2);
-	lua_pushboolean(L, room->CanPickupGridEntity(gridIndex));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_RoomPickupGridEntity)
-{
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	int gridIndex = (int)luaL_checkinteger(L, 2);
-	Entity_Effect* ent = room->PickupGridEntity(gridIndex);
-
-	lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_RoomGetGridIndexByTile)
-{
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	int gridRow, gridColumn;
-	if (lua_type(L, 2) == LUA_TTABLE) {
-		size_t length = (size_t)lua_rawlen(L, 2);
-		if (length != 2)
-			return luaL_argerror(L, 2, "expected table length of 2!");
-
-		lua_rawgeti(L, 2, 1);
-		gridRow = (int)luaL_checkinteger(L, -1);
-		lua_pop(L, 1);
-		lua_rawgeti(L, 2, 2);
-		gridColumn = (int)luaL_checkinteger(L, -1);
-		lua_pop(L, 1);
-	}
-	else
-	{
-		gridRow = (int)luaL_checkinteger(L, 2);
-		gridColumn = (int)luaL_checkinteger(L, 3);
+	__declspec(dllexport) int L_Room_GetRoomConfigStage(Room* room) {
+		return room->GetRoomConfigStage();
 	}
 
-	lua_pushinteger(L, room->GetGridIndexByTile(gridRow, gridColumn));
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_RoomSetPauseTimer)
-{
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	room->SetPauseTimer((int)luaL_checkinteger(L, 2));
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_Room_GetBossChampionChance) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	lua_pushnumber(L, room->GetChampionBossChance());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Room_IsChampionBossSeed) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	lua_pushboolean(L, room->IsChampionBossSeed());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_RoomColorModifierUpdate)
-{
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	bool process = lua::luaL_optboolean(L, 2, true);
-	bool lerp = lua::luaL_optboolean(L, 3, true);
-	float rate = (float)luaL_optnumber(L, 4, 0.015);
-
-	ColorModState pColor;
-	if (process) {
-		pColor = room->ComputeColorModifier();
-		
-	}
-	else {
-		// It was discovered in rep+ that FXParams does not actually contain a ColorModState, its KColor+floats, and KColor gained a new field.
-		// This logic provides backwards compatability.
-		FXParams* fx = room->GetFXParams();
-		KColor* c = &fx->roomColor;
-		pColor = ColorModState(c->_red, c->_green, c->_blue, c->_alpha, fx->brightness, fx->contrast);
+	__declspec(dllexport) int L_Room_GetSeededCollectible(Room* room, unsigned int seed, bool noDecrease) {
+		return ItemPool::GetSeededCollectible(seed, noDecrease, room->_descriptor);
 	}
 
-	g_Game->SetColorModifier(&pColor, lerp, rate);
-	return 0;
-}
+	__declspec(dllexport) int L_Room_GetShopItemPrice(Room* room, unsigned int entityVariant, unsigned int entitySubType, int shopItemID) {
+		return room->GetShopItemPrice(entityVariant, entitySubType, shopItemID);
+	}
 
-LUA_FUNCTION(Lua_RoomTryGetShopDiscount) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	const int shopItemIdx = (int)luaL_checkinteger(L, 2);
-	const int price = (int)luaL_checkinteger(L, 3);
+	//ditto
+	__declspec(dllexport) bool L_Room_IsAmbushActive() {
+		return g_Game->_ambush.active;
+	}
 
-	lua_pushinteger(L, room->TryGetShopDiscount(shopItemIdx, price));
-	return 1;
-}
+	__declspec(dllexport) bool L_Room_IsChampionBossSeed(Room* room) {
+		return room->IsChampionBossSeed();
+	}
 
-LUA_FUNCTION(Lua_RoomGetRoomClearDelay) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	lua_pushinteger(L, room->_roomClearDelay);
-	return 1;
-}
+	__declspec(dllexport) bool L_Room_IsCurrentRoomLastBoss() {
+		return Room::IsCurrentRoomLastBoss();
+	}
 
-LUA_FUNCTION(Lua_RoomSetRoomClearDelay) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	room->_roomClearDelay = (int)luaL_checkinteger(L, 2);
-	return 0;
-}
+	//ditto
+	__declspec(dllexport) bool L_Room_IsMirrorWorld() {
+		return Room::IsMirrorWorld();
+	}
 
-LUA_FUNCTION(Lua_RoomGetGreedWaveTimer) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	lua_pushinteger(L, room->_greedWaveTimer);
-	return 1;
-}
+	__declspec(dllexport) bool L_Room_IsPersistentRoomEntity(Room* room, int type, int variant) {
+		return room->IsPersistentRoomEntity(type, variant, 0);
+	}
+	__declspec(dllexport) bool L_Room_IsPositionInRoom(Room* room, Vector* pos, float margin) {
+		return room->IsPositionInRoom(pos, margin);
+	}
 
-LUA_FUNCTION(Lua_RoomSetGreedWaveTimer) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	room->_greedWaveTimer = (int)luaL_checkinteger(L, 2);
-	return 0;
-}
+	__declspec(dllexport) bool L_Room_IsValidGridIndex(Room* room, int gridIndex, bool includeWalls) {
+		return room->IsValidGridIndex(gridIndex, includeWalls);
+	}
 
-LUA_FUNCTION(Lua_RoomIsPersistentRoomEntity) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	const int type = (int)luaL_checkinteger(L, 2);
-	const int varinat = (int)luaL_optinteger(L, 3, 0);
-	lua_pushboolean(L, room->IsPersistentRoomEntity(type, varinat, 0));
-	return 1;
-}
+	__declspec(dllexport) void L_Room_PlayMusic(Room* room) {
+		room->PlayMusic();
+	}
 
-LUA_FUNCTION(Lua_RoomTrySpawnSpecialQuestDoor) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	roomASM.ForceSpecialQuestDoor = lua::luaL_optboolean(L, 2, false);
-	lua_pushboolean(L, room->TrySpawnSpecialQuestDoor());
-	return 1;
-}
+	__declspec(dllexport) void L_Room_RemoveDoor(Room* room, int slot) {
+		room->RemoveDoor(slot);
+	}
 
-LUA_FUNCTION(Lua_RoomSetLavaIntensity) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	room->_lavaIntensity = (float)luaL_checknumber(L, 2);
-	return 0;
-}
+	__declspec(dllexport) void L_Room_RemoveGridEntity(Room* room, int gridIndex, int pathTrail, bool keepDecoration) {
+		room->RemoveGridEntity(gridIndex, pathTrail, keepDecoration);
+	}
 
-LUA_FUNCTION(Lua_RoomGetLightningIntensity) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	lua_pushnumber(L, g_Game->_lightningIntensity);
-	return 1;
-}
+	__declspec(dllexport) void L_Room_RemoveGridEntityImmediate(Room* room, int gridIndex, int pathTrail, bool keepDecoration) {
+		room->RemoveGridEntityImmediate(gridIndex, pathTrail, keepDecoration);
+	}
 
-LUA_FUNCTION(Lua_RoomSetLightningIntensity) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	g_Game->_lightningIntensity = (float)luaL_checknumber(L, 2);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_RoomDoLightningStrike) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	unsigned int seed = (unsigned int)luaL_optinteger(L, 2, Isaac::genrand_int32());
-	RNG rng; // oppa tyrone style
-	rng.game_constructor(seed, 35);
-	float intensity = 1.3f + rng.RandomFloat()*.6f;
+	__declspec(dllexport) void L_Room_Render(Room* room) {
+		room->Render();
+	}
 	
-	g_Game->_lightningIntensity = intensity;
-	g_Manager->_sfxManager.Play(472, 1.0, 90, false, 0.9f + rng.RandomFloat() * 0.2f, 0);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_RoomGetRainIntensity) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	lua_pushnumber(L, room->_rainIntensity);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_RoomSetRainIntensity) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	room->_rainIntensity = (float)luaL_checknumber(L, 2);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_RoomGetNumRainSpawners) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	lua_pushinteger(L, room->_numRainSpawners);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_RoomGetBackdropTypeHui) { //this is a bad way to replace room.GetBackdropType, I think
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	if (hookedbackdroptype != 0) {
-		lua_pushinteger(L, hookedbackdroptype);
-		return 1;
-	}
-	else {
-		Backdrop* bg = room->GetBackdrop();
-		lua_pushinteger(L, bg->backdropId);
-		return 1;
-	}
-}
-
-LUA_FUNCTION(Lua_RoomSaveState) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	room->SaveState();
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_GetBossVictoryJingle) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	lua_pushinteger(L, room->GetBossVictoryJingle());
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_RoomSetItemPool) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	const int poolType = (int)luaL_checkinteger(L, 2);
-
-	if (poolType < POOL_NULL || poolType >= (int)ItemPoolManager::GetNumItemPools()) {
-		return luaL_argerror(L, 2, "Invalid ItemPoolType");
+	__declspec(dllexport) void L_Room_RespawnEnemies(Room* room) {
+		room->RespawnEnemies();
 	}
 
-	roomASM.ItemPool = poolType;
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_RoomGetItemPool) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	uint32_t seed = (unsigned int)luaL_optinteger(L, 2, Isaac::genrand_int32());
-	seed = seed != 0 ? seed : 1;
-	bool raw = lua::luaL_optboolean(L, 3, false);
-
-	if (raw)
-	{
-		lua_pushinteger(L, roomASM.ItemPool);
-		return 1;
+	__declspec(dllexport) void L_Room_SaveState(Room* room) {
+		room->SaveState();
 	}
 
-	int itemPool = Room::GetItemPool(seed, room->_descriptor, 0);
-	lua_pushinteger(L, itemPool);
-	return 1;
-}
+	__declspec(dllexport) void L_Room_ScreenWrapPosition(Room* room, Vector* pos, float margin, Vector* out) {
+		room->ScreenWrapPosition(out, pos, margin, margin, margin, margin);
+	}
 
-HOOK_METHOD(Room, Init, (int param_1, RoomDescriptor * desc) -> void) {
-	roomASM.WaterDisabled = false;
-	roomASM.ItemPool = POOL_NULL;
-	super(param_1, desc);
-	ZHL::Logger logger;
-	//logger.Log("WaterDisabled is %s, stage is %d, desc stage is %d\n", roomASM.WaterDisabled ? "TRUE" : "FALSE", g_Game->_stage, this->_descriptor->Data->StageId);
-	if (g_Game->_stage == 12 && !roomASM.WaterDisabled && (this->_descriptor->Data->StageId == 27 || this->_descriptor->Data->StageId == 28)) {
-		//__debugbreak();
-		this->_waterAmount = 1.0f;
-		//logger.Log("setting water\n");
+	__declspec(dllexport) void L_Room_SetBackdropType(Room* room, int id, int changeDecoration) {
+		room->_backdrop.Init(id, (bool)changeDecoration);
+	}
+
+	__declspec(dllexport) void L_Room_SetItemPool(Room* room, int poolType) {
+		roomASM.ItemPool = poolType;
+	}
+
+	__declspec(dllexport) void L_Room_SetPauseTimer(Room* room, int duration) {
+		room->SetPauseTimer(duration);
+	}
+
+	__declspec(dllexport) void L_Room_SetRailType(Room* room, int gridIndex, int railVariant) {
+		room->SetRailType(gridIndex, (RailType)railVariant);
+	}
+
+	__declspec(dllexport) void L_Room_ShopReshuffle(Room* room, bool keepCollectibleIdx, bool reselectSaleItem) {
+		room->ShopReshuffle(keepCollectibleIdx, reselectSaleItem);
+	}
+
+	__declspec(dllexport) void L_Room_ShopRestockFull(Room* room) {
+		room->ShopRestockFull();
+	}
+
+	__declspec(dllexport) void L_Room_ShopRestockPartial(Room* room) {
+		room->ShopRestockPartial();
+	}
+
+	__declspec(dllexport) void L_Room_SpawnClearAward(Room* room) {
+		room->SpawnClearAward();
+	}
+
+	__declspec(dllexport) bool L_Room_SpawnGridEntity(Room* room, int gridIndex, unsigned int gridType, unsigned int variant, unsigned int seed, unsigned int varData) {
+		return room->SpawnGridEntity(gridIndex, gridType, variant, seed, varData);
+	}
+
+	__declspec(dllexport) bool L_Room_SpawnGridEntityDesc(Room* room, int gridIndex, GridEntityDesc* desc) {
+		return room->SpawnGridEntityDesc(gridIndex, desc);
+	}
+
+	__declspec(dllexport) void L_Room_TriggerClear(Room* room, bool silent) {
+		room->TriggerClear(silent);
+	}
+
+	__declspec(dllexport) void L_Room_TriggerOutput(Room* room, int output) {
+		room->TriggerOutput(output);
+	}
+
+	__declspec(dllexport) void L_Room_TriggerRestock(Room* room, int gridIdx, int shopIdx) {
+		room->TriggerRestock(gridIdx, shopIdx);
+	}
+
+	__declspec(dllexport) int L_Room_TryGetShopDiscount(Room* room, int shopItemIdx, int price) {
+		return room->TryGetShopDiscount(shopItemIdx, price);
+	}
+
+	__declspec(dllexport) bool L_Room_TryMakeBridge(Room* room, GridEntity_Pit* pit, GridEntity_Rock* rock) {
+		return room->TryMakeBridge(pit, rock);
+	}
+
+	__declspec(dllexport) bool L_Room_TrySpawnBlueWombDoor(Room* room, bool firstTime, bool ignoreTime, bool force) {
+		return room->TrySpawnBlueWombDoor(firstTime, ignoreTime, force);
+	}
+
+	__declspec(dllexport) bool L_Room_TrySpawnBossRushDoor(Room* room, bool ignoreTime, bool force) {
+		return room->TrySpawnBossRushDoor(ignoreTime, force);
+	}
+
+	__declspec(dllexport) bool L_Room_TrySpawnDevilRoomDoor(Room* room, bool animate, bool force) {
+		return room->TrySpawnDevilRoomDoor(animate, force);
+	}
+
+	__declspec(dllexport) bool L_Room_TrySpawnMegaSatanRoomDoor(Room* room, bool force) {
+		return room->TrySpawnMegaSatanRoomDoor(force);
+	}
+
+	__declspec(dllexport) bool L_Room_TrySpawnSecretExit(Room* room, bool animate, bool force) {
+		return room->TrySpawnSecretExit(animate, force);
+	}
+
+	__declspec(dllexport) bool L_Room_TrySpawnSecretShop(Room* room, bool force) {
+		return room->TrySpawnSecretShop(force);
+	}
+
+	__declspec(dllexport) bool L_Room_TrySpawnSpecialQuestDoor(Room* room, bool ignoreStageType) {
+		roomASM.ForceSpecialQuestDoor = ignoreStageType;
+		return room->TrySpawnSpecialQuestDoor();
+	}
+
+	__declspec(dllexport) bool L_Room_TrySpawnTheVoidDoor(Room* room, bool force) {
+		return room->TrySpawnTheVoidDoor(force);
+	}
+
+	__declspec(dllexport) void L_Room_TurnGold(Room* room) {
+		room->TurnGold();
+	}
+
+	__declspec(dllexport) void L_Room_Update(Room* room) {
+		room->Update();
+	}
+
+	//ditto
+	__declspec(dllexport) void L_Room_UpdateColorModifier(Room* room, bool process, bool lerp, float rate) {
+		ColorModState pColor;
+		if (process) {
+			pColor = room->ComputeColorModifier();
+
+		}
+		else {
+			// It was discovered in rep+ that FXParams does not actually contain a ColorModState, its KColor+floats, and KColor gained a new field.
+			// This logic provides backwards compatability.
+			FXParams* fx = room->GetFXParams();
+			KColor* c = &fx->roomColor;
+			pColor = ColorModState(c->_red, c->_green, c->_blue, c->_alpha, fx->brightness, fx->contrast);
+		}
+
+		g_Game->SetColorModifier(&pColor, lerp, rate);
+	}
+
+	__declspec(dllexport) void L_Room_WorldToScreenPosition(Room* room, Vector* worldPos, Vector* out) {
+		room->WorldToScreenPosition(out, *worldPos);
+	}
+
+	__declspec(dllexport) unsigned int L_Room_TMP_GetSpawnGridEntitySeed(int gridIndex) {
+		return gridIndex + g_Game->_frameCount + 1;
+	}
+
+	__declspec(dllexport) int L_Room_TMP_GetNumItemPools() {
+		return ItemPoolManager::GetNumItemPools();
 	}
 }
 
-HOOK_STATIC(Room, GetItemPool, (uint32_t seed, RoomDescriptor* roomDesc, int bossId) -> int, __cdecl) {
-	if (roomASM.ItemPool != POOL_NULL) {
-		return roomASM.ItemPool;
-	}
-	return super(seed, roomDesc, bossId);
+MOD_EXPORT void L_Room_MamaMegaExplosion(Room* room, Vector* pos, Entity_Player* player) {
+	Vector position = *pos;
+	// function handles nullptr player
+	room->MamaMegaExplosion(&position, player);
 }
 
-LUA_FUNCTION(Lua_RoomGetWallColor) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	lua::luabridge::UserdataPtr::push(L, &room->_wallColor, lua::Metatables::COLOR);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_RoomTriggerOutput) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	const unsigned int output = (unsigned int)luaL_checkinteger(L, 2);
-
-	if (output < 0 || output > 9) {
-		return luaL_argerror(L, 2, "Invalid output index");
-	}
-
-	room->TriggerOutput(output);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_RoomClearBossHazards) {
-	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	Entity* source = nullptr;
-	const bool excludeNPCs = lua::luaL_optboolean(L, 2, true);
-	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		source = lua::GetLuabridgeUserdata<Entity*>(L, 3, lua::Metatables::ENTITY, "Entity");
-	}
-	// this function only uses [this] to create an EntityRef, and the constructor cleanly handles cases where Entity is nullptr
-	source->ClearBossHazards(excludeNPCs);
-	return 0;
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-
-	lua::LuaStackProtector protector(_state);
-
-	luaL_Reg functions[] = {
-		{ "SetRedHeartDamage", Lua_RoomSetRedHeartDamage_Override },
-
-		{ "GetShopItemPrice", Lua_RoomGetShopItemPrice},
-		{ "SpawnGridEntity", Lua_SpawnGridEntity},
-		{ "RemoveGridEntityImmediate", Lua_RemoveGridEntityImmediate},
-		{ "CanSpawnObstacleAtPosition", Lua_RoomCanSpawnObstacleAtPosition},
-		{ "GetWaterAmount", Lua_RoomGetWaterAmount},
-		{ "SetWaterAmount", Lua_RoomSetWaterAmount},
-		{ "GetFloorColor", Lua_RoomGetFloorColor},
-		{ "GetWallColor", Lua_RoomGetWallColor},
-		{ "GetWaterColor", Lua_RoomGetWaterColor},
-		{ "SetWaterColor", Lua_RoomSetWaterColor},
-		{ "SetWaterCurrent", Lua_RoomSetWaterCurrent},
-		{ "GetWaterColorMultiplier", Lua_RoomGetWaterColorMultiplier},
-		{ "SetWaterColorMultiplier", Lua_RoomSetWaterColorMultiplier},
-		{ "SetBackdropType", Lua_RoomSetBackdrop},
-		{ "GetEffects", Lua_RoomGetEffects},
-		{ "GetRail", lua_RoomGetRail},
-		{ "SetRail", lua_RoomSetRail},
-		{ "CanPickupGridEntity", Lua_RoomCanPickupGridEntity},
-		{ "PickupGridEntity", Lua_RoomPickupGridEntity},
-		{ "GetGridIndexByTile", Lua_RoomGetGridIndexByTile},
-		{ "SetPauseTimer", Lua_RoomSetPauseTimer},
-		{ "GetChampionBossChance", Lua_Room_GetBossChampionChance},
-		{ "IsChampionBossSeed", Lua_Room_IsChampionBossSeed},
-		{ "UpdateColorModifier", Lua_RoomColorModifierUpdate},
-		{ "TryGetShopDiscount", Lua_RoomTryGetShopDiscount},
-		{ "GetRoomClearDelay", Lua_RoomGetRoomClearDelay},
-		{ "SetRoomClearDelay", Lua_RoomSetRoomClearDelay},
-		{ "GetGreedWaveTimer", Lua_RoomGetGreedWaveTimer},
-		{ "SetGreedWaveTimer", Lua_RoomSetGreedWaveTimer},
-		{ "IsPersistentRoomEntity", Lua_RoomIsPersistentRoomEntity},
-		{ "TrySpawnSpecialQuestDoor", Lua_RoomTrySpawnSpecialQuestDoor},
-		{ "SetLavaIntensity", Lua_RoomSetLavaIntensity},
-		{ "GetLightningIntensity", Lua_RoomGetLightningIntensity},
-		{ "SetLightningIntensity", Lua_RoomSetLightningIntensity},
-		{ "DoLightningStrike", Lua_RoomDoLightningStrike},
-		{ "GetRainIntensity", Lua_RoomGetRainIntensity},
-		{ "SetRainIntensity", Lua_RoomSetRainIntensity},
-		{ "GetNumRainSpawners", Lua_RoomGetNumRainSpawners},
-		{ "GetBackdropType", Lua_RoomGetBackdropTypeHui},
-		{ "SaveState", Lua_RoomSaveState},
-		{ "GetBossVictoryJingle", Lua_GetBossVictoryJingle},
-		{ "SetItemPool", Lua_RoomSetItemPool },
-		{ "GetItemPool", Lua_RoomGetItemPool },
-		{ "TriggerOutput", Lua_RoomTriggerOutput },
-		{ "ClearBossHazards", Lua_RoomClearBossHazards },
-		{"TriggerRestock",Lua_RoomTriggerRestock},
-		{ NULL, NULL }
-	};
-	lua::RegisterFunctions(_state, lua::Metatables::ROOM, functions);
+MOD_EXPORT Entity_Effect* L_Room_PickupGridEntity(Room* room, int gridIndex) {
+	return room->PickupGridEntity(gridIndex);
 }

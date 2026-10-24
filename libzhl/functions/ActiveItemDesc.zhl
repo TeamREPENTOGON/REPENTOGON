@@ -6,6 +6,6 @@ struct ActiveItemDesc
     int _batteryCharge : 0xC;
     int _subCharge : 0x10;
     int _timeRechargeCooldown : 0x14;
-    int _partialCharge : 0x18;
+    float _partialCharge : 0x18;
     int _varData : 0x1C;
 } : 0x20;

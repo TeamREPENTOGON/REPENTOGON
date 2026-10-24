@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "lua.hpp"
 #include "libzhl.h"
@@ -9,335 +9,47 @@
 struct lua_State;
 
 namespace lua {
-    enum class Metatables {
-        BEGIN_NORMAL,
-        PILL_EFFECT,
-        SPAWN,
-        ENTITY_TEAR,
-        HUD,
-        SEEDS,
-        ROOM,
-        ACTIVE_ITEM_DESC,
-        GRID_ENTITY_DESC,
-        ENTITY,
-        ENTITY_BOMB,
-        CONFIG,
-        VECTOR_LIST,
-        MUSIC_MANAGER,
-        EFFECT_LIST,
-        ITEM_CONFIG_LIST,
-        ENTITY_KNIFE,
-        LEVEL,
-        PILL_CONFIG_LIST,
-        ROOM_DESCRIPTOR,
-        ENTITY_REF,
-        GRID_ENTITY_PRESSURE_PLATE,
-        TEMPORARY_EFFECT,
-        ENTITY_EFFECT,
-        RNG,
-        ENTITY_PLAYER,
-        FONT,
-        FONTRENDERSETTINGS,
-        ENTITY_PICKUP,
-        COSTUME,
-        ENTITY_LIST,
-        _TEMPORARY_EFFECTS, // Intended typo to disambiguate
-        BITSET_128,
-        ARRAY_PROXY_ROOM_DESCRIPTOR,
-        GAME,
-        PROJECTILE_PARAMS,
-        GRID_ENTITY_ROCK,
-        ENTITY_NPC,
-        ENTITY_PROJECTILE,
-        COLOR,
-        GRID_ENTITY_TNT,
-        ENTITY_FAMILIAR,
-        KCOLOR,
-        COSTUME_CONFIG_LIST,
-        ROOM_CONFIG_ENTRIES,
-        QUEUE_ITEM_DATA,
-        INT_VALUES,
-        ENTRY,
-        ITEM_POOL,
-        ITEM, 
-        GRID_ENTITY_SPIKES,
-        GRID_ENTITY,
-        ROOM_CONFIG_SPAWNS,
-        ROOM_CONFIG_ROOM,
-        ENTITY_PTR,
-        POS_VEL,
-        PATHFINDER,
-        TEAR_PARAMS,
-        GRID_ENTITY_POOP,
-        CARD,
-        GRID_ENTITY_PIT,
-        SPRITE,
-        GRID_ENTITY_DOOR,
-        ENTITY_LASER,
-        SFX_MANAGER,
-        CARD_CONFIG_LIST,
-        VECTOR,
-        BEGIN_CONST,
-        CONST_PILL_EFFECT,
-        CONST_SPAWN,
-        CONST_ENTITY_TEAR,
-        CONST_HUD,
-        CONST_SEEDS,
-        CONST_ROOM,
-        CONST_ACTIVE_ITEM_DESC,
-        CONST_GRID_ENTITY_DESC,
-        CONST_ENTITY,
-        CONST_ENTITY_BOMB,
-        CONST_CONFIG,
-        CONST_VECTOR_LIST,
-        CONST_MUSIC_MANAGER,
-        CONST_EFFECT_LIST,
-        CONST_ITEM_CONFIG_LIST,
-        CONST_ENTITY_KNIFE,
-        CONST_LEVEL,
-        CONST_PILL_CONFIG_LIST,
-        CONST_ROOM_DESCRIPTOR,
-        CONST_ENTITY_REF,
-        CONST_GRID_ENTITY_PRESSURE_PLATE,
-        CONST_TEMPORARY_EFFECT,
-        CONST_ENTITY_EFFECT,
-        CONST_RNG,
-        CONST_ENTITY_PLAYER,
-        CONST_FONT,
-        CONST_FONTRENDERSETTINGS,
-        CONST_ENTITY_PICKUP,
-        CONST_COSTUME,
-        CONST_ENTITY_LIST,
-        _CONST_TEMPORARY_EFFECTS, // Intended typo to disambiguate
-        CONST_BITSET_128,
-        CONST_ARRAY_PROXY_ROOM_DESCRIPTOR,
-        CONST_GAME,
-        CONST_PROJECTILE_PARAMS,
-        CONST_GRID_ENTITY_ROCK,
-        CONST_ENTITY_NPC,
-        CONST_ENTITY_PROJECTILE,
-        CONST_COLOR,
-        CONST_GRID_ENTITY_TNT,
-        CONST_ENTITY_FAMILIAR,
-        CONST_KCOLOR,
-        CONST_COSTUME_CONFIG_LIST,
-        CONST_ROOM_CONFIG_ENTRIES,
-        CONST_QUEUE_ITEM_DATA,
-        CONST_INT_VALUES,
-        CONST_ENTRY,
-        CONST_ITEM_POOL,
-        CONST_ITEM, 
-        CONST_GRID_ENTITY_SPIKES,
-        CONST_GRID_ENTITY,
-        CONST_ROOM_CONFIG_SPAWNS,
-        CONST_ROOM_CONFIG_ROOM,
-        CONST_ENTITY_PTR,
-        CONST_POS_VEL,
-        CONST_PATHFINDER,
-        CONST_TEAR_PARAMS,
-        CONST_GRID_ENTITY_POOP,
-        CONST_CARD,
-        CONST_GRID_ENTITY_PIT,
-        CONST_SPRITE,
-        CONST_GRID_ENTITY_DOOR,
-        CONST_ENTITY_LASER,
-        CONST_SFX_MANAGER,
-        CONST_CARD_CONFIG_LIST,
-        CONST_VECTOR,
-
-        METATABLES_MAX
-    };
-
     namespace GlobalClasses
     {
-      extern LIBZHL_API const char* Input;
       extern LIBZHL_API const char* Isaac;
-      extern LIBZHL_API const char* HUD;
-      extern LIBZHL_API const char* Options;
     }
 
-    namespace metatables
-    {
-        extern LIBZHL_API const char* AmbushMT;
-        extern LIBZHL_API const char* AnimationDataMT;
-        extern LIBZHL_API const char* AnimationFrameMT;
-        extern LIBZHL_API const char* AnimationLayerMT;
-        extern LIBZHL_API const char* AnimationStateMT;
-        extern LIBZHL_API const char* BackdropMT;
-        extern LIBZHL_API const char* BeamMT;
-        extern LIBZHL_API const char* BestiaryMenuMT;
-        extern LIBZHL_API const char* BlendModeMT;
-        extern LIBZHL_API const char* BossPoolMT;
-        extern LIBZHL_API const char* CameraMT;
-        extern LIBZHL_API const char* CapsuleMT;
-        extern LIBZHL_API const char* ChallengeMenuMT;
-        extern LIBZHL_API const char* ChallengeParamMT;
-        extern LIBZHL_API const char* CharacterMenuMT;
-        extern LIBZHL_API const char* CollectionMenuMT;
-        extern LIBZHL_API const char* ConsoleMT;
-        extern LIBZHL_API const char* ControllerSelectMenuMT;
-        extern LIBZHL_API const char* ColorModifierMT;
-        extern LIBZHL_API const char* CustomChallengeMenuMT;
-        extern LIBZHL_API const char* CutscenesMenuMT;
-        extern LIBZHL_API const char* GenericPromptMT;
-        extern LIBZHL_API const char* GridEntitiesSaveStateVectorMT;
-        extern LIBZHL_API const char* DailyChallengeMT;
-        extern LIBZHL_API const char* DailyChallengeMenuMT;
-        extern LIBZHL_API const char* DebugRendererMT;
-        extern LIBZHL_API const char* EntitiesSaveStateVectorMT;
-        extern LIBZHL_API const char* ColorParamsMT;
-        extern LIBZHL_API const char* EntityConfigMT;
-        extern LIBZHL_API const char* EntityConfigEntityMT;
-        extern LIBZHL_API const char* EntityConfigPlayerMT;
-        extern LIBZHL_API const char* EntityConfigBabyMT;
-        extern LIBZHL_API const char* EntitySaveStateMT;
-        extern LIBZHL_API const char* EntitySlotMT;
-        extern LIBZHL_API const char* FXLayersMT;
-        extern LIBZHL_API const char* FXParamsMT;
-        extern LIBZHL_API const char* GridDecorationMT;
-        extern LIBZHL_API const char* GridFireMT;
-        extern LIBZHL_API const char* GridGravityMT;
-        extern LIBZHL_API const char* GridLockMT;
-        extern LIBZHL_API const char* GridStairsMT;
-        extern LIBZHL_API const char* GridStatueMT;
-        extern LIBZHL_API const char* GridTeleporterMT;
-        extern LIBZHL_API const char* GridTNT_MT;
-        extern LIBZHL_API const char* GridTrapDoorMT;
-        extern LIBZHL_API const char* GridWallMT;
-        extern LIBZHL_API const char* GridWebMT;
-        extern LIBZHL_API const char* HistoryMT;
-        extern LIBZHL_API const char* HistoryItemMT;
-        extern LIBZHL_API const char* HistoryHUDMT;
-        extern LIBZHL_API const char* HistoryHUDItemMT;
-        extern LIBZHL_API const char* HUDMessageMT;
-        extern LIBZHL_API const char* ImGuiMT;
-        extern LIBZHL_API const char* ItemOverlayMT;
-        extern LIBZHL_API const char* KeyConfigMenuMT;
-        extern LIBZHL_API const char* LayerStateMT;
-        extern LIBZHL_API const char* LevelGeneratorMT;
-        extern LIBZHL_API const char* LevelGeneratorEntryMT;
-        extern LIBZHL_API const char* LevelGeneratorRoomMT;
-        extern LIBZHL_API const char* LRoomAreaDescMT;
-        extern LIBZHL_API const char* LRoomTileDescMT;
-        extern LIBZHL_API const char* MainMenuMT;
-        extern LIBZHL_API const char* MenuManagerMT;
-        extern LIBZHL_API const char* MinimapMT;
-        extern LIBZHL_API const char* ModsMenuMT;
-        extern LIBZHL_API const char* MultiShotParamsMT;
-        extern LIBZHL_API const char* NightmareSceneMT;
-        extern LIBZHL_API const char* NullFrameMT;
-        extern LIBZHL_API const char* OptionsMenuMT;
-        extern LIBZHL_API const char* PauseMenuMT;
-        extern LIBZHL_API const char* PersistentGameDataMT;
-        extern LIBZHL_API const char* PlayerHUDMT;
-        extern LIBZHL_API const char* PlayerHUDHeartMT;
-        extern LIBZHL_API const char* PlayerManagerMT;
-        extern LIBZHL_API const char* PocketItemMT;
-        extern LIBZHL_API const char* PointMT;
-        extern LIBZHL_API const char* ProceduralEffectMT;
-        extern LIBZHL_API const char* ProceduralItemMT;
-        extern LIBZHL_API const char* ProceduralItemManagerMT;
-        extern LIBZHL_API const char* RngMT;
-        extern LIBZHL_API const char* RoomMT;
-        extern LIBZHL_API const char* RoomConfigSetMT;
-        extern LIBZHL_API const char* RoomConfigStageMT;
-        extern LIBZHL_API const char* RoomDescriptorDoors;
-        extern LIBZHL_API const char* RoomDescriptorDoorsConst;
-        extern LIBZHL_API const char* RoomTransitionMT;
-        extern LIBZHL_API const char* SaveMenuMT;
-        extern LIBZHL_API const char* ScoreSheetMT;
-        extern LIBZHL_API const char* ShapeMT;
-        extern LIBZHL_API const char* SpecialSeedsMenuMT;
-        extern LIBZHL_API const char* StageTransitionMT;
-        extern LIBZHL_API const char* StatsMenuMT;
-        extern LIBZHL_API const char* TitleMenuMT;
-        extern LIBZHL_API const char* WeaponMT;
-        extern LIBZHL_API const char* WeightedOutcomePickerMT;
-        extern LIBZHL_API const char* CostumeSpriteDescMT;
-        extern LIBZHL_API const char* RailManagerMT;
-        extern LIBZHL_API const char* LootListMT;
-        extern LIBZHL_API const char* LootListEntryMT;
-        extern LIBZHL_API const char* MinimapConfigMT;
-        extern LIBZHL_API const char* EntityDescMT;
-    }
-
-    LIBZHL_API void UnloadMetatables();
-    LIBZHL_API void RegisterMetatable(Metatables metatable, void* key);
-    LIBZHL_API void PushMetatable(lua_State* L, Metatables metatable);
-    LIBZHL_API void* GetMetatableKey(Metatables metatable);
-    LIBZHL_API Metatables GetMetatableIdxFromName(std::string const& name);
-
-    LIBZHL_API void* TestUserdata(lua_State* L, int ud, lua::Metatables mt);
-    LIBZHL_API void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, std::string const& name);
-    LIBZHL_API void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, lua::Metatables constMt, std::string const& name);
-
-    LIBZHL_API void RegisterFunction(lua_State* L, lua::Metatables mt, const char* name, lua_CFunction func);
-    LIBZHL_API void RegisterFunctions(lua_State* L, lua::Metatables mt, luaL_Reg* functions);
+    LIBZHL_API void* TestCData(lua_State* L, int ud, lua_CTypeId ctypeid);
+    LIBZHL_API void* TestEntity(lua_State* L, int ud);
+    LIBZHL_API void* CheckCData(lua_State* L, int ud, lua_CTypeId ctypeid, std::string const& name);
 
     LIBZHL_API void RegisterGlobalClassFunction(lua_State* L, const char* className, const char* funcName, lua_CFunction func);
 
-    LIBZHL_API void RegisterVariable(lua_State* L, lua::Metatables mt, const char* variableName, lua_CFunction getFunc, lua_CFunction setFunc);
-    LIBZHL_API void RegisterVariableGetter(lua_State* L, lua::Metatables mt, const char* variableName, lua_CFunction func);
-    LIBZHL_API void RegisterVariableSetter(lua_State* L, lua::Metatables mt, const char* variableName, lua_CFunction func);
-    LIBZHL_API void RegisterGlobalClassVariable(lua_State* L, const char* className, const char* variableName, lua_CFunction getFunc, lua_CFunction setFunc);
-    LIBZHL_API void RegisterGlobalClassVariableGetter(lua_State* L, const char* className, const char* variableName, lua_CFunction func);
-    LIBZHL_API void RegisterGlobalClassVariableSetter(lua_State* L, const char* className, const char* variableName, lua_CFunction func);
-    LIBZHL_API void RegisterVariableToLoadedMT(lua_State* L, const char* variableName, lua_CFunction getFunc, lua_CFunction setFunc);
-    LIBZHL_API void RegisterVariableGetterToLoadedMT(lua_State* L, const char* variableName, lua_CFunction func, int pop = 2);
-    LIBZHL_API void RegisterVariableSetterToLoadedMT(lua_State* L, const char* variableName, lua_CFunction func, int pop = 2);
-
     LIBZHL_API void RegisterNewClass(lua_State* L, const char* name, const char* metaname, luaL_Reg* functions, lua_CFunction gc = nullptr);
 	
-    /* GetUserdata rationale.
-     * 
-     * CheckUserdata will return a class derived from Userdata.
-     * The layout will be as follows (LSB to the left):
-     * +-------------+------+
-     * | vtable addr | data |
-     * +-------------+------+
-     * 0             4      N
-     *
-     * p points to byte 0 in the structure, p + 0x4 points to the content
-     * of the Userdata object underneath.
-     *
-     * The function returns data interpreted as type T.
-     */
-
-    template<typename T>
-    T GetLuabridgeUserdata(lua_State* L, int idx, lua::Metatables mt, std::string const& name) {
-        void* p = CheckUserdata(L, idx, mt, name);
-        return *(T*)((char*)p + 0x4);
-    }
-
-    // Use this version if you need your userdata to be either the const or non const version
-    // of something. Most of the time you won't need it.
-    template<typename T>
-    T GetLuabridgeUserdata(lua_State* L, int idx, lua::Metatables mt, lua::Metatables constMt, std::string const& name) {
-        void* p = CheckUserdata(L, idx, mt, constMt, name);
-        return *(T*)((char*)p + 0x4);
-    }
-
-    template<typename T>
-    std::optional<T> TestUserdata(lua_State* L, int idx, lua::Metatables mt) {
-        void* p = TestUserdata(L, idx, mt);
-        if (p) {
-            return std::make_optional(*(T*)((char*)p + 0x4));
-        }
-
-        return std::nullopt;
-    }
-
     template<typename T>
     T GetRawUserdata(lua_State* L, int idx, const char* mt) {
         void* ud = luaL_checkudata(L, idx, mt);
         return (T)ud;
     }
 
-    LIBZHL_API void TracebackTillFunction(lua_State* L, const char* msg, int level, lua_CFunction function);
+    template<typename T>
+    T GetCData(lua_State* L, int idx, lua_CTypeId ctypeid, std::string const& name) {
+        void* p = CheckCData(L, idx, ctypeid, name);
 
-    struct lua_global_tag_t {};
+        if constexpr (std::is_pointer_v<T>) {
+            if (lua_tocdataid(L, idx) != ctypeid) {
+                return *reinterpret_cast<T*>(p);
+            }
+            return static_cast<T>(p);
+        } else {
+            return *(T*)p;
+        }
+    }
 
     class LuaResults;
+
+    // used for dynamic pushes in lua caller
+    struct LuaClassInterface
+    {
+        void (*Push)(lua_State*, const void*);
+        void (*PushPtr)(lua_State*, void*);
+    };
 
     class LIBZHL_API LuaCaller {
     public:
@@ -346,7 +58,6 @@ namespace lua {
         LuaCaller& push(bool x);
         LuaCaller& push(lua_CFunction fn, int n = 0);
         LuaCaller& pushfstring(const char* fmt, ...);
-        LuaCaller& push(lua_global_tag_t);
 
         template<typename T>
         std::enable_if_t<std::is_integral_v<T>, LuaCaller&> push(T x) {
@@ -369,36 +80,33 @@ namespace lua {
         LuaCaller& pushluaref(int t, int ref);
         LuaCaller& pushluaref(int ref);
         LuaCaller& push(const char* fmt, va_list va);
-        LuaCaller& push(void* ptr, Metatables meta);
-        LuaCaller& pushLuabridge(void* ptr, const char* meta); 
-        LuaCaller& pushLuabridge(void* ptr, lua::Metatables meta);
         LuaCaller& pushCallbackID(const char* name, const char* ns = nullptr);
-        template<typename T>
-        std::enable_if_t<std::is_pointer_v<T>, LuaCaller&> push(T ptr, const char* meta) {
-            void** result = (void**)lua_newuserdata(_L, sizeof(void*));
-            *result = ptr;
-            luaL_setmetatable(_L, meta);
+        template<typename LuaClass, typename T>
+        LuaCaller& pushClass(const T& value)
+        {
+            LuaClass::Push(_L, value);
             ++_n;
             return *this;
         }
-        template<typename T>
-        LuaCaller& pushUserdataValue(T const& t, Metatables meta) {
-            luabridge::UserdataValue<T>::push(_L, GetMetatableKey(meta), t);
+        template<typename LuaClass, class... Args>
+        LuaCaller& pushClassPtr(Args&&... args)
+        {
+            LuaClass::PushPtr(_L, std::forward<Args>(args)...);
             ++_n;
             return *this;
         }
-
-        void* pushUd(size_t size, const char* mt);
-
-        template<typename T, typename... Args>
-        T* pushUd(const char* mt, Args&&... args) {
-            void* result = lua_newuserdata(_L, sizeof(T));
-            luaL_setmetatable(_L, mt);
-            new (result) T(std::forward<Args>(args)...);
+        LuaCaller& pushClass(const LuaClassInterface& classInterface, const void* value)
+        {
+            classInterface.Push(_L, value);
             ++_n;
-            return (T*)result;
-        }
-
+            return *this;
+        };
+        LuaCaller& pushClassPtr(const LuaClassInterface& classInterface, void* value)
+        {
+            classInterface.PushPtr(_L, value);
+            ++_n;
+            return *this;
+        };
         void pushTable(int narr = 0, int nrec = 0);
 
         LuaResults call(int nresults);
@@ -455,98 +163,6 @@ namespace lua {
     };
 
 
-    template<typename T>
-    T UserdataToData(void* ud) {
-        return *(T*)((char*)ud + 4);
-    }
-	
-    /**
-     * The structure of Userdata, UserdataValue and UserdataPtr is taken directly
-     * from the source code of LuaBridge.
-     * 
-     * Warning: Userdata does have a virtual constructor in luabridge. It is
-     * a nop in Userdata and UserdataPtr, but in the case of UserdataValue it
-     * calls the destructor of the stored pointer (if any). This behavior is
-     * not reproduced here. However, the presence of a virtual destructor
-     * creates a vtable, adding 4 bytes of data at the start of the structure.
-     */
-    namespace luabridge {
-        extern LIBZHL_API void* identityKey;
-        extern LIBZHL_API lua_CFunction indexMetaMethod;
-        extern LIBZHL_API lua_CFunction newIndexMetaMethod;
-
-        inline void* getIdentityKey() {
-            return identityKey;
-        }
-
-        class LIBZHL_API Userdata {
-        protected:
-            void* m_p = nullptr;
-
-        public:
-            virtual ~Userdata() { }
-
-            inline void* getPointer() {
-                return m_p;
-            }
-        };
-
-        template<typename T>
-        class UserdataValue : public Userdata {
-        private:
-            UserdataValue<T>(UserdataValue<T> const&);
-            UserdataValue<T>& operator=(UserdataValue<T> const&);
-
-            char m_storage[sizeof(T)];
-
-            UserdataValue() {
-                m_p = getObject();
-            }
-
-            inline T* getObject() {
-                return reinterpret_cast<T*>(m_storage);
-            }
-
-        public:
-            static T* place(lua_State* L, void* key) {
-                UserdataValue<T>* const ud = new(lua_newuserdata(L, sizeof(UserdataValue<T>))) UserdataValue<T>();
-                lua_rawgetp(L, LUA_REGISTRYINDEX, key);
-                lua_setmetatable(L, -2);
-                return (T*)ud->getPointer();
-            }
-            
-            // this is not a function from the original LuaBridge source
-            static T* place_with_vftable(lua_State* L, void* key, void* vtable)
-            {
-                UserdataValue<T>* const ud = new(lua_newuserdata(L, sizeof(UserdataValue<T>))) UserdataValue<T>();
-                auto** vptr = reinterpret_cast<void**>(ud);
-                *vptr = vtable;
-
-                lua_rawgetp(L, LUA_REGISTRYINDEX, key);
-                lua_setmetatable(L, -2);
-                return (T*)ud->getPointer();
-            }
-
-            template<typename U>
-            static void push(lua_State* L, void* key, U const& u) {
-                new (place(L, key))  U(u);
-            }
-        };
-
-        class LIBZHL_API UserdataPtr : public Userdata {
-        private:
-            UserdataPtr(UserdataPtr const&);
-            UserdataPtr& operator= (UserdataPtr const&);
-
-            explicit UserdataPtr(void* const p);
-
-        public:
-            static void push(lua_State* L, void* const p, void const* const key);
-            static void push(lua_State* L, void* const p, const char* meta);
-            static void push(lua_State* L, void* const p, lua::Metatables mt);
-        };
-    }
-
     enum BoolCheckModes : uint8_t {
         BOOL_CHECK_MODE_DEFAULT,
         BOOL_CHECK_MODE_NOT_NIL,
@@ -556,6 +172,222 @@ namespace lua {
     LIBZHL_API bool luaL_optboolean(lua_State* L, int idx, bool default);
     LIBZHL_API bool luaL_checkboolean(lua_State* L, int idx, BoolCheckModes mode = BOOL_CHECK_MODE_NOT_NIL);
 
+    namespace ffi {
+        template<typename T>
+        void pushCdata(lua_State* L, lua_CTypeId ctypeid, T const& value) {
+            lua_pushcdata(L, ctypeid, &value, sizeof(T));
+        }
+
+        template<typename T>
+        T* placeCdata(lua_State* L, lua_CTypeId ctypeid) {
+            lua_pushcdata(L, ctypeid, nullptr, sizeof(T));
+            return (T*)lua_tocdata(L, -1);
+        }
+
+        inline void pushCdataPtr(lua_State* L, void const* p, lua_CTypeId ctypeid) {
+            if (p == nullptr)
+                lua_pushnil(L);
+            else
+                lua_pushcdata(L, ctypeid, &p, sizeof(p));
+        }
+        enum CDataID : lua_CTypeId {
+            VECTOR,
+            VECTOR_PTR,
+            GRID_ENTITY_DESC,
+            GRID_ENTITY_DESC_PTR,
+            COLOR,
+            CONST_COLOR,
+            COLOR_PTR,
+            BITSET_128,
+            BITSET_128_PTR,
+            POS_VEL,
+            POS_VEL_PTR,
+            COSTUME,
+            COSTUME_PTR,
+            ITEM,
+            ITEM_PTR,
+            KCOLOR,
+            KCOLOR_PTR,
+            TEAR_PARAMS,
+            TEAR_PARAMS_PTR,
+            PROJECTILE_PARAMS,
+            PROJECTILE_PARAMS_PTR,
+            ACTIVE_ITEM_DESC,
+            ACTIVE_ITEM_DESC_PTR,
+            QUEUE_ITEM_DATA,
+            QUEUE_ITEM_DATA_PTR,
+            TEMPORARY_EFFECTS,
+            TEMPORARY_EFFECTS_PTR,
+            SHADER,
+            SHADER_PTR,
+            IMAGE,
+            IMAGE_PTR,
+            DESTINATION_QUAD,
+            DESTINATION_QUAD_PTR,
+            SOURCE_QUAD,
+            SOURCE_QUAD_PTR,
+            SPRITE,
+            SPRITE_PTR,
+            BLEND_MODE,
+            BLEND_MODE_PTR,
+            ENTITY_REF,
+            ENTITY_REF_PTR,
+            GRID_ENTITY,
+            GRID_ENTITY_PTR,
+            GRID_ENTITY_ROCK,
+            GRID_ENTITY_ROCK_PTR,
+            GRID_ENTITY_PIT,
+            GRID_ENTITY_PIT_PTR,
+            GRID_ENTITY_SPIKES,
+            GRID_ENTITY_SPIKES_PTR,
+            GRID_ENTITY_TNT,
+            GRID_ENTITY_TNT_PTR,
+            GRID_ENTITY_POOP,
+            GRID_ENTITY_POOP_PTR,
+            GRID_ENTITY_DOOR,
+            GRID_ENTITY_DOOR_PTR,
+            GRID_ENTITY_PRESSURE_PLATE,
+            GRID_ENTITY_PRESSURE_PLATE_PTR,
+            GRID_ENTITY_DECORATION,
+            GRID_ENTITY_DECORATION_PTR,
+            GRID_ENTITY_WEB,
+            GRID_ENTITY_WEB_PTR,
+            GRID_ENTITY_LOCK,
+            GRID_ENTITY_LOCK_PTR,
+            GRID_ENTITY_FIRE,
+            GRID_ENTITY_FIRE_PTR,
+            GRID_ENTITY_WALL,
+            GRID_ENTITY_WALL_PTR,
+            GRID_ENTITY_TRAP_DOOR,
+            GRID_ENTITY_TRAP_DOOR_PTR,
+            GRID_ENTITY_STAIRS,
+            GRID_ENTITY_STAIRS_PTR,
+            GRID_ENTITY_GRAVITY,
+            GRID_ENTITY_GRAVITY_PTR,
+            GRID_ENTITY_STATUE,
+            GRID_ENTITY_STATUE_PTR,
+            GRID_ENTITY_TELEPORTER,
+            GRID_ENTITY_TELEPORTER_PTR,
+            ROOM_CONFIG_ROOM,
+            ROOM_CONFIG_ROOM_PTR,
+            COLOR_MODIFIER,
+            COLOR_MODIFIER_PTR,
+            ROOM,
+            ROOM_PTR,
+            ROOM_DESCRIPTOR,
+            ROOM_DESCRIPTOR_PTR,
+            ROOM_DESCRIPTOR_LIST,
+            ROOM_DESCRIPTOR_LIST_PTR,
+            RNG,
+            RNG_PTR,
+            VECTOR_LIST,
+            VECTOR_LIST_PTR,
+            ENTITY_DESC,
+            ENTITY_DESC_PTR,
+            CHALLENGE_PARAM,
+            CHALLENGE_PARAM_PTR,
+            CAPSULE,
+            CAPSULE_PTR,
+            SHAPE,
+            SHAPE_PTR,
+            COLOR_PARAMS,
+            COLOR_PARAMS_PTR,
+            LOOT_LIST,
+            LOOT_LIST_PTR,
+            MULTI_SHOT_PARAMS,
+            MULTI_SHOT_PARAMS_PTR,
+            WEIGHTED_OUTCOME_PICKER,
+            WEIGHTED_OUTCOME_PICKER_PTR,
+            HISTORY,
+            HISTORY_PTR,
+            HISTORY_ITEM,
+            HISTORY_ITEM_PTR,
+            POCKET_ITEM,
+            POCKET_ITEM_PTR,
+            LEVEL_GENERATOR,
+            LEVEL_GENERATOR_PTR,
+            LEVEL_GENERATOR_ROOM,
+            LEVEL_GENERATOR_ROOM_PTR,
+            LEVEL_GENERATOR_ENTRY,
+            LEVEL_GENERATOR_ENTRY_PTR,
+            BOSS_POOL,
+            BOSS_POOL_PTR,
+            COSTUME_SPRITE_DESC,
+            COSTUME_SPRITE_DESC_PTR,
+            GENERIC_PROMPT,
+            GENERIC_PROMPT_PTR,
+            HUD,
+            HUD_PTR,
+            PLAYER_HUD,
+            PLAYER_HUD_PTR,
+            HISTORY_HUD,
+            HISTORY_HUD_PTR,
+            WEAPON,
+            WEAPON_PTR,
+            ENTITY_SAVE_STATE,
+            ENTITY_SAVE_STATE_PTR,
+            ENTITIES_SAVE_STATE_VECTOR,
+            ENTITIES_SAVE_STATE_VECTOR_PTR,
+            GRID_ENTITIES_SAVE_STATE_VECTOR,
+            GRID_ENTITIES_SAVE_STATE_VECTOR_PTR,
+            ENTITY_CONFIG_ENTITY,
+            ENTITY_CONFIG_ENTITY_PTR,
+            ENTITY_CONFIG_PLAYER,
+            ENTITY_CONFIG_PLAYER_PTR,
+            ENTITY_CONFIG_BABY,
+            ENTITY_CONFIG_BABY_PTR,
+            SEEDS,
+            SEEDS_PTR,
+            FONT,
+            FONT_PTR,
+            FONT_RENDER_SETTINGS,
+            FONT_RENDER_SETTINGS_PTR,
+            ITEM_CONFIG,
+            ITEM_CONFIG_PTR,
+            ITEM_CONFIG_CARD,
+            ITEM_CONFIG_CARD_PTR,
+            ITEM_CONFIG_PILL_EFFECT,
+            ITEM_CONFIG_PILL_EFFECT_PTR,
+            ITEM_POOL,
+            ITEM_POOL_PTR,
+            LEVEL,
+            LEVEL_PTR,
+            GAME,
+            GAME_PTR,
+            ENTITY,
+            ENTITY_PTR,
+            ENTITY_PROJECTILE,
+            ENTITY_PROJECTILE_PTR,
+            ENTITY_TEAR,
+            ENTITY_TEAR_PTR,
+            ENTITY_BOMB,
+            ENTITY_BOMB_PTR,
+            ENTITY_KNIFE,
+            ENTITY_KNIFE_PTR,
+            ENTITY_LASER,
+            ENTITY_LASER_PTR,
+            ENTITY_EFFECT,
+            ENTITY_EFFECT_PTR,
+            ENTITY_PICKUP,
+            ENTITY_PICKUP_PTR,
+            ENTITY_FAMILIAR,
+            ENTITY_FAMILIAR_PTR,
+            ENTITY_SLOT,
+            ENTITY_SLOT_PTR,
+            PATHFINDER,
+            PATHFINDER_PTR,
+            ENTITY_NPC,
+            ENTITY_NPC_PTR,
+            ENTITY_DELIRIUM,
+            ENTITY_DELIRIUM_PTR,
+            ENTITY_PLAYER,
+            ENTITY_PLAYER_PTR,
+            MAX_CDATA
+        };
+
+        extern LIBZHL_API lua_CTypeId CData[MAX_CDATA];
+    };
+
     template<typename T, typename... Args>
     T* place(lua_State* L, const char* mt, Args&&... args) {
         void* data = lua_newuserdata(L, sizeof(T));
@@ -564,42 +396,15 @@ namespace lua {
         return (T*)data;
     }
 
-    struct LIBZHL_API LuaStackRef {
-        LuaStackRef(int ref) : _ref(ref) { }
-        operator int() {
-            return _ref;
-        }
-
-        int _ref;
-    };
-
-    /* The following four functions assume the destination table is at the top of the stack.
-     * If it's not the case you need to use the overload that takes two LuaStackRefs as 
-     * parameters. To do so, push the value you want to set in the table, then give both the
-     * index of this value and of the table as parameters to TableAssoc.
-     */
+    // These assume the destination table is at the top of the stack.
     LIBZHL_API void TableAssoc(lua_State* L, std::string const& name, int value);
     LIBZHL_API void TableAssoc(lua_State* L, std::string const& name, float value);
     LIBZHL_API void TableAssoc(lua_State* L, std::string const& name, lua_CFunction fn);
     LIBZHL_API void TableAssoc(lua_State* L, std::string const& name, void* ptr);
-    /* Store in the table at index dstTable the value at index srcObj.
-     * The value at index srcObj is subsequently poped from the stack.
-     */
-    LIBZHL_API void TableAssoc(lua_State* L, std::string const& name, LuaStackRef dstTable, LuaStackRef srcObj);
-
-    /* The following four functions assume the destination table is at the top of the stack.
-     * If it's not the case you need to use the overload that takes two LuaStackRefs as
-     * parameters. To do so, push the value you want to set in the table, then give both the
-     * index of this value and of the table as parameters to TableAssoc.
-     */
     LIBZHL_API void TableAssoc(lua_State* L, int key, int value);
     LIBZHL_API void TableAssoc(lua_State* L, int key, float value);
     LIBZHL_API void TableAssoc(lua_State* L, int key, lua_CFunction fn);
     LIBZHL_API void TableAssoc(lua_State* L, int key, void* ptr);
-    /* Store in the table at index dstTable the value at index srcObj.
-     * The value at index srcObj is subsequently poped from the stack.
-     */
-    LIBZHL_API void TableAssoc(lua_State* L, int key, LuaStackRef dstTable, LuaStackRef srcObj);
 
     namespace callbacks {
         LIBZHL_API bool CheckInteger(lua_State* L, int stackPosition);
@@ -611,7 +416,6 @@ namespace lua {
 
     void LIBZHL_API PushCallbackID(lua_State* L, const char* name, const char* ns = nullptr);
     void LIBZHL_API PushCallbackRegistryKey(lua_State* L = nullptr);
-    int LIBZHL_API LuaCheckMainMenuExists(lua_State* L, const char* className);
 }
 
 #define LUA_FUNCTION(name) static int name(lua_State* L)

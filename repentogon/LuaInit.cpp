@@ -20,162 +20,10 @@
 
 #include "LuaInit.h"
 
-static std::map<std::string, std::vector<std::pair<std::string, void*>>> _functions;
+extern "C" int luaopen_utf8(lua_State* L);
 
 int LuaKeys::runCallbackWithTwoParams = LUA_NOREF;
-
-static int LuaDumpRegistry(lua_State* L) {
-	int top = lua_gettop(L);
-	lua_newtable(L);
-	lua_pushnil(L);
-	while (lua_next(L, LUA_REGISTRYINDEX) != 0) {
-		lua_pushvalue(L, -2);
-		lua_pushvalue(L, -2);
-		lua_rawset(L, -5);
-		lua_pop(L, 1);
-	}
-
-	int newtop = lua_gettop(L);
-	if (newtop != top + 1) {
-		ZHL::Log("top = %d, newtop = %d\n", top, newtop);
-		exit(-1);
-	}
-	return 1;
-}
-
-static int LuaExtractFunctions(lua_State* L) {
-	/* int n = lua_gettop(L);
-	std::string path;
-	if (n == 0) {
-		path = "lua_functions.log";
-	} else {
-		if (lua_type(L, 1) == LUA_TSTRING) {
-			path = lua_tostring(L, 1);
-		} else {
-			path = "lua_functions.log";
-		}
-	} */
-
-	lua_newtable(L); // t
-	int i = 0;
-	for (auto iter = _functions.begin(); iter != _functions.end(); ++iter, ++i) {
-		lua_newtable(L); // t t
-
-		lua_pushstring(L, "type"); // t t type 
-		lua_pushstring(L, iter->first.c_str()); // t t type name
-		lua_rawset(L, -3); // t t
-
-		lua_pushstring(L, "functions"); // t t functions
-		lua_newtable(L); // t t functions t
-
-		for (auto fn_iter = iter->second.begin(); fn_iter != iter->second.end(); ++fn_iter) {
-			lua_pushstring(L, fn_iter->first.c_str()); // t t functions t fnname
-			lua_pushlightuserdata(L, fn_iter->second); // t t functions t fname addr
-			lua_rawset(L, -3); // t t functions t
-		}
-
-		lua_rawset(L, -3); // t t
-
-		lua_rawseti(L, -2, i); // t
-	}
-
-	return 1;
-}
-
-static void ExtractGameFunctions(lua_State* L, std::vector<std::pair<std::string, void*>>& functions, FILE* f) {
-	lua_pushnil(L);
-	while (lua_next(L, -3)) {
-		if (lua_type(L, -2) == LUA_TSTRING && lua_tostring(L, -2)[0] != '_') {
-			const char* name = lua_tostring(L, -2);
-			if (lua_type(L, -1) == LUA_TFUNCTION) {
-				const void* addr = lua_topointer(L, -1);
-				unsigned char nupvalues = *(unsigned char*)((char*)addr + 0x6);
-
-				if (nupvalues == 1) {
-					TValue* upvalue = (TValue*)((char*)addr + 0x10);
-					if ((upvalue->tt_ & 0xF) == LUA_TUSERDATA) {
-						Udata* closure_udata = (Udata*)upvalue->value_.p;
-						void* fn_addr = *(void**)((char*)closure_udata + 0x18);
-						// fprintf(f, "Found addr of %s at %p\n", name, fn_addr);
-						functions.push_back(std::make_pair(name, fn_addr));
-					}
-				}
-			}
-		}
-		lua_pop(L, 1);
-	}
-}
-
-static void RegisterMetatables(lua_State* L) {
-	ZHL::Logger logger;
-	logger.Log("Dumping Lua registry\n");
-
-	lua_pushnil(L);
-	std::map<std::string, void*> metatables;
-
-	while (lua_next(L, LUA_REGISTRYINDEX)) {
-		if (lua_type(L, -2) == LUA_TLIGHTUSERDATA) { // key value
-			if (lua_type(L, -1) == LUA_TTABLE) { // key value
-				lua_pushstring(L, "__type"); // key value (table) __type
-				int __type = lua_rawget(L, -2); // key table table["__type"]
-
-				if (__type == LUA_TSTRING) {
-					std::string type(lua_tostring(L, -1));
-					void* addr = lua_touserdata(L, -3);
-
-					if (type == "Room" || type == "const Room") {
-						lua_pushstring(L, "GetBossID"); // key table table["__type"] GetBossID
-						int bossID = lua_rawget(L, -3); // key table table["__type"] table["GetBossID"]
-
-						if (bossID == LUA_TNIL) {
-							if (type.find("const") != std::string::npos) {
-								type = "const RoomConfig_Room";
-							}
-							else {
-								type = "RoomConfig_Room";
-							}
-						}
-
-						lua_pop(L, 1); // key table table["__type"]
-					}
-					else if (type == "RoomDescriptor" || type == "const RoomDescriptor") {
-						lua_pushstring(L, "Get");
-						int get = lua_rawget(L, -3);
-
-						if (get != LUA_TNIL) {
-							if (type.find("const") != std::string::npos) {
-								type = "const ArrayProxy_RoomDescriptor";
-							}
-							else {
-								type = "ArrayProxy_RoomDescriptor";
-							}
-						}
-
-						lua_pop(L, 1);
-					}
-
-					lua::RegisterMetatable(lua::GetMetatableIdxFromName(type), addr);
-					ExtractGameFunctions(L, _functions[type.c_str()], logger.GetFile());
-				}
-
-				lua_pop(L, 1); // key table
-			}
-		}
-
-		lua_pop(L, 1); // key
-	}
-
-	logger.Log("Done dumping Lua registry\n");
-}
-
-void NukeConstMetatables(lua_State* L) {
-	int diff = (int)lua::Metatables::BEGIN_CONST + 1 - ((int)lua::Metatables::BEGIN_NORMAL + 1);
-	for (int i = (int)lua::Metatables::BEGIN_CONST + 1; i < (int)lua::Metatables::METATABLES_MAX; ++i) {
-		void* key = lua::GetMetatableKey((lua::Metatables)i);
-		lua::PushMetatable(L, (lua::Metatables)(i - diff));
-		lua_rawsetp(L, LUA_REGISTRYINDEX, key);
-	}
-}
+int LuaKeys::clearEntityData = LUA_NOREF;
 
 static void bind_lua_internals(lua_State* L, int tblIdx)
 {
@@ -212,16 +60,76 @@ static void bind_lua_internals(lua_State* L, int tblIdx)
 	}
 }
 
+HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, INT_MAX, () -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_newtable(L);
+	lua_setglobal(L, "Isaac");
+
+	if (!this->GetLuaDebug()) {
+		lua_register(L, "require", LuaEngine::Lua_Require);
+	}
+	lua_register(L, "include", LuaEngine::Lua_Include);
+	lua_register(L, "print", LuaEngine::Lua_Print);
+
+	int n = luaopen_jit(L);
+	lua_pop(L, n);
+
+	luaL_requiref(L, "ffi", luaopen_ffi, 1);
+	lua_pop(L, 1);
+
+	// For whatever rhyme or reason, string functions don't work in luadebug without us explicitly opening utf8 :shrugging:
+	luaL_requiref(L, "utf8", luaopen_utf8, 1);
+	lua_pop(L, 1);
+
+	this->RunBundledScript("resources/scripts/ffi/main.lua");
+}
+
+static size_t luaArenaSize = 0;
+static size_t forceCollectAt = 0;
+static int forceCollectPercentage = 80;
+static double gcFrameBudgetMs = 3.0;
+
+HOOK_GLOBAL(mi_reserve_os_memory_ex, (unsigned int size, bool commit, bool allowLarge, bool exclusive, int* arenaId) -> int, __cdecl) {
+	const int result = super(size, commit, allowLarge, exclusive, arenaId);
+	if (result == 0)
+		luaArenaSize = size;
+	return result;
+}
+
 HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	const char* C_BINDINGS_NAME = "_CBindings";
 	const char* LUA_BINDINGS_NAME = "_LuaBindings";
 
 	super(Debug);
-
 	lua_State* L = g_LuaEngine->_state;
+	luaJIT_setapifatal([](const char* msg) { ZHL::Log("[ERROR] %s", msg); });
+	luaJIT_setgcframebudget(L, gcFrameBudgetMs);
+	forceCollectAt = luaArenaSize / 100 * forceCollectPercentage;
+	if (luaArenaSize)
+		ZHL::Log("[REPENTOGON] Armed Lua heap emergency collection at %u of %u MB\n", forceCollectAt >> 20, luaArenaSize >> 20);
+
 	luaL_requiref(L, "debug", luaopen_debug, 1);
 	lua_pop(L, 1);
 	luaL_requiref(L, "os", luaopen_os, 1);
+	lua_pop(L, 1);
+
+	// IO is just needed for upstream 53compat, we'll nil it in main_ex.
+	luaL_requiref(L, "io", luaopen_io, 1);
+	lua_pop(L, 1);
+
+	// 53compat also needs package.loaded
+	lua_getglobal(L, "package");
+	if (lua_isnil(L, -1)) {
+		lua_newtable(L);
+		lua_getfield(L, LUA_REGISTRYINDEX, "_LOADED");
+		if (lua_isnil(L, -1)) {
+			lua_pop(L, 1);
+			lua_newtable(L);
+		}
+		lua_setfield(L, -2, "loaded");
+		lua_setglobal(L, "package");
+	}
 	lua_pop(L, 1);
 
 	lua_newtable(L);
@@ -231,6 +139,196 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua_State* state = g_LuaEngine->runCallbackRegistry->state;
 	this->RunBundledScript("resources/scripts/enums_ex.lua");
 	this->RunBundledScript("resources/scripts/main_ex.lua");
+
+	lua::ffi::CData[lua::ffi::CDataID::VECTOR] = lua_ctypeid(L, "Vector");
+	lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR] = lua_ctypeid(L, "VectorPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC] = lua_ctypeid(L, "GridEntityDesc");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC_PTR] = lua_ctypeid(L, "GridEntityDescPtr");
+	lua::ffi::CData[lua::ffi::CDataID::COLOR] = lua_ctypeid(L, "Color");
+	lua::ffi::CData[lua::ffi::CDataID::CONST_COLOR] = lua_ctypeid(L, "ConstColor");
+	lua::ffi::CData[lua::ffi::CDataID::COLOR_PTR] = lua_ctypeid(L, "ColorPtr");
+	lua::ffi::CData[lua::ffi::CDataID::BITSET_128] = lua_ctypeid(L, "BitSet128");
+	lua::ffi::CData[lua::ffi::CDataID::BITSET_128_PTR] = lua_ctypeid(L, "BitSet128Ptr");
+	lua::ffi::CData[lua::ffi::CDataID::POS_VEL] = lua_ctypeid(L, "PosVel");
+	lua::ffi::CData[lua::ffi::CDataID::POS_VEL_PTR] = lua_ctypeid(L, "PosVelPtr");
+	lua::ffi::CData[lua::ffi::CDataID::COSTUME] = lua_ctypeid(L, "ItemConfigCostume");
+	lua::ffi::CData[lua::ffi::CDataID::COSTUME_PTR] = lua_ctypeid(L, "ItemConfigCostumePtr");
+	lua::ffi::CData[lua::ffi::CDataID::ITEM] = lua_ctypeid(L, "ItemConfigItem");
+	lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR] = lua_ctypeid(L, "ItemConfigItemPtr");
+	lua::ffi::CData[lua::ffi::CDataID::KCOLOR] = lua_ctypeid(L, "KColor");
+	lua::ffi::CData[lua::ffi::CDataID::KCOLOR_PTR] = lua_ctypeid(L, "KColorPtr");
+	lua::ffi::CData[lua::ffi::CDataID::TEAR_PARAMS] = lua_ctypeid(L, "TearParams");
+	lua::ffi::CData[lua::ffi::CDataID::TEAR_PARAMS_PTR] = lua_ctypeid(L, "TearParamsPtr");
+	lua::ffi::CData[lua::ffi::CDataID::PROJECTILE_PARAMS] = lua_ctypeid(L, "ProjectileParams");
+	lua::ffi::CData[lua::ffi::CDataID::PROJECTILE_PARAMS_PTR] = lua_ctypeid(L, "ProjectileParamsPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ACTIVE_ITEM_DESC] = lua_ctypeid(L, "ActiveItemDesc");
+	lua::ffi::CData[lua::ffi::CDataID::ACTIVE_ITEM_DESC_PTR] = lua_ctypeid(L, "ActiveItemDescPtr");
+	lua::ffi::CData[lua::ffi::CDataID::QUEUE_ITEM_DATA] = lua_ctypeid(L, "QueueItemData");
+	lua::ffi::CData[lua::ffi::CDataID::QUEUE_ITEM_DATA_PTR] = lua_ctypeid(L, "QueueItemDataPtr");
+	lua::ffi::CData[lua::ffi::CDataID::TEMPORARY_EFFECTS] = lua_ctypeid(L, "TemporaryEffects");
+	lua::ffi::CData[lua::ffi::CDataID::TEMPORARY_EFFECTS_PTR] = lua_ctypeid(L, "TemporaryEffectsPtr");
+	lua::ffi::CData[lua::ffi::CDataID::SHADER] = lua_ctypeid(L, "Shader");
+	lua::ffi::CData[lua::ffi::CDataID::SHADER_PTR] = lua_ctypeid(L, "ShaderPtr");
+	lua::ffi::CData[lua::ffi::CDataID::IMAGE] = lua_ctypeid(L, "Image");
+	lua::ffi::CData[lua::ffi::CDataID::IMAGE_PTR] = lua_ctypeid(L, "ImagePtr");
+	lua::ffi::CData[lua::ffi::CDataID::DESTINATION_QUAD] = lua_ctypeid(L, "DestinationQuad");
+	lua::ffi::CData[lua::ffi::CDataID::DESTINATION_QUAD_PTR] = lua_ctypeid(L, "DestinationQuadPtr");
+	lua::ffi::CData[lua::ffi::CDataID::SOURCE_QUAD] = lua_ctypeid(L, "SourceQuad");
+	lua::ffi::CData[lua::ffi::CDataID::SOURCE_QUAD_PTR] = lua_ctypeid(L, "SourceQuadPtr");
+	lua::ffi::CData[lua::ffi::CDataID::SPRITE] = lua_ctypeid(L, "Sprite");
+	lua::ffi::CData[lua::ffi::CDataID::SPRITE_PTR] = lua_ctypeid(L, "SpritePtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_REF] = lua_ctypeid(L, "EntityRef");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_REF_PTR] = lua_ctypeid(L, "EntityRefPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY] = lua_ctypeid(L, "GridEntity");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_PTR] = lua_ctypeid(L, "GridEntityPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_ROCK] = lua_ctypeid(L, "GridEntityRock");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_ROCK_PTR] = lua_ctypeid(L, "GridEntityRockPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_PIT] = lua_ctypeid(L, "GridEntityPit");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_PIT_PTR] = lua_ctypeid(L, "GridEntityPitPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_SPIKES] = lua_ctypeid(L, "GridEntitySpikes");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_SPIKES_PTR] = lua_ctypeid(L, "GridEntitySpikesPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_TNT] = lua_ctypeid(L, "GridEntityTNT");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_TNT_PTR] = lua_ctypeid(L, "GridEntityTNTPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_POOP] = lua_ctypeid(L, "GridEntityPoop");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_POOP_PTR] = lua_ctypeid(L, "GridEntityPoopPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DOOR] = lua_ctypeid(L, "GridEntityDoor");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DOOR_PTR] = lua_ctypeid(L, "GridEntityDoorPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_PRESSURE_PLATE] = lua_ctypeid(L, "GridEntityPressurePlate");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_PRESSURE_PLATE_PTR] = lua_ctypeid(L, "GridEntityPressurePlatePtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DECORATION] = lua_ctypeid(L, "GridEntityDecoration");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DECORATION_PTR] = lua_ctypeid(L, "GridEntityDecorationPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_WEB] = lua_ctypeid(L, "GridEntityWeb");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_WEB_PTR] = lua_ctypeid(L, "GridEntityWebPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_LOCK] = lua_ctypeid(L, "GridEntityLock");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_LOCK_PTR] = lua_ctypeid(L, "GridEntityLockPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_FIRE] = lua_ctypeid(L, "GridEntityFire");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_FIRE_PTR] = lua_ctypeid(L, "GridEntityFirePtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_WALL] = lua_ctypeid(L, "GridEntityWall");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_WALL_PTR] = lua_ctypeid(L, "GridEntityWallPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_TRAP_DOOR] = lua_ctypeid(L, "GridEntityTrapDoor");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_TRAP_DOOR_PTR] = lua_ctypeid(L, "GridEntityTrapDoorPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_STAIRS] = lua_ctypeid(L, "GridEntityStairs");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_STAIRS_PTR] = lua_ctypeid(L, "GridEntityStairsPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_GRAVITY] = lua_ctypeid(L, "GridEntityGravity");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_GRAVITY_PTR] = lua_ctypeid(L, "GridEntityGravityPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_STATUE] = lua_ctypeid(L, "GridEntityStatue");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_STATUE_PTR] = lua_ctypeid(L, "GridEntityStatuePtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_TELEPORTER] = lua_ctypeid(L, "GridEntityTeleporter");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_TELEPORTER_PTR] = lua_ctypeid(L, "GridEntityTeleporterPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ROOM_CONFIG_ROOM] = lua_ctypeid(L, "RoomConfigRoom");
+	lua::ffi::CData[lua::ffi::CDataID::ROOM_CONFIG_ROOM_PTR] = lua_ctypeid(L, "RoomConfigRoomPtr");
+	lua::ffi::CData[lua::ffi::CDataID::COLOR_MODIFIER] = lua_ctypeid(L, "ColorModifier");
+	lua::ffi::CData[lua::ffi::CDataID::COLOR_MODIFIER_PTR] = lua_ctypeid(L, "ColorModifierPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ROOM] = lua_ctypeid(L, "Room");
+	lua::ffi::CData[lua::ffi::CDataID::ROOM_PTR] = lua_ctypeid(L, "RoomPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ROOM_DESCRIPTOR] = lua_ctypeid(L, "RoomDescriptor");
+	lua::ffi::CData[lua::ffi::CDataID::ROOM_DESCRIPTOR_PTR] = lua_ctypeid(L, "RoomDescriptorPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ROOM_DESCRIPTOR_LIST] = lua_ctypeid(L, "RoomDescriptorList");
+	lua::ffi::CData[lua::ffi::CDataID::ROOM_DESCRIPTOR_LIST_PTR] = lua_ctypeid(L, "RoomDescriptorListPtr");
+	lua::ffi::CData[lua::ffi::CDataID::RNG] = lua_ctypeid(L, "RNG");
+	lua::ffi::CData[lua::ffi::CDataID::RNG_PTR] = lua_ctypeid(L, "RNGPtr");
+	lua::ffi::CData[lua::ffi::CDataID::VECTOR_LIST] = lua_ctypeid(L, "VectorList");
+	lua::ffi::CData[lua::ffi::CDataID::VECTOR_LIST_PTR] = lua_ctypeid(L, "VectorListPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_DESC] = lua_ctypeid(L, "EntityDesc");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_DESC_PTR] = lua_ctypeid(L, "EntityDescPtr");
+	lua::ffi::CData[lua::ffi::CDataID::CHALLENGE_PARAM] = lua_ctypeid(L, "ChallengeParam");
+	lua::ffi::CData[lua::ffi::CDataID::CHALLENGE_PARAM_PTR] = lua_ctypeid(L, "ChallengeParamPtr");
+	lua::ffi::CData[lua::ffi::CDataID::CAPSULE] = lua_ctypeid(L, "Capsule");
+	lua::ffi::CData[lua::ffi::CDataID::CAPSULE_PTR] = lua_ctypeid(L, "CapsulePtr");
+	lua::ffi::CData[lua::ffi::CDataID::SHAPE] = lua_ctypeid(L, "Shape");
+	lua::ffi::CData[lua::ffi::CDataID::SHAPE_PTR] = lua_ctypeid(L, "ShapePtr");
+	lua::ffi::CData[lua::ffi::CDataID::COLOR_PARAMS] = lua_ctypeid(L, "ColorParams");
+	lua::ffi::CData[lua::ffi::CDataID::COLOR_PARAMS_PTR] = lua_ctypeid(L, "ColorParamsPtr");
+	lua::ffi::CData[lua::ffi::CDataID::LOOT_LIST] = lua_ctypeid(L, "LootList");
+	lua::ffi::CData[lua::ffi::CDataID::LOOT_LIST_PTR] = lua_ctypeid(L, "LootListPtr");
+	lua::ffi::CData[lua::ffi::CDataID::WEIGHTED_OUTCOME_PICKER] = lua_ctypeid(L, "WeightedOutcomePicker");
+    lua::ffi::CData[lua::ffi::CDataID::WEIGHTED_OUTCOME_PICKER_PTR] = lua_ctypeid(L, "WeightedOutcomePickerPtr");
+	lua::ffi::CData[lua::ffi::CDataID::MULTI_SHOT_PARAMS] = lua_ctypeid(L, "MultiShotParams");
+	lua::ffi::CData[lua::ffi::CDataID::MULTI_SHOT_PARAMS_PTR] = lua_ctypeid(L, "MultiShotParamsPtr");
+	lua::ffi::CData[lua::ffi::CDataID::HISTORY] = lua_ctypeid(L, "History");
+	lua::ffi::CData[lua::ffi::CDataID::HISTORY_PTR] = lua_ctypeid(L, "HistoryPtr");
+	lua::ffi::CData[lua::ffi::CDataID::HISTORY_ITEM] = lua_ctypeid(L, "HistoryItem");
+	lua::ffi::CData[lua::ffi::CDataID::HISTORY_ITEM_PTR] = lua_ctypeid(L, "HistoryItemPtr");
+	lua::ffi::CData[lua::ffi::CDataID::POCKET_ITEM] = lua_ctypeid(L, "PocketItem");
+	lua::ffi::CData[lua::ffi::CDataID::POCKET_ITEM_PTR] = lua_ctypeid(L, "PocketItemPtr");
+	lua::ffi::CData[lua::ffi::CDataID::LEVEL_GENERATOR] = lua_ctypeid(L, "LevelGenerator");
+	lua::ffi::CData[lua::ffi::CDataID::LEVEL_GENERATOR_PTR] = lua_ctypeid(L, "LevelGeneratorPtr");
+	lua::ffi::CData[lua::ffi::CDataID::LEVEL_GENERATOR_ROOM] = lua_ctypeid(L, "LevelGeneratorRoom");
+	lua::ffi::CData[lua::ffi::CDataID::LEVEL_GENERATOR_ROOM_PTR] = lua_ctypeid(L, "LevelGeneratorRoomPtr");
+	lua::ffi::CData[lua::ffi::CDataID::LEVEL_GENERATOR_ENTRY] = lua_ctypeid(L, "LevelGeneratorEntry");
+	lua::ffi::CData[lua::ffi::CDataID::LEVEL_GENERATOR_ENTRY_PTR] = lua_ctypeid(L, "LevelGeneratorEntryPtr");
+	lua::ffi::CData[lua::ffi::CDataID::BOSS_POOL] = lua_ctypeid(L, "BossPool");
+	lua::ffi::CData[lua::ffi::CDataID::BOSS_POOL_PTR] = lua_ctypeid(L, "BossPoolPtr");
+	lua::ffi::CData[lua::ffi::CDataID::COSTUME_SPRITE_DESC] = lua_ctypeid(L, "CostumeSpriteDesc");
+	lua::ffi::CData[lua::ffi::CDataID::COSTUME_SPRITE_DESC_PTR] = lua_ctypeid(L, "CostumeSpriteDescPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GENERIC_PROMPT] = lua_ctypeid(L, "GenericPrompt");
+	lua::ffi::CData[lua::ffi::CDataID::GENERIC_PROMPT_PTR] = lua_ctypeid(L, "GenericPromptPtr");
+	lua::ffi::CData[lua::ffi::CDataID::HUD] = lua_ctypeid(L, "HUD");
+	lua::ffi::CData[lua::ffi::CDataID::HUD_PTR] = lua_ctypeid(L, "HUDPtr");
+	lua::ffi::CData[lua::ffi::CDataID::PLAYER_HUD] = lua_ctypeid(L, "PlayerHUD");
+	lua::ffi::CData[lua::ffi::CDataID::PLAYER_HUD_PTR] = lua_ctypeid(L, "PlayerHUDPtr");
+	lua::ffi::CData[lua::ffi::CDataID::HISTORY_HUD] = lua_ctypeid(L, "HistoryHUD");
+	lua::ffi::CData[lua::ffi::CDataID::HISTORY_HUD_PTR] = lua_ctypeid(L, "HistoryHUDPtr");
+	lua::ffi::CData[lua::ffi::CDataID::WEAPON] = lua_ctypeid(L, "Weapon");
+	lua::ffi::CData[lua::ffi::CDataID::WEAPON_PTR] = lua_ctypeid(L, "WeaponPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_SAVE_STATE] = lua_ctypeid(L, "EntitySaveState");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_SAVE_STATE_PTR] = lua_ctypeid(L, "EntitySaveStatePtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITIES_SAVE_STATE_VECTOR] = lua_ctypeid(L, "EntitiesSaveStateVector");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITIES_SAVE_STATE_VECTOR_PTR] = lua_ctypeid(L, "EntitiesSaveStateVectorPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITIES_SAVE_STATE_VECTOR] = lua_ctypeid(L, "GridEntitiesSaveStateVector");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITIES_SAVE_STATE_VECTOR_PTR] = lua_ctypeid(L, "GridEntitiesSaveStateVectorPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_CONFIG_ENTITY] = lua_ctypeid(L, "EntityConfigEntity");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_CONFIG_ENTITY_PTR] = lua_ctypeid(L, "EntityConfigEntityPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_CONFIG_PLAYER] = lua_ctypeid(L, "EntityConfigPlayer");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_CONFIG_PLAYER_PTR] = lua_ctypeid(L, "EntityConfigPlayerPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_CONFIG_BABY] = lua_ctypeid(L, "EntityConfigBaby");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_CONFIG_BABY_PTR] = lua_ctypeid(L, "EntityConfigBabyPtr");
+	lua::ffi::CData[lua::ffi::CDataID::SEEDS] = lua_ctypeid(L, "Seeds");
+	lua::ffi::CData[lua::ffi::CDataID::SEEDS_PTR] = lua_ctypeid(L, "SeedsPtr");
+	lua::ffi::CData[lua::ffi::CDataID::FONT] = lua_ctypeid(L, "Font");
+	lua::ffi::CData[lua::ffi::CDataID::FONT_PTR] = lua_ctypeid(L, "FontPtr");
+	lua::ffi::CData[lua::ffi::CDataID::FONT_RENDER_SETTINGS] = lua_ctypeid(L, "FontRenderSettings");
+	lua::ffi::CData[lua::ffi::CDataID::FONT_RENDER_SETTINGS_PTR] = lua_ctypeid(L, "FontRenderSettingsPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ITEM_CONFIG] = lua_ctypeid(L, "ItemConfig");
+	lua::ffi::CData[lua::ffi::CDataID::ITEM_CONFIG_PTR] = lua_ctypeid(L, "ItemConfigPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ITEM_CONFIG_CARD] = lua_ctypeid(L, "ItemConfigCard");
+	lua::ffi::CData[lua::ffi::CDataID::ITEM_CONFIG_CARD_PTR] = lua_ctypeid(L, "ItemConfigCardPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ITEM_CONFIG_PILL_EFFECT] = lua_ctypeid(L, "ItemConfigPillEffect");
+	lua::ffi::CData[lua::ffi::CDataID::ITEM_CONFIG_PILL_EFFECT_PTR] = lua_ctypeid(L, "ItemConfigPillEffectPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ITEM_POOL] = lua_ctypeid(L, "ItemPool");
+	lua::ffi::CData[lua::ffi::CDataID::ITEM_POOL_PTR] = lua_ctypeid(L, "ItemPoolPtr");
+	lua::ffi::CData[lua::ffi::CDataID::LEVEL] = lua_ctypeid(L, "Level");
+	lua::ffi::CData[lua::ffi::CDataID::LEVEL_PTR] = lua_ctypeid(L, "LevelPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GAME] = lua_ctypeid(L, "Game");
+	lua::ffi::CData[lua::ffi::CDataID::GAME_PTR] = lua_ctypeid(L, "GamePtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY] = lua_ctypeid(L, "Entity");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_PTR] = lua_ctypeid(L, "EntityPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_PROJECTILE] = lua_ctypeid(L, "EntityProjectile");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_PROJECTILE_PTR] = lua_ctypeid(L, "EntityProjectilePtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_TEAR] = lua_ctypeid(L, "EntityTear");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_TEAR_PTR] = lua_ctypeid(L, "EntityTearPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_BOMB] = lua_ctypeid(L, "EntityBomb");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_BOMB_PTR] = lua_ctypeid(L, "EntityBombPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_KNIFE] = lua_ctypeid(L, "EntityKnife");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_KNIFE_PTR] = lua_ctypeid(L, "EntityKnifePtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_LASER] = lua_ctypeid(L, "EntityLaser");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_LASER_PTR] = lua_ctypeid(L, "EntityLaserPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_EFFECT] = lua_ctypeid(L, "EntityEffect");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_EFFECT_PTR] = lua_ctypeid(L, "EntityEffectPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_PICKUP] = lua_ctypeid(L, "EntityPickup");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_PICKUP_PTR] = lua_ctypeid(L, "EntityPickupPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_FAMILIAR] = lua_ctypeid(L, "EntityFamiliar");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_FAMILIAR_PTR] = lua_ctypeid(L, "EntityFamiliarPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_SLOT] = lua_ctypeid(L, "EntitySlot");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_SLOT_PTR] = lua_ctypeid(L, "EntitySlotPtr");
+	lua::ffi::CData[lua::ffi::CDataID::PATHFINDER] = lua_ctypeid(L, "PathFinder");
+	lua::ffi::CData[lua::ffi::CDataID::PATHFINDER_PTR] = lua_ctypeid(L, "PathFinderPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_NPC] = lua_ctypeid(L, "EntityNPC");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_NPC_PTR] = lua_ctypeid(L, "EntityNPCPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_DELIRIUM] = lua_ctypeid(L, "EntityDelirium");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_DELIRIUM_PTR] = lua_ctypeid(L, "EntityDeliriumPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_PLAYER] = lua_ctypeid(L, "EntityPlayer");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_PLAYER_PTR] = lua_ctypeid(L, "EntityPlayerPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");
@@ -258,7 +356,9 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
     lua_getglobal(state, "_RunCallbackWithTwoParams");
     LuaKeys::runCallbackWithTwoParams = luaL_ref(state, LUA_REGISTRYINDEX);
 
-	NukeConstMetatables(_state);
+	lua_getglobal(state, "_ClearEntityData");
+	LuaKeys::clearEntityData = luaL_ref(state, LUA_REGISTRYINDEX);
+
 	REPENTOGON::UpdateProgressDisplay("LuaEngine Initialized");
 }
 
@@ -353,20 +453,38 @@ LUA_FUNCTION(Lua_ToDegrees) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetPtrHash) {
+	if (lua_isuserdata(L, 1)) {
+		const char* ud = (const char*)lua_touserdata(L, 1);
+		uintptr_t inner = *(const uint32_t*)(ud + 4);
+		lua_pushinteger(L, (lua_Integer)g_LuaEngine->GetMaskedPointer(inner));
+		return 1;
+	}
+	else if (lua_type(L, 1) == LUA_TCDATA) {
+		void* payload = lua_tocdata(L, 1);
+		uintptr_t inner = payload ? *(const uintptr_t*)payload : 0;
+		lua_pushinteger(L, (lua_Integer)g_LuaEngine->GetMaskedPointer(inner));
+		return 1;
+	}
+	lua_settop(L, -2);
+	return luaL_error(L, "The parameter is not a userdata or cdata!");
+}
+
+MOD_EXPORT const uint32_t* L_LuaEngine_GetPointerMask() {
+	return &g_LuaEngine->_pointerMask;
+}
+
 HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 100, () -> void) {
 	super();
 	ZHL::Log("[REPENTOGON] Registering Lua functions and metatables\n");
 	lua_State *state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
 	// luaL_openlibs(state);
-	lua_register(state, "DumpRegistry", LuaDumpRegistry);
-	lua::UnloadMetatables();
-	RegisterMetatables(state);
-	lua_register(state, "ExtractFunctions", LuaExtractFunctions);
 	lua_register(state, "Benchmark", LuaBenchmark);
 	lua_register(state, "RandomFloat", Lua_RandomFloat);
 	lua_register(state, "ToRadians", Lua_ToRadians);
 	lua_register(state, "ToDegrees", Lua_ToDegrees);
+	lua_register(state, "GetPtrHash", Lua_GetPtrHash);
 }
 
 HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 9999, () -> void) {
@@ -401,4 +519,36 @@ HOOK_METHOD(RoomConfig, LoadStages, (char* xmlpath) -> void) {
 	REPENTOGON::UpdateProgressDisplay("Do RoomConfig::LoadStages");
 	super(xmlpath);
 	ZHL::SetExceptionHandlerEnabled(true);
+}
+
+// In typical Nicalis fashion, it turns out the game does its own GC stepping and it is WORSE than just letting Lua do its thing.
+// We'll reuse the loop, but only to do an *emergency* collection near the end of the Lua arena size instead of small ones constantly.
+HOOK_STATIC(LuaEngine, main_func, () -> void, __stdcall) {
+	if (!forceCollectAt)
+		return;
+
+	lua_State* L = g_LuaEngine->_state;
+	const size_t before = (size_t)lua_gc(L, LUA_GCCOUNT, 0) << 10;
+	if (before < forceCollectAt)
+		return;
+
+	lua_gc(L, LUA_GCCOLLECT, 0);
+	const size_t after = (size_t)lua_gc(L, LUA_GCCOUNT, 0) << 10;
+	forceCollectAt = (std::max)(luaArenaSize / 100 * forceCollectPercentage, after + (luaArenaSize - after) / 2);
+	ZHL::Log("[REPENTOGON] EMERGENCY GC COLLECTION! THIS SHOULD NEVER HAPPEN!!!!! Heap went from %u to %u MB after collection.\n", before >> 20, after >> 20);
+}
+
+// Since we're now using the native GC algorithm, we now need to run a forced collection when a run starts, to give the incremental GC an adequate baseline.
+// Without this, a new run will balloon, hitch, force a massive atomic, and *then* run smoothly. Not ideal. 
+// We run this after every mod has loaded in POST_GAME_STARTED which should be representative of a good baseline.
+HOOK_STATIC(LuaEngine, PostGameStart, (unsigned int state) -> void, __stdcall) {
+	super(state);
+	lua_gc(g_LuaEngine->_state, LUA_GCCOLLECT, 0);
+}
+
+// Tell LuaJIT the frame has finished rendering (for frame budgeting).
+HOOK_METHOD(Manager, Render, () -> void) {
+	super();
+	if (g_LuaEngine && g_LuaEngine->_state)
+		luaJIT_gcframe(g_LuaEngine->_state);
 }

@@ -24,6 +24,7 @@
 #include "../ImGuiFeatures/LogViewer.h"
 #include <lua.hpp>
 #include "LuaCore.h"
+#include "../LuaClasses.h"
 #include <filesystem>
 #include <regex>
 
@@ -2139,7 +2140,7 @@ HOOK_METHOD(Music, LoadConfig, (char* xmlpath, bool ismod)->void) {
 	currpath = "";
 }
 
-HOOK_METHOD(SFXManager, LoadConfig, (char* xmlpath, bool ismod)->void) {
+HOOK_METHOD(SoundEffects, LoadConfig, (char* xmlpath, bool ismod)->void) {
 	if (xmlsloaded) { return super(xmlpath, ismod); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
@@ -2287,7 +2288,7 @@ LUA_FUNCTION(Lua_GetBossColorByTypeVarSub)
 
 LUA_FUNCTION(Lua_GetFromEntity)
 {
-	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Entity* entity = LuaEntity::Get(L, 1);
 	if (entity == NULL) { return luaL_error(L, "Expected entity as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
 	int etype = *entity->GetType();
 	int evar = *entity->GetVariant();

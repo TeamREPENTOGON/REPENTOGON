@@ -10,6 +10,9 @@ __thiscall void OptionsConfig::SetFullScreen(bool value);
 "558becf30f104d??0f57c0":
 __thiscall void OptionsConfig::SetMusicVolume(float volume);
 
+"558bec51538a5d??8859":
+__thiscall void OptionsConfig::SetVSync(bool value);
+
 struct OptionsConfig depends (Game) {
 {{
 	inline bool ModsEnabled() { return _enableMods; }

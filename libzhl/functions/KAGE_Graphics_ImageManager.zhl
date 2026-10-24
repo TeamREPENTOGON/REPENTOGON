@@ -1,8 +1,18 @@
-struct KAGE_Graphics_ImageManager depends (KAGE_SmartPointer_ImageBase, KColor) {
+struct ImageCacheBucket depends (KAGE_SmartPointer_ImageBase) {
+    KAGE_SmartPointer_ImageBase* _first : 0x0;
+    KAGE_SmartPointer_ImageBase* _last : 0x4;
+    KAGE_SmartPointer_ImageBase* _end : 0x8;
+} : 0xC;
+
+struct KAGE_Graphics_ImageManager depends (KAGE_SmartPointer_ImageBase, KColor, KAGE_System_Mutex, ImageCacheBucket) {
+    ImageCacheBucket* _imageCache : 0x0;
+    KAGE_System_Mutex _cacheMutex : 0x4;
     vector_ImagePtr _frameImages : 0x10;
     vector_pair_RenderBatchPtr_ImagePtr _transparentBatches : 0x28;
 
     {{
+        static constexpr uint32_t IMAGE_CACHE_BUCKETS = 32;
+
         static KAGE_SmartPointer_ImageBase CreateProceduralImage(uint32_t width, uint32_t height, const char* name, KColor& color)
         {
             KAGE_SmartPointer_ImageBase result;
@@ -18,6 +28,9 @@ __thiscall void KAGE_Graphics_ImageManager::apply_frame_images();
 //  Libzhl doesn't push the implicit_output on it's own. The function assumes the smart pointer is not initialized so the helper is created to avoid potential problems.
 "558bec6aff68????????64a1????????5083ec14535657a1????????33c5508d45??64a3????????c745??00000000c745??00000000":
 static KAGE_SmartPointer_ImageBase* KAGE_Graphics_ImageManager::CreateProceduralImage_Internal(KAGE_SmartPointer_ImageBase* implicit_output, uint32_t width, uint32_t height, void* unused_1, const char* name, uint32_t unused_2, uint32_t unused_3, KColor color);
+
+"558bec6aff68????????64a1????????5083ec10535657a1????????33c5508d45??64a3????????8bd9895d??833b000f84":
+__thiscall void KAGE_Graphics_ImageManager::ReleaseImageCache();
 
 "a1(????????)8d0c??8b34":
 reference KAGE_Graphics_ImageManager g_KAGE_Graphics_ImageManager;

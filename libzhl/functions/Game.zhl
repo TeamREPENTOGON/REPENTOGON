@@ -81,7 +81,7 @@ __thiscall bool Game::GetDebugFlag(unsigned int flag);
 __thiscall void Game::BombDamage(Vector* pos, float damage, float radius, bool lineCheck, Entity* source, BitSet128 tearFlags, uint64_t damageFlags, bool damageSource);
 
 "558bec83e4f081ecf8000000a1":
-__thiscall void Game::BombExplosionEffects(Vector* pos, float damage, BitSet128 tearFlags, ColorMod* Color, Entity* source, float radiusMult, bool lineCheck, uint64_t damageFlags, bool damageSource);
+__thiscall void Game::BombExplosionEffects(Vector* pos, float damage, BitSet128 tearFlags, ColorMod* Color, Entity* source, float radiusMult, bool lineCheck,  bool damageSource, uint64_t damageFlags);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecd8000000a1????????33c58945??5657508d45??64a3????????894d":
 __thiscall void Game::BombTearflagEffects(Vector* pos, float radius, BitSet128 tearFlags, Entity* source, float radiusMult);
@@ -125,6 +125,9 @@ __thiscall bool Game::IsGreedMode();
 "558bec83e4f883ec0c538b5d??8bd1":
 __thiscall void Game::End(int EndingID);
 
+"558bec8b45??8bd180ba????????00":
+__thiscall void Game::FadeIn(float speed, bool showIcon, KColor* color);
+
 "558bec8b55??83ec14": //lua binder version
 __thiscall void Game::FadeOut(float Speed, int FadeoutTarget, KColor* color);
 
@@ -158,6 +161,27 @@ static Entity_Effect* Game::ChainLightning(Vector* position, float damage<xmm2>,
 "558bec83ec0c568bb1":
 __thiscall bool Game::HasSeedEffect(int SeedEffect);
 
+"558bec6aff68????????64a1????????5081ec88000000a1????????33c58945??535657508d45??64a3????????8bd98b7d":
+__thiscall void Game::ButterBeanFart(Vector* position, float radius, Entity* source, bool doEffect, bool doSuperKnockback);
+
+"558bec6aff68????????64a1????????5083ec78a1????????33c58945??535657508d45??64a3????????8b7d":
+__thiscall void Game::CharmFart(Vector* position, float radius, Entity* source);
+
+"558bec83e4f883ec0c5356578bf98bb7":
+__thiscall Entity_Player* Game::GetNearestPlayer(Vector* pos);
+
+"558bec6aff68????????64a1????????5083ec14535657a1????????33c5508d45??64a3????????8d81":
+__thiscall Entity_Player* Game::GetRandomPlayer(Vector* pos, float Radius);
+
+"558bec83e4f883ec0c5356578b7d??8bd9":
+__thiscall void Game::SpawnParticles(Vector* pos, int particleType, int numParticles, float speed, const ColorMod  &color, float height, int subType);
+
+"558bec6aff68????????64a1????????5083ec1c535657a1????????33c5508d45??64a3????????0f28c3":
+__thiscall void Game::UpdateStrangeAttractor(Vector* pos, void* unk, int unk2, float force<xmm2>, float radius<xmm3>);
+
+"558bec6aff68????????64a1????????5083ec3c535657a1????????33c5508d45??64a3????????8bf18b7d":
+__thiscall void Game::Fart(Vector* position, float radius, Entity* source, float fartScale, int fartSubType, const ColorMod &fartColor);
+
 "558bec83ec108b4d??538b1d":
 static void Game::AddErasedEnemy(Entity* entity);
 
@@ -169,6 +193,51 @@ static cleanup void Game::FixErasedEnemyID(int* type<ecx>, int* variant<edx>, in
 
 "a1(????????)c3????????????????????558bec6a00":
 reference Game *g_Game;
+
+"558bec5153568bf15733ff":
+__thiscall void Game::ChangeRoom(int roomIndex, int dimension);
+
+"558bec83e4f883ec54538b5d??8bd1":
+__thiscall void Game::StartRoomTransition(int roomIndex, int direction, int animation, Entity_Player* player, int dimension);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec405657a1????????33c5508d45??64a3????????894d??8b73":
+__thiscall bool Game::RerollEnemy(Entity* entity, bool unk);
+
+"5168????????81c198ba0100e8????????59c3??????????????????????????a1":
+__thiscall void Game::ShowFortune();
+
+"5168????????81c198ba0100e8????????59c3??????????????????????????e8":
+__thiscall void Game::ShowRule();
+
+"558bec83ec108bc15633f6":
+__thiscall void Game::RerollLevelCollectibles();
+
+"558bec83ec388bc1":
+__thiscall void Game::RerollLevelPickups(int seed);
+
+"558bec83ec280f57c0":
+__thiscall void Game::FinishChallenge();
+
+"558bec8b81????????8d55":
+__thiscall void Game::AddPixelation(int duration);
+
+"558bec83e4f883ec0c8b45??53568b35":
+__thiscall void Game::ShowHallucination(int frameCount, int backdrop);
+
+"558bec8b91????????83ec0c33c0":
+__thiscall void Game::AddEncounteredBoss(int type, int variant);
+
+"558bec8b91????????33c0":
+__thiscall bool Game::HasEncounteredBoss(int type, int variant);
+
+"ff81e05a020083b9e05a020003":
+__thiscall void Game::AddDevilRoomDeal();
+
+"558beca1????????568bf18b90":
+__thiscall void Game::SetChallenge(int challenge);
+
+"558bec5657e8????????8b75":
+__thiscall Entity_NPC* Game::SpawnEntityDesc(const EntityDesc& desc, const Vector& position, Entity* spawner);
 
 struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, GlowingHourglassState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge, Vector, EntityFactory, StageTransition, Minimap, ColorMod, HUD, PauseScreen, BackwardsStageDesc, RNG) { {{
 	Game()
@@ -271,6 +340,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	uint32_t _nbRooms : 0x182cc;
 	uint32_t _startingRoomIdx : 0x182d0;
 	RNG _generationRNG : 0x182d4;
+	RNG _devilAngelRoomRNG : 0x182e4;
 	Room* _room : 0x18300;
 	uint32_t _currentRoomIdx : 0x18304;
 	uint32_t _lastRoomIdx : 0x18308;

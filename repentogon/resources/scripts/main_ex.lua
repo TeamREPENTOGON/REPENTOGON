@@ -5,12 +5,76 @@ REPENTOGON = {
 	["Extras"] = { ["Misc"]={}, }, -- Tables containing additional REPENTOGON data structures, example: ChangeLog or StatsMenu
 }
 
-collectgarbage("generational")
-
 --- Each module is a { module, loaded } pair
 local s_modules = {}
 
 local debug_getinfo = debug.getinfo
+
+collectgarbage("setpause", 125)
+collectgarbage("setstepmul", 200)
+jit.opt.start('maxtrace=20000', 'maxmcode=32768')
+local builtinIpairs = ipairs
+local string_find, string_gmatch, string_gsub, string_match = string.find, string.gmatch, string.gsub, string.match
+require("compat53.init")
+
+-- Use the original LuaJIT string.x functions unless a pattern contains NUL, at which point use compat53's.
+-- We're doing this because compat53's doesn't trace as efficiently, it rewrites NUL to %z which takes time!
+do
+	local type = type
+	local function fixPattern(pattern)
+		if type(pattern) ~= "string" or string_find(pattern, "\0", 1, true) then
+			return (string_gsub(pattern, "%z", "%%z"))
+		end
+		return pattern
+	end
+	string.find = function(s, pattern, ...) return string_find(s, fixPattern(pattern), ...) end
+	string.gmatch = function(s, pattern) return string_gmatch(s, fixPattern(pattern)) end
+	string.gsub = function(s, pattern, ...) return string_gsub(s, fixPattern(pattern), ...) end
+	string.match = function(s, pattern, ...) return string_match(s, fixPattern(pattern), ...) end
+end
+
+-- compat53 overrides ipairs with one that's Lua 5.3 compliant, which is all well and good,
+-- except it does pointer arithmetic on cdata! Not Good!
+-- For cdata, use LuaJIT's built in implementation.
+do
+	local rawgetmetatable = getmetatable
+	local gmt = type(debug) == "table" and debug.getmetatable or rawgetmetatable
+	local function ipairsIterator(t, i)
+		i = i + 1
+		local v = t[i]
+		if v ~= nil then
+			return i, t[i]
+		end
+	end
+	ipairs = function(t)
+		if rawgetmetatable(t) == "ffi" or gmt(t) == nil then
+			local f, s, i = builtinIpairs(t)
+			return f, s, i
+		end
+		return ipairsIterator, t, 0
+	end
+end
+
+io = nil
+
+GetPtrHash = ffichecks.ptrhash(GetPtrHash)
+
+do
+	local _orig_getmetatable = getmetatable
+	local _dgmt = (type(debug) == "table" and debug.getmetatable) or nil
+	getmetatable = function(obj)
+		if _dgmt then
+			local t = type(obj)
+			if t == "userdata" or t == "cdata" then
+				local mt = _dgmt(obj)
+				if mt and (mt.__type ~= nil or mt.__class ~= nil) then
+					return mt
+				end
+			end
+		end
+		return _orig_getmetatable(obj)
+	end
+end
 
 local function cleanTraceback(level) -- similar to debug.traceback but breaks at xpcall, uses spaces instead of tabs, and doesn't call local functions upvalues
 	level = level + 1
@@ -118,7 +182,6 @@ function require(modname)
 	return ret
 end
 
-
 ----------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------
 ---- COLOR STUFF
@@ -191,29 +254,21 @@ end
 ----------------------------------------------------------------------------------------------------
 
 
--- I hate Luabridge, we can't have nice things.
+local function GetCDataType(ret)
+	return ret.__type
+end
+
 local function GetMetatableType(ret)
-	-- TODO directly pcall in here?
+	local mt = getmetatable(ret)
+	if mt == "ffi" then
+		local ok, typ = pcall(GetCDataType, ret)
+		return ok and typ or nil
+	end
 
-	-- Vector will CRASH THE GAME through a pcall if we try getting __name or __type from it, and getmetatable doesn't work on it.
-	-- We have no choice but to check manually.
-	if ret.X and ret.Y then
-		return "Vector"
-	else
-		-- Directly trying __name or __type, too, will crash the game on occasion, even through a pcall.
-		-- Absolute masterclass of an API here. Best in show, really.
-		return getmetatable(ret).__name or getmetatable(ret).__type
+	if type(mt) == "table" then
+		return mt.__type or mt.__name
 	end
 end
-
-local function checkMetatable(mtType)
-	return function(val)
-		if GetMetatableType(val) ~= mtType then
-			return "bad return type (" .. mtType .. " expected, got " .. GetMetatableType(val).__type .. ")"
-		end
-	end
-end
-
 
 local function checkInteger(val)
 	if math.type(val) ~= "integer" then
@@ -302,7 +357,7 @@ local function checkTableTypeFunction(typestrings)
 					paramType = "integer"
 				end
 
-				if paramType == "userdata" then
+				if paramType == "userdata" or paramType == "cdata" then
 					paramType = GetMetatableType(param)
 				end
 
@@ -512,13 +567,13 @@ local typecheckFunctions = {
 		["boolean"] = true,
 	},
 	[ModCallbacks.MC_PRE_LEVEL_PLACE_ROOM] = {
-		["Room"] = true,
+		["RoomConfigRoom"] = true,
 	},
 	[ModCallbacks.MC_PRE_SELECT_AMBUSH_WAVE] = {
-		["Room"] = true,
+		["RoomConfigRoom"] = true,
 	},
 	[ModCallbacks.MC_PRE_SELECT_GREED_WAVE] = {
-		["Room"] = true,
+		["RoomConfigRoom"] = true,
 	},
     [ModCallbacks.MC_SHOULD_SAVE_ENTITY] = {
         ["boolean"] = true,
@@ -844,7 +899,7 @@ local function typeCheckCallback(callback, callbackID, ret, ...)
 	if typeCheck then
 		local err
 		local typ = type(ret)
-		if typ == "userdata" then typ = GetMetatableType(ret) end
+		if typ == "userdata" or typ == "cdata" then typ = GetMetatableType(ret) end
 
 		if typeCheck[typ] == true then
 		elseif typeCheck[typ] then
@@ -939,6 +994,7 @@ local function InitCallbackIfNeeded(callbackID)
 	if not Callbacks[callbackID] then
 		Callbacks[callbackID] = {
 			NUM_ADDED = 0,
+			MUTATION = 0,
 			ALL = setmetatable({}, legacyCallbackMeta),
 			COMMON = {},
 			PARAM = {},
@@ -959,7 +1015,7 @@ end
 
 -- Support to apply a conversion function to the params for certain callbacks (ie, for stuff like tables/userdata).
 local function ConvertItemConfigItemParam(param)
-	if param and type(param) == "userdata" and GetMetatableType(param) == "Item" then
+	if param and (type(param) == "userdata" or type(param) == "cdata") and GetMetatableType(param) == "ItemConfigItem" then
 		return GetPtrHash(param)
 	end
 	return param
@@ -1011,31 +1067,111 @@ local RUN_CALLBACK_MINUS_ONE_PARAM_BLACKLIST = {
 
 -- Returns an iterator function that takes advantage of how callbacks are now mapped by their optional params.
 -- Allows other code to easily iterate over callbacks using a param, in the correct execution order.
+local function EmptyCallbackIterator() end
+
+local AllCallbackIteratorMeta = {}
+AllCallbackIteratorMeta.__call = function(self)
+	local nextCallback = self.Current
+	if nextCallback == nil then
+		nextCallback = self.Head
+	else
+		nextCallback = nextCallback.NextAll
+	end
+
+	while nextCallback and nextCallback.Removed do
+		nextCallback = nextCallback.NextAll
+	end
+
+	self.Current = nextCallback
+	return nextCallback
+end
+
+local CommonCallbackIteratorMeta = {}
+CommonCallbackIteratorMeta.__call = function(self)
+	local nextCallback = self.Current
+	if nextCallback == nil then
+		nextCallback = self.Head
+	else
+		nextCallback = nextCallback.NextParam
+	end
+
+	while nextCallback and nextCallback.Removed do
+		nextCallback = nextCallback.NextParam
+	end
+
+	self.Current = nextCallback
+	return nextCallback
+end
+
+-- Simultaneously iterate over both the common callbacks and the relevant parameterized ones.
+-- By comparing the Priority of the callbacks and the order they were added, we can iterate in the correct order.
+local MergedCallbackIteratorMeta = {}
+MergedCallbackIteratorMeta.__call = function(self)
+	local commonCallback = self.Common
+	local paramCallback = self.Param
+	local nextCallback
+
+	-- Skip over removed callbacks if needed.
+	repeat
+		if CallbackComparator(commonCallback, paramCallback) then
+			nextCallback = commonCallback
+			commonCallback = commonCallback.NextParam
+		elseif paramCallback then
+			nextCallback = paramCallback
+			paramCallback = paramCallback.NextParam
+		else
+			nextCallback = nil
+		end
+	until not nextCallback or not nextCallback.Removed
+
+	self.Common = commonCallback
+	self.Param = paramCallback
+	return nextCallback
+end
+
+-- New: Iterate over callbacks using... two parameters at once???
+local TripleCallbackIteratorMeta = {}
+TripleCallbackIteratorMeta.__call = function(self)
+	local commonCallback = self.Common
+	local paramCallback = self.Param
+	local extraParamCallback = self.ExtraParam
+	local nextCallback
+
+	repeat
+		nextCallback = commonCallback
+		if CallbackComparator(paramCallback, nextCallback) then
+			nextCallback = paramCallback
+		end
+		if CallbackComparator(extraParamCallback, nextCallback) then
+			nextCallback = extraParamCallback
+		end
+
+		if nextCallback == commonCallback and commonCallback then
+			commonCallback = commonCallback.NextParam
+		elseif nextCallback == paramCallback and paramCallback then
+			paramCallback = paramCallback.NextParam
+		elseif nextCallback == extraParamCallback and extraParamCallback then
+			extraParamCallback = extraParamCallback.NextParam
+		else
+			nextCallback = nil
+		end
+	until not nextCallback or not nextCallback.Removed
+
+	self.Common = commonCallback
+	self.Param = paramCallback
+	self.ExtraParam = extraParamCallback
+	return nextCallback
+end
+
 local function GetCallbackIterator(callbackID, param, extraParam)
 	local callbackData = Callbacks[callbackID]
 
 	if not callbackData then
-		-- No callbacks to run. Return an empty iterator.
-		return function() end
+		return EmptyCallbackIterator
 	end
 
 	if param == -1 and not RUN_CALLBACK_MINUS_ONE_PARAM_BLACKLIST[callbackID] then
-		-- If the callback is executed with -1 as the param, run ALL callbacks.
-		-- This is sometimes used by the game for callbacks not intended to support optional params.
-		local allCallback = callbackData.ALL[1]
-		return function()
-			local nextCallback
-
-			-- Skip over removed callbacks if needed.
-			repeat
-				nextCallback = allCallback
-				if allCallback then
-					allCallback = allCallback.NextAll
-				end
-			until not nextCallback or not nextCallback.Removed
-
-			return nextCallback
-		end
+		local result = setmetatable({ Head = callbackData.ALL[1] }, AllCallbackIteratorMeta) return result
 	end
 
 	param = ConvertCallbackParam(callbackID, param)
@@ -1050,71 +1186,96 @@ local function GetCallbackIterator(callbackID, param, extraParam)
 	end
 
 	if not paramCallback then
-		-- No parameterized callbacks to run, so just iterate over the common callbacks.
-		return function()
-			local nextCallback
-
-			-- Skip over removed callbacks if needed.
-			repeat
-				nextCallback = commonCallback
-				if commonCallback then
-					commonCallback = commonCallback.NextParam
-				end
-			until not nextCallback or not nextCallback.Removed
-
-			return nextCallback
-		end
+		local result = setmetatable({ Head = commonCallback }, CommonCallbackIteratorMeta) return result
 	end
 
 	if not extraParamCallback then
-		-- Simultaneously iterate over both the common callbacks and the relevant parameterized ones.
-		-- By comparing the Priority of the callbacks and the order they were added, we can iterate in the correct order.
-		return function()
-			local nextCallback
+		local result = setmetatable({ Common = commonCallback, Param = paramCallback }, MergedCallbackIteratorMeta) return result
+	end
 
-			-- Skip over removed callbacks if needed.
-			repeat
-				if CallbackComparator(commonCallback, paramCallback) then
-					nextCallback = commonCallback
-					commonCallback = commonCallback.NextParam
-				elseif paramCallback then
-					nextCallback = paramCallback
-					paramCallback = paramCallback.NextParam
-				else
-					nextCallback = nil
-				end
-			until not nextCallback or not nextCallback.Removed
+	local result = setmetatable({ Common = commonCallback, Param = paramCallback, ExtraParam = extraParamCallback }, TripleCallbackIteratorMeta) return result
+end
 
-			return nextCallback
+local ALL_CALLBACKS_LIST = {}
+local TWO_PARAM_CACHE = {}
+
+local function GetCallbackList(callbackID, param, extraParam)
+	local callbackData = Callbacks[callbackID]
+
+	if not callbackData then
+		return nil
+	end
+
+	if param == -1 and not RUN_CALLBACK_MINUS_ONE_PARAM_BLACKLIST[callbackID] then
+		param = ALL_CALLBACKS_LIST
+	else
+		param = ConvertCallbackParam(callbackID, param)
+		if extraParam ~= nil then
+			extraParam = ConvertCallbackParam(callbackID, extraParam)
 		end
 	end
 
-	-- New: Iterate over callbacks using... two parameters at once???
-	return function()
-		local nextCallback
-
-		repeat
-			nextCallback = commonCallback
-			if CallbackComparator(paramCallback, nextCallback) then
-				nextCallback = paramCallback
-			end
-			if CallbackComparator(extraParamCallback, nextCallback) then
-				nextCallback = extraParamCallback
-			end
-
-			if nextCallback == commonCallback and commonCallback then
-				commonCallback = commonCallback.NextParam
-			elseif nextCallback == paramCallback and paramCallback then
-				paramCallback = paramCallback.NextParam
-			elseif nextCallback == extraParamCallback and extraParamCallback then
-				extraParamCallback = extraParamCallback.NextParam
-			else
-				nextCallback = nil
-			end
-		until not nextCallback or not nextCallback.Removed
-
-		return nextCallback
+	local cache = callbackData.LIST_CACHE
+	if not cache then
+		cache = {}
+		callbackData.LIST_CACHE = cache
 	end
+
+	local key
+	if rawequal(param, ALL_CALLBACKS_LIST) then
+		key = ALL_CALLBACKS_LIST
+	elseif extraParam == nil then
+		if param == nil then key = false else key = param end
+	end
+
+	if key ~= nil then
+		local cached = cache[key]
+		if cached then
+			return cached
+		end
+	end
+
+	local key2
+	if key == nil then
+		local sub = cache[TWO_PARAM_CACHE]
+		if not sub then
+			sub = {}
+			cache[TWO_PARAM_CACHE] = sub
+		end
+		local p1key
+		if param == nil then p1key = false else p1key = param end
+		local p1cache = sub[p1key]
+		if not p1cache then
+			p1cache = {}
+			sub[p1key] = p1cache
+		end
+		key2 = p1cache
+		local cached = p1cache[extraParam]
+		if cached then
+			return cached
+		end
+	end
+
+	local runAll = rawequal(param, ALL_CALLBACKS_LIST)
+	local list = {}
+	local listIndex = 0
+	for i = 1, #callbackData.ALL do
+		local callback = callbackData.ALL[i]
+		if callback and not callback.Removed then
+			local callbackParam = callback.Param
+			if runAll or callbackParam == nil or callbackParam == -1 or rawequal(callbackParam, param) or (extraParam ~= nil and rawequal(callbackParam, extraParam)) then
+				listIndex = listIndex + 1
+				list[listIndex] = callback
+			end
+		end
+	end
+
+	if key ~= nil then
+		cache[key] = list
+	elseif key2 ~= nil then
+		key2[extraParam] = list
+	end
+	return list
 end
 
 rawset(Isaac, "GetCallbackIterator", function(callbackID, param)
@@ -1122,7 +1283,6 @@ rawset(Isaac, "GetCallbackIterator", function(callbackID, param)
 	return GetCallbackIterator(callbackID, param)
 end)
 
--- Maintain legacy Isaac.GetCallbacks behaviour as it is accessible to mods and expects a table of ALL the callbacks, in execution order.
 rawset(Isaac, "GetCallbacks", function(callbackID, createIfMissing)
 	checkCallbackIdArg(1, callbackID)
 	if createIfMissing then
@@ -1233,6 +1393,10 @@ rawset(Isaac, "AddPriorityCallback", function(mod, callbackID, priority, fn, par
 			Isaac.SetBuiltInCallbackState(callbackID, true)
 		end
 	end
+
+	-- Registered callbacks changed: any memoized dispatch lists are now stale.
+	callbackData.MUTATION = callbackData.MUTATION + 1
+	callbackData.LIST_CACHE = nil
 end)
 
 rawset(Isaac, "AddCallback", function(mod, callbackID, fn, param)
@@ -1273,6 +1437,8 @@ local function RemoveAllCallbacksIf(callbackID, removeConditionFunc)
 				callbackData.PARAM[param] = nil
 			end
 		end
+		callbackData.MUTATION = callbackData.MUTATION + 1
+		callbackData.LIST_CACHE = nil
 		if #callbackData.ALL == 0 then
 			if type(callbackID) == "number" then
 				-- No more functions left, disable this callback
@@ -1311,10 +1477,12 @@ end
 
 -- Runs a single callback function and checks the results.
 -- Only returns the value returned by the callback if no errors occured and the return value passed the type checks.
+local function callbackErrorHandler(msg)
+	return msg .. "\n" .. cleanTraceback(2)
+end
+
 local function RunCallbackInternal(callbackID, callback, ...)
-	local status, ret = xpcall(callback.Function, function(msg)
-		return msg .. "\n" .. cleanTraceback(2)
-	end, callback.Mod, ...)
+	local status, ret = xpcall(callback.Function, callbackErrorHandler, callback.Mod, ...)
 
 	if not status then
 		logError(callbackID, callback.Mod.Name, ret)
@@ -1331,131 +1499,318 @@ end
 
 
 -- Default callback behaviour (first returned non-nil value terminates the callback).
-local function DefaultRunCallbackLogic(callbackID, callbackIterator, ...)
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, ...)
-		if ret ~= nil then
-			return ret
+-- I AM SO, SO SORRY ABOUT THIS but LuaJIT won't trace nested varargs! That kills our perf.
+local function DefaultRunCallbackLogic(callbackID, callbackList, ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret
+			if n == 0 then
+				ret = RunCallbackInternal(callbackID, callback)
+			elseif n == 1 then
+				ret = RunCallbackInternal(callbackID, callback, a1)
+			elseif n == 2 then
+				ret = RunCallbackInternal(callbackID, callback, a1, a2)
+			elseif n == 3 then
+				ret = RunCallbackInternal(callbackID, callback, a1, a2, a3)
+			elseif n == 4 then
+				ret = RunCallbackInternal(callbackID, callback, a1, a2, a3, a4)
+			else
+				ret = RunCallbackInternal(callbackID, callback, ...)
+			end
+			if ret ~= nil then
+				return ret
+			end
 		end
 	end
 end
 
 -- Slightly modified callback that only breaks on returning false specifically.
-local function RunFalseBreakCallbackLogic(callbackID, callbackIterator, ...)
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, ...)
-		if ret == false then
-			return ret
+local function RunFalseBreakCallbackLogic(callbackID, callbackList, ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret
+			if n == 0 then
+				ret = RunCallbackInternal(callbackID, callback)
+			elseif n == 1 then
+				ret = RunCallbackInternal(callbackID, callback, a1)
+			elseif n == 2 then
+				ret = RunCallbackInternal(callbackID, callback, a1, a2)
+			elseif n == 3 then
+				ret = RunCallbackInternal(callbackID, callback, a1, a2, a3)
+			elseif n == 4 then
+				ret = RunCallbackInternal(callbackID, callback, a1, a2, a3, a4)
+			else
+				ret = RunCallbackInternal(callbackID, callback, ...)
+			end
+			if ret == false then
+				return ret
+			end
 		end
 	end
 end
 
 -- For callbacks with no return values that don't want to allow mods to terminate them early.
-local function RunNoReturnCallback(callbackID, callbackIterator, ...)
-	for callback in callbackIterator do
-		RunCallbackInternal(callbackID, callback, ...)
+local function RunNoReturnCallback(callbackID, callbackList, ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			if n == 0 then
+				RunCallbackInternal(callbackID, callback)
+			elseif n == 1 then
+				RunCallbackInternal(callbackID, callback, a1)
+			elseif n == 2 then
+				RunCallbackInternal(callbackID, callback, a1, a2)
+			elseif n == 3 then
+				RunCallbackInternal(callbackID, callback, a1, a2, a3)
+			elseif n == 4 then
+				RunCallbackInternal(callbackID, callback, a1, a2, a3, a4)
+			else
+				RunCallbackInternal(callbackID, callback, ...)
+			end
+		end
 	end
 end
 
 -- Basic "additive" callback behaviour. Values returned from a callback replace the value of the FIRST arg for subsequent callbacks.
 -- Separate implementations are used depending on which arg is updated by the return value, because table.unpack tricks are slower.
-local function RunAdditiveFirstArgCallback(callbackID, callbackIterator, value, ...)
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, value, ...)
-		if ret ~= nil then
-			value = ret
-		end
-	end
-	return value
-end
-
-local function RunAdditiveSecondArgCallback(callbackID, callbackIterator, arg1, value, ...)
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, arg1, value, ...)
-		if ret ~= nil then
-			value = ret
-		end
-	end
-	return value
-end
-
-local function RunAdditiveSecondArgCallbackWithBreak(callbackID, callbackIterator, arg1, value, ...)
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, arg1, value, ...)
-		if type(ret) == "boolean" then
-			if ret == false then
-				return ret
+local function RunAdditiveFirstArgCallback(callbackID, callbackList, value, ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret
+			if n == 0 then
+				ret = RunCallbackInternal(callbackID, callback, value)
+			elseif n == 1 then
+				ret = RunCallbackInternal(callbackID, callback, value, a1)
+			elseif n == 2 then
+				ret = RunCallbackInternal(callbackID, callback, value, a1, a2)
+			elseif n == 3 then
+				ret = RunCallbackInternal(callbackID, callback, value, a1, a2, a3)
+			elseif n == 4 then
+				ret = RunCallbackInternal(callbackID, callback, value, a1, a2, a3, a4)
+			else
+				ret = RunCallbackInternal(callbackID, callback, value, ...)
 			end
-		elseif ret ~= nil then
-			value = ret
-		end
-	end
-	return value
-end
-
-local function RunAdditiveThirdArgCallback(callbackID, callbackIterator, arg1, arg2, value, ...)
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value, ...)
-		if ret ~= nil then
-			value = ret
-		end
-	end
-	return value
-end
-
-local function RunAdditiveThirdArgCallbackWithBreak(callbackID, callbackIterator, arg1, arg2, value, ...)
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value, ...)
-		if type(ret) == "boolean" then
-			if ret == false then
-				return ret
+			if ret ~= nil then
+				value = ret
 			end
-		elseif ret ~= nil then
-			value = ret
 		end
 	end
 	return value
 end
 
-local function RunAdditiveFourthArgCallback(callbackID, callbackIterator, arg1, arg2, arg3, value, ...)
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, arg1, arg2, arg3, value, ...)
-		if ret ~= nil then
-			value = ret
+local function RunAdditiveSecondArgCallback(callbackID, callbackList, arg1, value, ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret
+			if n == 0 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, value)
+			elseif n == 1 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, value, a1)
+			elseif n == 2 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, value, a1, a2)
+			elseif n == 3 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, value, a1, a2, a3)
+			elseif n == 4 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, value, a1, a2, a3, a4)
+			else
+				ret = RunCallbackInternal(callbackID, callback, arg1, value, ...)
+			end
+			if ret ~= nil then
+				value = ret
+			end
 		end
 	end
 	return value
 end
 
-local function RunPostModsLoadedCallback(callbackID, callbackIterator, ...)
-	DefaultRunCallbackLogic(callbackID, callbackIterator, ...)
+local function RunAdditiveSecondArgCallbackWithBreak(callbackID, callbackList, arg1, value, ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret
+			if n == 0 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, value)
+			elseif n == 1 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, value, a1)
+			elseif n == 2 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, value, a1, a2)
+			elseif n == 3 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, value, a1, a2, a3)
+			elseif n == 4 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, value, a1, a2, a3, a4)
+			else
+				ret = RunCallbackInternal(callbackID, callback, arg1, value, ...)
+			end
+			if type(ret) == "boolean" then
+				if ret == false then
+					return ret
+				end
+			elseif ret ~= nil then
+				value = ret
+			end
+		end
+	end
+	return value
+end
+
+local function RunAdditiveThirdArgCallback(callbackID, callbackList, arg1, arg2, value, ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret
+			if n == 0 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value)
+			elseif n == 1 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value, a1)
+			elseif n == 2 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value, a1, a2)
+			elseif n == 3 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value, a1, a2, a3)
+			elseif n == 4 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value, a1, a2, a3, a4)
+			else
+				ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value, ...)
+			end
+			if ret ~= nil then
+				value = ret
+			end
+		end
+	end
+	return value
+end
+
+local function RunAdditiveThirdArgCallbackWithBreak(callbackID, callbackList, arg1, arg2, value, ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret
+			if n == 0 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value)
+			elseif n == 1 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value, a1)
+			elseif n == 2 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value, a1, a2)
+			elseif n == 3 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value, a1, a2, a3)
+			elseif n == 4 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value, a1, a2, a3, a4)
+			else
+				ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value, ...)
+			end
+			if type(ret) == "boolean" then
+				if ret == false then
+					return ret
+				end
+			elseif ret ~= nil then
+				value = ret
+			end
+		end
+	end
+	return value
+end
+
+local function RunAdditiveFourthArgCallback(callbackID, callbackList, arg1, arg2, arg3, value, ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret
+			if n == 0 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, arg2, arg3, value)
+			elseif n == 1 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, arg2, arg3, value, a1)
+			elseif n == 2 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, arg2, arg3, value, a1, a2)
+			elseif n == 3 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, arg2, arg3, value, a1, a2, a3)
+			elseif n == 4 then
+				ret = RunCallbackInternal(callbackID, callback, arg1, arg2, arg3, value, a1, a2, a3, a4)
+			else
+				ret = RunCallbackInternal(callbackID, callback, arg1, arg2, arg3, value, ...)
+			end
+			if ret ~= nil then
+				value = ret
+			end
+		end
+	end
+	return value
+end
+
+local function RunPostModsLoadedCallback(callbackID, callbackList, ...)
+	DefaultRunCallbackLogic(callbackID, callbackList, ...)
 	ModManager.detail.OnModsLoaded()
 end
 
-local function RunPreAddCardPillCallback(callbackID, callbackIterator, player, pillCard, ...)
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, player, pillCard, ...)
-		if type(ret) == "boolean" and ret == false then
-			return false
-		elseif type(ret) == "number" and ret > 0 then
-			pillCard = ret
+local function RunPreAddCardPillCallback(callbackID, callbackList, player, pillCard, ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret
+			if n == 0 then
+				ret = RunCallbackInternal(callbackID, callback, player, pillCard)
+			elseif n == 1 then
+				ret = RunCallbackInternal(callbackID, callback, player, pillCard, a1)
+			elseif n == 2 then
+				ret = RunCallbackInternal(callbackID, callback, player, pillCard, a1, a2)
+			elseif n == 3 then
+				ret = RunCallbackInternal(callbackID, callback, player, pillCard, a1, a2, a3)
+			elseif n == 4 then
+				ret = RunCallbackInternal(callbackID, callback, player, pillCard, a1, a2, a3, a4)
+			else
+				ret = RunCallbackInternal(callbackID, callback, player, pillCard, ...)
+			end
+			if type(ret) == "boolean" and ret == false then
+				return false
+			elseif type(ret) == "number" and ret > 0 then
+				pillCard = ret
+			end
 		end
 	end
 	return pillCard
 end
 
 local function IsValidMultiShotParams(params)
-	return params ~= nil and type(params) == "userdata" and GetMetatableType(params) == "MultiShotParams"
+	return params ~= nil and (type(params) == "userdata" or type(params) == "cdata") and GetMetatableType(params) == "MultiShotParams"
 end
 
-local function RunGetMultiShotParamsCallback(callbackID, callbackIterator, player, multiShotParams, ...)
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, player, multiShotParams, ...)
-		if IsValidMultiShotParams(ret) then
-			multiShotParams = ret
+local function RunGetMultiShotParamsCallback(callbackID, callbackList, player, multiShotParams, ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret
+			if n == 0 then
+				ret = RunCallbackInternal(callbackID, callback, player, multiShotParams)
+			elseif n == 1 then
+				ret = RunCallbackInternal(callbackID, callback, player, multiShotParams, a1)
+			elseif n == 2 then
+				ret = RunCallbackInternal(callbackID, callback, player, multiShotParams, a1, a2)
+			elseif n == 3 then
+				ret = RunCallbackInternal(callbackID, callback, player, multiShotParams, a1, a2, a3)
+			elseif n == 4 then
+				ret = RunCallbackInternal(callbackID, callback, player, multiShotParams, a1, a2, a3, a4)
+			else
+				ret = RunCallbackInternal(callbackID, callback, player, multiShotParams, ...)
+			end
+			if IsValidMultiShotParams(ret) then
+				multiShotParams = ret
+			end
 		end
 	end
-	
+
 	return multiShotParams
 end
 
@@ -1471,14 +1826,31 @@ function _RunGetMultiShotParamsCallbackWithLegacyCompat(param, player, multiShot
 end
 
 -- Custom behaviour for pre-render callbacks (terminate on false, adds returned vectors to the render offset).
-local function RunPreRenderCallback(callbackID, callbackIterator, mt, value, ...)
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, mt, value, ...)
-		if ret ~= nil then
-			if type(ret) == "boolean" and ret == false then
-				return false
-			elseif ret.X and ret.Y then -- We're a Vector, checking it directly will crash the game... While we should always be a Vector at this point it doesn't hurt to check
-				value = value + ret
+local function RunPreRenderCallback(callbackID, callbackList, mt, value, ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret
+			if n == 0 then
+				ret = RunCallbackInternal(callbackID, callback, mt, value)
+			elseif n == 1 then
+				ret = RunCallbackInternal(callbackID, callback, mt, value, a1)
+			elseif n == 2 then
+				ret = RunCallbackInternal(callbackID, callback, mt, value, a1, a2)
+			elseif n == 3 then
+				ret = RunCallbackInternal(callbackID, callback, mt, value, a1, a2, a3)
+			elseif n == 4 then
+				ret = RunCallbackInternal(callbackID, callback, mt, value, a1, a2, a3, a4)
+			else
+				ret = RunCallbackInternal(callbackID, callback, mt, value, ...)
+			end
+			if ret ~= nil then
+				if type(ret) == "boolean" and ret == false then
+					return false
+				elseif ret.X and ret.Y then -- We're a Vector, checking it directly will crash the game... While we should always be a Vector at this point it doesn't hurt to check
+					value = value + ret
+				end
 			end
 		end
 	end
@@ -1487,33 +1859,36 @@ end
 
 -- Custom handling for the MC_ENTITY_TAKE_DMG rewrite, so if a mod changes the damage amount etc that doesn't terminate the callback
 -- and the updated values are shown to later callbacks. The callback also now ONLY terminates early if FALSE is returned.
-local function RunEntityTakeDmgCallback(callbackID, callbackIterator, entity, damage, damageFlags, source, damageCountdown, extraSource)
+local function RunEntityTakeDmgCallback(callbackID, callbackList, entity, damage, damageFlags, source, damageCountdown, extraSource)
 	local combinedRet
 
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, entity, damage, damageFlags, source, damageCountdown, extraSource)
-		if ret ~= nil then
-			if type(ret) == "boolean" and ret == false then
-				-- Only terminate the callback early if someone returns FALSE.
-				-- RIP to returning true stopping the callback.
-				return false
-			elseif type(ret) == "table" then
-				-- Set / update overrides to damage etc so that they are visible to later callbacks.
-				if ret.Damage and type(ret.Damage) == "number" then
-					damage = ret.Damage
-				end
-				if ret.DamageFlags and type(ret.DamageFlags) == "number" and math.tointeger(ret.DamageFlags) then
-					damageFlags = ret.DamageFlags
-				end
-				if ret.DamageCountdown and type(ret.DamageCountdown) == "number" then
-					damageCountdown = ret.DamageCountdown
-				end
-				if combinedRet then
-					for k, v in pairs(ret) do
-						combinedRet[k] = v
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret = RunCallbackInternal(callbackID, callback, entity, damage, damageFlags, source, damageCountdown, extraSource)
+			if ret ~= nil then
+				if type(ret) == "boolean" and ret == false then
+					-- Only terminate the callback early if someone returns FALSE.
+					-- RIP to returning true stopping the callback.
+					return false
+				elseif type(ret) == "table" then
+					-- Set / update overrides to damage etc so that they are visible to later callbacks.
+					if ret.Damage and type(ret.Damage) == "number" then
+						damage = ret.Damage
 					end
-				else
-					combinedRet = ret
+					if ret.DamageFlags and type(ret.DamageFlags) == "number" and math.tointeger(ret.DamageFlags) then
+						damageFlags = ret.DamageFlags
+					end
+					if ret.DamageCountdown and type(ret.DamageCountdown) == "number" then
+						damageCountdown = ret.DamageCountdown
+					end
+					if combinedRet then
+						for k, v in pairs(ret) do
+							combinedRet[k] = v
+						end
+					else
+						combinedRet = ret
+					end
 				end
 			end
 		end
@@ -1522,21 +1897,42 @@ local function RunEntityTakeDmgCallback(callbackID, callbackIterator, entity, da
 	return combinedRet
 end
 
-local function RunAccumulateReturnTableCallback(callbackID, callbackIterator, ...)
+local function RunAccumulateReturnTableCallback(callbackID, callbackList, ...)
 	local retTable
+	local n, a1, a2, a3, a4, a5, a6 = select('#', ...), ...
 
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, ...)
-		if ret ~= nil then
-			if type(ret) == "boolean" then
-				return ret
-			elseif type(ret) == "table" then
-				if retTable then
-					for k, v in pairs(ret) do
-						retTable[k] = v
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret
+			if n == 0 then
+				ret = RunCallbackInternal(callbackID, callback)
+			elseif n == 1 then
+				ret = RunCallbackInternal(callbackID, callback, a1)
+			elseif n == 2 then
+				ret = RunCallbackInternal(callbackID, callback, a1, a2)
+			elseif n == 3 then
+				ret = RunCallbackInternal(callbackID, callback, a1, a2, a3)
+			elseif n == 4 then
+				ret = RunCallbackInternal(callbackID, callback, a1, a2, a3, a4)
+			elseif n == 5 then
+				ret = RunCallbackInternal(callbackID, callback, a1, a2, a3, a4, a5)
+			elseif n == 6 then
+				ret = RunCallbackInternal(callbackID, callback, a1, a2, a3, a4, a5, a6)
+			else
+				ret = RunCallbackInternal(callbackID, callback, ...)
+			end
+			if ret ~= nil then
+				if type(ret) == "boolean" then
+					return ret
+				elseif type(ret) == "table" then
+					if retTable then
+						for k, v in pairs(ret) do
+							retTable[k] = v
+						end
+					else
+						retTable = ret
 					end
-				else
-					retTable = ret
 				end
 			end
 		end
@@ -1545,37 +1941,54 @@ local function RunAccumulateReturnTableCallback(callbackID, callbackIterator, ..
 	return retTable
 end
 
-local function RunPreAddCollectibleCallback(callbackID, callbackIterator, collectibleType, charge, firstTime, slot, vardata, ...)
+local function RunPreAddCollectibleCallback(callbackID, callbackList, collectibleType, charge, firstTime, slot, vardata, ...)
 	local retType
 	local retTable
+	local n, a1, a2, a3, a4 = select('#', ...), ...
 
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, collectibleType, charge, firstTime, slot, vardata, ...)
-		if ret ~= nil then
-			if type(ret) == "boolean" and ret == false then
-				return false
-			elseif type(ret) == "number" then
-				retType = ret
-				collectibleType = ret
-				if retTable then
-					retTable.Type = ret
-				end
-			elseif type(ret) == "table" then
-				-- Set / update overrides so that they are visible to later callbacks.
-				collectibleType = ret[1] or collectibleType
-				charge = ret[2] or charge
-				if ret[3] ~= nil then
-					firstTime = ret[3]
-				end
-				slot = ret[4] or slot
-				vardata = ret[5] or vardata
-				if retTable then
-					for k, v in pairs(ret) do
-						retTable[k] = v
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret
+			if n == 0 then
+				ret = RunCallbackInternal(callbackID, callback, collectibleType, charge, firstTime, slot, vardata)
+			elseif n == 1 then
+				ret = RunCallbackInternal(callbackID, callback, collectibleType, charge, firstTime, slot, vardata, a1)
+			elseif n == 2 then
+				ret = RunCallbackInternal(callbackID, callback, collectibleType, charge, firstTime, slot, vardata, a1, a2)
+			elseif n == 3 then
+				ret = RunCallbackInternal(callbackID, callback, collectibleType, charge, firstTime, slot, vardata, a1, a2, a3)
+			elseif n == 4 then
+				ret = RunCallbackInternal(callbackID, callback, collectibleType, charge, firstTime, slot, vardata, a1, a2, a3, a4)
+			else
+				ret = RunCallbackInternal(callbackID, callback, collectibleType, charge, firstTime, slot, vardata, ...)
+			end
+			if ret ~= nil then
+				if type(ret) == "boolean" and ret == false then
+					return false
+				elseif type(ret) == "number" then
+					retType = ret
+					collectibleType = ret
+					if retTable then
+						retTable.Type = ret
 					end
-				else
-					retTable = ret
-					retTable[1] = retTable[1] or collectibleType
+				elseif type(ret) == "table" then
+					-- Set / update overrides so that they are visible to later callbacks.
+					collectibleType = ret[1] or collectibleType
+					charge = ret[2] or charge
+					if ret[3] ~= nil then
+						firstTime = ret[3]
+					end
+					slot = ret[4] or slot
+					vardata = ret[5] or vardata
+					if retTable then
+						for k, v in pairs(ret) do
+							retTable[k] = v
+						end
+					else
+						retTable = ret
+						retTable[1] = retTable[1] or collectibleType
+					end
 				end
 			end
 		end
@@ -1584,34 +1997,51 @@ local function RunPreAddCollectibleCallback(callbackID, callbackIterator, collec
 	return retTable or retType
 end
 
-local function RunPreAddTrinketCallback(callbackID, callbackIterator, player, trinketType, firstTime, ...)
+local function RunPreAddTrinketCallback(callbackID, callbackList, player, trinketType, firstTime, ...)
 	local retType
 	local retTable
+	local n, a1, a2, a3, a4 = select('#', ...), ...
 
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, player, trinketType, firstTime, ...)
-		if ret ~= nil then
-			if type(ret) == "boolean" and ret == false then
-				return false
-			elseif type(ret) == "number" then
-				retType = ret
-				trinketType = ret
-				if retTable then
-					retTable.Type = ret
-				end
-			elseif type(ret) == "table" then
-				-- Set / update overrides so that they are visible to later callbacks.
-				trinketType = ret[1] or trinketType
-				if ret[2] ~= nil then
-					firstTime = ret[2]
-				end
-				if retTable then
-					for k, v in pairs(ret) do
-						retTable[k] = v
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret
+			if n == 0 then
+				ret = RunCallbackInternal(callbackID, callback, player, trinketType, firstTime)
+			elseif n == 1 then
+				ret = RunCallbackInternal(callbackID, callback, player, trinketType, firstTime, a1)
+			elseif n == 2 then
+				ret = RunCallbackInternal(callbackID, callback, player, trinketType, firstTime, a1, a2)
+			elseif n == 3 then
+				ret = RunCallbackInternal(callbackID, callback, player, trinketType, firstTime, a1, a2, a3)
+			elseif n == 4 then
+				ret = RunCallbackInternal(callbackID, callback, player, trinketType, firstTime, a1, a2, a3, a4)
+			else
+				ret = RunCallbackInternal(callbackID, callback, player, trinketType, firstTime, ...)
+			end
+			if ret ~= nil then
+				if type(ret) == "boolean" and ret == false then
+					return false
+				elseif type(ret) == "number" then
+					retType = ret
+					trinketType = ret
+					if retTable then
+						retTable.Type = ret
 					end
-				else
-					retTable = ret
-					retTable[1] = retTable[1] or trinketType
+				elseif type(ret) == "table" then
+					-- Set / update overrides so that they are visible to later callbacks.
+					trinketType = ret[1] or trinketType
+					if ret[2] ~= nil then
+						firstTime = ret[2]
+					end
+					if retTable then
+						for k, v in pairs(ret) do
+							retTable[k] = v
+						end
+					else
+						retTable = ret
+						retTable[1] = retTable[1] or trinketType
+					end
 				end
 			end
 		end
@@ -1622,14 +2052,31 @@ end
 
 -- Custom handling for MC_PRE_TRIGGER_PLAYER_DEATH and MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES.
 -- Terminate early if the player is revived by any means.
-local function RunTriggerPlayerDeathCallback(callbackID, callbackIterator, player, ...)
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, player, ...)
-		if not player:IsDead() or not player:Exists() then
-			return
-		end
-		if ret == false then
-			return false
+local function RunTriggerPlayerDeathCallback(callbackID, callbackList, player, ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret
+			if n == 0 then
+				ret = RunCallbackInternal(callbackID, callback, player)
+			elseif n == 1 then
+				ret = RunCallbackInternal(callbackID, callback, player, a1)
+			elseif n == 2 then
+				ret = RunCallbackInternal(callbackID, callback, player, a1, a2)
+			elseif n == 3 then
+				ret = RunCallbackInternal(callbackID, callback, player, a1, a2, a3)
+			elseif n == 4 then
+				ret = RunCallbackInternal(callbackID, callback, player, a1, a2, a3, a4)
+			else
+				ret = RunCallbackInternal(callbackID, callback, player, ...)
+			end
+			if not player:IsDead() or not player:Exists() then
+				return
+			end
+			if ret == false then
+				return false
+			end
 		end
 	end
 	return true
@@ -1637,40 +2084,60 @@ end
 
 -- Custom handling for MC_POST_PICKUP_SELECTION.
 -- Terminate early if the table's 3rd argument is nil or false
-local function RunPostPickupSelectionCallback(callbackID, callbackIterator, pickup, variant, subType, ...)
+local function RunPostPickupSelectionCallback(callbackID, callbackList, pickup, variant, subType, ...)
 	local recentRet = nil
+	local n, a1, a2, a3, a4 = select('#', ...), ...
 
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, pickup, variant, subType, ...)
-		if type(ret) == "table" then
-			if not ret[3] then
-				return ret
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret
+			if n == 0 then
+				ret = RunCallbackInternal(callbackID, callback, pickup, variant, subType)
+			elseif n == 1 then
+				ret = RunCallbackInternal(callbackID, callback, pickup, variant, subType, a1)
+			elseif n == 2 then
+				ret = RunCallbackInternal(callbackID, callback, pickup, variant, subType, a1, a2)
+			elseif n == 3 then
+				ret = RunCallbackInternal(callbackID, callback, pickup, variant, subType, a1, a2, a3)
+			elseif n == 4 then
+				ret = RunCallbackInternal(callbackID, callback, pickup, variant, subType, a1, a2, a3, a4)
+			else
+				ret = RunCallbackInternal(callbackID, callback, pickup, variant, subType, ...)
 			end
+			if type(ret) == "table" then
+				if not ret[3] then
+					return ret
+				end
 
-			if (math.type(ret[1]) == "integer" and math.type(ret[2]) == "integer") then
-				recentRet = {ret[1], ret[2]}
-				variant = ret[1]
-				subType = ret[2]
+				if (math.type(ret[1]) == "integer" and math.type(ret[2]) == "integer") then
+					recentRet = {ret[1], ret[2]}
+					variant = ret[1]
+					subType = ret[2]
+				end
+
 			end
-
 		end
 	end
 
 	return recentRet
 end
 
-local function RunTryAddToBagOfCraftingCallback(callbackID, callbackIterator, player, pickup, result, ...)
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, player, pickup, result)
-		if type(ret) == "boolean" and ret == false then
-			return false
-		elseif type(ret) == "table" then
-			result = {}
-			for i=1,8 do
-				if not ret[i] or ret[i] <= BagOfCraftingPickup.BOC_NONE or ret[i] > BagOfCraftingPickup.BOC_POOP then
-					break
-				else
-					table.insert(result, ret[i])
+local function RunTryAddToBagOfCraftingCallback(callbackID, callbackList, player, pickup, result, ...)
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret = RunCallbackInternal(callbackID, callback, player, pickup, result)
+			if type(ret) == "boolean" and ret == false then
+				return false
+			elseif type(ret) == "table" then
+				result = {}
+				for i=1,8 do
+					if not ret[i] or ret[i] <= BagOfCraftingPickup.BOC_NONE or ret[i] > BagOfCraftingPickup.BOC_POOP then
+						break
+					else
+						table.insert(result, ret[i])
+					end
 				end
 			end
 		end
@@ -1679,31 +2146,34 @@ local function RunTryAddToBagOfCraftingCallback(callbackID, callbackIterator, pl
 	return result
 end
 
-local function RunPreApplyTearflagEffectsCallback(callbackID, callbackIterator, entity, pos, flags, source, damage)
+local function RunPreApplyTearflagEffectsCallback(callbackID, callbackList, entity, pos, flags, source, damage)
 	local combinedRet
 
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, entity, pos, flags, source, damage)
-		if ret ~= nil then
-			if type(ret) == "boolean" and ret == false then
-				return false
-			elseif type(ret) == "table" then
-				-- Set / update modified values so that they are visible to later callbacks.
-				if ret.Damage and type(ret.Damage) == "number" then
-					damage = ret.Damage
-				end
-				if ret.TearFlags and type(ret.TearFlags) == "userdata" and GetMetatableType(ret.TearFlags) == "BitSet128" then
-					flags = ret.TearFlags
-				end
-				if ret.Position and type(ret.Position) == "userdata" and GetMetatableType(ret.Position) == "Vector" then
-					pos = ret.Position
-				end
-				if combinedRet then
-					for k, v in pairs(ret) do
-						combinedRet[k] = v
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret = RunCallbackInternal(callbackID, callback, entity, pos, flags, source, damage)
+			if ret ~= nil then
+				if type(ret) == "boolean" and ret == false then
+					return false
+				elseif type(ret) == "table" then
+					-- Set / update modified values so that they are visible to later callbacks.
+					if ret.Damage and type(ret.Damage) == "number" then
+						damage = ret.Damage
 					end
-				else
-					combinedRet = ret
+					if ret.TearFlags and (type(ret.TearFlags) == "userdata" or type(ret.TearFlags) == "cdata") and GetMetatableType(ret.TearFlags) == "BitSet128" then
+						flags = ret.TearFlags
+					end
+					if ret.Position and (type(ret.Position) == "userdata" or type(ret.Position) == "cdata") and GetMetatableType(ret.Position) == "Vector" then
+						pos = ret.Position
+					end
+					if combinedRet then
+						for k, v in pairs(ret) do
+							combinedRet[k] = v
+						end
+					else
+						combinedRet = ret
+					end
 				end
 			end
 		end
@@ -1729,73 +2199,79 @@ local preStatusApplyReturnTableTypes = {
 -- Handle type checking here since the callback is called for several status effects with different types,
 -- terminate early if false is returned,
 -- and use additive callback logic instead of the default one.
-local function RunPreStatusEffectApplyCallback(callbackID, callbackIterator, status, entity, entityRef, duration, extraParam1, extraParam2, extraParam3)
+local function RunPreStatusEffectApplyCallback(callbackID, callbackList, status, entity, entityRef, duration, extraParam1, extraParam2, extraParam3)
 	local recentRet = nil
 
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, status, entity, entityRef, duration, extraParam1, extraParam2, extraParam3)
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret = RunCallbackInternal(callbackID, callback, status, entity, entityRef, duration, extraParam1, extraParam2, extraParam3)
 
-		if type(ret) == "boolean" then
-			if ret == false then return false end
-		elseif type(ret) == "table" then
-			if preStatusApplyReturnTableTypes[status] then
-				local err = preStatusApplyReturnTableTypes[status](ret)
+			if type(ret) == "boolean" then
+				if ret == false then return false end
+			elseif type(ret) == "table" then
+				if preStatusApplyReturnTableTypes[status] then
+					local err = preStatusApplyReturnTableTypes[status](ret)
 
-				if err then
-					logError(callbackID, callback.Mod.Name, err)
+					if err then
+						logError(callbackID, callback.Mod.Name, err)
+					else
+						if ret[1] ~= nil then duration = ret[1] end
+						if ret[2] ~= nil then extraParam1 = ret[2] end
+						if ret[3] ~= nil then extraParam2 = ret[3] end
+						if ret[4] ~= nil then extraParam3 = ret[4] end
+						recentRet = { duration, extraParam1, extraParam2, extraParam3 }
+					end
 				else
-					if ret[1] ~= nil then duration = ret[1] end
-					if ret[2] ~= nil then extraParam1 = ret[2] end
-					if ret[3] ~= nil then extraParam2 = ret[3] end
-					if ret[4] ~= nil then extraParam3 = ret[4] end
-					recentRet = { duration, extraParam1, extraParam2, extraParam3 }
+					logError(callbackID, callback.Mod.Name, "bad return type (table not expected for status)")
 				end
-			else
-				logError(callbackID, callback.Mod.Name, "bad return type (table not expected for status)")
+			elseif type(ret) == "number" then
+				if type(recentRet) == "table" then
+					recentRet[1] = ret
+				else
+					recentRet = ret
+				end
+				duration = ret
 			end
-		elseif type(ret) == "number" then
-			if type(recentRet) == "table" then
-				recentRet[1] = ret
-			else
-				recentRet = ret
-			end
-			duration = ret
 		end
 	end
 
 	return recentRet
 end
 
-local function RunPreBombDamageCallback(callbackID, callbackIterator, pos, damage, radius, lineCheck, source, tearFlags, damageFlags, damageSource)
+local function RunPreBombDamageCallback(callbackID, callbackList, pos, damage, radius, lineCheck, source, tearFlags, damageFlags, damageSource)
 	local combinedRet
 
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, pos, damage, radius, lineCheck, source, tearFlags, damageFlags, damageSource)
-		if ret ~= nil then
-			if type(ret) == "boolean" and ret == false then
-				return false
-			elseif type(ret) == "table" then
-				if ret.Position and type(ret.Position) == "userdata" and GetMetatableType(ret.Position) == "Vector" then
-					pos = ret.Position
-				end
-				if ret.Damage and type(ret.Damage) == "number" then
-					damage = ret.Damage
-				end
-				if ret.Radius and type(ret.Radius) == "number" then
-					radius = ret.Radius
-				end
-				if ret.TearFlags and type(ret.TearFlags) == "userdata" and GetMetatableType(ret.TearFlags) == "BitSet128" then
-					tearFlags = ret.TearFlags
-				end
-				if ret.DamageFlags and type(ret.DamageFlags) == "number" and math.tointeger(ret.DamageFlags) then
-					damageFlags = ret.DamageFlags
-				end
-				if combinedRet then
-					for k, v in pairs(ret) do
-						combinedRet[k] = v
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret = RunCallbackInternal(callbackID, callback, pos, damage, radius, lineCheck, source, tearFlags, damageFlags, damageSource)
+			if ret ~= nil then
+				if type(ret) == "boolean" and ret == false then
+					return false
+				elseif type(ret) == "table" then
+					if ret.Position and (type(ret.Position) == "userdata" or type(ret.Position) == "cdata") and GetMetatableType(ret.Position) == "Vector" then
+						pos = ret.Position
 					end
-				else
-					combinedRet = ret
+					if ret.Damage and type(ret.Damage) == "number" then
+						damage = ret.Damage
+					end
+					if ret.Radius and type(ret.Radius) == "number" then
+						radius = ret.Radius
+					end
+					if ret.TearFlags and (type(ret.TearFlags) == "userdata" or type(ret.TearFlags) == "cdata") and GetMetatableType(ret.TearFlags) == "BitSet128" then
+						tearFlags = ret.TearFlags
+					end
+					if ret.DamageFlags and type(ret.DamageFlags) == "number" and math.tointeger(ret.DamageFlags) then
+						damageFlags = ret.DamageFlags
+					end
+					if combinedRet then
+						for k, v in pairs(ret) do
+							combinedRet[k] = v
+						end
+					else
+						combinedRet = ret
+					end
 				end
 			end
 		end
@@ -1804,33 +2280,36 @@ local function RunPreBombDamageCallback(callbackID, callbackIterator, pos, damag
 	return combinedRet
 end
 
-local function RunPreBombTearFlagEffectsCallback(callbackID, callbackIterator, pos, radius, tearFlags, source, radiusMult)
+local function RunPreBombTearFlagEffectsCallback(callbackID, callbackList, pos, radius, tearFlags, source, radiusMult)
 	local combinedRet
 
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, pos, radius, tearFlags, source, radiusMult)
-		if ret ~= nil then
-			if type(ret) == "boolean" and ret == false then
-				return false
-			elseif type(ret) == "table" then
-				if ret.Position and type(ret.Position) == "userdata" and GetMetatableType(ret.Position) == "Vector" then
-					pos = ret.Position
-				end
-				if ret.Radius and type(ret.Radius) == "number" then
-					radius = ret.Radius
-				end
-				if ret.RadiusMult and type(ret.RadiusMult) == "number" then
-					radiusMult = ret.RadiusMult
-				end
-				if ret.TearFlags and type(ret.TearFlags) == "userdata" and GetMetatableType(ret.TearFlags) == "BitSet128" then
-					tearFlags = ret.TearFlags
-				end
-				if combinedRet then
-					for k, v in pairs(ret) do
-						combinedRet[k] = v
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret = RunCallbackInternal(callbackID, callback, pos, radius, tearFlags, source, radiusMult)
+			if ret ~= nil then
+				if type(ret) == "boolean" and ret == false then
+					return false
+				elseif type(ret) == "table" then
+					if ret.Position and (type(ret.Position) == "userdata" or type(ret.Position) == "cdata") and GetMetatableType(ret.Position) == "Vector" then
+						pos = ret.Position
 					end
-				else
-					combinedRet = ret
+					if ret.Radius and type(ret.Radius) == "number" then
+						radius = ret.Radius
+					end
+					if ret.RadiusMult and type(ret.RadiusMult) == "number" then
+						radiusMult = ret.RadiusMult
+					end
+					if ret.TearFlags and (type(ret.TearFlags) == "userdata" or type(ret.TearFlags) == "cdata") and GetMetatableType(ret.TearFlags) == "BitSet128" then
+						tearFlags = ret.TearFlags
+					end
+					if combinedRet then
+						for k, v in pairs(ret) do
+							combinedRet[k] = v
+						end
+					else
+						combinedRet = ret
+					end
 				end
 			end
 		end
@@ -1839,26 +2318,43 @@ local function RunPreBombTearFlagEffectsCallback(callbackID, callbackIterator, p
 	return combinedRet
 end
 
-local function RunPreHistoryHudRenderCallback(callbackID, callbackIterator, ...)
+local function RunPreHistoryHudRenderCallback(callbackID, callbackList, ...)
 	local combinedRet = {
 		HideCollectibles = {},
 		HideTrinkets = {},
 	}
+	local n, a1, a2, a3, a4 = select('#', ...), ...
 
-	for callback in callbackIterator do
-		local ret = RunCallbackInternal(callbackID, callback, ...)
-		if ret ~= nil then
-			if type(ret) == "boolean" and ret == false then
-				return false
-			elseif type(ret) == "table" then
-				if ret.HideCollectibles and type(ret.HideCollectibles) == "table" then
-					for _, id in pairs(ret.HideCollectibles) do
-						combinedRet.HideCollectibles[id] = true
+	for i = 1, #callbackList do
+		local callback = callbackList[i]
+		if not callback.Removed then
+			local ret
+			if n == 0 then
+				ret = RunCallbackInternal(callbackID, callback)
+			elseif n == 1 then
+				ret = RunCallbackInternal(callbackID, callback, a1)
+			elseif n == 2 then
+				ret = RunCallbackInternal(callbackID, callback, a1, a2)
+			elseif n == 3 then
+				ret = RunCallbackInternal(callbackID, callback, a1, a2, a3)
+			elseif n == 4 then
+				ret = RunCallbackInternal(callbackID, callback, a1, a2, a3, a4)
+			else
+				ret = RunCallbackInternal(callbackID, callback, ...)
+			end
+			if ret ~= nil then
+				if type(ret) == "boolean" and ret == false then
+					return false
+				elseif type(ret) == "table" then
+					if ret.HideCollectibles and type(ret.HideCollectibles) == "table" then
+						for _, id in pairs(ret.HideCollectibles) do
+							combinedRet.HideCollectibles[id] = true
+						end
 					end
-				end
-				if ret.HideTrinkets and type(ret.HideTrinkets) == "table" then
-					for _, id in pairs(ret.HideTrinkets) do
-						combinedRet.HideTrinkets[id] = true
+					if ret.HideTrinkets and type(ret.HideTrinkets) == "table" then
+						for _, id in pairs(ret.HideTrinkets) do
+							combinedRet.HideTrinkets[id] = true
+						end
 					end
 				end
 			end
@@ -1868,21 +2364,93 @@ local function RunPreHistoryHudRenderCallback(callbackID, callbackIterator, ...)
 	return combinedRet
 end
 
+local EMPTY_CALLBACK_LIST = {}
+
 -- Legacy globals. Safer to just leave them alone since they were already exposed. Don't use these.
 function _RunPreRenderCallback(callbackID, param, ...)
-	return RunPreRenderCallback(callbackID, GetCallbackIterator(callbackID, param), ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	local list = GetCallbackList(callbackID, param) or EMPTY_CALLBACK_LIST
+	if n == 0 then
+		return RunPreRenderCallback(callbackID, list)
+	elseif n == 1 then
+		return RunPreRenderCallback(callbackID, list, a1)
+	elseif n == 2 then
+		return RunPreRenderCallback(callbackID, list, a1, a2)
+	elseif n == 3 then
+		return RunPreRenderCallback(callbackID, list, a1, a2, a3)
+	elseif n == 4 then
+		return RunPreRenderCallback(callbackID, list, a1, a2, a3, a4)
+	else
+		return RunPreRenderCallback(callbackID, list, ...)
+	end
 end
 function _RunAdditiveCallback(callbackID, value, ...)
-	return RunAdditiveFirstArgCallback(callbackID, GetCallbackIterator(callbackID), value, ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	local list = GetCallbackList(callbackID) or EMPTY_CALLBACK_LIST
+	if n == 0 then
+		return RunAdditiveFirstArgCallback(callbackID, list, value)
+	elseif n == 1 then
+		return RunAdditiveFirstArgCallback(callbackID, list, value, a1)
+	elseif n == 2 then
+		return RunAdditiveFirstArgCallback(callbackID, list, value, a1, a2)
+	elseif n == 3 then
+		return RunAdditiveFirstArgCallback(callbackID, list, value, a1, a2, a3)
+	elseif n == 4 then
+		return RunAdditiveFirstArgCallback(callbackID, list, value, a1, a2, a3, a4)
+	else
+		return RunAdditiveFirstArgCallback(callbackID, list, value, ...)
+	end
 end
 function _RunEntityTakeDmgCallback(callbackID, param, ...)
-	return RunEntityTakeDmgCallback(callbackID, GetCallbackIterator(callbackID, param), ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	local list = GetCallbackList(callbackID, param) or EMPTY_CALLBACK_LIST
+	if n == 0 then
+		return RunEntityTakeDmgCallback(callbackID, list)
+	elseif n == 1 then
+		return RunEntityTakeDmgCallback(callbackID, list, a1)
+	elseif n == 2 then
+		return RunEntityTakeDmgCallback(callbackID, list, a1, a2)
+	elseif n == 3 then
+		return RunEntityTakeDmgCallback(callbackID, list, a1, a2, a3)
+	elseif n == 4 then
+		return RunEntityTakeDmgCallback(callbackID, list, a1, a2, a3, a4)
+	else
+		return RunEntityTakeDmgCallback(callbackID, list, ...)
+	end
 end
 function _RunPostPickupSelection(callbackID, param, ...)
-	return RunPostPickupSelectionCallback(callbackID, GetCallbackIterator(callbackID, param), ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	local list = GetCallbackList(callbackID, param) or EMPTY_CALLBACK_LIST
+	if n == 0 then
+		return RunPostPickupSelectionCallback(callbackID, list)
+	elseif n == 1 then
+		return RunPostPickupSelectionCallback(callbackID, list, a1)
+	elseif n == 2 then
+		return RunPostPickupSelectionCallback(callbackID, list, a1, a2)
+	elseif n == 3 then
+		return RunPostPickupSelectionCallback(callbackID, list, a1, a2, a3)
+	elseif n == 4 then
+		return RunPostPickupSelectionCallback(callbackID, list, a1, a2, a3, a4)
+	else
+		return RunPostPickupSelectionCallback(callbackID, list, ...)
+	end
 end
 function _RunTriggerPlayerDeathCallback(callbackID, param, ...)
-	return RunTriggerPlayerDeathCallback(callbackID, GetCallbackIterator(callbackID, param), ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	local list = GetCallbackList(callbackID, param) or EMPTY_CALLBACK_LIST
+	if n == 0 then
+		return RunTriggerPlayerDeathCallback(callbackID, list)
+	elseif n == 1 then
+		return RunTriggerPlayerDeathCallback(callbackID, list, a1)
+	elseif n == 2 then
+		return RunTriggerPlayerDeathCallback(callbackID, list, a1, a2)
+	elseif n == 3 then
+		return RunTriggerPlayerDeathCallback(callbackID, list, a1, a2, a3)
+	elseif n == 4 then
+		return RunTriggerPlayerDeathCallback(callbackID, list, a1, a2, a3, a4)
+	else
+		return RunTriggerPlayerDeathCallback(callbackID, list, ...)
+	end
 end
 rawset(Isaac, "RunPreRenderCallback", _RunPreRenderCallback)
 rawset(Isaac, "RunAdditiveCallback", _RunAdditiveCallback)
@@ -1969,26 +2537,388 @@ for _, callback in ipairs({
 	CustomRunCallbackLogic[callback] = RunPreRenderCallback
 end
 
-local function RunCallbackOverIterator(callbackID, callbackIterator, ...)
+-- Runs the correct callback logic over a callback list (a plain array from GetCallbackList).
+local function RunCallbacksOverList(callbackID, callbackList, ...)
 	local runCallbackLogic = CustomRunCallbackLogic[callbackID] or DefaultRunCallbackLogic
-	return runCallbackLogic(callbackID, callbackIterator, ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	if n == 0 then
+		return runCallbackLogic(callbackID, callbackList or EMPTY_CALLBACK_LIST)
+	elseif n == 1 then
+		return runCallbackLogic(callbackID, callbackList or EMPTY_CALLBACK_LIST, a1)
+	elseif n == 2 then
+		return runCallbackLogic(callbackID, callbackList or EMPTY_CALLBACK_LIST, a1, a2)
+	elseif n == 3 then
+		return runCallbackLogic(callbackID, callbackList or EMPTY_CALLBACK_LIST, a1, a2, a3)
+	elseif n == 4 then
+		return runCallbackLogic(callbackID, callbackList or EMPTY_CALLBACK_LIST, a1, a2, a3, a4)
+	else
+		return runCallbackLogic(callbackID, callbackList or EMPTY_CALLBACK_LIST, ...)
+	end
 end
-rawset(Isaac, "RunCallbackOverIterator", RunCallbackOverIterator)
+rawset(Isaac, "RunCallbacksOverList", RunCallbacksOverList)
+
+rawset(Isaac, "RunCallbackOverIterator", function(callbackID, callbackIterator, ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	local callbackList
+	if type(callbackIterator) == "function" then
+		local first = callbackIterator()
+		if first == nil then
+			if n == 0 then
+				return RunCallbacksOverList(callbackID, EMPTY_CALLBACK_LIST)
+			elseif n == 1 then
+				return RunCallbacksOverList(callbackID, EMPTY_CALLBACK_LIST, a1)
+			elseif n == 2 then
+				return RunCallbacksOverList(callbackID, EMPTY_CALLBACK_LIST, a1, a2)
+			elseif n == 3 then
+				return RunCallbacksOverList(callbackID, EMPTY_CALLBACK_LIST, a1, a2, a3)
+			elseif n == 4 then
+				return RunCallbacksOverList(callbackID, EMPTY_CALLBACK_LIST, a1, a2, a3, a4)
+			else
+				return RunCallbacksOverList(callbackID, EMPTY_CALLBACK_LIST, ...)
+			end
+		end
+		callbackList = { first }
+		while true do
+			local cb = callbackIterator()
+			if cb == nil then
+				break
+			end
+			callbackList[#callbackList + 1] = cb
+		end
+	else
+		callbackList = {}
+		for cb in callbackIterator do
+			callbackList[#callbackList + 1] = cb
+		end
+	end
+	if n == 0 then
+		return RunCallbacksOverList(callbackID, callbackList)
+	elseif n == 1 then
+		return RunCallbacksOverList(callbackID, callbackList, a1)
+	elseif n == 2 then
+		return RunCallbacksOverList(callbackID, callbackList, a1, a2)
+	elseif n == 3 then
+		return RunCallbacksOverList(callbackID, callbackList, a1, a2, a3)
+	elseif n == 4 then
+		return RunCallbacksOverList(callbackID, callbackList, a1, a2, a3, a4)
+	else
+		return RunCallbacksOverList(callbackID, callbackList, ...)
+	end
+end)
+
+-- !!!!! WARNING - HIGHLY CURSED !!!!!
+-- Normally, every instance of a callback runs in a single xpcall. To LuaJIT this is *one function*.
+-- If a single mod in the callback causes a trace abort, the *entire callback stack* does not compile. Not ideal!
+-- Instead, unroll callback loops such that each instance of a callback gets its own xpcall. 
+-- Our LuaJIT fork has been changed to stitch around xpcalls, so this results in the rest of the callbacks tracing.
+-- These are cached so future runs will just use the pregenenerated runner.
+local function nonNil(code) return "if r ~= nil then " .. code .. " end" end
+local MergeIntoCombined = "if combinedRet then for k_, v_ in pairs(r) do combinedRet[k_] = v_ end else combinedRet = r end"
+local function isMetatype(expr, mtType)
+	return string.format('%s and (type(%s) == "userdata" or type(%s) == "cdata") and GetMetatableType(%s) == "%s"',
+		expr, expr, expr, expr, mtType)
+end
+
+local GeneratedCallbackRunLogic = {
+	[DefaultRunCallbackLogic] = { body = nonNil("return r") },
+	[RunFalseBreakCallbackLogic] = { body = nonNil("if r == false then return r end") },
+	[RunNoReturnCallback] = { body = "" },
+	[RunAdditiveFirstArgCallback] = { minArgs = 1, body = nonNil("a1 = r"), post = "return a1" },
+	[RunAdditiveSecondArgCallback] = { minArgs = 2, body = nonNil("a2 = r"), post = "return a2" },
+	[RunAdditiveThirdArgCallback] = { minArgs = 3, body = nonNil("a3 = r"), post = "return a3" },
+	[RunAdditiveFourthArgCallback] = { minArgs = 4, body = nonNil("a4 = r"), post = "return a4" },
+	[RunAdditiveSecondArgCallbackWithBreak] = { minArgs = 2, post = "return a2",
+		body = nonNil('if type(r) == "boolean" then if r == false then return r end else a2 = r end') },
+	[RunAdditiveThirdArgCallbackWithBreak] = { minArgs = 3, post = "return a3",
+		body = nonNil('if type(r) == "boolean" then if r == false then return r end else a3 = r end') },
+	[RunPreRenderCallback] = { minArgs = 2, post = "return a2",
+		body = nonNil('if type(r) == "boolean" and r == false then return false elseif r.X and r.Y then a2 = a2 + r end') },
+
+	[RunPreAddCardPillCallback] = { minArgs = 2, post = "return a2",
+		body = 'if type(r) == "boolean" and r == false then return false elseif type(r) == "number" and r > 0 then a2 = r end' },
+	[RunGetMultiShotParamsCallback] = { minArgs = 2, post = "return a2",
+		body = "if IsValidMultiShotParams(r) then a2 = r end" },
+	[RunEntityTakeDmgCallback] = { fixedArgs = 6, pre = "local combinedRet", post = "return combinedRet",
+		body = nonNil([[
+			if type(r) == "boolean" and r == false then
+				return false
+			elseif type(r) == "table" then
+				if r.Damage and type(r.Damage) == "number" then a2 = r.Damage end
+				if r.DamageFlags and type(r.DamageFlags) == "number" and math.tointeger(r.DamageFlags) then a3 = r.DamageFlags end
+				if r.DamageCountdown and type(r.DamageCountdown) == "number" then a5 = r.DamageCountdown end
+				]] .. MergeIntoCombined .. [[
+			end]]) },
+	[RunAccumulateReturnTableCallback] = { pre = "local retTable", post = "return retTable",
+		body = nonNil([[
+			if type(r) == "boolean" then
+				return r
+			elseif type(r) == "table" then
+				if retTable then for k_, v_ in pairs(r) do retTable[k_] = v_ end else retTable = r end
+			end]]) },
+	[RunPreAddCollectibleCallback] = { minArgs = 5, pre = "local retType, retTable", post = "return retTable or retType",
+		body = nonNil([[
+			if type(r) == "boolean" and r == false then
+				return false
+			elseif type(r) == "number" then
+				retType = r
+				a1 = r
+				if retTable then retTable.Type = r end
+			elseif type(r) == "table" then
+				a1 = r[1] or a1
+				a2 = r[2] or a2
+				if r[3] ~= nil then a3 = r[3] end
+				a4 = r[4] or a4
+				a5 = r[5] or a5
+				if retTable then
+					for k_, v_ in pairs(r) do retTable[k_] = v_ end
+				else
+					retTable = r
+					retTable[1] = retTable[1] or a1
+				end
+			end]]) },
+	[RunPreAddTrinketCallback] = { minArgs = 3, pre = "local retType, retTable", post = "return retTable or retType",
+		body = nonNil([[
+			if type(r) == "boolean" and r == false then
+				return false
+			elseif type(r) == "number" then
+				retType = r
+				a2 = r
+				if retTable then retTable.Type = r end
+			elseif type(r) == "table" then
+				a2 = r[1] or a2
+				if r[2] ~= nil then a3 = r[2] end
+				if retTable then
+					for k_, v_ in pairs(r) do retTable[k_] = v_ end
+				else
+					retTable = r
+					retTable[1] = retTable[1] or a2
+				end
+			end]]) },
+	[RunTriggerPlayerDeathCallback] = { minArgs = 1, post = "return true",
+		body = [[
+			if not a1:IsDead() or not a1:Exists() then return end
+			if r == false then return false end]] },
+	[RunPostPickupSelectionCallback] = { minArgs = 3, pre = "local recentRet", post = "return recentRet",
+		body = [[
+			if type(r) == "table" then
+				if not r[3] then return r end
+				if (math.type(r[1]) == "integer" and math.type(r[2]) == "integer") then
+					recentRet = {r[1], r[2]}
+					a2 = r[1]
+					a3 = r[2]
+				end
+			end]] },
+	[RunTryAddToBagOfCraftingCallback] = { fixedArgs = 3, post = "return a3",
+		body = [[
+			if type(r) == "boolean" and r == false then
+				return false
+			elseif type(r) == "table" then
+				a3 = {}
+				for i_ = 1, 8 do
+					if not r[i_] or r[i_] <= BagOfCraftingPickup.BOC_NONE or r[i_] > BagOfCraftingPickup.BOC_POOP then
+						break
+					else
+						table.insert(a3, r[i_])
+					end
+				end
+			end]] },
+	[RunPreApplyTearflagEffectsCallback] = { fixedArgs = 5, pre = "local combinedRet", post = "return combinedRet",
+		body = nonNil([[
+			if type(r) == "boolean" and r == false then
+				return false
+			elseif type(r) == "table" then
+				if r.Damage and type(r.Damage) == "number" then a5 = r.Damage end
+				if ]] .. isMetatype("r.TearFlags", "BitSet128") .. [[ then a3 = r.TearFlags end
+				if ]] .. isMetatype("r.Position", "Vector") .. [[ then a2 = r.Position end
+				]] .. MergeIntoCombined .. [[
+			end]]) },
+	[RunPreStatusEffectApplyCallback] = { fixedArgs = 7, pre = "local recentRet", post = "return recentRet",
+		body = [[
+			if type(r) == "boolean" then
+				if r == false then return false end
+			elseif type(r) == "table" then
+				local check_ = preStatusApplyReturnTableTypes[a1]
+				if check_ then
+					local err_ = check_(r)
+					if err_ then
+						logError(id, cb.Mod.Name, err_)
+					else
+						if r[1] ~= nil then a4 = r[1] end
+						if r[2] ~= nil then a5 = r[2] end
+						if r[3] ~= nil then a6 = r[3] end
+						if r[4] ~= nil then a7 = r[4] end
+						recentRet = { a4, a5, a6, a7 }
+					end
+				else
+					logError(id, cb.Mod.Name, "bad return type (table not expected for status)")
+				end
+			elseif type(r) == "number" then
+				if type(recentRet) == "table" then recentRet[1] = r else recentRet = r end
+				a4 = r
+			end]] },
+	[RunPreBombDamageCallback] = { fixedArgs = 8, pre = "local combinedRet", post = "return combinedRet",
+		body = nonNil([[
+			if type(r) == "boolean" and r == false then
+				return false
+			elseif type(r) == "table" then
+				if ]] .. isMetatype("r.Position", "Vector") .. [[ then a1 = r.Position end
+				if r.Damage and type(r.Damage) == "number" then a2 = r.Damage end
+				if r.Radius and type(r.Radius) == "number" then a3 = r.Radius end
+				if ]] .. isMetatype("r.TearFlags", "BitSet128") .. [[ then a6 = r.TearFlags end
+				if r.DamageFlags and type(r.DamageFlags) == "number" and math.tointeger(r.DamageFlags) then a7 = r.DamageFlags end
+				]] .. MergeIntoCombined .. [[
+			end]]) },
+	[RunPreBombTearFlagEffectsCallback] = { fixedArgs = 5, pre = "local combinedRet", post = "return combinedRet",
+		body = nonNil([[
+			if type(r) == "boolean" and r == false then
+				return false
+			elseif type(r) == "table" then
+				if ]] .. isMetatype("r.Position", "Vector") .. [[ then a1 = r.Position end
+				if r.Radius and type(r.Radius) == "number" then a2 = r.Radius end
+				if r.RadiusMult and type(r.RadiusMult) == "number" then a5 = r.RadiusMult end
+				if ]] .. isMetatype("r.TearFlags", "BitSet128") .. [[ then a3 = r.TearFlags end
+				]] .. MergeIntoCombined .. [[
+			end]]) },
+	[RunPreHistoryHudRenderCallback] = {
+		pre = "local combinedRet = { HideCollectibles = {}, HideTrinkets = {} }", post = "return combinedRet",
+		body = nonNil([[
+			if type(r) == "boolean" and r == false then
+				return false
+			elseif type(r) == "table" then
+				if r.HideCollectibles and type(r.HideCollectibles) == "table" then
+					for _, v_ in pairs(r.HideCollectibles) do combinedRet.HideCollectibles[v_] = true end
+				end
+				if r.HideTrinkets and type(r.HideTrinkets) == "table" then
+					for _, v_ in pairs(r.HideTrinkets) do combinedRet.HideTrinkets[v_] = true end
+				end
+			end]]) },
+}
+
+local Runners = {}
+
+local function BuildRunner(callbackID, list, numArgs, template)
+	local n = template.fixedArgs or math.max(numArgs, template.minArgs or 0)
+	local args = {}
+	for i = 1, n do args[i] = "a" .. i end
+	args = table.concat(args, ", ")
+	local passArgs = n > 0 and (", " .. args) or ""
+
+	local src = {
+		"local xpcall, handler, logError, typeCheckCallback, type, C, id, GetMetatableType, IsValidMultiShotParams, preStatusApplyReturnTableTypes = ...\n",
+		"return function(", args, ")\n\tlocal cb, ok, r\n",
+		template.pre and ("\t" .. template.pre .. "\n") or "",
+	}
+
+	for i = 1, #list do
+		src[#src + 1] = string.format([[
+	cb = C[%d]
+	if not cb.Removed then
+		ok, r = xpcall(cb.Function, handler, cb.Mod%s)
+		if not ok then
+			logError(id, cb.Mod.Name, r)
+			r = nil
+		elseif r ~= nil and typeCheckCallback(cb, id, r%s) then
+			r = nil
+		end
+		%s
+	end
+]], i, passArgs, passArgs, template.body)
+	end
+	if template.post then
+		src[#src + 1] = "\t" .. template.post .. "\n"
+	end
+	src[#src + 1] = "end\n"
+
+	
+	local chunk = load(table.concat(src), "=[RunCallback " .. tostring(callbackIDToName[callbackID] or callbackID) .. "]")
+	return chunk and chunk(xpcall, callbackErrorHandler, logError, typeCheckCallback, type, list, callbackID,
+		GetMetatableType, IsValidMultiShotParams, preStatusApplyReturnTableTypes) or false
+end
+
+local function GetRunner(callbackID, list, numArgs)
+	local runners = list[Runners]
+	if runners then
+		local run = runners[numArgs]
+		if run ~= nil then
+			return run
+		end
+	else
+		runners = {}
+		list[Runners] = runners
+	end
+	local template = GeneratedCallbackRunLogic[CustomRunCallbackLogic[callbackID] or DefaultRunCallbackLogic]
+	local run = template and BuildRunner(callbackID, list, numArgs, template) or false
+	runners[numArgs] = run
+	return run
+end
 
 function _RunCallback(callbackID, param, ...)
-	local callbackIterator = GetCallbackIterator(callbackID, param)
-	return RunCallbackOverIterator(callbackID, callbackIterator, ...)
+	local list = GetCallbackList(callbackID, param)
+	if list then
+		local run = GetRunner(callbackID, list, select('#', ...))
+		if run then
+			return run(...)
+		end
+	end
+
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	if n == 0 then
+		return RunCallbacksOverList(callbackID, list)
+	elseif n == 1 then
+		return RunCallbacksOverList(callbackID, list, a1)
+	elseif n == 2 then
+		return RunCallbacksOverList(callbackID, list, a1, a2)
+	elseif n == 3 then
+		return RunCallbacksOverList(callbackID, list, a1, a2, a3)
+	elseif n == 4 then
+		return RunCallbacksOverList(callbackID, list, a1, a2, a3, a4)
+	else
+		return RunCallbacksOverList(callbackID, list, ...)
+	end
 end
 
 Isaac.RunCallbackWithParam = _RunCallback
 
 function Isaac.RunCallback(callbackID, ...)
-	return Isaac.RunCallbackWithParam(callbackID, nil, ...)
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	if n == 0 then
+		return Isaac.RunCallbackWithParam(callbackID, nil)
+	elseif n == 1 then
+		return Isaac.RunCallbackWithParam(callbackID, nil, a1)
+	elseif n == 2 then
+		return Isaac.RunCallbackWithParam(callbackID, nil, a1, a2)
+	elseif n == 3 then
+		return Isaac.RunCallbackWithParam(callbackID, nil, a1, a2, a3)
+	elseif n == 4 then
+		return Isaac.RunCallbackWithParam(callbackID, nil, a1, a2, a3, a4)
+	else
+		return Isaac.RunCallbackWithParam(callbackID, nil, ...)
+	end
 end
 
 function _RunCallbackWithTwoParams(callbackID, param1, param2, ...)
-	local callbackIterator = GetCallbackIterator(callbackID, param1, param2)
-	return RunCallbackOverIterator(callbackID, callbackIterator, ...)
+	local list = GetCallbackList(callbackID, param1, param2)
+	if list then
+		local run = GetRunner(callbackID, list, select('#', ...))
+		if run then
+			return run(...)
+		end
+	end
+
+	local n, a1, a2, a3, a4 = select('#', ...), ...
+	if n == 0 then
+		return RunCallbacksOverList(callbackID, list)
+	elseif n == 1 then
+		return RunCallbacksOverList(callbackID, list, a1)
+	elseif n == 2 then
+		return RunCallbacksOverList(callbackID, list, a1, a2)
+	elseif n == 3 then
+		return RunCallbacksOverList(callbackID, list, a1, a2, a3)
+	elseif n == 4 then
+		return RunCallbacksOverList(callbackID, list, a1, a2, a3, a4)
+	else
+		return RunCallbacksOverList(callbackID, list, ...)
+	end
 end
 rawset(Isaac, "RunCallbackWithTwoParams", _RunCallbackWithTwoParams)
 
@@ -2060,6 +2990,7 @@ end
 
 if not _LUADEBUG then
 	debug = nil
+	package = nil
 	os = {
 		date = os.date,
 		time = os.time,
@@ -2078,6 +3009,23 @@ function Game()
 	return gaymeinstance
 end
 
+local sfxManagerInstance
+local oldSFXManager = SFXManager
+function SFXManager()
+	if not sfxManagerInstance then
+		sfxManagerInstance = oldSFXManager()
+	end
+	return sfxManagerInstance
+end
+
+local musicManagerInstance
+local oldMusicManager = MusicManager
+function MusicManager()
+	if not musicManagerInstance then
+		musicManagerInstance = oldMusicManager()
+	end
+	return musicManagerInstance
+end
 
 local oldregmod = RegisterMod
 
@@ -2093,6 +3041,26 @@ function RegisterMod(name, ver)
 
 	return out
 end
+
+
+-- Luaside reimplementation of entity:GetData()
+-- TODO: Right now, we overwrite GetData with _GetEntityData in LuaInit.cpp. When we jit Entity, remove that.
+local _EntityData = {}
+
+function _GetEntityData(entity)
+	local hash = GetPtrHash(entity)
+	if not _EntityData[hash] then
+		_EntityData[hash] = {}
+	end
+	return _EntityData[hash]
+end
+rawset(Isaac, "GetEntityData", _GetEntityData)
+
+function _ClearEntityData(entity)
+	local hash = GetPtrHash(entity)
+	_EntityData[hash] = nil
+end
+rawset(Isaac, "ClearEntityData", _ClearEntityData)
 
 
 rawset(Isaac, "GetEntityConfig", function() return EntityConfig end)
@@ -2161,23 +3129,6 @@ rawset(Isaac, "GetAllowedDoorsMaskForRoomShape", function(roomShape)
 	return roomShape and RoomShapeToDoorMask[roomShape] or 0
 end)
 
-
-local SpriteMT=getmetatable(Sprite)
-local OldSprConstructor=SpriteMT.__call
-
-function SpriteMT.__call(_,ANM2Path,LoadGraphics)
-	local out,isloaded=OldSprConstructor(),false
-	if LoadGraphics==nil then LoadGraphics=true end
-
-	if ANM2Path and type(ANM2Path)=="string" then
-		out:Load(ANM2Path,LoadGraphics)
-		isloaded=out:GetLayerCount()>0
-	end
-
-	return out,isloaded
-end
-
-
 local FontMT=getmetatable(Font)
 local OldFontConstructor=FontMT.__call
 
@@ -2198,7 +3149,6 @@ end
 -- errors report the actual call site instead of the line in `scripts/main.lua`.
 -- Make sure you understand what the old wrapper was doing, and that the new hook maintains any features like optional args.
 local LuaWrappersToRemove = {
-	{ ItemPool, {"GetCollectible"} },
 	{
 		EntityPlayer, {
 			"AddCollectible",

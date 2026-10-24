@@ -1,0 +1,103 @@
+ffi.cdef[[
+    struct GridEntityPoop {
+        padding void* vtable;
+        private struct GridEntityDesc DescValue;
+        private int GridIndex;
+        private int SpawnFrame;
+        private struct RNG RNG;
+        int CollisionClass;
+        struct Sprite Sprite;
+        int ReviveTimer;
+        private struct StdString StateAnimationString;
+        bool UnderPlayer;
+        private bool Destroyed;
+        padding char[0x2a];
+    };
+    typedef struct GridEntityPoop* GridEntityPoopPtr;
+    
+    bool L_GridEntityPoop_Hurt(struct GridEntityPoop*, int, struct EntityRef*);
+    void L_GridEntityPoop_PostInit(struct GridEntityPoop*);
+    void L_GridEntityPoop_Render(struct GridEntityPoop*, struct Vector);
+    void L_GridEntityPoop_RespawnRedPoop(struct GridEntityPoop*);
+    void L_GridEntityPoop_Update(struct GridEntityPoop*);
+]]
+local ffi = ffi
+local repentogon = ffidll
+
+ffi.reentrant(repentogon.L_GridEntityPoop_Hurt)
+ffi.reentrant(repentogon.L_GridEntityPoop_PostInit)
+ffi.reentrant(repentogon.L_GridEntityPoop_Render)
+ffi.reentrant(repentogon.L_GridEntityPoop_Update)
+
+local GridEntityPoopMT
+GridEntityPoopMT = {
+    __type = "GridEntityPoop",
+    Destroy = function(self)
+        local result = repentogon.L_GridEntityPoop_Hurt(self, 4, EntityRef()) return result
+    end,
+    DestroyWithSource = function(self, _, source)
+        ffichecks.checkcdata(2, source, "EntityRef")
+        local result = repentogon.L_GridEntityPoop_Hurt(self, 4, source) return result
+    end,
+    Hurt = function(self, damage)
+        damage = ffichecks.checkinteger(1, damage)
+        local result = repentogon.L_GridEntityPoop_Hurt(self, damage, EntityRef()) return result
+    end,
+    HurtWithSource = function(self, damage, source)
+        damage = ffichecks.checkinteger(1, damage)
+        ffichecks.checkcdata(2, source, "EntityRef")
+        local result = repentogon.L_GridEntityPoop_Hurt(self, damage, source) return result
+    end,
+    PostInit = function(self)
+        repentogon.L_GridEntityPoop_PostInit(self)
+    end,
+    ReduceSpawnRate = function(self)
+        ffi.getprivate(self, "DescValue").VarData = 1
+    end,
+    RespawnRedPoop = function(self)
+        -- Crazy that we're already at the point where we can just reimplement functions and they'll be close to C speed.
+        -- Original C speed after 1,000,000 iters: {320ms}, direct C exposure {90 ms}, this reimplementation {150 ms}
+        if ffi.getprivate(self, "DescValue").Variant == 1 then
+            ffi.getprivate(self, "DescValue").State = 1000
+            self.ReviveTimer = 120
+            self.CollisionClass = 0
+
+            local sprite = ffi.getprivate(self, "Sprite")
+            local anim = sprite:SetAnimation("State5")
+            local animState = ffi.getprivate(sprite, "AnimState")
+            if anim && not ffichecks.isnullptr(animState.AnimData) then
+                animState:SetPosition(ffi.getprivate(sprite:GetAnimationData("State5"), "Length"))
+                if not ffichecks.isnullptr(animState.AnimData) then
+                    animState.IsPlaying = false
+                end
+            end
+        end
+    end,
+    Render = function(self, offset)
+        ffichecks.checkcdata(1, offset, "Vector")
+        repentogon.L_GridEntityPoop_Render(self, offset)
+    end,
+    Update = function(self)
+        repentogon.L_GridEntityPoop_Update(self)
+    end,
+}
+
+local baseIndex = getmetatable(GridEntity).__class.__index
+local baseNewindex = getmetatable(GridEntity).__class.__newindex
+
+GridEntityPoopMT.__index = function(self, key)
+    if key == "StateAnimation" then
+        return ffichecks.stdstring(ffi.getprivate(self, "StateAnimationString"))
+    end 
+    if GridEntityPoopMT[key] ~= nil then
+        return GridEntityPoopMT[key]
+    end
+    return baseIndex(self, key)
+end
+
+GridEntityPoopMT.__newindex = function(self, key, value)
+    baseNewindex(self, key, value)
+end
+
+local GridEntityPoopT = ffi.metatype("struct GridEntityPoop", GridEntityPoopMT)
+GridEntityPoop = setmetatable({}, {__class = GridEntityPoopMT})

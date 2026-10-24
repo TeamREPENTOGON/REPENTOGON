@@ -7,7 +7,7 @@ __thiscall bool Entity_Bomb::HandleCollision(Entity* collider, bool low);
 // "558bec83ec5ca1????????33c58945??538bd9":
 // __thiscall void Entity_Bomb::UpdateDirtColor();
 
-struct Entity_Bomb depends (ANM2) : public Entity { {{
+struct Entity_Bomb depends (ANM2, BitSet128) : public Entity { {{
     inline int* GetExplosionCountdown() { return &this->_explosionCountdown1; }
     void LIBZHL_API Entity_Bomb::UpdateDirtColor();
 }}
@@ -49,6 +49,7 @@ struct Entity_Bomb depends (ANM2) : public Entity { {{
 	float _fallSpeed : 0x41c;  // formerly mislabeled as _height
 	float _fallAcceleration : 0x420;  // formerly mislabeled as _fallingSpeed
 	float _rocketAngle : 0x428;
+	BitSet128 _tearFlags : 0x438;
 	float _rocketSpeed : 0x42c;
 	float _scale : 0x434;
 	bool _prismTouched : 0x45c;

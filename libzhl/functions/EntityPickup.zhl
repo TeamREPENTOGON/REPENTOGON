@@ -87,6 +87,18 @@ __thiscall void Entity_Pickup::ReloadGraphics(bool ignoreBlind);
 "8b0d(????????)565741":
 reference uint32_t s_EntityPickup_IgnoreModifiers;
 
+"558bec8b45??83ec1053":
+__thiscall void Entity_Pickup::SetPrice(int price);
+
+"558bec518bd1":
+__thiscall void Entity_Pickup::PlayDropSound();
+
+"558bec83ec145356578bf98b47":
+__thiscall void Entity_Pickup::PlayPickupSound();
+
+"8379??1456":
+__thiscall void Entity_Pickup::AppearFast();
+
 struct Entity_Pickup depends (ANM2, KAGE_SmartPointer_EntitySaveState) : public Entity { {{
 	inline bool IsBlind() { return this->_isForceBlind; }
 	inline int* GetDropDelay() { return &this->_dropDelay; }
