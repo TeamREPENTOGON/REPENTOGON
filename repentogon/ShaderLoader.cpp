@@ -1,6 +1,6 @@
 #include "ShaderLoader.h"
+#include "Utils/StringUtils.h"
 #include "Utils/ShaderUtils.h"
-#include "MiscFunctions.h"
 #include <numeric>
 #include <filesystem>
 #include <regex>

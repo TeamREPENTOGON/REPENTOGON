@@ -8,6 +8,7 @@
 #include "document.h" // rapidjson
 #include "writer.h" // rapidjson
 #include "stringbuffer.h" // rapidjson
+#include "../Utils/StringUtils.h"
 #include "../MiscFunctions.h"
 #include "../Patches/EntityPlus.h"
 #include "../Patches/ItemSpoofSystem.h"

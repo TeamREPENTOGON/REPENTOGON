@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Log.h"
+#include "Utils/StringUtils.h"
 #include "MiscFunctions.h"
 
 #include <cstdint>
