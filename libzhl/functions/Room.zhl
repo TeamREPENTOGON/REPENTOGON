@@ -152,6 +152,9 @@ __thiscall bool Room::GetBossThematicItem(int* retCollectibleType, int* retTrink
 "8b41??8b40??c1e80d":
 __thiscall bool Room::HasCurseMist();
 
+"558bec83e4f883ec2453568bf157897424":
+__thiscall void Room::RecomputeRoomBounds(bool init);
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, FXLayers, KColor, ColorMod, Backdrop, Vector) {
 {{
 	inline Camera* GetCamera() { return this->_Camera; }

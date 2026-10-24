@@ -522,6 +522,12 @@ LUA_FUNCTION(Lua_RoomClearBossHazards) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_RoomRecomputeBounds) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	room->RecomputeRoomBounds(/*init=*/false);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -575,7 +581,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetItemPool", Lua_RoomGetItemPool },
 		{ "TriggerOutput", Lua_RoomTriggerOutput },
 		{ "ClearBossHazards", Lua_RoomClearBossHazards },
-		{"TriggerRestock",Lua_RoomTriggerRestock},
+		{ "TriggerRestock", Lua_RoomTriggerRestock },
+		{ "RecomputeRoomBounds", Lua_RoomRecomputeBounds },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ROOM, functions);
