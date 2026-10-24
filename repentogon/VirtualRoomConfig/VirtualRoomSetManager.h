@@ -6,6 +6,7 @@
 #include "../LogUtility.h"
 #include "LuaCore.h"
 #include "../SaveStateManagement/GameStateManagement.h"
+#include "../Utils/Array.h"
 
 #include <string>
 #include <vector>
@@ -42,6 +43,20 @@ public:
 		/// @brief Deletes the restored rooms DB file, also clears the DB itself.
 		static void DeleteSave(const GameStateSaveInfo& saveInfo, bool isRerun);
 
+        /// @brief Loads the vanilla set if needed. Returns the set index the added rooms start at.
+        static size_t BeginAddRooms(VirtualRoomSet& virtualSet);
+        /// @brief Adds a copy of the room to the room holder and the set.
+        static RoomConfig_Room* AddRoom(VirtualRoomSet& virtualSet, const RoomConfig_Room& room);
+        /// @brief Commits the rooms added since BeginAddRooms to the vanilla RoomConfig system.
+        static void EndAddRooms(VirtualRoomSet& virtualSet, size_t begin);
+        /// @brief Adds the rooms stored in the .stb to the specified set.
+        /// @param fileName is expected to correspond to file(s) found @ `<mod root>/content/rooms/<filename>`
+        /// @return the set index the added rooms start at; they run to the end of the set.
+        static size_t AddStbRooms(VirtualRoomSet& virtualSet, const std::string& fileName);
+        /// @brief Adds the rooms stored in the .stb to the specified set.
+        /// @param fileName is expected to correspond to file(s) found @ `<mod root>/content/rooms/<filename>`
+        static void AddStbRooms(const uint32_t stageId, const uint32_t mode, const std::string& fileName);
+
 		// The lua functions are placed here since they are just details for the LUA API
 		// rather than functionality of a VirtualRoomSet
 
@@ -54,21 +69,31 @@ public:
 		/// @param fileName is expected to correspond to file(s) found @ `<mod root>/content/rooms/<filename>`
 		/// @return number of return Lua values the function has pushed on the stack.
 		static int Lua_AddStbRooms(lua_State* L, VirtualRoomSet& virtualSet, const std::string& fileName);
+
+        static size_t GetId(const VirtualRoomSet& virtualSet);
 	};
 
 public:
-	/// @brief Gets the vanilla set extension, using the vanilla RoomSet id.
-	static VirtualRoomSet GetVanillaSet(uint32_t stageId, int mode);
-	/// @brief Creates a new room set.
-	// static VirtualRoomSet CreateSet();
+	/// @brief Gets the roomset extension corresponding to the given stage ID and mode (vanilla or custom).
+	static VirtualRoomSet GetSet(uint32_t stageId, int mode);
+    /// @brief Gets the roomset extension corresponding to the given id.
+    static VirtualRoomSet GetSetById(size_t id);
+    /// @brief Ensures that the virtual roomset for the given stage id is initialized.
+    static void TryInitializeSet(uint32_t stageId);
+    /// @brief Wrapper for RoomConfig::GetRoomByStageTypeAndVariant that ignores the current custom stage override.
+    static RoomConfig_Room* VirtualRoomSetManager::GetRoomByStageTypeAndVariant_IgnoreStageOverride(uint32_t stage, uint32_t type, uint32_t variant, int mode);
+    /// @brief Wrapper for RoomConfig::GetRandomRoom that ignores the current custom stage override.
+    static RoomConfig_Room* VirtualRoomSetManager::GetRandomRoom_IgnoreStageOverride(uint32_t seed, bool reduceWeight, int stage, int roomType, int roomShape, uint32_t minVariant, int maxVariant, int minDifficulty, int maxDifficulty, uint32_t* requiredDoors, uint32_t roomSubtype, int mode);
 };
 
 class VirtualRoomSet
 {
+private:
 	friend class VirtualRoomSetManager;
 
-	using _VirtualRoomSet = VirtualRoomSetManager::detail::_VirtualRoomSet;
+    using _VirtualRoomSet = VirtualRoomSetManager::detail::_VirtualRoomSet;
 public:
+    class ScopedRoomLoader;
 	using Iterator = _VirtualRoomSet::const_iterator;
 
 private:
@@ -76,6 +101,7 @@ private:
 
 private:
 	VirtualRoomSet(size_t id);
+    _VirtualRoomSet& get_data();
 public:
 	RoomConfig_Room* operator[](size_t index);
 	size_t size();
@@ -84,8 +110,53 @@ public:
 	/// @brief Adds the rooms that match the given filter to the buffer
 	void GetRooms(std::vector<RoomConfig_Room*>buffer, uint32_t roomType, uint32_t roomShape, uint32_t minVariant, uint32_t maxVariant, int minDifficulty, int maxDifficulty, uint32_t doors, int subType);
 	void ResetRoomWeights();
+    ScopedRoomLoader LoadRooms();
+};
+
+class VirtualRoomSet::ScopedRoomLoader
+{
+    friend class VirtualRoomSet;
+private:
+    VirtualRoomSet m_roomSet;
+    size_t m_begin = 0;
+
+private:
+    ScopedRoomLoader(VirtualRoomSet& roomSet);
+public:
+    ScopedRoomLoader(const ScopedRoomLoader&) = delete;
+    ScopedRoomLoader& operator=(const ScopedRoomLoader&) = delete;
+    ScopedRoomLoader(ScopedRoomLoader&& o) = delete;
+    ScopedRoomLoader& operator=(ScopedRoomLoader&&) = delete;
+
+    ~ScopedRoomLoader();
+    /// @brief Adds the room to the set.
+    void AddRoom(const RoomConfig_Room& room);
+    /// @brief Adds the rooms to the set
+    void AddRooms(REPENTOGON::Array<RoomConfig_Room> rooms);
 };
 
 inline VirtualRoomSet::VirtualRoomSet(size_t id)
 	: m_id(id)
 {}
+
+inline VirtualRoomSet::ScopedRoomLoader::ScopedRoomLoader(VirtualRoomSet& roomSet)
+    : m_roomSet(roomSet)
+{
+    this->m_begin = VirtualRoomSetManager::detail::BeginAddRooms(roomSet);
+}
+
+inline VirtualRoomSet::ScopedRoomLoader::~ScopedRoomLoader()
+{
+    VirtualRoomSetManager::detail::EndAddRooms(this->m_roomSet, this->m_begin);
+}
+
+inline void VirtualRoomSet::ScopedRoomLoader::AddRoom(const RoomConfig_Room& room)
+{
+    VirtualRoomSetManager::detail::AddRoom(this->m_roomSet, room);
+}
+
+inline void VirtualRoomSetManager::detail::AddStbRooms(const uint32_t stageId, const uint32_t mode, const std::string& fileName)
+{
+    VirtualRoomSet virtualSet = VirtualRoomSetManager::GetSet(stageId, mode);
+    VirtualRoomSetManager::detail::AddStbRooms(virtualSet, fileName);
+}
