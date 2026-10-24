@@ -95,21 +95,3 @@ ___
 Sets if the tear was converted through the Angelic Prism effect. If `true`, it will not get converted by the familiar again.
 
 ___
-
-
-### SetBackdropType () {: aria-label='Functions' }
-#### void SetBackdropType ( int Backdrop = [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) ) {: .copyable aria-label='Functions' }
-Sets the backdrop the grid tear should use, which is used for determining the drops of alt rocks. This sets [`TearIndex`](https://wofsauge.github.io/IsaacDocs/rep/EntityTear.html#tearindex).
-
-???+ info "Applicable variants only"
-	Only works for `TearVariant.GRIDENT`.
-
-___
-### GetBackdropType () {: aria-label='Functions' }
-#### [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) GetBackdropType (  ) {: .copyable aria-label='Functions' }
-Gets the backdrop the grid tear should use, which is used for determining the drops of alt rocks. This is the same as reading [`TearIndex`](https://wofsauge.github.io/IsaacDocs/rep/EntityTear.html#tearindex).
-
-???+ info "Applicable variants only"
-	Returns `BackdropType.BACKDROP_NULL` for all tear variants other than `TearVariant.GRIDENT`.
-
-___
