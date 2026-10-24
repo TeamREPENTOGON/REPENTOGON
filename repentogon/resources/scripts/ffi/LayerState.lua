@@ -93,7 +93,9 @@ LayerStateMT = {
         if ffichecks.isnullptr(ffi.getprivate(sheet, "NativeImage")) then
             return nil
         end
-        return sheet
+        local result = ffi.new("struct Image")
+        repentogon.L_Image_CopyConstruct(result, sheet)
+        return result
     end,
     GetSpritesheetPath = function(self)
         return ffichecks.stdstring(ffi.getprivate(self, "SpritesheetPath"))
