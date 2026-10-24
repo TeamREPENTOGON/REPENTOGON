@@ -15,12 +15,6 @@ __thiscall int Entity_Familiar::GetFollowerPriority();
 "558bec83e4f883ec0c53568bf1578b86":
 __thiscall void Entity_Familiar::GetMultiplier();
 
-"558bec83e4c081ec34010000a1????????33c4898424????????53568b75":
-__thiscall void Entity_Familiar::Render(Vector *offset);
-
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec08020000":
-__thiscall bool Entity_Familiar::HandleCollision(Entity* collider, bool low);
-
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec305657a1????????33c5508d45??64a3????????8bf1":
 __thiscall void Entity_Familiar::Shoot();
 
@@ -145,7 +139,9 @@ struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder, Vec
 	int _wispCollectibleType : 0xf0c;
 	
     __vtable {
-		skip; // Free
+		override
+		"558bec568bf1e8????????f645??0174??68300f0000":
+		void Free(unsigned int flags);
 
 		override
 		"558bec6aff68????????64a1????????5081ec2c030000":
@@ -158,25 +154,57 @@ struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder, Vec
         void Update();
 		
 		skip; // Interpolate
-		skip; // Render
-		skip; // RenderShadowLayer
+		
+		override
+		"558bec83e4c081ec34010000a1????????33c4898424????????53568b75":
+		void Render(Vector* offset);
+		
+		override
+		"558bec568bf1e8????????84c074":
+		bool RenderShadowLayer(Vector* offset);
+		
 		skip; // PostRender
-		skip; // TakeDamage
-		skip; // Kill
-		skip; // Remove
+		
+		override
+		"558bec83e4f88b45??83ec14":
+		bool TakeDamage(float Damage, unsigned long long DamageFlags, EntityRef *Source, int DamageCountdown);
+		
+		override
+		"558bec83e4f881ec34010000a1????????33c4898424????????5356578bf9897c24":
+		void Kill(EntityRef* Source);
+		
+		override	
+		"558bec83e4f851568bf1e8????????8b86":
+		void Remove();
+		
 		skip; // TriggerGlowingHourglass
 		skip; // ???
 		skip; // GetRenderZ
 		skip; // CanOverwrite
 		skip; // SetColor
 		skip; // SetCollisionDamage
-		skip; // ClearReferences
-		skip; // CanShutDoors
+		
+		override
+		"558bec83ec10568bf18b46??3d84030000":
+		void ClearReferences();
+		
+		override
+		"8179??f200000075":
+		bool CanShutDoors();
+		
 		skip; // IsBoss
 		skip; // IsValidTarget
-		skip; // TryThrow
+		
+		override
+		"558bec8b41??3dc9000000":
+		bool TryThrow(const EntityRef& Source, Vector* dir, float force);
+		
 		skip; // GetForwardVector
-		skip; // HandleCollision
+		
+		override
+		"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec08020000":
+		bool HandleCollision(Entity* Collider, bool Low);
+		
 		skip; // ResetColor
 		skip; // LoadEntityConfig
     };

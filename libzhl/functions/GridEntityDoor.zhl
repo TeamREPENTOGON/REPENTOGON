@@ -51,6 +51,7 @@ struct GridEntity_Door depends (ANM2, Entity, Entity_Player) : public GridEntity
 		skip; // Free
 		skip; // PostInit
 		
+		override
 		"558bec83e4c081ecb4000000a1????????33c4898424????????538bd95657ff83":
         void Update();
 		
@@ -59,7 +60,10 @@ struct GridEntity_Door depends (ANM2, Entity, Entity_Player) : public GridEntity
         void Render(Vector& Offset);
 		
 		skip; // Hurt
-		skip; // Destroy
+		
+		override
+		"558bec83e4f8515356576a006a01":
+		bool Destroy(bool Immediate, EntityRef* Source);
 		
 		override
 		"558bec8b45??c70000000000":

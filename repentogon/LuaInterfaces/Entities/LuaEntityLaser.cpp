@@ -28,11 +28,6 @@ MOD_EXPORT void L_EntityLaser_SetActiveRotation(Entity_Laser* laser, int delay, 
 	laser->SetActiveRotation(delay, degrees, speed, setTimeout);
 }
 
-MOD_EXPORT int L_EntityLaser_GetRenderZ(Entity_Laser* laser) {
-	void** vtable = *reinterpret_cast<void***>(laser);
-	return reinterpret_cast<int(__thiscall*)(Entity*)>(vtable[0x34 / sizeof(void*)])(laser);
-}
-
 MOD_EXPORT void L_EntityLaser_ResetSpriteScale(Entity_Laser* laser) {
 	laser->ResetSpriteScale();
 }

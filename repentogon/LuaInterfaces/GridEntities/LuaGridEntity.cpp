@@ -35,6 +35,10 @@ extern "C" {
 		grid->Init(seed);
 	}
 
+	__declspec(dllexport) void L_GridEntity_PostInit(GridEntity* grid) {
+		grid->PostInit();
+	}
+
 	__declspec(dllexport) void L_GridEntity_Render(GridEntity* grid, Vector offset) {
 		grid->Render(offset);
 	}
@@ -51,6 +55,10 @@ extern "C" {
 		if (gridEntPlus) {
 			gridEntPlus->waterClipInfoFlagsOverride = flags;
 		}
+	}
+
+	__declspec(dllexport) void L_GridEntity_Update(GridEntity* grid) {
+		grid->Update();
 	}
 }
 

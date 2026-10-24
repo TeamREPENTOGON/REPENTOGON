@@ -23,7 +23,6 @@ typedef struct EntityKnife* EntityKnifePtr;
 ffi.cdef [[
     void L_EntityKnife_Shoot(struct EntityKnife*, float, float);
     void L_EntityKnife_Reset(struct EntityKnife*);
-    int L_EntityKnife_GetRenderZ(struct EntityKnife*);
     unsigned int L_EntityKnife_GetHitListSize(struct EntityKnife*);
     unsigned int L_EntityKnife_GetHitListEntry(struct EntityKnife*, unsigned int);
     void L_EntityKnife_RemoveFromHitList(struct EntityKnife*, void*);
@@ -96,7 +95,7 @@ local methods = {
     GetKnifeDistance = Getter("KnifeDistanceValue"),
     GetKnifeVelocity = Getter("KnifeVelocityValue"),
     GetRenderZ = function(self)
-        local result = repentogon.L_EntityKnife_GetRenderZ(self) return result
+        local result = repentogon.L_Entity_GetRenderZ(self) return result
     end,
     HasTearFlags = function(self, flags)
         return (self.TearFlags & flags) ~= TearFlags.TEAR_NORMAL

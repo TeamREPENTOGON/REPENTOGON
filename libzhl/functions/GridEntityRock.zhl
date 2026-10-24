@@ -25,12 +25,6 @@ static cleanup void GridEntity_Rock::RegisterRockDestroyed(int GridEntityType<ec
 "8bd18b42??83f801":
 __thiscall void GridEntity_Rock::update_collision();
 
-"558bec83ec34a1????????33c58945??f30f7e05":
-__thiscall void GridEntity_Rock::PostInit();
-
-"558bec6aff68????????64a1????????5081eca8000000a1????????33c58945??5657":
-__thiscall void GridEntity_Rock::Update();
-
 "558bec83e4f883ec14538b5d??56578bf98db7":
 __thiscall void GridEntity_Rock::SetBigRockFrame(int frame);
 
@@ -41,8 +35,14 @@ struct GridEntity_Rock depends (Vector) : public GridEntity {
 
 	__vtable {
 		skip; // Free
-		skip; // PostInit
-		skip; // Update
+		
+		override
+		"558bec83ec34a1????????33c58945??f30f7e05":
+		void PostInit();
+		
+		override
+		"558bec6aff68????????64a1????????5081eca8000000a1????????33c58945??5657":
+		void Update();
 		
 		override
 		"558bec83e4f881ecd4000000":

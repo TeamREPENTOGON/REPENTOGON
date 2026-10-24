@@ -5758,7 +5758,7 @@ int requestedPickupVariant = 0;
 int requestedPickupSubType = 0;
 uint32_t pickupInitSeed = 0;
 
-HOOK_METHOD(Entity_Pickup, Init, (uint32_t type, int variant, int subType, uint32_t seed) -> void)
+HOOK_METHOD(Entity_Pickup, Init, (unsigned int type, unsigned int variant, unsigned int subType, unsigned int seed) -> void)
 {
 	requestedPickupVariant = variant;
 	requestedPickupSubType = subType;

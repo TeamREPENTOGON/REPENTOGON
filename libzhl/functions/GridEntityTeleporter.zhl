@@ -3,6 +3,7 @@ struct GridEntity_Teleporter : public GridEntity {
 		skip; // Free
 		skip; // PostInit
 		
+		override
 		"558bec83e4f883ec1453568bf1578b46":
         void Update();
 		

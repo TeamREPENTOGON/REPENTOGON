@@ -21,9 +21,6 @@ __thiscall Vector Entity::GetNullOffset(const char* nullLayerName);
 "558bec83e4f883ec24568bf1837e??00":
 __thiscall Capsule Entity::GetNullCapsule(const char* nullLayerName);
 
-"558bec83e4c081ecb4000000f30f1005":
-__thiscall bool Entity::RenderShadowLayer(Vector *offset);
-
 "558becff05":
 static cleanup bool Entity::ForceCollide(Entity* boom<ecx>, Entity *collider<edx>, bool low);
 
@@ -131,9 +128,6 @@ __thiscall void Entity::ClearEntityFlags(unsigned int l, unsigned int h);
 
 "558becf30f1099":
 __thiscall void Entity::AddVelocity(Vector * velocity, bool ignoreTimeScale);
-
-"558bec83e4c083ec38568bf1":
-__thiscall void Entity::Render(Vector * offset);
 
 "558bec83e4f8f30f1055":
 __thiscall void Entity::SetSize(float size, Vector sizeMulti, int numGridCollisionPoints);
@@ -304,10 +298,15 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr, ColorMod) {
         void Update();
 		
 		skip; // Interpolate
-		skip; // Render
-		skip; // RenderShadowLayer
-		skip; // PostRender
-		
+
+		"558bec83e4c083ec38568bf1":
+		void Render(Vector* offset);
+
+		"558bec83e4c081ecb4000000f30f1005":
+		bool RenderShadowLayer(Vector* offset);
+
+		pure void PostRender();
+
         "558bec83e4f883ec3c5356578bf9837f??01":
         bool TakeDamage(float Damage, unsigned long long DamageFlags, EntityRef *Source, int DamageCountdown);
 		
@@ -319,27 +318,27 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr, ColorMod) {
 		
 		skip; // TriggerGlowingHourglass
 		skip; // ???
-		skip; // GetRenderZ
+		pure int GetRenderZ();
 		skip; // CanOverwrite
 
 		"558bec83e4f883ec4c538b5d??568b75":
 		void SetColor(ColorMod *color, int Duration, int Priority, bool Fadeout, bool Shared);
 		
-		skip; // SetCollisionDamage
+		pure void SetCollisionDamage(float damage);
 
 		"558bec515356578bf98b8f":
 		void ClearReferences();
 
-		skip; // CanShutDoors
-		skip; // IsBoss
+		pure bool CanShutDoors();
+		pure bool IsBoss();
 		skip; // IsValidTarget
 		
 		"32c0c20c00":
 		bool TryThrow(const EntityRef& Source, Vector* dir, float force);
 		
 		skip; // GetForwardVector
-		skip; // HandleCollision
-		
+		pure bool HandleCollision(Entity* Collider, bool Low);
+
 		"8d81????????81c1f0000000":
 		void ResetColor();
 		

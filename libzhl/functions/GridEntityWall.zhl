@@ -1,7 +1,11 @@
 struct GridEntity_Wall : public GridEntity {
 	__vtable {
 		skip; // Free
-		skip; // PostInit
+		
+		override
+		"558bec83e4f883ec2ca1????????33c4894424??a1????????5356578bb0":
+		void PostInit();
+		
 		skip; // Update
 		
 		override

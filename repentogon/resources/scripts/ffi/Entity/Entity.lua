@@ -86,6 +86,7 @@ ffi.cdef [[
     void L_Entity_Kill(void*);
     void L_Entity_KillWithSource(void*, struct EntityRef*);
     void L_Entity_Remove(void*);
+    int L_Entity_GetRenderZ(void*);
     void L_Entity_BloodExplode(void*);
     bool L_Entity_CanShutDoors(void*);
     bool L_Entity_IsBoss(void*);

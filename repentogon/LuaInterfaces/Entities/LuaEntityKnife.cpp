@@ -14,11 +14,6 @@ MOD_EXPORT void L_EntityKnife_Reset(Entity_Knife* knife) {
 	knife->Reset();
 }
 
-MOD_EXPORT int L_EntityKnife_GetRenderZ(Entity_Knife* knife) {
-	void** vtable = *reinterpret_cast<void***>(knife);
-	return reinterpret_cast<int(__thiscall*)(Entity*)>(vtable[0x34 / sizeof(void*)])(knife);
-}
-
 MOD_EXPORT unsigned int L_EntityKnife_GetHitListSize(Entity_Knife* knife) {
 	return (unsigned int)knife->GetHitEntities()->size();
 }

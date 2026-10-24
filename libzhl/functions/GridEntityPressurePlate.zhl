@@ -7,6 +7,7 @@ struct GridEntity_PressurePlate : public GridEntity {
 		skip; // Free
 		skip; // PostInit
 		
+		override
 		"558bec83e4f851568bf180be????????0074":
         void Update();
 		

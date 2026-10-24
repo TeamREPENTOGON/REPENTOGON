@@ -43,7 +43,6 @@ ffi.cdef [[
     void L_EntityLaser_CalculateEndPoint(struct Vector*, struct Vector*, struct Vector*, void*, float, struct Vector*);
     void L_EntityLaser_SetAngle(struct EntityLaser*, float);
     void L_EntityLaser_SetActiveRotation(struct EntityLaser*, int, float, float, bool);
-    int L_EntityLaser_GetRenderZ(struct EntityLaser*);
     void L_EntityLaser_ResetSpriteScale(struct EntityLaser*);
     void L_EntityLaser_RotateToAngle(struct EntityLaser*, float, float);
     void L_EntityLaser_RecalculateSamplesNextUpdate(struct EntityLaser*);
@@ -161,7 +160,7 @@ local methods = {
     GetNumChainedLasers = Getter("ChainedLasersValue"),
     GetOneHit = Getter("OneHitValue"),
     GetRenderZ = function(self)
-        local result = repentogon.L_EntityLaser_GetRenderZ(self) return result
+        local result = repentogon.L_Entity_GetRenderZ(self) return result
     end,
     GetSamples = Getter("SamplesValue"),
     GetScale = Getter("ScaleValue"),

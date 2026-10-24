@@ -1,9 +1,3 @@
-"558bec83e4c081ecb400000053568bf15780be????????000f84????????80be????????000f84????????f30f108e":
-__thiscall void Entity_Tear::Render(Vector *offset);
-
-"558bec6aff68????????64a1????????5081ec9c010000a1????????33c58945??5657508d45??64a3????????8bf1":
-__thiscall bool Entity_Tear::HandleCollision(Entity* collider, bool low);
-
 "558bec83e4f083ec1856":
 __thiscall Entity_Tear* Entity_Tear::MakeMultidimensionalCopy(Entity * spawner);
 
@@ -36,8 +30,14 @@ static cleanup void Entity_Tear::ApplyTearFlagEffects(Entity* entity<ecx>, Vecto
 
 struct Entity_Tear depends (ANM2, BitSet128, Vector) : public Entity {
 	__vtable {
-		skip; // Free
-		skip; // Init
+		override
+		"558bec568bf1e8????????f645??0174??6848080000":
+		void Free(unsigned int flags);
+		
+		override
+		"558bec6aff68????????64a1????????5083ec3ca1????????33c58945??56":
+		void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
+		
 		skip; // PreUpdate
 		
 		override
@@ -45,7 +45,11 @@ struct Entity_Tear depends (ANM2, BitSet128, Vector) : public Entity {
 		void Update();
 		
 		skip; // Interpolate
-		skip; // Render
+		
+		override
+		"558bec83e4c081ecb400000053568bf15780be????????000f84????????80be????????000f84????????f30f108e":
+		void Render(Vector* offset);
+		
 		skip; // RenderShadowLayer
 		skip; // PostRender
 		skip; // TakeDamage
@@ -56,14 +60,25 @@ struct Entity_Tear depends (ANM2, BitSet128, Vector) : public Entity {
 		skip; // GetRenderZ
 		skip; // CanOverwrite
 		skip; // SetColor
-		skip; // SetCollisionDamage
-		skip; // ClearReferences
+		
+		override
+		"558becf30f1045??f30f1181????????f30f1181":
+		void SetCollisionDamage(float damage);
+		
+		override
+		"558bec83e4f85153568bf18b8e":
+		void ClearReferences();
+		
 		skip; // CanShutDoors
 		skip; // IsBoss
 		skip; // IsValidTarget
 		skip; // TryThrow
 		skip; // GetForwardVector
-		skip; // HandleCollision
+		
+		override
+		"558bec6aff68????????64a1????????5081ec9c010000a1????????33c58945??5657508d45??64a3????????8bf1":
+		bool HandleCollision(Entity* Collider, bool Low);
+		
 		skip; // ResetColor
 		skip; // LoadEntityConfig
 	};

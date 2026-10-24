@@ -19,10 +19,12 @@ ffi.cdef [[
     void L_GridEntity_HurtSurroundings(struct GridEntity*, float, float, float, int, uint64_t, bool);
     void L_GridEntity_HurtDamage(struct GridEntity*, void*, int, uint64_t, float, bool);
     void L_GridEntity_Init(struct GridEntity*, unsigned int);
+    void L_GridEntity_PostInit(struct GridEntity*);
     void L_GridEntity_Render(struct GridEntity*, struct Vector);
     void L_GridEntity_ResetWaterClipFlags(struct GridEntity*);
     void L_GridEntity_SetWaterClipFlags(struct GridEntity*, unsigned int);
-]]  
+    void L_GridEntity_Update(struct GridEntity*);
+]]
 
 local ffi = ffi
 local repentogon = ffidll
@@ -32,7 +34,9 @@ ffi.reentrant(repentogon.L_GridEntity_Hurt)
 ffi.reentrant(repentogon.L_GridEntity_HurtDamage)
 ffi.reentrant(repentogon.L_GridEntity_HurtSurroundings)
 ffi.reentrant(repentogon.L_GridEntity_Init)
+ffi.reentrant(repentogon.L_GridEntity_PostInit)
 ffi.reentrant(repentogon.L_GridEntity_Render)
+ffi.reentrant(repentogon.L_GridEntity_Update)
 
 local GridEntityType = {
 	GRID_NULL = 0,
@@ -155,41 +159,11 @@ GridEntityMT = {
         return false
     end,
     PostInit = function(self)
-        if self:ToGravity() then
-            self:ToGravity():PostInit()
-        elseif self:ToPit() then
-            self:ToPit():PostInit()
-        elseif self:ToPoop() then
-            self:ToPoop():PostInit()
-        elseif self:ToRock() then
-            self:ToRock():PostInit()
-        end
+        repentogon.L_GridEntity_PostInit(ffi.cast("struct GridEntity*", self))
     end,
     Render = function(self, offset)
         ffichecks.checkcdata(1, offset, "Vector")
-        if self:ToDecoration() then
-            self:ToDecoration():Render(offset)
-        elseif self:ToDoor() then
-            self:ToDoor():Render(offset)
-        elseif self:ToFire() then
-            self:ToFire():Render(offset)
-        elseif self:ToLock() then
-            self:ToLock():Render(offset)
-        elseif self:ToPit() then
-            self:ToPit():Render(offset)
-        elseif self:ToPoop() then
-            self:ToPoop():Render(offset)
-        elseif self:ToPressurePlate() then
-            self:ToPressurePlate():Render(offset)
-        elseif self:ToRock() then
-            self:ToRock():Render(offset)
-        elseif self:ToTeleporter() then
-            self:ToTeleporter():Render(offset)
-        elseif self:ToWall() then
-            self:ToWall():Render(offset)
-        else
-            repentogon.L_GridEntity_Render(ffi.cast("struct GridEntity*", self), offset)
-        end
+        repentogon.L_GridEntity_Render(ffi.cast("struct GridEntity*", self), offset)
     end,
     ResetWaterClipFlags = function(self)
         repentogon.L_GridEntity_ResetWaterClipFlags(ffi.cast("struct GridEntity*", self))
@@ -279,34 +253,7 @@ GridEntityMT = {
         local result = ffi.cast("struct GridEntityWeb*", self) return result
     end,
     Update = function(self)
-        -- before you accuse me of being yanderedev, this should be faster than caching the functions in a table with the jit compiler
-        if self:ToDecoration() then
-            self:ToDecoration():Update()
-        elseif self:ToDoor() then
-            self:ToDoor():Update()
-        elseif self:ToFire() then
-            self:ToFire():Update()
-        elseif self:ToGravity() then
-            self:ToGravity():Update()
-        elseif self:ToLock() then
-            self:ToLock():Update()
-        elseif self:ToPit() then
-            self:ToPit():Update()
-        elseif self:ToPoop() then
-            self:ToPoop():Update()
-        elseif self:ToPressurePlate() then
-            self:ToPressurePlate():Update()
-        elseif self:ToRock() then
-            self:ToRock():Update()
-        elseif self:ToSpikes() then
-            self:ToSpikes():Update()
-        elseif self:ToTeleporter() then
-            self:ToTeleporter():Update()
-        elseif self:ToTrapDoor() then
-            self:ToTrapDoor():Update()
-        elseif self:Web() then
-            self:ToWeb():Update()
-        end
+        repentogon.L_GridEntity_Update(ffi.cast("struct GridEntity*", self))
     end,
 }
 

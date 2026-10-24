@@ -118,9 +118,6 @@ __thiscall void Entity_Player::UseCard(int cardType, unsigned int useFlag);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec78010000a1????????33c58945??5657508d45??64a3????????8bf989bd????????8b0d":
 __thiscall void Entity_Player::UsePill(int ePillEffect, int ePillColor, unsigned int useFlag);
 
-"558bec6aff68????????64a1????????5081ecdc010000":
-__thiscall void Entity_Player::Render(Vector *offset);
-
 "8b81????????83c0fc83f824":
 __thiscall int Entity_Player::GetHealthType();
 
@@ -289,9 +286,6 @@ __thiscall PocketItem* Entity_Player::GetPocketItem(int SlotID);
 /*"a1????????568b90????????8bb0":
 __thiscall bool Entity_Player::IsLocalPlayer();
 */
-
-"558bec83e4f881ecc8000000a1????????33c4898424????????5657ff75":
-__thiscall bool Entity_Player::HandleCollision(Entity* collider, bool low);
 
 "558bec6aff68????????64a1????????5083ec6ca1????????33c58945??5657508d45??64a3????????8bf9":
 __thiscall void Entity_Player::InitPreLevelInitStats();
@@ -995,7 +989,9 @@ struct Entity_Player depends (QueueItemData, Vector, ANM2, ColorMod, KColor, Pla
 }} 
 
     __vtable {
-		skip; // Free
+		override
+		"558bec568bf1e8????????f645??0174??68a02e0000":
+		void Free(unsigned int flags);
 		
         override
         "558bec6aff68????????64a1????????5081ec98010000":
@@ -1008,8 +1004,15 @@ struct Entity_Player depends (QueueItemData, Vector, ANM2, ColorMod, KColor, Pla
         void Update();
 		
 		skip; // Interpolate
-		skip; // Render
-		skip; // RenderShadowLayer
+		
+		override
+		"558bec6aff68????????64a1????????5081ecdc010000":
+		void Render(Vector* offset);
+		
+		override
+		"558bec83e4f851566a0068b1010000":
+		bool RenderShadowLayer(Vector* offset);
+		
 		skip; // PostRender
 		
         override
@@ -1024,8 +1027,15 @@ struct Entity_Player depends (QueueItemData, Vector, ANM2, ColorMod, KColor, Pla
 		skip; // CanOverwrite
 		skip; // SetColor
 		skip; // SetCollisionDamage
-		skip; // ClearReferences
-		skip; // CanShutDoors
+		
+		override
+		"568bf1e8????????6a008bcee8????????5ec3":
+		void ClearReferences();
+		
+		override
+		"a1????????83b8????????020f9dc0":
+		bool CanShutDoors();
+		
 		skip; // IsBoss
 		skip; // IsValidTarget
 		
@@ -1034,7 +1044,10 @@ struct Entity_Player depends (QueueItemData, Vector, ANM2, ColorMod, KColor, Pla
 		bool TryThrow(const EntityRef& Source, Vector* pos, float unk);
 		
 		skip; // GetForwardVector
-		skip; // HandleCollision
+		
+		override
+		"558bec83e4f881ecc8000000a1????????33c4898424????????5657ff75":
+		bool HandleCollision(Entity* Collider, bool Low);
 		
 		override
 		"558bec0f1081":

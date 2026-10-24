@@ -117,21 +117,12 @@ void CopyStatusEffects(Entity* ent1, Entity* ent2, bool overwrite) {
 	}
 }
 
-namespace {
-	template<typename Ret, typename... Args>
-	Ret CallVirtual(Entity* entity, int offset, Args... args) {
-		using Function = Ret(__thiscall*)(Entity*, Args...);
-		void** vtable = *reinterpret_cast<void***>(entity);
-		return reinterpret_cast<Function>(vtable[offset / sizeof(void*)])(entity, args...);
-	}
-}
-
 MOD_EXPORT void L_Entity_Update(Entity* entity) {
 	entity->Update();
 }
 
 MOD_EXPORT void L_Entity_PostRender(Entity* entity) {
-	CallVirtual<void>(entity, 0x1c);
+	entity->PostRender();
 }
 
 MOD_EXPORT void L_Entity_Render(Entity* entity, Vector* offset) {
@@ -159,20 +150,24 @@ MOD_EXPORT void L_Entity_Remove(Entity* entity) {
 	entity->Remove();
 }
 
+MOD_EXPORT int L_Entity_GetRenderZ(Entity* entity) {
+	return entity->GetRenderZ();
+}
+
 MOD_EXPORT void L_Entity_BloodExplode(Entity* entity) {
 	entity->BloodExplode();
 }
 
 MOD_EXPORT bool L_Entity_CanShutDoors(Entity* entity) {
-	return CallVirtual<bool>(entity, 0x48);
+	return entity->CanShutDoors();
 }
 
 MOD_EXPORT bool L_Entity_IsBoss(Entity* entity) {
-	return CallVirtual<bool>(entity, 0x4c);
+	return entity->IsBoss();
 }
 
 MOD_EXPORT void L_Entity_SetCollisionDamage(Entity* entity, float damage) {
-	CallVirtual<void>(entity, 0x40, damage);
+	entity->SetCollisionDamage(damage);
 }
 
 MOD_EXPORT void L_Entity_SetColor(Entity* entity, ColorMod* color, int duration, int priority, bool fadeout, bool share) {
