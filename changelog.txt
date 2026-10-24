@@ -41,14 +41,14 @@ Added:
 	- GetButtonFrame(int button, int ControllerIndex)
 		Returns the animation frame in `(controls_)buttons.anm2` to use for the given button (-1 for invalid buttons).
 * Added SaveStateManager class to automatically manage modded save data for the current run.
-
 /newline/
 Modified:
 * ModCallbacks:
 	- Added PickupVariant optional param for MC_PRE/POST_PICKUP_GET_LOOT_LIST & MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS
 /newline/
 Fixes:
-* 
+* Fixed "?" sometimes appearing next to the lives counter unintentionally for custom revive items.
+* Fixed the "effectdamagemult" and "effecttearsmult" items.xml tags not working.
 /newline/
 /versionseparator/
 v1.1.3 -

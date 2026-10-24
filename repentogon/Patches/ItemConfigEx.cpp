@@ -94,7 +94,7 @@ float CalculateStatMult(Entity_Player* player, const ItemStat stat) {
 			}
 			float effectValue = ex->GetEffectStat(stat);
 			if (effectValue != 1) {
-				finalMult *= CalcStatMult(value, effects->GetCollectibleEffectNum(id));
+				finalMult *= CalcStatMult(effectValue, effects->GetCollectibleEffectNum(id));
 			}
 		}
 	}
@@ -106,7 +106,7 @@ float CalculateStatMult(Entity_Player* player, const ItemStat stat) {
 			}
 			float effectValue = ex->GetEffectStat(stat);
 			if (effectValue != 1) {
-				finalMult *= CalcStatMult(value, effects->GetTrinketEffectNum(id));
+				finalMult *= CalcStatMult(effectValue, effects->GetTrinketEffectNum(id));
 			}
 		}
 	}
