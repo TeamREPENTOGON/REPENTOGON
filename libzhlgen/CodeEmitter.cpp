@@ -1715,10 +1715,8 @@ void CodeEmitter::ExtractMangledNames() {
     std::wstring dumpbin = tc + L"\\dumpbin.exe";
     std::wstring cmd = Quote(dumpbin) + L" /SYMBOLS " + Quote(NarrowUTF8ToWide(_stubObj));
 
-    wchar_t cmdStr[32767];
-    wcscpy(cmdStr, cmd.c_str());
-    printf("Running dumpbin as %ls with params %ls\n", dumpbin.c_str(), cmdStr);
-    BOOL ok = CreateProcessW(dumpbin.c_str(), cmdStr, NULL, NULL, TRUE,
+    printf("Running dumpbin as %ls with params %ls\n", dumpbin.c_str(), cmd.c_str());
+    BOOL ok = CreateProcessW(dumpbin.c_str(), cmd.data(), NULL, NULL, TRUE,
 			     0, NULL, NULL, &startupInfo, &processInfo);
     CloseHandle(writePipe);
     if (!ok) {
