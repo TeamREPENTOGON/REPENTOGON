@@ -177,7 +177,7 @@ struct LogViewer : ImGuiWindowObject {
         }
     }
 
-    void AddLog(const char* type, const char* fmt, ...) IM_FMTARGS(2)
+    void AddLog(const char* type, const char* fmt, ...) IM_FMTARGS(3)
     {
         // First get the length of the formatted string.
         va_list args;

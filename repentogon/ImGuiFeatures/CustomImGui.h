@@ -387,7 +387,7 @@ struct CustomImGui {
         windows->clear();
     }
 
-    bool AddElement(const char* parentId, const char* id, const char* text, int type) IM_FMTARGS(2)
+    bool AddElement(const char* parentId, const char* id, const char* text, int type)
     {
         Element* parent = GetElementById(parentId);
         if (parent == NULL)
@@ -397,7 +397,7 @@ struct CustomImGui {
         return true;
     }
 
-    bool RemoveElement(const char* elementId) IM_FMTARGS(2)
+    bool RemoveElement(const char* elementId)
     {
         Element* element = GetElementById(elementId);
             if (element == NULL) {
@@ -429,13 +429,13 @@ struct CustomImGui {
         return false;
     }
 
-    bool CreateMenuElement(const char* id, const char* text) IM_FMTARGS(2)
+    bool CreateMenuElement(const char* id, const char* text)
     {
         menuElements->push_back(Element(id, text, static_cast<int>(IMGUI_ELEMENT::Menu)));
         return true;
     }
 
-    void RemoveMenu(const char* menuId) IM_FMTARGS(2)
+    void RemoveMenu(const char* menuId)
     {
         for (auto it = menuElements->begin(); it != menuElements->end(); ) {
             if (it->id.compare(menuId) == 0) {
@@ -447,7 +447,7 @@ struct CustomImGui {
         }
     }
 
-    bool CreateWindowElement(const char* id, const char* name, const char* parentId = nullptr) IM_FMTARGS(2)
+    bool CreateWindowElement(const char* id, const char* name, const char* parentId = nullptr)
     {
         if (parentId != nullptr) {
             Element* parent = GetElementById(parentId);
@@ -463,7 +463,7 @@ struct CustomImGui {
         return true;
     }
 
-    void RemoveWindow(const char* windowId) IM_FMTARGS(2)
+    void RemoveWindow(const char* windowId)
     {
         for (auto window = windows->begin(); window != windows->end(); ++window) {
             if (window->id.compare(windowId) == 0) {
@@ -473,7 +473,7 @@ struct CustomImGui {
         }
     }
 
-    bool AddCallback(const char* parentId, int type, int callbackID) IM_FMTARGS(2)
+    bool AddCallback(const char* parentId, int type, int callbackID)
     {
         Element* parent = GetElementById(parentId);
         if (parent == NULL)
@@ -483,7 +483,7 @@ struct CustomImGui {
         return true;
     }
 
-    bool RemoveCallback(const char* parentId, int type) IM_FMTARGS(2)
+    bool RemoveCallback(const char* parentId, int type)
     {
         Element* parent = GetElementById(parentId);
         if (parent == NULL)
@@ -493,7 +493,7 @@ struct CustomImGui {
         return true;
     }
 
-    bool LinkWindowToElement(const char* windowId, const char* elementId) IM_FMTARGS(2)
+    bool LinkWindowToElement(const char* windowId, const char* elementId)
     {
         Element* element = GetElementById(elementId);
         Element* window = GetElementById(windowId);
@@ -552,7 +552,7 @@ struct CustomImGui {
         return GetElementById(elementId) != NULL;
     }
 
-    bool SetVisible(const char* elementId, bool newState) IM_FMTARGS(2)
+    bool SetVisible(const char* elementId, bool newState)
     {
         Element* element = GetElementById(elementId);
         if (element == NULL)
@@ -562,7 +562,7 @@ struct CustomImGui {
         return true;
     }
 
-    bool GetVisible(const char* elementId) IM_FMTARGS(2)
+    bool GetVisible(const char* elementId)
     {
         const Element* element = GetElementById(elementId);
         if (element == NULL)
@@ -571,7 +571,7 @@ struct CustomImGui {
         return (menuShown || !menuShown && element->data.windowPinned) && element->evaluatedVisibleState;
     }
 
-    bool SetPinned(const char* elementId, bool newState) IM_FMTARGS(2)
+    bool SetPinned(const char* elementId, bool newState)
     {
         Element* element = GetElementById(elementId);
         if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
@@ -582,7 +582,7 @@ struct CustomImGui {
         return false;
     }
 
-    bool SetWindowFlags(const char* elementId, ImGuiWindowFlags newFlags) IM_FMTARGS(2)
+    bool SetWindowFlags(const char* elementId, ImGuiWindowFlags newFlags)
     {
         Element* element = GetElementById(elementId);
         if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
@@ -593,7 +593,7 @@ struct CustomImGui {
         return false;
     }
 
-    bool SetWindowChildFlags(const char* elementId, ImGuiChildFlags newFlags) IM_FMTARGS(2)
+    bool SetWindowChildFlags(const char* elementId, ImGuiChildFlags newFlags)
     {
       Element* element = GetElementById(elementId);
       if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
@@ -603,7 +603,7 @@ struct CustomImGui {
       return false;
     }
 
-    bool SetWindowPosition(const char* elementId, float x, float y) IM_FMTARGS(2)
+    bool SetWindowPosition(const char* elementId, float x, float y)
     {
         Element* element = GetElementById(elementId);
         if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
@@ -614,7 +614,7 @@ struct CustomImGui {
         return false;
     }
 
-    bool SetElementSize(const char* elementId, float sizeX, float sizeY) IM_FMTARGS(2)
+    bool SetElementSize(const char* elementId, float sizeX, float sizeY)
     {
         Element* element = GetElementById(elementId);
         if (element != NULL) {
@@ -625,7 +625,7 @@ struct CustomImGui {
         return false;
     }
 
-    bool SetColor(const char* elementId, ImGuiCol_ type, const ImVec4& newColor) IM_FMTARGS(2)
+    bool SetColor(const char* elementId, ImGuiCol_ type, const ImVec4& newColor)
     {
         Element* element = GetElementById(elementId);
         if (element != NULL) {
@@ -636,7 +636,7 @@ struct CustomImGui {
         return false;
     }
 
-    bool RemoveColor(const char* elementId, ImGuiCol_ type) IM_FMTARGS(2)
+    bool RemoveColor(const char* elementId, ImGuiCol_ type)
     {
         Element* element = GetElementById(elementId);
         if (element != NULL) {
@@ -655,7 +655,7 @@ struct CustomImGui {
         ImGui::OpenPopup(popupId);
     }
 
-    void RunPreRenderCallbacks(Element* element) IM_FMTARGS(2)
+    void RunPreRenderCallbacks(Element* element)
     {
         for (auto callback = element->callbacks.begin(); callback != element->callbacks.end(); ++callback) {
             if (callback->first == IMGUI_CALLBACK::Render) {
@@ -664,7 +664,7 @@ struct CustomImGui {
         }
     }
 
-    void RunCallbacks(Element* element) IM_FMTARGS(2)
+    void RunCallbacks(Element* element)
     {
         for (auto callback = element->callbacks.begin(); callback != element->callbacks.end(); ++callback) {
             switch (callback->first) {
@@ -731,7 +731,7 @@ struct CustomImGui {
         }
     }
 
-    void RunCallback(Element* element, const int callbackID, const IMGUI_CALLBACK callbackType = IMGUI_CALLBACK::Clicked) IM_FMTARGS(2)
+    void RunCallback(Element* element, const int callbackID, const IMGUI_CALLBACK callbackType = IMGUI_CALLBACK::Clicked)
     {
         if (callbackID == 0) {
             return;
@@ -913,7 +913,7 @@ struct CustomImGui {
         }
     }
 
-    Element* GetElementById(const char* elementID) IM_FMTARGS(2)
+    Element* GetElementById(const char* elementID)
     {
         Element* element = GetElementByList(elementID, menuElements);
         if (element != NULL) {
