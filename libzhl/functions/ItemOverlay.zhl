@@ -12,7 +12,7 @@ struct ItemOverlay depends (ANM2) {
 	inline int* GetOverlayID() { return &_overlayID; } 
 	inline ANM2* GetSprite() { return &_sprite; } 
 	inline int* GetDelay() { return &_delay; } 
-	inline Entity_Player* GetPlayer() { &_player; }
+	inline Entity_Player* GetPlayer() { return _player; }
 	
 	enum eItemOverlayState {
 		INACTIVE = 0,
