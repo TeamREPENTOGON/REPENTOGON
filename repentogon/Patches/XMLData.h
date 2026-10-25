@@ -91,6 +91,8 @@ public:
 		if (tab.find(index) != tab.end()) {
 			return tab[index];
 		}
+
+		return vector<int>();
 	}
 	void Set(const string &index,int id) {
 		if (tab.find(index) != tab.end()) {
