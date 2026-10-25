@@ -443,6 +443,7 @@ public:
 private:
 	class LIBZHL_API ASMNode {
 	public:
+		virtual ~ASMNode() { }
 		virtual std::unique_ptr<char[]> ToASM(void* at) const = 0;
 		virtual size_t Length() const = 0;
 	};
