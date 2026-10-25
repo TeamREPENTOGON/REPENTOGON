@@ -244,8 +244,8 @@ HOOK_METHOD(Level, HasAbandonedMineshaft, () -> bool) {
 	return name;
 } */
 
-HOOK_GLOBAL(GetLevelName, (std_string* result, uint32_t levelStage, uint32_t stageType, uint32_t curseMask, uint32_t unk1, uint32_t unk2, bool unk3) -> void, __cdecl) {
-	super(result, levelStage, stageType, curseMask, unk1, unk2, unk3);
+HOOK_GLOBAL(GetLevelName, (std_string* result, uint32_t levelStage, uint32_t stageType, uint32_t curseMask, int BASEMENTnum, bool jumble, int mode) -> void, __cdecl) {
+	super(result, levelStage, stageType, curseMask, BASEMENTnum, jumble, mode);
 	if (!CustomStageName.empty()) {
 		*result = CustomStageName;
 	}

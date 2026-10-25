@@ -64,6 +64,7 @@
 #include "Log.h"
 #include "../MiscFunctions.h"
 #include "../LuaClasses.h"
+#include "../Utils/StringUtils.h"
 #include "../LuaInterfaces/_Internals.h"
 #include "../ImGuiFeatures/CustomImGui.h"
 #include "../Patches/ExtraRenderSteps.h"
@@ -3481,9 +3482,9 @@ void ESSM::detail::Init::RegisterLuaInternals(lua_State *L, int tbl)
 }
 
 // make it high priority so that it only checks stability after everything is done
-HOOK_METHOD_PRIORITY(Room, Init, -9999, (int param_1, RoomDescriptor * descriptor) -> void)
+HOOK_METHOD_PRIORITY(Room, Init, -9999, (RoomConfig_Room* config, RoomDescriptor* descriptor) -> void)
 {
-    super(param_1, descriptor);
+    super(config, descriptor);
     ESSM::StabilityChecker::CheckStability();
 }
 

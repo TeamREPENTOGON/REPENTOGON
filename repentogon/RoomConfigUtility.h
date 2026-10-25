@@ -38,6 +38,26 @@ namespace RoomConfigUtility
 		};
 	};
 
+    struct StbRoomSet
+    {
+        RoomSet roomSet;
+
+        StbRoomSet() = default;
+        ~StbRoomSet() {
+            // This will properly destroy/free the RoomConfig_Rooms in the RoomSet.
+            // (Note: RoomSet's real destructor does not call this function.)
+            roomSet.unload();
+        }
+
+        StbRoomSet(const StbRoomSet&) = delete;
+        StbRoomSet& operator=(const StbRoomSet&) = delete;
+
+        StbRoomSet(StbRoomSet&& o) : roomSet(std::move(o.roomSet)) {
+            o.roomSet._configs = nullptr;
+            o.roomSet._count = 0;
+        }
+    };
+
 	// Returns a pair of Width and Height of the shape
 	const std::pair<const int, const int>& GetShapeDimensions(size_t shape);
 
@@ -53,6 +73,8 @@ namespace RoomConfigUtility
 	void AssertRoomValidity(const RoomConfig_Room& room);
 	void AssertRoomSpawnValidity(const RoomSpawn& roomSpawn, const RoomConfig_Room* room = nullptr);
 	void AssertRoomSpawnEntryValidity(const RoomEntry& spawnEntry);
+    
+    std::optional<StbRoomSet> ParseStb(const std::string& filePath, int stageId);
 
 	std::optional<RoomConfig_Room> DeserializeRoom(const rapidjson::Value& roomNode, LogContext& logContext);
 	std::optional<RoomSpawn> DeserializeRoomSpawn(const rapidjson::Value& spawnNode, RoomConfig_Room& room, LogContext& logContext);

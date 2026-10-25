@@ -1,6 +1,7 @@
 #include "../XMLData.h"
 #include "IsaacRepentance.h"
 #include "../../MiscFunctions.h"
+#include "../../Utils/StringUtils.h"
 #include "rapidxml_print.hpp"
 
 using NodeMap = std::unordered_map<int, rapidxml::xml_node<char>*>;

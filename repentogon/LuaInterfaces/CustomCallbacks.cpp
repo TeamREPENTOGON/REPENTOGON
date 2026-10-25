@@ -3834,8 +3834,15 @@ HOOK_METHOD(Entity_Player, InitPreLevelInitStats, () -> void) {
 	super();
 }
 
-//PRE_NEW_ROOM (1200)
-HOOK_METHOD(Room, Init, (int param_1, RoomDescriptor* descriptor) -> void) {
+// MC_PRE_NEW_ROOM (1200)
+HOOK_METHOD(Room, Init, (RoomConfig_Room* config, RoomDescriptor* descriptor) -> void) {
+	// Slightly jank, but is an assortment of potential crashes in Room functions during MC_PRE_NEW_ROOM if this is left as nullptr
+	// Originally considered using the default RoomDescriptor, but the the Data being nullptr can also lead to crashes...
+	// Doing this is probably fine, only happens at the start of levels, and the core Init code doesn't use this before it overwrites it
+	if (this->_descriptor == nullptr) {
+		this->_descriptor = descriptor;
+	}
+
 	const int callbackid = 1200;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -3843,6 +3850,7 @@ HOOK_METHOD(Room, Init, (int param_1, RoomDescriptor* descriptor) -> void) {
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
+		// Don't pass the RoomConfig_Room to the callback
 		lua::LuaCaller(L).push(callbackid)
 			.pushnil()
 			.pushClassPtr<LuaRoom>(this)
@@ -3850,7 +3858,18 @@ HOOK_METHOD(Room, Init, (int param_1, RoomDescriptor* descriptor) -> void) {
 			.call(1);
 	}
 
-	super(param_1, descriptor);
+	// "Recompute" the RoomConfig_Room sent to super in case it was changed on the RoomDescriptor.
+	// In vanilla, Room::Init is only caused by Level::load_room, and the behaviour below is consistent with that function.
+	// This should (in theory) only cause changes if a mod messed with the (Override)Data or Flags during MC_PRE_NEW_ROOM.
+	constexpr uint32_t ROOM_SURPRISE_MINIBOSS = 1 << 4;
+	if ((descriptor->Flags & ROOM_SURPRISE_MINIBOSS) != 0 && descriptor->OverrideData != nullptr) {
+		config = descriptor->OverrideData;
+	} else {
+		descriptor->Flags &= ~ROOM_SURPRISE_MINIBOSS;
+		config = descriptor->Data;
+	}
+
+	super(config, descriptor);
 }
 
 HOOK_METHOD(ModManager, LoadConfigs, () -> void) {

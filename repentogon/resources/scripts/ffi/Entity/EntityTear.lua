@@ -64,6 +64,7 @@ local CopyStruct = helpers.CopyStruct
 local EntityToPointer = ffichecks.entitytopointer
 
 local TYPE_TEAR = 2
+local VARIANT_GRIDENT = 40
 
 local getters = {
     Height = Getter("HeightValue"),
@@ -124,6 +125,13 @@ local methods = {
         self.TearFlags = self.TearFlags & ~flags
     end,
     FireSplitTear = Entity.Helpers.FireSplitTear,
+    GetBackdropType = function(self)
+        -- only grid entity tears store a backdrop type in the tear index
+        if ffi.getprivate(self, "VariantValue") == VARIANT_GRIDENT then
+            return ffi.getprivate(self, "TearIndexValue")
+        end
+        return 0 -- BACKDROP_NULL
+    end,
     GetDeadEyeIntensity = Getter("DeadEyeIntensityValue"),
     GetDeadEyeSprite = function(self)
         local result = repentogon.L_EntityTear_GetDeadEyeSprite(self) return result
@@ -157,6 +165,12 @@ local methods = {
     end,
     ResetSpriteScale = function(self, force)
         repentogon.L_EntityTear_ResetSpriteScale(self, ffichecks.optboolean(force, false))
+    end,
+    SetBackdropType = function(self, backdrop)
+        backdrop = ffichecks.checkinteger(1, backdrop)
+        if backdrop >= 0 and ffi.getprivate(self, "VariantValue") == VARIANT_GRIDENT then
+            ffi.setprivate(self, "TearIndexValue", backdrop)
+        end
     end,
     SetDeadEyeIntensity = function(self, intensity)
         intensity = ffichecks.checknumber(1, intensity)

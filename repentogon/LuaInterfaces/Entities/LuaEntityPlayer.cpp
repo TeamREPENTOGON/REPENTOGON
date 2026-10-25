@@ -10,7 +10,7 @@
 #include "../../Patches/EntityPlus.h"
 #include "../../Patches/PlayerFeatures.h"
 #include "../../Patches/ItemSpoofSystem.h"
-#include "../../MiscFunctions.h"
+#include "../../Utils/StringUtils.h"
 
 #include <algorithm>
 #include <array>

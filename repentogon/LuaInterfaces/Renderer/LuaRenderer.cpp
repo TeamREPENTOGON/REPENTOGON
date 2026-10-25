@@ -3,6 +3,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "../../ShaderLoader.h"
+#include "../../Utils/StringUtils.h"
 
 MOD_EXPORT bool L_Renderer_LoadImage(const char* path, KAGE_SmartPointer_ImageBase* out) {
 	if (!std::filesystem::path(path).is_relative()) {

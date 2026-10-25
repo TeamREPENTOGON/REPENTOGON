@@ -144,6 +144,7 @@ ffi.cdef("struct EntityPlayer { " .. Entity.Fields .. [[
     private int NumGigaBombsValue : 0x1dc0;
     private struct EntityPlayer* TwinPlayerValue : 0x1e4c;
     private struct EntityPlayer* BackupPlayerValue : 0x1e50;
+    private float FallingSpeedValue : 0x1e54;
     private int RedStewBonusDurationValue : 0x1e58;
     private float RockBottomMoveSpeedValue : 0x1e94;
     private float RockBottomMaxFireDelayValue : 0x1e98;
@@ -2709,6 +2710,8 @@ local methods = {
         end
         return nil
     end,
+    GetFallingSpeed = Getter("FallingSpeedValue"),
+    SetFallingSpeed = NumberSetter("FallingSpeedValue"),
     GetBombVariant = function(self, flags, forceSmall)
         ffichecks.checkcdata(1, flags, "BitSet128")
         forceSmall = ffichecks.checkboolean(2, forceSmall)

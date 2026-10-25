@@ -18,7 +18,7 @@ MOD_EXPORT unsigned int L_RoomConfig_GetVanillaSetID(uint32_t stage, int mode) {
 	if (mode == -1) {
 		mode = g_Game->IsGreedMode() ? 1 : 0;
 	}
-	return VirtualRoomSetManager::detail::GetId(VirtualRoomSetManager::GetVanillaSet(stage, mode));
+	return VirtualRoomSetManager::detail::GetId(VirtualRoomSetManager::GetSet(stage, mode));
 }
 
 MOD_EXPORT bool L_RoomConfig_HasShapeSlot(int shape, unsigned int slot) {

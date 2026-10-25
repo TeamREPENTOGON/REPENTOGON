@@ -3,6 +3,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "MiscFunctions.h"
+#include "Utils/Result.h"
 
 template<typename T>
 struct LuaArrayProxy

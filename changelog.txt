@@ -18,14 +18,18 @@ Added:
 	- MC_POST_GAME_STATE_SAVE
 	- MC_PRE_GAME_STATE_RESTORE
 	- MC_POST_GAME_STATE_RESTORE
-    - MC_SHOULD_SAVE_ENTITY(Entity, bool isRoomClear)
-        Can be used to override whether or not the entity should be saved.
-    - MC_ENTITY_SAVE(Entity)
-    - MC_ENTITY_RESTORE(Entity)
+	- MC_SHOULD_SAVE_ENTITY(Entity, bool isRoomClear)
+		Can be used to override whether or not the entity should be saved.
+	- MC_ENTITY_SAVE(Entity)
+	- MC_ENTITY_RESTORE(Entity)
 * Isaac:
-    - Added overloads for the ModData functions that accept a custom filename.
+	- Added overloads for the ModData functions that accept a custom filename.
+* Room:
+	- RecomputeRoomBounds()
 * ModReference:
     - Added overloads for the Data functions that accept a custom filename.
+* EntityPlayer:
+	- Get/SetFallingSpeed
 * EntityNPC:
 	- GetLootList(bool ShouldAdvance = false)
 		Generic replacement for GetFireplaceLoot and GetShopkeeperLoot that enables LootList for all NPCs.
@@ -35,20 +39,25 @@ Added:
 		Only Fireplaces and Shopkeepers naturally call this function, so if you want to add/modify an NPC's LootList, you should call this once.
 * EntityPickup:
 	- ShouldIgnoreModifiers()
+* EntityTear:
+	- Get/SetBackdropType
+		Only works on TearVariant.GRIDENT
 * Input:
 	- GetActionButtons(int ButtonAction, int ControllerIndex)
 		Returns the button(s) assigned to the specified action for the specified input device (-1 for unmapped/invalid actions).
 	- GetButtonFrame(int button, int ControllerIndex)
 		Returns the animation frame in `(controls_)buttons.anm2` to use for the given button (-1 for invalid buttons).
 * Added SaveStateManager class to automatically manage modded save data for the current run.
-
 /newline/
 Modified:
 * ModCallbacks:
 	- Added PickupVariant optional param for MC_PRE/POST_PICKUP_GET_LOOT_LIST & MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS
+	- Changes to the `(Override)Data` of the incoming RoomDescriptor during MC_PRE_NEW_ROOM are now respected
 /newline/
 Fixes:
-* 
+* Fixed "?" sometimes appearing next to the lives counter unintentionally for custom revive items.
+* Fixed the "effectdamagemult" and "effecttearsmult" items.xml tags not working.
+* Reduced likelihood of crashes during the MC_PRE_NEW_ROOM callback.
 /newline/
 /versionseparator/
 v1.1.3 -

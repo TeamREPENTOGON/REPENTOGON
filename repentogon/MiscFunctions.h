@@ -15,76 +15,9 @@
 #include <array>
 #include <string_view>
 #include <charconv>
+#include "Utils/StringUtils.h"
 
 extern std::string GetUserPath();
-
-namespace REPENTOGON {
-	template <typename T>
-	struct Ok
-	{
-		T value;
-	};
-
-	template <typename E>
-	struct Err
-	{
-		E error;
-	};
-
-	template <typename T>
-	Ok<T> ok(T v)
-	{
-		return Ok<T>{v};
-	}
-
-	template <typename E>
-	Err<E> err(E e)
-	{
-		return Err<E>{e};
-	}
-
-	template<typename T, typename E>
-	class Result
-	{
-		std::variant<Ok<T>, Err<E>> data;
-
-	public:
-
-		Result(Ok<T> v) : data(v) {}
-		Result(Err<E> e) : data(e) {}
-
-		bool is_ok() const
-		{
-			return std::holds_alternative<Ok<T>>(data);
-		}
-
-		bool is_err() const
-		{
-			return std::holds_alternative<Err<E>>(data);
-		}
-
-		const T& unwrap() const
-		{
-			return std::get<Ok<T>>(data).value;
-		}
-
-		T& unwrap()
-		{
-			return std::get<Ok<T>>(data).value;
-		}
-
-		const E& unwrap_err() const
-		{
-			return std::get<Err<E>>(data).error;
-		}
-
-		E& unwrap_err()
-		{
-			return std::get<Err<E>>(data).error;
-		}
-
-	};
-}
 
 namespace REPENTOGON {
 	static auto gameStartTime = std::chrono::high_resolution_clock::now();
@@ -123,56 +56,6 @@ namespace REPENTOGON {
 		std::stringstream ss;
 		ss << std::fixed << std::setprecision(precision) << number;
 		return ss.str();
-	}
-
-	static std::string StringFormat(const char* format, va_list args)
-	{
-		int size = vsnprintf(nullptr, 0, format, args);
-
-		std::string result(size, '\0');
-		vsnprintf(&result[0], size + 1, format, args);
-
-		return result;
-	}
-
-	static inline std::string StringFormat(const char* format, ...)
-	{
-		va_list args;
-		va_start(args, format);
-		std::string result = StringFormat(format, args);
-		va_end(args);
-		return result;
-	}
-
-	/// @brief Concatenates all passed strings.
-	/// all arguments must be convertible to std::string_view
-	template <typename... Args, std::enable_if_t<(std::is_convertible_v<Args, std::string_view> && ...),int> = 0>
-	static std::string StringConcat(const Args&... args)
-	{
-		const std::size_t size = (std::string_view(args).size() + ...);
-
-		std::string result;
-		result.reserve(size);
-
-		(result.append(std::string_view(args)), ...);
-
-		return result;
-	}
-
-	template <typename T>
-	static std::optional<T> StringToNumber(const std::string_view& string)
-	{
-		T value;
-		const char* start = string.data();
-		const char* end = string.data() + string.size();
-
-		auto [ptr, ec] = std::from_chars(start, end, value);
-
-		if (ec == std::errc{} && ptr == end) {
-			return value;
-		}
-
-		return std::nullopt;
 	}
 
 	template <typename NewType, typename OldType>
@@ -364,9 +247,9 @@ namespace REPENTOGON {
 		return std::nullopt;
 	}
 
-	static std::vector<std::string> GetAllModContentPaths(const std::string& filePath)
+	static std::vector<std::pair<ModEntry*, std::string>> GetAllModContentPaths(const std::string& filePath)
 	{
-		std::vector<std::string> paths;
+		std::vector<std::pair<ModEntry*, std::string>> paths;
 
 		for (ModEntry* mod : g_Manager->GetModManager()->_mods)
 		{
@@ -377,7 +260,7 @@ namespace REPENTOGON {
 
 			if (std::optional<std::string> expandedPath = g_ContentManager.GetMountedFilePath(contentPath.c_str()))
 			{
-				paths.push_back(*expandedPath);
+				paths.push_back(std::make_pair(mod, *expandedPath));
 			}
 		}
 

@@ -147,6 +147,7 @@ ffi.cdef [[
     int L_Room_TMP_GetNumItemPools();
     void L_Room_MamaMegaExplosion(struct Room*, struct Vector*, struct EntityPlayer*);
     struct EntityEffect* L_Room_PickupGridEntity(struct Room*, int);
+    void L_Room_RecomputeRoomBounds(struct Room*);
 ]]
 
 local ffi = ffi
@@ -677,6 +678,9 @@ RoomMT = {
     end,
     PlayMusic = function(self)
         repentogon.L_Room_PlayMusic(self)
+    end,
+    RecomputeRoomBounds = function(self)
+        repentogon.L_Room_RecomputeRoomBounds(self)
     end,
     RemoveDoor = function(self, slot)
         slot = ffichecks.checkinteger(1, slot)

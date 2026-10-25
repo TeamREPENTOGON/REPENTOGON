@@ -9,6 +9,26 @@
 RoomASM roomASM;
 extern uint32_t hookedbackdroptype;
 
+HOOK_METHOD(Room, Init, (RoomConfig_Room* config, RoomDescriptor* desc) -> void) {
+	roomASM.WaterDisabled = false;
+	roomASM.ItemPool = POOL_NULL;
+	super(config, desc);
+	ZHL::Logger logger;
+	//logger.Log("WaterDisabled is %s, stage is %d, desc stage is %d\n", roomASM.WaterDisabled ? "TRUE" : "FALSE", g_Game->_stage, this->_descriptor->Data->StageId);
+	if (g_Game->_stage == 12 && !roomASM.WaterDisabled && (this->_descriptor->Data->StageId == 27 || this->_descriptor->Data->StageId == 28)) {
+		//__debugbreak();
+		this->_waterAmount = 1.0f;
+		//logger.Log("setting water\n");
+	}
+}
+
+HOOK_STATIC(Room, GetItemPool, (uint32_t seed, RoomDescriptor* roomDesc, int bossId) -> int, __cdecl) {
+	if (roomASM.ItemPool != POOL_NULL) {
+		return roomASM.ItemPool;
+	}
+	return super(seed, roomDesc, bossId);
+}
+
 // TODO: see what we can reimplement in Lualand
 extern "C" {
 
@@ -389,4 +409,8 @@ MOD_EXPORT void L_Room_MamaMegaExplosion(Room* room, Vector* pos, Entity_Player*
 
 MOD_EXPORT Entity_Effect* L_Room_PickupGridEntity(Room* room, int gridIndex) {
 	return room->PickupGridEntity(gridIndex);
+}
+
+MOD_EXPORT void L_Room_RecomputeRoomBounds(Room* room) {
+	room->RecomputeRoomBounds(/*init=*/false);
 }

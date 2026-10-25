@@ -94,7 +94,7 @@ float CalculateStatMult(Entity_Player* player, const ItemStat stat) {
 			}
 			float effectValue = ex->GetEffectStat(stat);
 			if (effectValue != 1) {
-				finalMult *= CalcStatMult(value, effects->GetCollectibleEffectNum(id));
+				finalMult *= CalcStatMult(effectValue, effects->GetCollectibleEffectNum(id));
 			}
 		}
 	}
@@ -106,7 +106,7 @@ float CalculateStatMult(Entity_Player* player, const ItemStat stat) {
 			}
 			float effectValue = ex->GetEffectStat(stat);
 			if (effectValue != 1) {
-				finalMult *= CalcStatMult(value, effects->GetTrinketEffectNum(id));
+				finalMult *= CalcStatMult(effectValue, effects->GetTrinketEffectNum(id));
 			}
 		}
 	}
@@ -269,7 +269,9 @@ bool HasCustomChanceRevive(Entity_Player* player) {
 	}
 	for (const int id : s_NullCustomTagsLookup[CustomTags::REVIVE_EFFECT]) {
 		if (NullItemEx* ex = GetNullItemEx(id); ex && ex->ShouldCountReviveEffect(false) && ex->IsChanceRevive()) {
-			return true;
+			if (effects.HasNullEffect(id)) {
+				return true;
+			}
 		}
 	}
 	return false;

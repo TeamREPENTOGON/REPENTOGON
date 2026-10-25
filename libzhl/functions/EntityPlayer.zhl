@@ -1183,6 +1183,7 @@ struct Entity_Player depends (QueueItemData, Vector, ANM2, ColorMod, KColor, Pla
 	deque_afterImageFrames _afterImageFrames : 0x1e38;
 	EntityPtr _twinPlayer : 0x1e4c;
 	Entity_Player* _backupPlayer : 0x1e50;
+	float _posOffsetYSpeed : 0x1e54;
 	int _redStewBonusDuration : 0x1e58;
 	int _marsUnk1 : 0x1e70;
 	int _marsCooldown : 0x1e74;

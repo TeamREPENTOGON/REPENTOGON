@@ -71,7 +71,7 @@ __thiscall Entity_Effect* Room::PickupGridEntity(int GridIndex);
 __thiscall int Room::GetGridIndexByTile(int GridRow, int GridColumn);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec30080000":
-__thiscall void Room::Init(int param_1, RoomDescriptor* descriptor);
+__thiscall void Room::Init(RoomConfig_Room* room, RoomDescriptor* descriptor);
 
 "558bec578bf933d2":
 __thiscall void Room::SetPauseTimer(int Duration);
@@ -274,6 +274,9 @@ __thiscall void Room::Update();
 
 "558bec83e4f883ec2c538bd95657895c24??8b43":
 __thiscall int Room::GetRandomTileIndex(unsigned int seed);
+
+"558bec83e4f883ec2453568bf157897424":
+__thiscall void Room::RecomputeRoomBounds(bool init);
 
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, FXLayers, KColor, ColorMod, Backdrop, Vector) {
 {{
