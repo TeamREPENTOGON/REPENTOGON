@@ -31,7 +31,7 @@ class SyncStatus {
 	bool* GetEnabledPtr() { return &_autoSyncEnabled; }
 
 	static std::string GetKey(const int slot, const bool isRepentogon);
-	static std::string SyncStatus::GetJsonPath();
+	static std::string GetJsonPath();
 
 	bool SaveToJson();
 	bool LoadFromJson();
