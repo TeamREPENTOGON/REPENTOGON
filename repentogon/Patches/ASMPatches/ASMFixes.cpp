@@ -306,6 +306,10 @@ static Room* __fastcall asm_room_reset(Room* room)
         room->destructor();
     }
 
+	// Forced zero-initialization, because for some reason the constructor does not initialize all fields, such as the _roomDescriptor pointer.
+	// Helps to prevent some potential crashes at specific points in time, such as MC_PRE_NEW_ROOM.
+	std::memset(room, 0, sizeof(Room));
+
     room->constructor();
     return room;
 }
