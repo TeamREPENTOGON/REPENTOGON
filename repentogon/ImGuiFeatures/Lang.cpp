@@ -1,4 +1,4 @@
-#include "lang.h"
+#include "Lang.h"
 #include "IconsFontAwesome6.h"
 #include "IconsFontAwesome6_unicode.h"
 #include "IsaacRepentance.h"
