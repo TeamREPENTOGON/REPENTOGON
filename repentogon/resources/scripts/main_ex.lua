@@ -10,7 +10,7 @@ local s_modules = {}
 
 local debug_getinfo = debug.getinfo
 
-collectgarbage("setpause", 125)
+collectgarbage("setpause", 110)
 collectgarbage("setstepmul", 200)
 jit.opt.start('maxtrace=20000', 'maxmcode=32768')
 local builtinIpairs = ipairs
