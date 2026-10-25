@@ -1,7 +1,7 @@
 ffi.cdef [[
     struct RoomConfigSpawn {
-        uint16_t X : 0x0;
-        uint16_t Y : 0x2;
+        int16_t X : 0x0;
+        int16_t Y : 0x2;
         private struct RoomConfigEntry* _Entries : 0x4;
         uint8_t EntryCount : 0x8;
         float SumWeights : 0xC;
