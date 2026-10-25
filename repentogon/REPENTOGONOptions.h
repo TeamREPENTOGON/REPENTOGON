@@ -121,24 +121,24 @@ struct REPENTOGONOptions {
 		ZHL::Log("Loaded REPENTOGON INI\n");
 	}
 
-	bool GetBool(char* category, char* field) {
+	bool GetBool(const char* category, const char* field) {
 		mINI::INIFile iniFile(optionsPath);
 		return ini[category][field] == "1" ? true : false;
 	}
 
-	bool Write(char* category, char* field, char* value) {
+	bool Write(const char* category, const char* field, const char* value) {
 		mINI::INIFile iniFile(optionsPath);
 		ini[category][field] = value;
 		return iniFile.write(ini);
 	}
 
-	bool Write(char* category, char* field, bool value) {
+	bool Write(const char* category, const char* field, bool value) {
 		mINI::INIFile iniFile(optionsPath);
 		ini[category][field] = value? "1" : "0";
 		return iniFile.write(ini);
 	}
 
-	bool Write(char* category, char* field, int value) {
+	bool Write(const char* category, const char* field, int value) {
 		mINI::INIFile iniFile(optionsPath);
 		char buff[128];
 		sprintf_s(buff, "%d", value);
