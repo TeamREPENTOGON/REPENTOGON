@@ -9,7 +9,7 @@ __thiscall bool Entity_Bomb::HandleCollision(Entity* collider, bool low);
 
 struct Entity_Bomb depends (ANM2) : public Entity { {{
     inline int* GetExplosionCountdown() { return &this->_explosionCountdown1; }
-    void LIBZHL_API Entity_Bomb::UpdateDirtColor();
+    void LIBZHL_API UpdateDirtColor();
 }}
 
 	__vtable {

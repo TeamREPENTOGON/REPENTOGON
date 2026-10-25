@@ -19,7 +19,7 @@ struct AnimationData depends (AnimationLayer) { {{
 	// Given a layer ID, returns where in the layer order it sits.
 	// IE, the very bottom layer is the 0th layer regardless of its ID.
 	inline int GetLayerOrder(const int layerID) {
-		if (this->_layerMap != nullptr && layerID >= 0 && layerID < 64) {
+		if (layerID >= 0 && layerID < 64) {
 			return this->_layerMap[layerID];
 		}
 		return -1;

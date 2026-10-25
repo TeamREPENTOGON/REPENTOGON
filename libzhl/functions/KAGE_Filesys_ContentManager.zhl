@@ -3,10 +3,10 @@ __thiscall void KAGE_Filesys_ContentManager::AddMountPoint(const char* mountPoin
 
 struct KAGE_Filesys_ContentManager {
 	{{
-		std::optional<std::string> LIBZHL_API KAGE_Filesys_ContentManager::GetMountedFilePath(const std::string& filePath);
-		std::optional<std::string> LIBZHL_API KAGE_Filesys_ContentManager::GetMountedFilePath(const char* filePath);
-		bool LIBZHL_API KAGE_Filesys_ContentManager::MountedFileExists(const std::string& filePath);
-		bool LIBZHL_API KAGE_Filesys_ContentManager::MountedFileExists(const char* filePath);
+		std::optional<std::string> LIBZHL_API GetMountedFilePath(const std::string& filePath);
+		std::optional<std::string> LIBZHL_API GetMountedFilePath(const char* filePath);
+		bool LIBZHL_API MountedFileExists(const std::string& filePath);
+		bool LIBZHL_API MountedFileExists(const char* filePath);
 	}}
     __vtable {
         skip; // Initialize

@@ -10,9 +10,9 @@ __thiscall void RoomDescriptor::InitSeeds(RNG * rng);
 struct RoomDescriptor depends (RoomConfig_Room)
 {
 	{{
-		int LIBZHL_API RoomDescriptor::GetErrorTrinketEffect();
+		int LIBZHL_API GetErrorTrinketEffect();
 
-        void RoomDescriptor::Reset()
+        void Reset()
         {
             this->destructor();
             this->constructor();

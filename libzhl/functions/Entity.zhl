@@ -177,7 +177,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
     inline Entity_Projectile* ToProjectile() { return Downcast<Entity_Projectile*>(__ptr_EntityProjectileRTTI); }
 	inline Entity_Effect* ToEffect() { return Downcast<Entity_Effect*>(__ptr_EntityEffectRTTI); }
 
-    Vector LIBZHL_API Entity::GetPredictedTargetPosition(Entity* target, float multiplier);
+    Vector LIBZHL_API GetPredictedTargetPosition(Entity* target, float multiplier);
 	
 	Entity() 
 	{
