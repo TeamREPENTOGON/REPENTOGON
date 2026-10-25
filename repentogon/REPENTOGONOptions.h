@@ -8,13 +8,14 @@
 
 #include <filesystem>
 
-inline int defstoi(const std::string& str, int default) {
+inline int defstoi(const std::string& str, int def) {
 	try {
 		return std::stoi(str);
 	}
 	catch (...) {
 	}
-	return default;
+
+	return def;
 }
 
 // be careful with this: don't block any feature for wine users.
