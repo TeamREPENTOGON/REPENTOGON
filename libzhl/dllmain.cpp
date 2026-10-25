@@ -1,5 +1,8 @@
 #include <Windows.h>
 #include <DbgHelp.h>
+
+#include "libzhl.h"
+
 #include <ehdata_forceinclude.h>
 #include <stdio.h>
 
