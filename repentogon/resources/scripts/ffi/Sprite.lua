@@ -415,7 +415,7 @@ SpriteMT = {
         if not layer then 
             return false
         end
-        ffi.setprivate(layer, "Spritesheet", spritesheet)
+        repentogon.L_LayerState_SetSpritesheet(layer, spritesheet)
         return true
     end,
     Stop = function(self, stopOverlay)
