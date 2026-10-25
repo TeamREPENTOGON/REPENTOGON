@@ -87,6 +87,7 @@ public:
         delete[] this->name;
         copy_name(other.name);
         this->format = other.format;
+	return *this;
     }
 
     bool operator==(const KAGE_Graphics_VertexAttributeDescriptor& other) const
