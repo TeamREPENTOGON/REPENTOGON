@@ -1053,7 +1053,7 @@ struct CustomImGui {
     {
         if (!element->data.tooltipText.empty()) {
             if (ImGui::IsItemHovered())
-                ImGui::SetTooltip(element->data.tooltipText.c_str());
+                ImGui::SetTooltip("%s", element->data.tooltipText.c_str());
         }
         if (!element->data.helpmarkerText.empty()) {
             ImGui::SameLine();
@@ -1322,7 +1322,7 @@ struct CustomImGui {
                 ImGui::ProgressBar(data->currentFloatVal, element->data.size, overlayText);
                 if (!element->name.empty()) {
                     ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-                    ImGui::Text(name);
+                    ImGui::Text("%s", name);
                 }
                 RunCallbacks(&(*element));
             } break;

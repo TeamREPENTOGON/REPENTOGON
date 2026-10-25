@@ -84,9 +84,9 @@ struct NotificationHandler {
 				ImGui::BringWindowToDisplayFront(ImGui::GetCurrentWindow()); // force object to be in front of all other objects
 				ImGui::SetWindowSize(ImVec2(0, 0), ImGuiCond_Always);
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 4); // move text up a bit  to center it correctly in window
-				ImGui::TextColored(textColor, severityIcons[notification->_severity]);
+				ImGui::TextColored(textColor, "%s", severityIcons[notification->_severity]);
 				ImGui::SameLine(0, 10);
-				ImGui::TextColored(textColor, notification->_text.c_str());
+				ImGui::TextColored(textColor, "%s", notification->_text.c_str());
 
 				previousWindowHeight += ImGui::GetWindowSize().y + 3.0f;
 			}

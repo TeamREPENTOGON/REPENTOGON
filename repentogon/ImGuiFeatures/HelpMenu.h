@@ -134,10 +134,10 @@ struct EasterEggGame {
         auto gameState = states[currentGameState];
 
         ImGui::PushStyleColor(ImGuiCol_Text, gameState.iconColor);
-        ImGui::Text(gameState.icon.c_str());
+        ImGui::Text("%s", gameState.icon.c_str());
         ImGui::PopStyleColor();
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNone) && !gameState.description.empty())
-            ImGui::SetTooltip(gameState.description.c_str());
+            ImGui::SetTooltip("%s", gameState.description.c_str());
         if (ImGui::IsItemClicked()) {
             totalClicks++;
 
@@ -244,7 +244,7 @@ struct HelpMenu {
 
     void AddHyperLink(const char* link)
     {
-        ImGui::TextColored(ImVec4(0.25f, 0.25f, 1.0f, 1.0f), link);
+        ImGui::TextColored(ImVec4(0.25f, 0.25f, 1.0f, 1.0f), "%s", link);
         if (ImGui::IsItemHovered())
             ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
         if (ImGui::IsItemClicked())
@@ -256,39 +256,39 @@ struct HelpMenu {
         if (ImGui::BeginMenu(LANG.HELP_MENU)) {
             if (ImGui::BeginMenu(LANG.HELP_MENU_CTRLS)) {
                 if (ImGui::BeginMenu(LANG.HELP_MENU_CTRL_MOUSE)) {
-                    ImGui::Text(LANG.HELP_MENU_CTRL_MOUSE_HINT);
+                    ImGui::Text("%s", LANG.HELP_MENU_CTRL_MOUSE_HINT);
                     ImGui::EndMenu();
                 }
                 if (ImGui::MenuItem(LANG.HELP_MENU_CTRL_KEYBOARD)) { }
                 if (ImGui::BeginMenu(LANG.HELP_MENU_CTRL_CONTROLLER)) {
                     if (ImGui::BeginMenu(LANG.HELP_MENU_CTRL_PLAYSTATION)) {
-                        ImGui::Text(LANG.HELP_MENU_CTRL_PLAYSTATION_TEXT);
+                        ImGui::Text("%s", LANG.HELP_MENU_CTRL_PLAYSTATION_TEXT);
                         if (ImGui::BeginTable("controls-ps", 2)) {
                             for (string const& entry: controlsPS) {
                                 ImGui::TableNextColumn();
-                                ImGui::Text(entry.c_str());
+                                ImGui::Text("%s", entry.c_str());
                             }
                             ImGui::EndTable();
                         }
                         ImGui::EndMenu();
                     }
                     if (ImGui::BeginMenu(LANG.HELP_MENU_CTRL_XBOX)) {
-                        ImGui::Text(LANG.HELP_MENU_CTRL_XBOX_TEXT);
+                        ImGui::Text("%s", LANG.HELP_MENU_CTRL_XBOX_TEXT);
                         if (ImGui::BeginTable("controls-xb", 2)) {
                             for (string const& entry: controlsXB) {
                                 ImGui::TableNextColumn();
-                                ImGui::Text(entry.c_str());
+                                ImGui::Text("%s", entry.c_str());
                             }
                             ImGui::EndTable();
                         }
                         ImGui::EndMenu();
                     }
                     if (ImGui::BeginMenu(LANG.HELP_MENU_CTRL_SWITCH)) {
-                        ImGui::Text(LANG.HELP_MENU_CTRL_SWITCH_TEXT);
+                        ImGui::Text("%s", LANG.HELP_MENU_CTRL_SWITCH_TEXT);
                         if (ImGui::BeginTable("controls-xb", 2)) {
                             for (string const& entry: controlsSwitch) {
                                 ImGui::TableNextColumn();
-                                ImGui::Text(entry.c_str());
+                                ImGui::Text("%s", entry.c_str());
                             }
                             ImGui::EndTable();
                         }
@@ -299,7 +299,7 @@ struct HelpMenu {
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu(LANG.HELP_MENU_DOC)) {
-                ImGui::Text(LANG.HELP_MENU_DOC_TEXT);
+                ImGui::Text("%s", LANG.HELP_MENU_DOC_TEXT);
                 AddHyperLink("https://repentogon.com/docs.html");
 
                 easterEggGame.Draw();
@@ -319,7 +319,7 @@ struct HelpMenu {
                         // kinda hacky method to load arbitrary lua files
                         g_Game->GetConsole()->RunCommand(executeableTests[i][2], &out, NULL);
                     }
-                    ImGui::SetItemTooltip(executeableTests[i][1].c_str());
+                    ImGui::SetItemTooltip("%s", executeableTests[i][1].c_str());
                 }
 
                 ImGui::EndMenu();

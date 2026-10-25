@@ -114,12 +114,12 @@ ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed)
 		if (isController) {
 			firstKey = static_cast<int>(ImGuiKey_GamepadStart);
 			lastKey = static_cast<int>(ImGuiKey_GamepadRStickDown);
-			ImGui::Text(LANG.IMGUI_CHANGE_KEY_BTN_PRESS_KEY_CTRL);
+			ImGui::Text("%s", LANG.IMGUI_CHANGE_KEY_BTN_PRESS_KEY_CTRL);
 		}
 		else {
-			ImGui::Text(LANG.IMGUI_CHANGE_KEY_BTN_PRESS_KEY_KEYBOARD);
+			ImGui::Text("%s", LANG.IMGUI_CHANGE_KEY_BTN_PRESS_KEY_KEYBOARD);
 		}
-		ImGui::Text(LANG.IMGUI_CHANGE_KEY_BTN_PRESS_ESC);
+		ImGui::Text("%s", LANG.IMGUI_CHANGE_KEY_BTN_PRESS_ESC);
 
 		std::list<ImGuiKey> keys{};
 		GetPressedKeys(&keys);
@@ -458,7 +458,7 @@ void RenderLuamodErrorPopup() {
 				float buttonWidth = ImGui::CalcTextSize("Close").x + ImGui::GetStyle().FramePadding.x * 2.0f;
 				float buttonHeight = ImGui::CalcTextSize("Close").y + ImGui::GetStyle().FramePadding.y * 2.0f;
 				if (ImGui::BeginChild("ErrorBox", ImVec2(0, ImGui::GetWindowHeight() - (buttonHeight * 2.5f)), ImGuiChildFlags_Borders)) {
-					ImGui::TextWrapped(luamoderrorcache.c_str());
+					ImGui::TextWrapped("%s", luamoderrorcache.c_str());
 					if (!popupscrolled) {
 						ImGui::SetScrollHereY(1.0f);
 						popupscrolled = true; // Prevent scrolling every frame
@@ -738,7 +738,7 @@ void HookImGui() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 	ZHL::Log("[REPENTOGON] Injecting Dear ImGui at %p\n", addr);
-	void* imguiAddr = &RunImGui;
+	void* imguiAddr = (void*)&RunImGui;
 	ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(registers)

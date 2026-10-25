@@ -89,7 +89,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
         if (clicked) {
             valueRef = defaultValue;
         }
-        ImGui::SetItemTooltip(LANG.OPT_RESET_BTN_HINT);
+        ImGui::SetItemTooltip("%s", LANG.OPT_RESET_BTN_HINT);
         ImGui::PopID();
         if (disable) {
           ImGui::EndDisabled();
@@ -119,13 +119,13 @@ struct GameOptionsWindow : ImGuiWindowObject {
             ImGui::SameLine();
             if (*result == SaveSyncing::IMPORT_EXPORT_SUCCESS) {
                 ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-                ImGui::Text(LANG.OPT_SAVE_MANAGEMENT_SUCCESS);
+                ImGui::Text("%s", LANG.OPT_SAVE_MANAGEMENT_SUCCESS);
             } else if (*result == SaveSyncing::IMPORT_EXPORT_NOT_FOUND) {
                 ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 0, 255));
-                ImGui::Text(slot == 0 ? LANG.OPT_SAVE_MANAGEMENT_SUCCESS_NOT_FOUND : LANG.OPT_SAVE_MANAGEMENT_NOT_FOUND);
+                ImGui::Text("%s", slot == 0 ? LANG.OPT_SAVE_MANAGEMENT_SUCCESS_NOT_FOUND : LANG.OPT_SAVE_MANAGEMENT_NOT_FOUND);
             } else {
                 ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
-                ImGui::Text(LANG.OPT_SAVE_MANAGEMENT_FAILED);
+                ImGui::Text("%s", LANG.OPT_SAVE_MANAGEMENT_FAILED);
             }
             ImGui::PopStyleColor();
         }
@@ -239,7 +239,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         AddNewTableRow();
 
                         if (predefinedFonts.size() > 1) {
-                            ImGui::Text(LANG.OPT_HUD_FONT_SELECT);
+                            ImGui::Text("%s", LANG.OPT_HUD_FONT_SELECT);
                             AddNewTableRow();
                             for (size_t i = 0; i < predefinedFonts.size(); i++) {
                                 ImGui::SameLine();
@@ -490,7 +490,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         if (!saveManagementAllowed) {
                             AddNewTableRow();
                             ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
-                            ImGui::Text(LANG.OPT_SAVE_MANAGEMENT_DISABLED_REASON);
+                            ImGui::Text("%s", LANG.OPT_SAVE_MANAGEMENT_DISABLED_REASON);
                             ImGui::PopStyleColor();
                         }
 

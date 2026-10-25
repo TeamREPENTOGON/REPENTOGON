@@ -473,7 +473,7 @@ struct ConsoleMega : ImGuiWindowObject {
                   ImGui::SetCursorPos(ImVec2(drawPos.x + ImGui::GetStyle().FramePadding.x, drawPos.y + ImGui::GetStyle().FramePadding.y));
 
                   ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
-                  ImGui::Text(LANG.CONSOLE_CMD_HINT);
+                  ImGui::Text("%s", LANG.CONSOLE_CMD_HINT);
                   ImGui::PopStyleColor();
               }
 
@@ -488,7 +488,7 @@ struct ConsoleMega : ImGuiWindowObject {
                 ImGui::SetCursorPos(ImVec2(drawPos.x + ImGui::GetStyle().FramePadding.x + textSize.x, drawPos.y + ImGui::GetStyle().FramePadding.y));
 
                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
-                ImGui::Text(previewText.c_str());
+                ImGui::Text("%s", previewText.c_str());
                 ImGui::PopStyleColor();
               }
             }
