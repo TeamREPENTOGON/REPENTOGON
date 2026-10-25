@@ -273,17 +273,21 @@ public:
 
 	}
 
+	/* Return an empty value if name does not start with a number that
+	 * strtol accepts. name may have trailing non number-compatible
+	 * character and those will be ignored silently.
+	 */
 	XMLAttributes GetNodeById(const string& name) { //for convenience,lol
 		int id = 0;
 		if (name.length() > 0) {
 			char* endPtr;
-			int tentid = strtol(name.c_str(), &endPtr, 0);
-			if (endPtr != "\0") {
-				id = tentid;
-			}
-			else {
-				return XMLAttributes();
-			}
+			errno = 0;
+			const char* asStr = name.c_str();
+			long tentid = strtol(asStr, &endPtr, 0);
+			if (asStr == endPtr || errno == ERANGE)
+			    return XMLAttributes();
+
+			id = tentid;
 		}
 
 		auto iter = this->nodes.find(id);
@@ -1334,13 +1338,21 @@ struct CustomXML {
 };
 extern vector<CustomXML> pendingcustomxmls;
 
+/* Convert str to an integer. Return 0 in case of failure.
+ * str may have trailing non number-compatible characters. Those will be
+ * ignored.
+ */
 inline int xmltoint(const string& str) {
 	if (str.length() > 0) {
 		char* endPtr;
-		int returnval = strtol(str.c_str(), &endPtr, 0);
-		if (endPtr != "\0") {
-			return returnval;
-		}
+		const char* asStr = str.c_str();
+		errno = 0;
+		int returnval = strtol(asStr, &endPtr, 0);
+
+		if (endPtr == asStr || errno == ERANGE)
+		    return 0;
+
+		return returnval;
 	}
 	return 0;
 }
@@ -1385,7 +1397,10 @@ inline char* GetResources(const string& dir, const string& filename) {
 			return buffer;
 		}
 	}
-	return "";
+
+	char* empty = (char*)malloc(1);
+	*empty = 0;
+	return empty;
 }
 
 inline bool GetContent(const string& dir, xml_document<char>* xmldoc) {
