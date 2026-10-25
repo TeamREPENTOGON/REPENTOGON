@@ -214,7 +214,7 @@ public:
 
 	void ClearByPath(const string &path) {
 		if (byfilepathmulti.tab.find(path) != byfilepathmulti.tab.end()) {
-			for each (int idx in byfilepathmulti.Get(path)) {
+			for (int idx: byfilepathmulti.Get(path)) {
 				XMLAttributes node = nodes[idx];
 				if (byname[node["name"]] == idx) { byname.erase(node["name"]); }
 				if (bynamemod[node["name"] + node["sourceid"]] == idx) { bynamemod.erase(node["name"] + node["sourceid"]); }
@@ -597,7 +597,7 @@ public:
 	}
 
 	void Clear() {
-		for each (auto& n in nodes) {;
+		for (auto& n: nodes) {;
 			XMLAttributes node = n.second;
 			if (strcmp(node["sourceid"].c_str(), "BaseGame") != 0) {
 				int idx = n.first;
@@ -1301,11 +1301,11 @@ inline void RegisterCustomXMLAttr(XMLDataHolder* XMLDataToUpdate, const string& 
 
 inline bool MultiValXMLParamParseLATE() {
 	bool did = false;
-	for each (auto patch in xmllatepatches) {
+	for (auto& patch: xmllatepatches) {
 		XMLDataHolder* xmldatasource = patch.first;
-		for each (auto node in xmldatasource->nodes) {
+		for (auto& node: xmldatasource->nodes) {
 			XMLAttributes auxnode = node.second;
-			for each (auto toparse in xmllatepatches[xmldatasource]) {
+			for (auto& toparse: xmllatepatches[xmldatasource]) {
 				XMLDataHolder* xmldata = toparse.second;
 				string attrname = toparse.first;
 				if (auxnode.find(attrname) != auxnode.end()) {
@@ -1404,7 +1404,7 @@ inline bool GetContent(const string& dir, xml_document<char>* xmldoc) {
 }
 
 inline void UpdateRelEntTracker(XMLDataHolder* data, XMLRelEnt* target, const char* trgtattr) {
-	for each (auto node in data->nodes) {
+	for (auto& node: data->nodes) {
 		XMLAttributes attrs = node.second;
 		if (attrs.find(trgtattr) != attrs.end()) {
 			int entid = xmltoint(attrs[trgtattr]);

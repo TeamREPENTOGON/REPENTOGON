@@ -359,7 +359,7 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 HOOK_METHOD(ItemPool, Init, (unsigned int seed, char* filename)-> void) {
 	PersistentGameData* pgd = g_Manager->GetPersistentGameData();
 	ItemConfig* itmcfg = g_Manager->GetItemConfig();
-	for each (XMLAttributes xml in XMLStuff.ItemData->customachievitems) {
+	for (XMLAttributes const& xml: XMLStuff.ItemData->customachievitems) {
 		int id = toint(xml["id"]);
 		int achid = toint(xml["achievement"]);
 		ItemConfig_Item* entry = itmcfg->GetCollectible(id);
@@ -370,7 +370,7 @@ HOOK_METHOD(ItemPool, Init, (unsigned int seed, char* filename)-> void) {
 			entry->achievementId = achid;
 		}
 	}
-	for each (XMLAttributes xml in XMLStuff.TrinketData->customachievitems) {
+	for (XMLAttributes const& xml: XMLStuff.TrinketData->customachievitems) {
 		int id = toint(xml["id"]);
 		int achid = toint(xml["achievement"]);
 		ItemConfig_Item* entry = itmcfg->GetTrinket(id);
@@ -381,7 +381,7 @@ HOOK_METHOD(ItemPool, Init, (unsigned int seed, char* filename)-> void) {
 			entry->achievementId = achid;
 		}
 	}
-	for each (XMLAttributes xml in XMLStuff.CardData->customachievitems) {
+	for (XMLAttributes const& xml: XMLStuff.CardData->customachievitems) {
 		int id = toint(xml["id"]);
 		int achid = toint(xml["achievement"]);
 		ItemConfig_Card* entry = itmcfg->GetCard(id);
@@ -392,7 +392,7 @@ HOOK_METHOD(ItemPool, Init, (unsigned int seed, char* filename)-> void) {
 			entry->achievementId = achid;
 		}
 	}
-	for each (XMLAttributes xml in XMLStuff.PillData->customachievitems) {
+	for (XMLAttributes const& xml: XMLStuff.PillData->customachievitems) {
 		int id = toint(xml["id"]);
 		int achid = toint(xml["achievement"]);
 		ItemConfig_Pill* entry = itmcfg->GetPillEffects()->at(id); //whatever, not getting GetPill's sig, its pointless

@@ -578,11 +578,11 @@ inline void AddMarkTracker(int achievementid, int marktype, int charaid = -1) {
 }
 
 inline void RunTrackersForMark(int marktype, int charaid = -1) {
-	for each (int achievementid in CompletionMarkListeners[marktype][charaid]) {
+	for (int achievementid: CompletionMarkListeners[marktype][charaid]) {
 		IncreaseAchievementCounter(achievementid);
 	}
 	if (charaid >= 0) {
-		for each (int achievementid in CompletionMarkListeners[marktype][-1]) {
+		for (int achievementid: CompletionMarkListeners[marktype][-1]) {
 			IncreaseAchievementCounter(achievementid);
 		}
 	}
@@ -593,11 +593,11 @@ inline void AddBossDeathTracker(int achievementid, tuple<int, int, int>* boss, i
 }
 
 inline void RunTrackersForBossDeath(tuple<int, int, int>* boss,int charaid = -1) {
-	for each (int achievementid in BossDeathListeners[*boss][0]) {
+	for (int achievementid: BossDeathListeners[*boss][0]) {
 		IncreaseAchievementCounter(achievementid);
 	}
 	if (charaid >= 0) {
-		for each (int achievementid in BossDeathListeners[*boss][-1]) {
+		for (int achievementid: BossDeathListeners[*boss][-1]) {
 			IncreaseAchievementCounter(achievementid);
 		}
 	}
@@ -611,11 +611,11 @@ inline void AddEventCounterTracker(int achievementid,int eventid,int charaid = -
 
 
 inline void RunTrackersForEventCounter(int eventid, int charaid = -1) {
-	for each (int achievementid in EventCounterListeners[eventid][charaid]) {
+	for (int achievementid: EventCounterListeners[eventid][charaid]) {
 		IncreaseAchievementCounter(achievementid);
 	}
 	if (charaid >= 0) {
-		for each (int achievementid in EventCounterListeners[eventid][-1]) {
+		for (int achievementid: EventCounterListeners[eventid][-1]) {
 			IncreaseAchievementCounter(achievementid);
 		}
 	}
@@ -675,7 +675,7 @@ inline void AddAchievCounterTracker(int achievementid, const string& achievs, co
 }
 
 inline void RunTrackersForAchievementCounter(int achievementid) {
-	for each (int toincrease in AchievementListeners[achievementid]) {
+	for (int toincrease: AchievementListeners[achievementid]) {
 		IncreaseAchievementCounter(toincrease);
 	}
 }
@@ -732,7 +732,7 @@ inline void InitAchievs() {
 
 			string achievcond = "";
 			//if (node["conditiontype"] == "achievement") { achievcond += node["conditionvalue"]; }
-			for each (XMLAttributes child in XMLStuff.AchievementData->childs[i]["condition"]) {
+			for (XMLAttributes child: XMLStuff.AchievementData->childs[i]["condition"]) {
 				condid++;
 				Conditionals[-condid] = i;
 				XMLStuff.AchievementData->nodes[-condid] = child;

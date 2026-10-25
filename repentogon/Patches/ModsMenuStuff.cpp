@@ -61,7 +61,7 @@ void SetupEnabledStates() {
 	if (!enabledstatesset) {
 		enabledstatesset = true;
 		ModManager* modman = g_Manager->GetModManager();
-		for each (ModEntry * mod in modman->_mods) {
+		for (ModEntry* mod: modman->_mods) {
 			enabledtstates.push_back(mod->IsEnabled());
 		}
 		modswereenabled = g_Manager->GetOptions()->ModsEnabled();
@@ -71,7 +71,7 @@ void SetupEnabledStates() {
 void RestoreEnabledStates() {
 	ModManager* modman = g_Manager->GetModManager();
 	int i = 0;
-	for each (ModEntry * mod in modman->_mods) {
+	for (ModEntry* mod: modman->_mods) {
 		if (mod->IsEnabled() != enabledtstates[i]) {
 			mod->SetEnabled(enabledtstates[i]);
 			string disablepath = string(&g_ModsDirectory) + mod->GetDir() + "\\disable.it";
@@ -234,7 +234,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 			}
 		if (did) { this->SelectedElement = 0; }
 	
-	for each (ModEntry* mod in modman->_mods) {	
+	for (ModEntry* mod: modman->_mods) {	
 			string order = to_string(i) + ".";
 			string modname = order + mod->GetName();
 			if (mod->IsEnabled()) {
@@ -257,7 +257,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 			lastvalid = actualpos;
 			i++;
 	}
-	for each (ModEntry * mod in modman->_mods) {
+	for (ModEntry* mod: modman->_mods) {
 		string order = to_string(i) + ".";
 		string modname = order + mod->GetName();
 		if (mod->IsEnabled()) {

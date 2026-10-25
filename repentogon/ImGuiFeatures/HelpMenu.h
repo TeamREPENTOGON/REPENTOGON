@@ -171,7 +171,9 @@ struct HelpMenu {
     {
         easterEggGame.InitAfterLanguageAvaliable();
 
-        string controlsPS[7][2] = {
+        constexpr const size_t PS_X = 7;
+        constexpr const size_t PS_Y = 2;
+        string controlsPS[PS_X][PS_Y] = {
             {LANG.HELP_CTRL_PS_DPAD, LANG.HELP_CTRL_PS_DPAD_DESC},
             {LANG.HELP_CTRL_PS_TOUCH, LANG.HELP_CTRL_PS_TOUCH_DESC},
             {LANG.HELP_CTRL_PS_LSTICK, LANG.HELP_CTRL_PS_LSTICK_DESC},
@@ -180,11 +182,16 @@ struct HelpMenu {
             {LANG.HELP_CTRL_PS_CIRCLE, LANG.HELP_CTRL_PS_CIRCLE_DESC},
             {LANG.HELP_CTRL_PS_CROSS, LANG.HELP_CTRL_PS_CROSS_DESC},
         };
-        for each(string entry in controlsPS){
-            this->controlsPS.push_back(entry);
+
+        for (int i = 0; i < PS_X; ++i) {
+            for (int j = 0; j < PS_Y; ++j) {
+                this->controlsPS.push_back(controlsPS[i][j]);
+            }
         }
 
-        string controlsXB[6][2] = {
+        constexpr const size_t XB_X = 6;
+        constexpr const size_t XB_Y = 2;
+        string controlsXB[XB_X][XB_Y] = {
             {LANG.HELP_CTRL_XB_DPAD, LANG.HELP_CTRL_XB_DPAD_DESC},
             {LANG.HELP_CTRL_XB_STICK, LANG.HELP_CTRL_XB_STICK_DESC},
             {LANG.HELP_CTRL_XB_X, LANG.HELP_CTRL_XB_X_DESC},
@@ -192,11 +199,17 @@ struct HelpMenu {
             {LANG.HELP_CTRL_XB_B, LANG.HELP_CTRL_XB_B_DESC},
             {LANG.HELP_CTRL_XB_A, LANG.HELP_CTRL_XB_A_DESC},
         };
-        for each(string entry in controlsXB){
-            this->controlsXB.push_back(entry);
+
+        for (int i = 0; i < XB_X; ++i) {
+            for (int j = 0; j < XB_Y; ++j) {
+                this->controlsXB.push_back(controlsXB[i][j]);
+            }
         }
 
-        string controlsSwitch[6][2] = {
+        constexpr const size_t SWITCH_X = 6;
+        constexpr const size_t SWITCH_Y = 2;
+
+        string controlsSwitch[SWITCH_X][SWITCH_Y] = {
             {LANG.HELP_CTRL_SWITCH_DPAD, LANG.HELP_CTRL_SWITCH_DPAD_DESC},
             {LANG.HELP_CTRL_SWITCH_LSTICK, LANG.HELP_CTRL_SWITCH_LSTICK_DESC},
             {LANG.HELP_CTRL_SWITCH_Y, LANG.HELP_CTRL_SWITCH_Y_DESC},
@@ -204,8 +217,11 @@ struct HelpMenu {
             {LANG.HELP_CTRL_SWITCH_B, LANG.HELP_CTRL_SWITCH_B_DESC},
             {LANG.HELP_CTRL_SWITCH_A, LANG.HELP_CTRL_SWITCH_A_DESC},
         };
-        for each(string entry in controlsSwitch){
-            this->controlsSwitch.push_back(entry);
+
+        for (int i = 0; i < SWITCH_X; ++i) {
+            for (int j = 0; j < SWITCH_Y; ++j) {
+                this->controlsSwitch.push_back(controlsSwitch[i][j]);
+            }
         }
     }
 
@@ -248,7 +264,7 @@ struct HelpMenu {
                     if (ImGui::BeginMenu(LANG.HELP_MENU_CTRL_PLAYSTATION)) {
                         ImGui::Text(LANG.HELP_MENU_CTRL_PLAYSTATION_TEXT);
                         if (ImGui::BeginTable("controls-ps", 2)) {
-                            for each (string entry in controlsPS) {
+                            for (string const& entry: controlsPS) {
                                 ImGui::TableNextColumn();
                                 ImGui::Text(entry.c_str());
                             }
@@ -259,7 +275,7 @@ struct HelpMenu {
                     if (ImGui::BeginMenu(LANG.HELP_MENU_CTRL_XBOX)) {
                         ImGui::Text(LANG.HELP_MENU_CTRL_XBOX_TEXT);
                         if (ImGui::BeginTable("controls-xb", 2)) {
-                            for each (string entry in controlsXB) {
+                            for (string const& entry: controlsXB) {
                                 ImGui::TableNextColumn();
                                 ImGui::Text(entry.c_str());
                             }
@@ -270,7 +286,7 @@ struct HelpMenu {
                     if (ImGui::BeginMenu(LANG.HELP_MENU_CTRL_SWITCH)) {
                         ImGui::Text(LANG.HELP_MENU_CTRL_SWITCH_TEXT);
                         if (ImGui::BeginTable("controls-xb", 2)) {
-                            for each (string entry in controlsSwitch) {
+                            for (string const& entry: controlsSwitch) {
                                 ImGui::TableNextColumn();
                                 ImGui::Text(entry.c_str());
                             }

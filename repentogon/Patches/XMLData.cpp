@@ -455,7 +455,7 @@ HOOK_METHOD(ItemOverlay, Show, (int eOverlayID, int delay, Entity_Player* player
 		if (XMLStuff.GiantBookData->childs.find(eOverlayID) != XMLStuff.GiantBookData->childs.end()) {
 			if (XMLStuff.GiantBookData->childs[eOverlayID].find("layer") != XMLStuff.GiantBookData->childs[eOverlayID].end()) {
 				XMLChilds childs = XMLStuff.GiantBookData->childs[eOverlayID];
-				for each (XMLAttributes  att2 in childs["layer"])
+				for (XMLAttributes const& att2: childs["layer"])
 				{
 					if (att2.find("name") != att.end()) {
 						for (int i = sprite->GetLayerCount() - 1; i >= 0; i--) {
@@ -2044,7 +2044,7 @@ char * rootnodename(char* a) {
 
 void UpdateOddXMLSourceData()
 {
-	for each (auto & att in XMLStuff.CurseData->nodes)
+	for (auto& att: XMLStuff.CurseData->nodes)
 	{
 		XMLAttributes node = att.second;
 		ModEntry* mod = GetModEntryByContentPath(node["sourcepath"]);
@@ -2207,10 +2207,10 @@ bool Lua_PushXMLSubNodes(lua_State* L, vector<XMLAttributes> node)
 {
 	lua_newtable(L);
 	int count = 1;
-	for each (const XMLAttributes & elem in node)
+	for (const XMLAttributes& elem: node)
 	{
 		lua_newtable(L);
-		for each (const auto & att in elem)
+		for (const auto& att: elem)
 		{
 			//ZHL::Log("attr: %s / %s \n", att.first.c_str(), att.second.c_str());
 			lua_pushstring(L, att.first.c_str());
@@ -2226,14 +2226,14 @@ bool Lua_PushXMLNode(lua_State* L, XMLAttributes node, unordered_map<string, vec
 {
 	if (node.end() == node.begin()) { lua_pushnil(L); return false; }
 	lua_newtable(L);
-	for each (const auto & att in node)
+	for (const auto& att: node)
 	{
 		//ZHL::Log("attr: %s / %s \n", att.first.c_str(), att.second.c_str());
 		lua_pushstring(L, att.first.c_str());
 		lua_pushstring(L, att.second.c_str());
 		lua_settable(L, -3);
 	}
-	for each (const auto & att in childs)
+	for (const auto& att: childs)
 	{
 		//ZHL::Log("---childattr: %s / %s \n", att.first.c_str(), att.first.c_str());
 		lua_pushstring(L, att.first.c_str());
