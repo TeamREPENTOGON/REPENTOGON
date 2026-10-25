@@ -22,7 +22,7 @@ GridEntitiesSaveStateVectorMT = {
     Clear = function(self)
         local first = ffi.getprivate(self, "First")
         for i = 0, GetSize(self) - 1 do
-            first[i].Type = 0
+            ffi.getprivate(first, i).Type = 0
         end
     end,
     Get = function(self, index)
@@ -30,7 +30,7 @@ GridEntitiesSaveStateVectorMT = {
         if index < 0 or index >= GetSize(self) then
             ffichecks.argerror(1, string.format("invalid index for Get(): %d", index))
         end
-        return ffi.getprivate(self, "First") + index
+        return ffi.ptradd(ffi.getprivate(self, "First"), index)
     end,
     GetByType = function(self, type)
         type = ffichecks.checkinteger(1, type)
@@ -38,8 +38,8 @@ GridEntitiesSaveStateVectorMT = {
         local result = {}
         local first = ffi.getprivate(self, "First")
         for i = 0, GetSize(self) - 1 do
-            if first[i].Type == type then
-                result[#result + 1] = first + i
+            if ffi.getprivate(first, i).Type == type then
+                result[#result + 1] = ffi.ptradd(first, i)
             end
         end
         return result

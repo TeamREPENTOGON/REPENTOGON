@@ -15,13 +15,13 @@ local function FindAnimationFrame(layer, frame)
     local frames = ffi.getprivate(layer, "AnimFrames")
     local count = ffi.getprivate(layer, "FrameCount")
     for i = 0, count - 1 do
-        local animationFrame = frames[i]
+        local animationFrame = ffi.getprivate(frames, i)
         if frame >= animationFrame:GetStartFrame() and frame < animationFrame:GetEndFrame() then
             return animationFrame
         end
     end
     -- Return the last frame.
-    return frames[count - 1]
+    return ffi.getprivate(frames, count - 1)
 end
 
 

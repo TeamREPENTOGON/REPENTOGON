@@ -62,7 +62,7 @@ function EffectListMT:Get(idx)
     idx = ffichecks.checknumber(2, idx)
     local n = el_size(self)
     if idx < 0 or idx >= n then return nil end
-    local result = ffi.getprivate(self, "_begin") + idx return result
+    local result = ffi.ptradd(ffi.getprivate(self, "_begin"), idx) return result
 end
 
 ffi.metatype("struct EffectList", EffectListMT)

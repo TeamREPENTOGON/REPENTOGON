@@ -113,14 +113,14 @@ SpriteMT = {
     GetAllAnimationData = function(self)
         local ret = {}
         for i = 0, ffi.getprivate(self, "AnimCount") - 1 do
-            table.insert(ret, ffi.getprivate(self, "AnimationData")[i])
+            table.insert(ret, ffi.getprivate(ffi.getprivate(self, "AnimationData"), i))
         end
         return ret
     end,
     GetAllLayers = function(self)
         local ret = {}
         for i = 0, ffi.getprivate(self, "LayerCount") - 1 do
-            table.insert(ret, ffi.getprivate(self, "LayerState")[i])
+            table.insert(ret, ffi.getprivate(ffi.getprivate(self, "LayerState"), i))
         end
         return ret
     end,

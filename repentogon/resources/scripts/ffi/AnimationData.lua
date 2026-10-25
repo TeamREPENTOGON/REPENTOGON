@@ -57,7 +57,7 @@ AnimationDataMT = {
         layer = ffichecks.checkinteger(1, layer)
         local layers = ffi.getprivate(self, "AnimationLayers")
         if not ffichecks.isnullptr(layers) and layer >= 0 and layer < ffi.getprivate(self, "LayerCount") then
-            local result = ffi.cast("const struct AnimationLayer*", layers + layer) return result
+            local result = ffi.cast("const struct AnimationLayer*", ffi.ptradd(layers, layer)) return result
         end
         return nil
     end,

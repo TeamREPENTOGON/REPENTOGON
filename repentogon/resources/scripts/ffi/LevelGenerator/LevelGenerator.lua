@@ -22,7 +22,7 @@ local function GetRooms(self, indicesFirst, indicesLast)
     local first = ffi.getprivate(self, indicesFirst)
     local result = {}
     for i = 0, ffichecks.vectorsize(first, ffi.getprivate(self, indicesLast), ffi.sizeof("int")) - 1 do
-        result[i + 1] = rooms + first[i]
+        result[i + 1] = ffi.ptradd(rooms, first[i])
     end
     return result
 end
@@ -34,7 +34,7 @@ LevelGeneratorMT = {
         local first = ffi.getprivate(self, "RoomsFirst")
         local result = {}
         for i = 0, ffichecks.vectorsize(first, ffi.getprivate(self, "RoomsLast"), ffi.sizeof("struct LevelGeneratorRoom")) - 1 do
-            result[i + 1] = first + i
+            result[i + 1] = ffi.ptradd(first, i)
         end
         return result
     end,

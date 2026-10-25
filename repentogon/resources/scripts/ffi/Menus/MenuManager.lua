@@ -30,12 +30,12 @@ MenuManager = {
     GetColorModifierLerpAmount = function()
         ffichecks.checkmainmenu("MenuManager")
         local p = repentogon.L_MenuManager_GetColorModifierLerpAmount();
-        local result = ffi.new("struct ColorModifier", p[0]) return result
+        local result = ffi.new("struct ColorModifier", ffi.getprivate(p, 0)) return result
     end,
     GetCurrentColorModifier = function()
         ffichecks.checkmainmenu("MenuManager")
         local p = repentogon.L_MenuManager_GetCurrentColorModifier()
-        local result = ffi.new("struct ColorModifier", p[0]) return result
+        local result = ffi.new("struct ColorModifier", ffi.getprivate(p, 0)) return result
     end,
     GetInputMask = function()
         ffichecks.checkmainmenu("MenuManager")
@@ -52,7 +52,7 @@ MenuManager = {
     GetTargetColorModifier = function()
         ffichecks.checkmainmenu("MenuManager")
         local p = repentogon.L_MenuManager_GetTargetColorModifier();
-        local result = ffi.new("struct ColorModifier", p[0]) return result
+        local result = ffi.new("struct ColorModifier", ffi.getprivate(p, 0)) return result
     end,
     GetViewPosition = function()
         ffichecks.checkmainmenu("MenuManager")

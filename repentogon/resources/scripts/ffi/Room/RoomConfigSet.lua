@@ -353,7 +353,7 @@ RoomConfigSetMT = {
         if vanillaSet then
             local vanillaSize = ffi.getprivate(vanillaSet, "Count")
             if index < vanillaSize then
-                return ffi.getprivate(vanillaSet, "Configs") + index
+                return ffi.ptradd(ffi.getprivate(vanillaSet, "Configs"), index)
             end
             index = index - vanillaSize
         end

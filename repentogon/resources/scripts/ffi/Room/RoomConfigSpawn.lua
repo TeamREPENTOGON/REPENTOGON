@@ -34,7 +34,7 @@ end
 function RoomConfigSpawnsMT:Get(idx)
     idx = ffichecks.checkinteger(1, idx)
     if idx < 0 or idx >= el_size(self) then return nil end
-    return ffi.getprivate(self, "_begin") + idx
+    return ffi.ptradd(ffi.getprivate(self, "_begin"), idx)
 end
 
 ffi.metatype("struct RoomConfigSpawns", RoomConfigSpawnsMT)

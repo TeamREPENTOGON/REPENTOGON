@@ -67,7 +67,7 @@ local function CopyItems(self, filter)
     local first = ffi.getprivate(self, "First")
     local result = {}
     for i = 0, ffichecks.vectorsize(first, ffi.getprivate(self, "Last"), ffi.sizeof(HistoryItemT)) - 1 do
-        local item = first[i]
+        local item = ffi.getprivate(first, i)
         if not filter or filter(item) then
             result[#result + 1] = HistoryItemT(item)
         end

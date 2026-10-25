@@ -66,7 +66,7 @@ end
 function RoomDescriptorListMT:Get(idx)
     idx = ffichecks.checkinteger(1, idx)
     if idx < 0 or idx >= rdl_size(self) then return nil end
-    return ffi.getprivate(self, "_data") + idx
+    return ffi.ptradd(ffi.getprivate(self, "_data"), idx)
 end
 
 ffi.metatype("struct RoomDescriptorList", RoomDescriptorListMT)
