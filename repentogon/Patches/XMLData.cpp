@@ -457,7 +457,7 @@ HOOK_METHOD(ItemOverlay, Show, (int eOverlayID, int delay, Entity_Player* player
 		if (XMLStuff.GiantBookData->childs.find(eOverlayID) != XMLStuff.GiantBookData->childs.end()) {
 			if (XMLStuff.GiantBookData->childs[eOverlayID].find("layer") != XMLStuff.GiantBookData->childs[eOverlayID].end()) {
 				XMLChilds childs = XMLStuff.GiantBookData->childs[eOverlayID];
-				for (XMLAttributes const& att2: childs["layer"])
+				for (XMLAttributes& att2: childs["layer"])
 				{
 					if (att2.find("name") != att.end()) {
 						for (int i = sprite->GetLayerCount() - 1; i >= 0; i--) {
