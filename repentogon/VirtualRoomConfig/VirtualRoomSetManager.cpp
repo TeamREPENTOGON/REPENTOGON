@@ -621,7 +621,7 @@ int Lua_AddLuaRooms(lua_State* L, size_t id, int tableIndex)
 	bool isVanilla = is_vanilla_set(id);
 	if (isVanilla)
 	{
-		auto& vanillaId = id_to_stage_mode(id);
+		auto&& vanillaId = id_to_stage_mode(id);
 		stageId = vanillaId.first;
 		mode = vanillaId.second;
 		init_vanilla_room_set(stageId, mode);
@@ -648,7 +648,7 @@ int Lua_AddStbRooms(lua_State* L, size_t id, const std::string& filename)
 	bool isVanilla = is_vanilla_set(id);
 	if (isVanilla)
 	{
-		auto& vanillaId = id_to_stage_mode(id);
+		auto&& vanillaId = id_to_stage_mode(id);
 		stageId = vanillaId.first;
 		mode = vanillaId.second;
 		init_vanilla_room_set(stageId, mode);
@@ -1039,21 +1039,21 @@ static bool ReadDB(const std::string& filePath, uint32_t gameChecksum, RestoreRo
 		return false;
 	}
 
-	auto& json_version = LogUtility::Json::ReadIntegerMember<uint32_t>(doc, "Version", logContext, false); if (!json_version) { return false; }
+	auto const& json_version = LogUtility::Json::ReadIntegerMember<uint32_t>(doc, "Version", logContext, false); if (!json_version) { return false; }
 	if (json_version.value() != DB_VERSION)
 	{
 		ZHL::Log(LOG_ERROR_HEADER "version mismatch (current: %u, save: %u)\n", DB_VERSION, json_version.value());
 		return false;
 	}
 
-	auto& json_checksum = LogUtility::Json::ReadIntegerMember<uint32_t>(doc, "Checksum", logContext, false); if (!json_checksum) { return false; }
+	auto const& json_checksum = LogUtility::Json::ReadIntegerMember<uint32_t>(doc, "Checksum", logContext, false); if (!json_checksum) { return false; }
 	if (json_checksum.value() != gameChecksum)
 	{
 		ZHL::Log(LOG_ERROR_HEADER "checksum mismatch (current: %u, save: %u)\n", gameChecksum, json_checksum.value());
 		return false;
 	}
 
-	auto& json_rooms = LogUtility::Json::GetArrayMember(doc, "Rooms", logContext, false); if (!json_rooms) { return false; } // treat this missing as a parse fail
+	auto const& json_rooms = LogUtility::Json::GetArrayMember(doc, "Rooms", logContext, false); if (!json_rooms) { return false; } // treat this missing as a parse fail
 
 	// deserialize rooms
 	const auto& json_roomsArray = json_rooms.value()->GetArray();
