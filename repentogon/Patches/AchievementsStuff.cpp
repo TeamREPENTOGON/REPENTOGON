@@ -598,9 +598,11 @@ HOOK_METHOD(Menu_Stats, Render, () -> void) {
 		float y = 100;
 		this->_cursorLeftSprite._scale = Vector(0.5, 0.5);
 		this->_cursorLeftSprite._rotation = 90;
-		this->_cursorLeftSprite.Render(&(offset + Vector(192- txtwidth, 8)), &z, &z);
+		Vector position = offset + Vector(192 - txtwidth, 8);
+		this->_cursorLeftSprite.Render(&position, &z, &z);
 		this->_cursorLeftSprite._rotation = -90;
-		this->_cursorLeftSprite.Render(&(offset + Vector(205+ txtwidth, 4)), &z, &z);
+		position = offset + Vector(205 + txtwidth, 4);
+		this->_cursorLeftSprite.Render(&position, &z, &z);
 		this->_cursorLeftSprite._rotation = 0;
 		this->_cursorLeftSprite._scale = Vector(1, 1);
 	}

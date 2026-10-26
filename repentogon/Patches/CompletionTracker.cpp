@@ -963,7 +963,8 @@ HOOK_METHOD(PauseScreen, Render, () -> void) {
 				mainsprite._animState.GetNullFrameByID(0) != 0x0)
 			{
 				cmpl->CharacterId = playertype;
-				cmpl->Render(&Vector((g_WIDTH * 0.6f) + widgtpos->x, (g_HEIGHT * 0.5f) + widgtpos->y), widgtscale);
+				Vector position(g_WIDTH * 0.6f + widgtpos->x, g_HEIGHT * 0.5f + widgtpos->y);
+				cmpl->Render(&position, widgtscale);
 			}
 		}
 		// PauseScreen class doesn't seem to handle this in REP+? Uncertain
@@ -992,7 +993,9 @@ HOOK_METHOD(Menu_Character, Render, () -> void) {
 		array marks = GetMarksForPlayer(playertype, anm, true, &hidemarks);
 		if (!hidemarks) {
 			cmpl->CharacterId = playertype;
-			cmpl->Render(&Vector(ref->x + 80, ref->y + 860), &Vector(1, 1));
+			Vector position(ref->x + 80, ref->y + 860);
+			Vector one(1, 1);
+			cmpl->Render(&position, &one);
 		}
 
 	}
