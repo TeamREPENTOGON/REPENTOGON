@@ -32,7 +32,7 @@ using namespace rapidxml;
 using namespace std;
 
 ANM2* pathCheckanm2 = new ANM2();
-char* bosspoolsxml; //caching this ffs
+// char* bosspoolsxml; //caching this ffs
 char* fxlayerssxml; //caching this ffs
 bool itempoolerror = false;
 bool xmlsloaded = false;
@@ -44,7 +44,8 @@ char* lastmodid = "BaseGame";
 bool didoddxmlpatch = false;
 bool iscontent = false;
 bool isitemmetadata = false;
-bool no = false;
+// bool no = false;
+
 vector<string> xmlerrors;
 string currpath;
 
@@ -1252,7 +1253,7 @@ int XMLLocust::AssignId(XMLAttributes& locust, const bool isContent) {
 
 bool initedxmlenums = false;
 void ProcessXmlNode(xml_node<char>* node,bool force = false) {
-	if (!force && (!node || no || xmlsloaded)) { return; }
+	if (!force && (!node || xmlsloaded)) { return; }
 	if (queuedhackyxmlvalue > 0) { return; }
 	//clock_t tStart = clock();
 	//if (currpath.length() > 0) { ZHL::Log("Loading: %s \n", currpath.c_str()); }
@@ -1449,6 +1450,13 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 		daddy = node;
 		babee = node->first_node();
 		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
+			// The game does not load excess sounds, so skip them here too.
+			if (std::string(lastmodid) == "BaseGame") {
+				auto* idAttr = auxnode->first_attribute("id");
+				if (idAttr && std::atoi(idAttr->value()) >= 915) {
+					break;
+				}
+			}
 			XMLStuff.SoundData->CreateAndAddNode(*auxnode, daddy, currpath, iscontent, lastmodid);
 			XMLStuff.ModData->sounds[lastmodid] += 1;
 		}
@@ -3079,7 +3087,7 @@ char* BuildModdedSta(char* xml) {
 }
 
 char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch) {
-	if (no) {return xml;}
+	// if (no) {return xml;}
 	//resources
 	if (needsresourcepatch) {
 		for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
@@ -3157,55 +3165,56 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 				xml_document<char>* resourcesdoc = new xml_document<char>();
 				if (GetContent(contentsdir, resourcesdoc)) {
 					xml_node<char>* resourcescroot = resourcesdoc->first_node();
-						if (filename == "bosspools.xml") {
-							for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
-								XMLAttributes node;
-								for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
-								{
-									node[stringlower(attr->name())] = string(attr->value());
-								}
-								xml_node<char>* tocopy = find_child(root, auxnode->name(), "name", node["name"]);
-								if ((tocopy == NULL) || (tocopy->first_attribute("name")->value() != node["name"])) {
-									xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
-									xml_attribute<char>* sourceid = new xml_attribute<char>();
-									sourceid->name("sourceid");
-									sourceid->value(lastmodid.c_str());
-									clonedNode->append_attribute(sourceid);
-									root->append_node(clonedNode);
-								}
-								else {
-									for (xml_node<char>* auxchild = auxnode->first_node(); auxchild; auxchild = auxchild->next_sibling()) {
-										xml_node<char>* clonedNode = xmldoc->clone_node(auxchild);
-										xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
-										tocopy->append_node(clonedNode);
-									}
+					if (filename == "bosspools.xml") {
+						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+							XMLAttributes node;
+							for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+							{
+								node[stringlower(attr->name())] = string(attr->value());
+							}
+							xml_node<char>* tocopy = find_child(root, auxnode->name(), "name", node["name"]);
+							if ((tocopy == NULL) || (tocopy->first_attribute("name")->value() != node["name"])) {
+								xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
+								xml_attribute<char>* sourceid = new xml_attribute<char>();
+								sourceid->name("sourceid");
+								sourceid->value(lastmodid.c_str());
+								clonedNode->append_attribute(sourceid);
+								root->append_node(clonedNode);
+							}
+							else {
+								for (xml_node<char>* auxchild = auxnode->first_node(); auxchild; auxchild = auxchild->next_sibling()) {
+									xml_node<char>* clonedNode = xmldoc->clone_node(auxchild);
+									xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
+									tocopy->append_node(clonedNode);
 								}
 							}
-						} else if (filename == "stringtable.sta") {
-							for (xml_node<char>* auxnode = resourcescroot->first_node("category"); auxnode; auxnode = auxnode->next_sibling()) {
-								XMLAttributes node;
-								for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
-								{
-									node[stringlower(attr->name())] = string(attr->value());
-								}
-								xml_node<char>* tocopy = find_child(root, auxnode->name(), "name", node["name"]);
-								if ((tocopy == NULL) || (tocopy->first_attribute("name")->value() != node["name"])) {
-									xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
-									xml_attribute<char>* sourceid = new xml_attribute<char>();
-									sourceid->name("sourceid");
-									sourceid->value(lastmodid.c_str());
-									clonedNode->append_attribute(sourceid);
-									root->append_node(clonedNode);
-								}
-								else {
-									for (xml_node<char>* auxchild = auxnode->first_node(); auxchild; auxchild = auxchild->next_sibling()) {
-										xml_node<char>* clonedNode = xmldoc->clone_node(auxchild);
-										xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
-										tocopy->append_node(clonedNode);
-									}
+						}
+					} else if (filename == "stringtable.sta") {
+						for (xml_node<char>* auxnode = resourcescroot->first_node("category"); auxnode; auxnode = auxnode->next_sibling()) {
+							XMLAttributes node;
+							for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+							{
+								node[stringlower(attr->name())] = string(attr->value());
+							}
+							xml_node<char>* tocopy = find_child(root, auxnode->name(), "name", node["name"]);
+							if ((tocopy == NULL) || (tocopy->first_attribute("name")->value() != node["name"])) {
+								xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
+								xml_attribute<char>* sourceid = new xml_attribute<char>();
+								sourceid->name("sourceid");
+								sourceid->value(lastmodid.c_str());
+								clonedNode->append_attribute(sourceid);
+								root->append_node(clonedNode);
+							}
+							else {
+								for (xml_node<char>* auxchild = auxnode->first_node(); auxchild; auxchild = auxchild->next_sibling()) {
+									xml_node<char>* clonedNode = xmldoc->clone_node(auxchild);
+									xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
+									tocopy->append_node(clonedNode);
 								}
 							}
-					}else if (filename == "bossportraits.xml") {
+						}
+					}
+					else if (filename == "bossportraits.xml") {
 						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
 							xml_attribute<char>* sourceid = new xml_attribute<char>();sourceid->name("sourceid");sourceid->value(lastmodid.c_str());clonedNode->append_attribute(sourceid);
@@ -3435,43 +3444,96 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 char* ParseModdedXMLAttributes(char* xml, const string& filename) {
 	//if (no) { return xml; }
 	int did = 0;
-	xml_document<char>* xmldoc = new xml_document<char>();
-	if (XMLParse(xmldoc, xml, filename)) {
+	auto xmldoc = make_unique<xml_document<char>>();
+	if (XMLParse(xmldoc.get(), xml, filename)) {
 		xml_node<char>* root = xmldoc->first_node();
-			if (filename == "players.xml") {
+		if (filename == "players.xml") {
+			for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+				did += MultiValXMLParamParse(auxnode, xmldoc.get(), XMLStuff.ItemData, "items");
+				did += SingleValXMLParamParse(auxnode, xmldoc.get(), XMLStuff.ItemData, "pocketActive");
+				did += SingleValXMLParamParse(auxnode, xmldoc.get(), XMLStuff.TrinketData, "trinket");
+				did += SingleValXMLParamParse(auxnode, xmldoc.get(), XMLStuff.CardData, "card");
+			}
+		} else if (filename == "challenges.xml") {
+			for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+				did += SingleValXMLParamParse(auxnode, xmldoc.get(), XMLStuff.PlayerData, "playertype");
+				did += MultiValXMLParamParse(auxnode, xmldoc.get(), XMLStuff.ItemData, "startingitems");
+				did += MultiValXMLParamParse(auxnode, xmldoc.get(), XMLStuff.ItemData, "startingitems2");
+				did += MultiValXMLParamParse(auxnode, xmldoc.get(), XMLStuff.TrinketData, "startingtrinkets");
+				did += SingleValXMLParamParse(auxnode, xmldoc.get(), XMLStuff.CardData, "startingcard");
+				did += MultiValXMLParamParse(auxnode, xmldoc.get(), XMLStuff.AchievementData, "achievements");
+				did += SingleValXMLParamParse(auxnode, xmldoc.get(), XMLStuff.AchievementData, "unlockachievement");
+			}
+		} else if (filename == "pocketitems.xml") {
+			for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+				did += SingleValXMLParamParse(auxnode, xmldoc.get(), XMLStuff.AchievementData, "achievement");
+			}
+		} else if (filename == "items.xml") {
+			if (string(lastmodid) != "BaseGame") {
 				for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
-					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.ItemData, "items");
-					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.ItemData, "pocketActive");
-					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.TrinketData, "trinket");
-					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.CardData, "card");
+					did += SingleValXMLParamParse(auxnode, xmldoc.get(), XMLStuff.AchievementData, "achievement");
 				}
-			} else if (filename == "challenges.xml") {
-				for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
-					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.PlayerData, "playertype");
-					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.ItemData, "startingitems");
-					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.ItemData, "startingitems2");
-					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.TrinketData, "startingtrinkets");
-					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.CardData, "startingcard");
-					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.AchievementData, "achievements");
-					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.AchievementData, "unlockachievement");
+			} else {
+				// Some extra validations and potential truncation for the resources items.xml
+				// TODO: This should probably be done somewhere else, but I put it here for now to avoid an extra iteration and possible memory leak.
+				// The ideal thing to do would probably be to restructure all of the in-place XML modifications to be more generic/dynamic
+				// and less memory leaky, but bluh not right now... Mainly just looking to prevent crashes caused by the .17 items.xml
+				bool correctItems = false;
+				bool correctTrinkets = false;
+				bool correctNulls = isitemmetadata;
+
+				rapidxml::xml_node<>* root = xmldoc->first_node("items");
+				rapidxml::xml_node<>* auxnode = root->first_node();
+				while (auxnode) {
+					rapidxml::xml_node<>* nextnode = auxnode->next_sibling();
+
+					const std::string type = auxnode->name();
+					auto* idAttr = auxnode->first_attribute("id");
+					const int id = idAttr ? std::atoi(idAttr->value()) : 0;
+
+					bool isCollectible = type == "active" || type == "passive" || type == "familiar" || type == "item";
+					bool isTrinket = type == "trinket";
+					bool isNull = !isCollectible && !isTrinket;
+
+					constexpr int MAX_COLLECTIBLE = NUM_COLLECTIBLES - 1;
+					constexpr int MAX_TRINKET = NUM_TRINKETS - 1;
+					constexpr int MAX_NULL = 131;
+
+					if (isCollectible && id == MAX_COLLECTIBLE) {
+						correctItems = true;
+					}
+					if (isTrinket && id == MAX_TRINKET) {
+						correctTrinkets = true;
+					}
+					if (isNull && id == MAX_NULL) {
+						correctNulls = true;
+					}
+
+					if ((isCollectible && id > MAX_COLLECTIBLE) || (isTrinket && id > MAX_TRINKET) || (isNull && id > MAX_NULL)) {
+						auto* nameAttr = auxnode->first_attribute("name");
+						const std::string name = nameAttr ? nameAttr->value() : "";
+						KAGE::_LogMessage(2, "Ignoring invalid `resources/items.xml` node: <%s id=\"%d\" name=\"%s\" ...\n", type.c_str(), id, name.c_str());
+						root->remove_node(auxnode);
+						did++;
+					} else {
+						did += SingleValXMLParamParse(auxnode, xmldoc.get(), XMLStuff.AchievementData, "achievement");
+					}
+
+					auxnode = nextnode;
 				}
-			} else if (filename == "pocketitems.xml") {
-				for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
-					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.AchievementData, "achievement");
-				}
-			} else if (filename == "items.xml") {
-				for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
-					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.AchievementData, "achievement");
+
+				if (!correctItems || !correctTrinkets || !correctNulls) {
+					KAGE::_LogMessage(2, "Detected malformed/outdated `resources/items.xml`!\n");
 				}
 			}
-			if (did > 0) { //so it doesnt do all this shit if nothing needed to be parsed
-				ostringstream modifiedXmlStream;
-				modifiedXmlStream << *xmldoc;
-				delete xmldoc;
-				string modifiedXml = modifiedXmlStream.str();
-				xml = new char[modifiedXml.length() + 1];
-				std::strcpy(xml, modifiedXml.c_str());
-			}
+		}
+		if (did > 0) { //so it doesnt do all this shit if nothing needed to be parsed
+			ostringstream modifiedXmlStream;
+			modifiedXmlStream << *xmldoc;
+			string modifiedXml = modifiedXmlStream.str();
+			xml = new char[modifiedXml.length() + 1];
+			std::strcpy(xml, modifiedXml.c_str());
+		}
 	}
 	//if (did) {ZHL::Log("s: %s \n", xml);}
 	return xml;
@@ -3626,7 +3688,7 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		else if (charfind(xmldata, "<chal", 50)) {
 			xmldata = ParseModdedXMLAttributes(xmldata, "challenges.xml");
 		}
-		else if (charfind(xmldata, "<item", 50)) {
+		else if (charfind(xmldata, "<items", 50)) {
 			xmldata = ParseModdedXMLAttributes(xmldata, "items.xml");
 		}
 		else if (charfind(xmldata, "<pock", 50)) {

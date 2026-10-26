@@ -145,7 +145,8 @@ HOOK_METHOD(Menu_Game, UnknownJoinLobby, (int unk1, int unk2, int unk3) -> void)
 }
 
 //Prints log message about redirected configs
-HOOK_METHOD(ModManager, TryRedirectPath, (std_string* result, std_string* filePath) -> void) {
+//Priority is to avoid getting **cked by the REPENTOGONFileMap
+HOOK_METHOD_PRIORITY(ModManager, TryRedirectPath, -1, (std_string* result, std_string* filePath) -> void) {
 	super(result, filePath);
 
 	auto suffixRes = [](std::string s) {
