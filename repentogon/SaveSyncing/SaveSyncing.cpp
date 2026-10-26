@@ -387,7 +387,7 @@ void TryInitRepentogonSaveFile(const int slot) {
 
 	syncStatus.ClearChecksum(SyncStatus::GetKey(slot, /*isRepentogon=*/true));
 
-	ZHL::Log("[SaveSyncing] Initializing REPENTOGON save file for slot %d @ %s\n", slot, rgonPath);
+	ZHL::Log("[SaveSyncing] Initializing REPENTOGON save file for slot %d @ %s\n", slot, rgonPath.c_str());
 	
 	// Start by initializing the PersistentGameData normally, importing from a previous DLC if available (Repentance, AB+, etc)
 	{

@@ -74,7 +74,7 @@ void SaveAchieveemntsToJson() {
 
 	ofstream ofs(achivjsonpath);
 	ofs << buffer.GetString() << std::endl;
-	logViewer.AddLog("[REPENTOGON]", "Achievements saved to : % s \n", achivjsonpath.c_str());
+	logViewer.AddLog("[REPENTOGON]", "Achievements saved to : %s \n", achivjsonpath.c_str());
 }
 
 void LoadAchievementsFromJson() {
