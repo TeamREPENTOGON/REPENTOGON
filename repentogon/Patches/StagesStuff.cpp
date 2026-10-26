@@ -183,22 +183,20 @@ HOOK_METHOD(RoomConfig, LoadStages, (char* xmlpath)-> void) {
 
 
 tuple<int, int> ConsoleStageIdToTuple(const string& input) {
-	string* numberPart = new string("");
+	string numberPart;
 	int letterValue = 0;
 	for (char c : input) {
 		if (isdigit(c)) {
-			*numberPart += c;
+			numberPart += c;
 		}
 		else {
 			if (isalpha(c)) {
-				int x = toint(*numberPart);
-				delete numberPart;
+				int x = toint(numberPart);
 				return { x ,c - 'a' + 1 };
 			}
 		}
 	}
-	int y = toint(*numberPart);
-	delete numberPart;
+	int y = toint(numberPart);
 	return { y ,0 };
 }
 
