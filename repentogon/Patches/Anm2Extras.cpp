@@ -25,7 +25,8 @@ namespace {
 HOOK_METHOD(PauseScreen, Show, ()-> void) {
 		if (!this->mainsprite.GetLayer("Invite")) {
 			g_Game->GetConsole()->PrintError("A custom Pause menu ANM2 is not compatible with Repentance+ and has not been loaded, check your Pause Menu related mods!.");
-			this->mainsprite.Load(REPENTOGON::GetRGONGfxAbsolutePath("gfx/ui/pausescreen.anm2"), true);
+			std::string path = REPENTOGON::GetRGONGfxAbsolutePath("gfx/ui/pausescreen.anm2");
+			this->mainsprite.Load(path, true);
 		}
 	super();
 	return;

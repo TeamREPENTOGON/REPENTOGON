@@ -295,12 +295,13 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 			undopop.Load(dir, true);
 			undopop.LoadGraphics(true);
 		}
+		std::string undoPop("UndoPop");
 		if (g_MenuControllerIndex > 0) {
-			undopop.SetFrame(&string("UndoPop"), 1);
+			undopop.SetFrame(&undoPop, 1);
 			undopop.Update();
 		}
 		else {
-			undopop.SetFrame(&string("UndoPop"), 0);
+			undopop.SetFrame(&undoPop, 0);
 			undopop.Update();
 		}
 
@@ -342,7 +343,8 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 		}
 		super(); //sorry!
 		if (g_MenuControllerIndex > 0) {
-			g_Manager->_buttonsSprite.SetFrame(&string("XboxOne"), 3);//you cant be fucking serious, i keep forgetting frame is a fucking float!
+			std::string xbox1("XboxOne");
+			g_Manager->_buttonsSprite.SetFrame(&xbox1, 3);//you cant be fucking serious, i keep forgetting frame is a fucking float!
 			g_Manager->_buttonsSprite.SetLayerFrame(0, 3);
 			g_Manager->_buttonsSprite.Update();
 			g_Manager->_buttonsSprite.Render(&tabbtnpos, &z, &z);

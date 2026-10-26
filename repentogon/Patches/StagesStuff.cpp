@@ -218,7 +218,8 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 				//super(in, out, player); //we still run it just in case I dunno, does nothing anyway
 				setstageoverloadid = get<0>(id);
 				setstageoverloadalt = get<1>(id);
-				g_Game->GetConsole()->RunCommand(string("stage 1"), out, player);
+				std::string cmd("stage 1");
+				g_Game->GetConsole()->RunCommand(cmd, out, player);
 				return;
 			}
 		}

@@ -443,12 +443,14 @@ HOOK_METHOD(ItemOverlay, Show, (int eOverlayID, int delay, Entity_Player* player
 		ANM2* sprite = this->GetSprite();
 		XMLAttributes att = XMLStuff.GiantBookData->GetNodeById(eOverlayID);
 		if (att.find("anm2") != att.end()) {
-			sprite->Load(att["anm2root"] + att["anm2"],true);
+			std::string path = att["anm2root"] + att["anm2"];
+			sprite->Load(path, true);
 			sprite->LoadGraphics(true);
 			sprite->Update();
 		}
 		if (att.find("gfx") != att.end()) {
-			sprite->ReplaceSpritesheet(0, att["anm2root"] + att["gfx"]);
+			std::string path = att["anm2root"] + att["gfx"];
+			sprite->ReplaceSpritesheet(0, path);
 			sprite->LoadGraphics(true);
 			sprite->Update();
 		}
@@ -534,7 +536,8 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 			int id = stoi(cmdlets[1]);
 			if (id > 26) {
 				hijackedcutscene = id;
-				super(std::string("cutscene 1"), out, player);
+				std::string c1("cutscene 1");
+				super(c1, out, player);
 				return;
 			}
 		}

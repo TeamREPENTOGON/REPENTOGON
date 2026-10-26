@@ -182,20 +182,24 @@ void ReplaceAchievementSprite(ANM2* AchievPop, int achieveemntid) {
 		//AchievPop->LoadGraphics(true);
 	//}
 	if (modachiev.find("gfxback") != modachiev.end()) {
-		AchievPop->ReplaceSpritesheet(2, modachiev["gfxroot"] + modachiev["gfxback"]);
+		std::string path = modachiev["gfxroot"] + modachiev["gfxback"];
+		AchievPop->ReplaceSpritesheet(2, path);
 		AchievPop->LoadGraphics(true);
 	}
 	else {
-		AchievPop->ReplaceSpritesheet(2, string("gfx/ui/achievement/paper.png"));
+		std::string path("gfx/ui/achievement/paper.png");
+		AchievPop->ReplaceSpritesheet(2, path);
 		AchievPop->LoadGraphics(true);
 	}
 	PersistentGameData* pgd = g_Manager->GetPersistentGameData();
 	if (pgd->Unlocked(achieveemntid)) {
-		AchievPop->ReplaceSpritesheet(3, modachiev["gfxroot"] + modachiev["gfx"]);
+		std::string path = modachiev["gfxroot"] + modachiev["gfx"];
+		AchievPop->ReplaceSpritesheet(3, path);
 		AchievPop->LoadGraphics(true);
 		AchievPop->Update();
 	}else{
-		AchievPop->ReplaceSpritesheet(3, string("gfx/ui/achievement/achievement_locked.png"));
+		std::string path("gfx/ui/achievement/achievement_locked.png");
+		AchievPop->ReplaceSpritesheet(3, path);
 		AchievPop->LoadGraphics(true);
 		AchievPop->Update();
 	}
@@ -219,7 +223,8 @@ HOOK_METHOD(AchievementOverlay, Update, () -> void) {
 		} else {
 			// If we previously displayed an achievement with a custom background,
 			// make sure that we reset the graphics for a vanilla one.
-			AchievPop->ReplaceSpritesheet(2, string("gfx/ui/achievement/paper.png"));
+			std::string path("gfx/ui/achievement/paper.png");
+			AchievPop->ReplaceSpritesheet(2, path);
 			AchievPop->LoadGraphics(true);
 		}
 	}

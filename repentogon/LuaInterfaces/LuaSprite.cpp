@@ -97,7 +97,8 @@ LUA_FUNCTION(Lua_SpriteLoadRgonSprite)
 	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	const char* path = luaL_checkstring(L, 2);
 	bool loadg = lua::luaL_checkboolean(L, 3);
-	anm2->Load(REPENTOGON::GetRGONGfxAbsolutePath(path), loadg);
+	std::string&& absolutePath = REPENTOGON::GetRGONGfxAbsolutePath(path);
+	anm2->Load(absolutePath, loadg);
 
 	return 0;
 }

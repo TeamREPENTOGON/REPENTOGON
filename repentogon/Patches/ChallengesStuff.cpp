@@ -292,7 +292,8 @@ HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) {
 	super();
 	if (!Streak._loaded) {
 		Streak.construct_from_copy(s);
-		Streak.Load(REPENTOGON::GetRGONGfxAbsolutePath("gfx/ui/challengesmenustuff.anm2"), true);
+		std::string path(REPENTOGON::GetRGONGfxAbsolutePath("gfx/ui/challengesmenustuff.anm2"));
+		Streak.Load(path, true);
 		Streak.LoadGraphics(true);
 		Streak.Play("Idle", true);
 		Streak.Update();
@@ -342,7 +343,8 @@ HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) {
 			g_Manager->_font2_TeamMeatEx12.DrawString(challengesrt.c_str(), renderPos, scale, &color, &settings);
 			if (Challenges[GetChallengeSaveKey(i)] > 0) {
 				srand(i-40);
-				Streak.SetFrame(&string("Idle"), (float)(rand() % 6));
+				std::string idle("Idle");
+				Streak.SetFrame(&idle, (float)(rand() % 6));
 				Streak.Update();
 				Streak._scale.x =  (float)(g_Manager->_font2_TeamMeatEx12.GetStringWidth(name.c_str()) / 294.0);
 				Streak._offset.x = (float)(g_Manager->_font2_TeamMeatEx12.GetStringWidth(order.c_str()) - 10);
