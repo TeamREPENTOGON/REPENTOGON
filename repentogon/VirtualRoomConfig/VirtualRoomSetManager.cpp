@@ -1033,11 +1033,6 @@ void VirtualRoomSet::ResetRoomWeights()
 
 #pragma region detail
 
-VirtualRoomSet VirtualRoomSetManager::detail::FromId(size_t id)
-{
-	return VirtualRoomSet(id);
-}
-
 void VirtualRoomSetManager::detail::ClearDB(const GameStateSaveInfo& saveInfo)
 {
 	RestoreRoomsDB& db = get_db_for_slot(saveInfo.saveSlot, saveInfo.isRemote);
