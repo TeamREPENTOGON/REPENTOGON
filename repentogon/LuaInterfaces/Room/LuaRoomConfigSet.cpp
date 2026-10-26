@@ -30,17 +30,17 @@ struct LuaRoomDesc {
 };
 
 MOD_EXPORT unsigned int L_RoomConfigSet_GetVirtualSize(unsigned int id) {
-	VirtualRoomSet virtualSet = VirtualRoomSetManager::detail::FromId(id);
+	VirtualRoomSet virtualSet = VirtualRoomSetManager::GetSetById(id);
 	return virtualSet.size();
 }
 
 MOD_EXPORT RoomConfig_Room* L_RoomConfigSet_GetVirtualRoom(unsigned int id, unsigned int index) {
-	VirtualRoomSet virtualSet = VirtualRoomSetManager::detail::FromId(id);
+	VirtualRoomSet virtualSet = VirtualRoomSetManager::GetSetById(id);
 	return virtualSet[index];
 }
 
 MOD_EXPORT unsigned int L_RoomConfigSet_BeginAddRooms(unsigned int id) {
-	VirtualRoomSet virtualSet = VirtualRoomSetManager::detail::FromId(id);
+	VirtualRoomSet virtualSet = VirtualRoomSetManager::GetSetById(id);
 	return VirtualRoomSetManager::detail::BeginAddRooms(virtualSet);
 }
 
@@ -106,16 +106,16 @@ MOD_EXPORT RoomConfig_Room* L_RoomConfigSet_AddRoom(unsigned int id, const LuaRo
 
 	RoomConfigUtility::AssertRoomValidity(room);
 
-	VirtualRoomSet virtualSet = VirtualRoomSetManager::detail::FromId(id);
+	VirtualRoomSet virtualSet = VirtualRoomSetManager::GetSetById(id);
 	return VirtualRoomSetManager::detail::AddRoom(virtualSet, room);
 }
 
 MOD_EXPORT void L_RoomConfigSet_EndAddRooms(unsigned int id, unsigned int begin) {
-	VirtualRoomSet virtualSet = VirtualRoomSetManager::detail::FromId(id);
+	VirtualRoomSet virtualSet = VirtualRoomSetManager::GetSetById(id);
 	VirtualRoomSetManager::detail::EndAddRooms(virtualSet, begin);
 }
 
 MOD_EXPORT unsigned int L_RoomConfigSet_AddStbRooms(unsigned int id, const char* fileName) {
-	VirtualRoomSet virtualSet = VirtualRoomSetManager::detail::FromId(id);
+	VirtualRoomSet virtualSet = VirtualRoomSetManager::GetSetById(id);
 	return VirtualRoomSetManager::detail::AddStbRooms(virtualSet, fileName);
 }

@@ -58,7 +58,6 @@ public:
 		/// @param fileName is expected to correspond to file(s) found @ `<mod root>/content/rooms/<filename>`
 		static void AddStbRooms(const uint32_t stageId, const uint32_t mode, const std::string& fileName);
 
-		static VirtualRoomSet FromId(size_t id);
 		static size_t GetId(const VirtualRoomSet& virtualSet);
 	};
 
