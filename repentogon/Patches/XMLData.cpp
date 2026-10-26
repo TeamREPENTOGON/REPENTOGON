@@ -2809,7 +2809,8 @@ std::string TryReadModNameFromMetadataXml(const std::filesystem::path& metadata_
 		ZHL::Log("[XMLData::TryReadModNameFromMetadataXml] [ERROR] File does not exist: %s\n", metadata_xml.string().c_str());
 		return "";
 	}
-	std::string buffer((std::istreambuf_iterator<char>(std::ifstream(metadata_xml))), std::istreambuf_iterator<char>());
+	std::ifstream stream(metadata_xml);
+	std::string buffer((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
 	if (buffer.empty()) {
 		ZHL::Log("[XMLData::TryReadModNameFromMetadataXml] [ERROR] Failed to read %s\n", metadata_xml.string().c_str());
 		return "";

@@ -224,7 +224,8 @@ void TryImportInputConfigs() {
 		ZHL::Log("[InputConfigs] [INFO] - Importing input configs from %s to %s\n", vanillaPath.c_str(), rgonPath.c_str());
 
 		ZHL::Log("[InputConfigs] [INFO] - Reading vanilla file...\n");
-		std::string buffer((std::istreambuf_iterator<char>(std::ifstream(vanillaPath))), std::istreambuf_iterator<char>());
+		std::ifstream stream(vanillaPath);
+		std::string buffer((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
 		if (buffer.empty()) {
 			ZHL::Log("[InputConfigs] [ERROR] - Failed to read %s\n", vanillaPath.c_str());
 			return;
