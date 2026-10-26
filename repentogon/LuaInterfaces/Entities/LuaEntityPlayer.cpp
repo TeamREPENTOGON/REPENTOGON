@@ -10,7 +10,7 @@
 #include "../../Patches/ExtraLives.h"
 #include "../../Patches/EntityPlus.h"
 #include "../../Patches/PlayerFeatures.h"
-#include "../../Patches/XmlData.h"
+#include "../../Patches/XMLData.h"
 #include "../../Patches/ItemSpoofSystem.h"
 #include "../../MiscFunctions.h"
 
