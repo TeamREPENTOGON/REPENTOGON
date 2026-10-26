@@ -9,7 +9,7 @@
 #include <Windows.h>
 #include <fstream>
 #include <array>
-#include <Vector>
+#include <vector>
 
 #include <lua.hpp>
 #include "LuaCore.h"
