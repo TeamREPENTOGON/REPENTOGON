@@ -227,45 +227,6 @@ HOOK_METHOD(ModEntry, WriteMetadata, () -> void) {
 	super();
 }
 
-/* A specific variant range is used to identify DoubleTrouble boss rooms.
- * Vanilla does not fully reserve this range, so modded boss rooms can accidentally become DoubleTrouble due to variant ID conflicts.
- *  
- * To fix this we simply add the entire range of values to the variant set.
- * This ensures that modded boss rooms cannot be assigned a DoubleTrouble variant by accident.
- *  
- * NOTE: This also prevents modded STBs from adding DoubleTrouble rooms.
- * However, the available variant range is very small, making ID conflicts common, which will push the room outside of the variant range
- * and making it behave like a normal boss room.
- *
- * Since the mechanics for adding modded DoubleTrouble rooms have never been documented, it is unlikely that many mods rely on it.
- * Even so, the implementation itself is highly unreliable, so I'd consider removing this behavior low risk.
- *
- * If we ever want to restore this functionality, we can just check if the originalVariant is in the DoubleTrouble range and mark the room as
- * DoubleTrouble in a more proper way.
- */
-HOOK_METHOD(ModManager, UpdateRooms, (int id, int mode) -> void)
-{
-	super(id, mode);
-
-	assert(0 <= id && id < NUM_STB);
-	assert(0 <= mode && mode <= 1);
-
-	bool isSpecialRoomsStb = id == eStbType::STB_SPECIAL_ROOMS && mode == 0;
-	if (!isSpecialRoomsStb)
-	{
-		return;
-	}
-
-	auto& roomSet = g_Game->GetRoomConfig()->_stages[id]._rooms[mode];
-	auto* variantSet = roomSet.GetVariantSet(eRoomType::ROOM_BOSS);
-
-	for (size_t i = RoomConfig_Room::BOSS_DOUBLE_TROUBLE_START; i < RoomConfig_Room::BOSS_DOUBLE_TROUBLE_END; i++)
-	{
-		variantSet->Add(i);
-	}
-}
-
-
 // Allow anything that would register as an "Unknown Device" to get blocked from being registered as a controller.
 HOOK_METHOD(InputDeviceBase, Initialize, (void* unk) -> bool) {
 	if (repentogonOptions.blockUnknownDevices && this->_deviceName && std::string(this->_deviceName) == "Unknown Device") {
@@ -342,4 +303,17 @@ HOOK_METHOD_PRIORITY(EntityConfig, GetEntity, 9999, (int id, int variant, int su
     if (variant != 0)
         if (auto* e = find_id(this, id, 0, 0)) return e;
     return nullptr;
+}
+
+// mark the room set as loaded early on, that way we avoid infinite recursion
+// when adding rooms to a room set, while it's being loaded.
+HOOK_METHOD_PRIORITY(ModManager, UpdateRooms, -9999, (int id, int mode) -> void)
+{
+    if (0 <= id && id < NUM_STB) // isVanilla
+    {
+        auto& roomSet = g_Game->GetRoomConfig()->_stages[id]._rooms[mode];
+        roomSet._loaded = true;
+    }
+
+    super(id, mode);
 }

@@ -494,7 +494,25 @@ class XMLLocust : public XMLDataHolder {
 class XMLLocustColor : public XMLDataHolder {};
 
 class XMLBossPortrait : public XMLDataHolder {
+public:
+    struct BossStbDesc
+    {
+        std::string filePath;
+        std::unordered_map<uint32_t, size_t> idMap;
+        ModEntry* mod;
+
+        BossStbDesc(ModEntry* mod, string_view filePath)
+            : mod(mod), filePath(filePath) {};
+    };
+    
+public:
+    std::vector<BossStbDesc> stbDescs;
+
+private:
 	void AddByNameLookups(XMLAttributes& boss, int id, const std::string& modid) override;
+public:
+    static void BuildDefaultDoc(rapidxml::xml_document<char>& doc); 
+	static void ParseXml(rapidxml::xml_document<char>& resourcesDoc, const std::string& xmlPath);
 };
 
 class XMLItem : public XMLDataHolder {

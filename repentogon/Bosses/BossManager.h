@@ -4,12 +4,45 @@
 #include "../Patches/XMLData.h"
 #include "rapidxml.hpp"
 
+/* There are several observed properties tied to a Boss / BossEntity that are not given proper support:
+ *  - BossEntity::CanAddEncounter
+ *      - Prevents the boss entity from being added when calling Game::AddEncounteredBoss
+ *      - The 'nodelirium' flag can be used to achieve the same effect, albeit this would totally prevent
+ *        the entity from being added to the list, while the flag simply makes it unused.
+ *  - BossEntity::CanTriggerBossDeath
+ *      - Prevents the entity from doing anything meaningful in Room::TriggerBossDeath
+ *      - FLAG_DONT_COUNT_BOSS_HP can be used to achieve a similar effect.
+ *      - Also sounds incredibly risky, given that this prevents the normal boss reward from being spawned if used incorrectly.
+ *  - Boss::HasNoBossBar
+ *  - Boss::CustomVersusScreen
+ */
+
+/* StageAPI adds a few callbacks related to bosses, an attempt was made to provide similar callbacks
+ * to make the transition simpler:
+ *  - PRE_BOSS_SELECT -> MC_PRE_BOSS_SELECT
+ *  - POST_SELECT_BOSS_MUSIC -> TODO
+ *  - PRE_STAGEAPI_SELECT_BOSS_ITEM -> TODO
+ */
+
+/* TODO:
+ *  - Implement a way to get a Boss's Music
+ *  - Implement a callback similar to StageAPI.POST_SELECT_BOSS_MUSIC
+ *  - Implement a callback similar to StageAPI.PRE_STAGEAPI_SELECT_BOSS_ITEM
+ *      - Maybe MC_GET_BOSS_THEMATIC_ITEM already works for this.
+ *  - Implement AddBoss for Custom bosses
+ *  - Choose what to display in the Dream Catcher sequence when a boss doesn't have a portrait.
+ *      - The game defaults to the Larry Jr. portrait (death portrait 0 in bosses)
+ *  - Save GameState's EncounteredBosses
+ *  - Save GameState's RemovedBosses
+ *  - Save Defeated Bosses.
+ */
+
 class BossManager
 {
 public:
     struct Data
     {
-        std::unordered_map<std::string, uint32_t> bossMap;
+        std::unordered_map<std::string, int> bossMap;
 
         private: Data() = default;
         friend BossManager;
@@ -23,6 +56,8 @@ public:
     {
     public:
         static void LoadModBosses(EntityConfig& config);
+        /// @brief Loads all custom bosses .stb, and adds the rooms to the STB_SPECIAL_ROOMS set.
+        static void LoadCustomBossRooms();
         /// @brief parses the entity's bossid attribute and patches it's value, so the game's parser can automatically handle it.
         static void PatchEntityBossId(xml_document<char>& doc, xml_node<char>& node, XMLAttributes& entity);
         static void ApplyPatches();

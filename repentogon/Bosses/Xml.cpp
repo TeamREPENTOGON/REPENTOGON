@@ -1,7 +1,6 @@
 #include "BossManager.h"
 #include "../Patches/XMLData.h"
 #include "../Patches/AchievementsStuff.h"
-#include <charconv>
 
 namespace BossPortraits
 {
@@ -37,7 +36,7 @@ namespace BossPortraits
     }
 }
 
-#pragma region Definitions
+#pragma region Declarations
 
 namespace {
     struct BossPortraitsRoot
@@ -46,27 +45,14 @@ namespace {
     };
 }
 
-static int get_node_id_by_order(const XMLDataHolder& data, int order);
 static const XMLChilds* get_childs_by_id(const XMLDataHolder& data, int id);
 static const std::vector<XMLAttributes>* get_child_nodes(const XMLChilds& childs, const std::string& name);
 static const std::string* get_attribute(const XMLAttributes& attributes, const std::string& name);
-template <typename T>
-static const char* doc_allocate_string(xml_document<char>& doc, T value);
-template <typename T>
-static std::optional<T> string_to_number(const std::string_view& string);
-static std::string concat_string(const std::string_view& string, const std::string_view& other);
 
 static EntityConfig_Boss* parse_boss_node(EntityConfig& config, const BossPortraitsRoot& root, const XMLAttributes& node);
 static void parse_boss_alt_node(EntityConfig_Boss* boss, const BossPortraitsRoot& root, const XMLAttributes& node);
 
 #pragma endregion
-
-static int get_node_id_by_order(const XMLDataHolder& data, int order)
-{
-    auto iter = data.byorder.find(order);
-    assert(iter != data.byorder.end());
-    return iter->second;
-}
 
 static const XMLChilds* get_childs_by_id(const XMLDataHolder& data, int id)
 {
@@ -96,39 +82,6 @@ static const std::string* get_attribute(const XMLAttributes& attributes, const s
     return &iter->second;
 }
 
-template <typename T>
-static const char* doc_allocate_string(xml_document<char>& doc, T value)
-{
-    const std::string str = std::to_string(value);
-    return doc.allocate_string(str.c_str(), str.length());
-}
-
-template <typename T>
-static std::optional<T> string_to_number(const std::string_view& string)
-{
-    T value;
-    const char* start = string.data();
-    const char* end = string.data() + string.size();
-
-    auto [ptr, ec] = std::from_chars(start, end, value);
-
-    if (ec == std::errc{} && ptr == end) {
-        return value;
-    }
-
-    return std::nullopt;
-}
-
-static std::string concat_string(const std::string_view& string, const std::string_view& other)
-{
-    std::string result;
-    result.reserve(string.size() + other.size());
-    result.append(string);
-    result.append(other);
-
-    return result;
-}
-
 static EntityConfig_Boss* parse_boss_node(EntityConfig& config, const BossPortraitsRoot& root, const XMLAttributes& node)
 {
     using namespace BossPortraits::Boss;
@@ -148,25 +101,25 @@ static EntityConfig_Boss* parse_boss_node(EntityConfig& config, const BossPortra
     boss.name = *name;
     
     if (auto* attribute = get_attribute(node, Attribute::NAME_IMAGE); attribute) {
-        boss.namePath = concat_string(root.imageRoot, *attribute);
+        boss.namePath = REPENTOGON::StringConcat(root.imageRoot, *attribute);
     }
 
     if (auto* attribute = get_attribute(node, Attribute::PORTRAIT); attribute) {
-        boss.portraitPath = concat_string(root.imageRoot, *attribute);
+        boss.portraitPath = REPENTOGON::StringConcat(root.imageRoot, *attribute);
     }
 
     if (auto* attribute = get_attribute(node, Attribute::PIVOT_X); attribute) {
-        float value = string_to_number<float>(*attribute).value_or(0.0);
+        float value = REPENTOGON::StringToNumber<float>(*attribute).value_or(0.0);
         boss.pivot.x = 96.0f - value;
     }
 
     if (auto* attribute = get_attribute(node, Attribute::PIVOT_Y); attribute) {
-        float value = string_to_number<float>(*attribute).value_or(0.0);
+        float value = REPENTOGON::StringToNumber<float>(*attribute).value_or(0.0);
         boss.pivot.y = 132.0f - value;
     }
 
     if (auto* attribute = get_attribute(node, Attribute::ACHIEVEMENT); attribute) {
-        std::optional<int> intValue = string_to_number<int>(*attribute);
+        std::optional<int> intValue = REPENTOGON::StringToNumber<int>(*attribute);
         if (intValue) {
             int achievement = intValue.value();
             bool isVanillaAchievement = 0 <= achievement && achievement < (int)eAchievement::NUM_ACHIEVEMENTS;
@@ -189,12 +142,12 @@ static void parse_boss_alt_node(EntityConfig_Boss* boss, const BossPortraitsRoot
     EntityConfig_Boss_Alt& alt = boss->alts.emplace_back();
 
     if (auto* attribute = get_attribute(node, Attribute::STAGE); attribute) {
-        int value = string_to_number<int>(*attribute).value_or(0);
+        int value = REPENTOGON::StringToNumber<int>(*attribute).value_or(0);
         alt.stageId = (0 <= value && value < NUM_STB) ? value : 0;
     }
 
     if (auto* attribute = get_attribute(node, Attribute::PORTRAIT); attribute) {
-        alt.portraitPath = concat_string(root.imageRoot, *attribute);
+        alt.portraitPath = REPENTOGON::StringConcat(root.imageRoot, *attribute);
     }
 }
 
@@ -207,18 +160,11 @@ void BossManager::detail::LoadModBosses(EntityConfig& config)
     config._bosses.reserve(xmlMaxId + 1);
     assert(config._bosses.size() == NUM_BOSSES);
 
-    for (size_t i = 1; i <= numEntries; i++)
+    for (size_t i = NUM_BOSSES; i <= xmlMaxId; i++)
     {
-        int nodeId = get_node_id_by_order(xmlData, i);
-        const XMLAttributes* attributes = xmlData.GetNodeOrNullById(nodeId);
-        const XMLChilds* childs = get_childs_by_id(xmlData, nodeId);
-        assert(attributes != nullptr);
-
-        bool isModded = *get_attribute(*attributes, "sourceid") != "BaseGame";
-        if (!isModded)
-        {
-            continue;
-        }
+        const XMLAttributes* attributes = xmlData.GetNodeOrNullById(i);
+        const XMLChilds* childs = get_childs_by_id(xmlData, i);
+        assert(attributes != nullptr); // there should never be a gap in between modded ids.
 
         BossPortraitsRoot root;
         if (auto* attribute = get_attribute(*attributes, BossPortraits::IMAGE_ROOT); attribute) {
@@ -230,8 +176,6 @@ void BossManager::detail::LoadModBosses(EntityConfig& config)
         {
             continue;
         }
-
-        BossManager::m_data.bossMap[boss->name] = boss->bossID;
 
         if (!childs)
         {
@@ -247,6 +191,9 @@ void BossManager::detail::LoadModBosses(EntityConfig& config)
             }
         }
     }
+
+    // copy the lookup table.
+    BossManager::m_data.bossMap = xmlData.byname;
 }
 
 void BossManager::detail::PatchEntityBossId(xml_document<char>& doc, xml_node<char>& node, XMLAttributes& entity)
@@ -263,13 +210,13 @@ void BossManager::detail::PatchEntityBossId(xml_document<char>& doc, xml_node<ch
         return;
     }
 
-    std::optional<int> intValue = string_to_number<int>(*attribute);
+    std::optional<int> intValue = REPENTOGON::StringToNumber<int>(*attribute);
     if (intValue)
     {
         bool isVanilla = 0 <= intValue && intValue < NUM_BOSSES;
         if (!isVanilla)
         {
-            xmlAttribute->value("0");
+            XML::SetValue(xmlAttribute, "0");
         }
         return;
     }
@@ -277,11 +224,10 @@ void BossManager::detail::PatchEntityBossId(xml_document<char>& doc, xml_node<ch
     std::optional<int> customId = BossManager::GetBossIdByName(*attribute);
     if (!customId)
     {
-        xmlAttribute->value("0");
-        return;
+        XML::SetValue(xmlAttribute, "0");
     }
     else
     {
-        xmlAttribute->value(doc_allocate_string(doc, customId.value()));
+        XML::SetValueCopy(doc, xmlAttribute, std::to_string(customId.value()));
     }
 }
