@@ -58,7 +58,8 @@ namespace delirium {
 		Save registers(Save::EBX | Save::ECX | Save::EDX | Save::ESI | Save::EDI, true);
 		ASMPatch patch;
 		ByteBuffer orBytes;
-		orBytes.AddAny("\x83\xC8\x00", 3);
+		const char* bytes = "\x83\xC8\x00";
+		orBytes.AddAny((void*)bytes, 3);
 
 		patch.PreserveRegisters(registers)
 			.Push(Reg::EAX)
