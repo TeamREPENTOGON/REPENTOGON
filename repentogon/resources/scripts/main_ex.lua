@@ -55,6 +55,17 @@ do
 	end
 end
 
+-- Wrap math.atan to make it work as mods written against 5.3 expect.
+do
+	local math_atan, math_atan2 = math.atan, math.atan2
+	math.atan = function(y, x)
+		if x == nil then
+			return math_atan(y)
+		end
+		return math_atan2(y, x)
+	end
+end
+
 io = nil
 
 GetPtrHash = ffichecks.ptrhash(GetPtrHash)
