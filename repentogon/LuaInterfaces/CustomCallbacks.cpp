@@ -525,7 +525,7 @@ HOOK_METHOD(_type, Update, () -> void) { \
 	if (!RunPreUpdateCallback(this, _metatable, _callbackid)) { \
 		super(); \
 	} else { \
-		((Entity*)this)->Original_Update(); \
+		((Entity*)this)->Update_Original(); \
 	} \
 }
 
@@ -2575,7 +2575,7 @@ HOOK_METHOD(Entity_Slot, Update, () -> void) {
 			.call(1);
 
 		if (!result && lua_isboolean(L, -1) && (bool)lua_toboolean(L, -1) == true) {
-			((Entity*)this)->Original_Update();
+			((Entity*)this)->Update_Original();
 			return;
 		}
 	}

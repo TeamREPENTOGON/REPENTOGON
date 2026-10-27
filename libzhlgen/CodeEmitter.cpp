@@ -3,9 +3,12 @@
 
 #include "CodeEmitter.h"
 #include "ParserCore.h"
+#include "SymbolNameReader.h"
+#include "TypeUnifier.h"
 
 #include <fstream>
 #include <iostream>
+#include <regex>
 
 static Logger parserLogger(LOG_INFO, "ZHL Generator", {
     new StdoutLogOutput(),
@@ -15,15 +18,6 @@ static Logger parserLogger(LOG_INFO, "ZHL Generator", {
 
 Logger* ParserLogger() {
     return &parserLogger;
-}
-
-CodeEmitter::TypeEmitter::TypeEmitter(CodeEmitter* emitter) : _emitter(emitter) {
-
-}
-
-template<typename T>
-void CodeEmitter::TypeEmitter::operator()(T const& t) {
-    _emitter->EmitType(t);
 }
 
 CodeEmitter::TypeGenerator::TypeGenerator(CodeEmitter* emitter) : _emitter(emitter) {
@@ -122,7 +116,7 @@ void CodeEmitter::EmitHeader() {
     EmitForwardDecl();
 
     for (GenericCode const& code: _global._generic) {
-	Emit(code);
+Emit(code);
 	EmitNL();
     }
 
@@ -174,6 +168,15 @@ void CodeEmitter::EmitImplementation() {
     EmitAsmDefinitions_Impl();
 }
 
+void CodeEmitter::EmitAssemblyFilePrologue() {
+    std::ofstream* original = _emitContext;
+    EmitAsmImpl();
+    Emit("bits 32\n\n");
+    Emit("segment .text\n\n");
+
+    _emitContext = original;
+}
+
 void CodeEmitter::EmitJsonFile() {
     EmitJson();
     EmitJsonPrologue();
@@ -185,12 +188,12 @@ void CodeEmitter::EmitJsonFile() {
 
 void CodeEmitter::Emit() {
     BuildExternalNamespaces();
-
     EmitHeader();
-    EmitImplementation();
     if (_emitAssembly) {
+	EmitAssemblyFilePrologue();
 	ComputeMangledNames();
     }
+    EmitImplementation();
     EmitJsonFile();
 }
 
@@ -436,10 +439,6 @@ std::string CodeEmitter::GenerateType(BasicType const& t) {
     return result;
 }
 
-void CodeEmitter::EmitType(BasicType const& t) {
-    Emit(GenerateType(t));
-}
-
 std::string CodeEmitter::GenerateType(Struct const& s) {
     std::string result = s._name;
 
@@ -456,10 +455,6 @@ std::string CodeEmitter::GenerateType(Struct const& s) {
     }
 
     return result;
-}
-
-void CodeEmitter::EmitType(Struct const& s) {
-    Emit(GenerateType(s));
 }
 
 std::string CodeEmitter::GenerateType(FunctionPtr* ptr) {
@@ -491,24 +486,12 @@ std::string CodeEmitter::GenerateType(FunctionPtr* ptr) {
     return result;
 }
 
-void CodeEmitter::EmitType(FunctionPtr* ptr) {
-    Emit(GenerateType(ptr));
-}
-
 std::string CodeEmitter::GenerateType(std::string const& t) {
     return t;
 }
 
-void CodeEmitter::EmitType(std::string const& t) {
-    Emit(t);
-}
-
 std::string CodeEmitter::GenerateType(EmptyType const&) {
     throw std::runtime_error("[FATAL] Attempting to generate empty type");
-}
-
-void CodeEmitter::EmitType(EmptyType const&) {
-    throw std::runtime_error("[FATAL] Attempting to emit empty type");
 }
 
 void CodeEmitter::EmitTab() {
@@ -638,9 +621,7 @@ void CodeEmitter::EmitHeader(Signature const& sig, bool isVirtual) {
      */
     if (isVirtual) {
         Signature copy(sig);
-        std::ostringstream name;
-        name << "Original_" << sig._function._name;
-        copy._function._name = name.str();
+        copy._function._name.append("_Original");
         EmitHeader(copy, false);
     }
 }
@@ -650,9 +631,7 @@ void CodeEmitter::EmitImpl(Signature const& sig, bool isVirtual) {
 
     if (isVirtual) {
 	Signature copy(sig);
-	std::ostringstream name;
-	name << "Original_" << sig._function._name;
-	copy._function._name = name.str();
+	copy._function._name.append("_Original");
 	EmitImpl(copy, false);
     }
 }
@@ -779,6 +758,121 @@ Function const* CodeEmitter::FunctionFromSigOrFunc(SigOrFunc const& sig) {
     }
 }
 
+void CodeEmitter::EmitAssemblyDeclaration(Function const& fn) {
+    Emit("__declspec(naked) ");
+    Emit(*fn._ret);
+    Emit(" ");
+    if (fn._convention) {
+	if (*fn._convention != CallingConventions::THISCALL &&
+		*fn._convention != CallingConventions::X86_64 &&
+		*fn._convention != CallingConventions::X86_64_OUTPUT) {
+	    Emit(CallingConventionToString(*fn._convention));
+	    Emit(" ");
+	}
+    }
+    else {
+	if (fn._kind == FUNCTION && !fn.IsCleanup()) {
+	    Emit("__stdcall ");
+	}
+    }
+
+    if (_currentStructure) {
+	Emit(_currentStructure->_name);
+	Emit("::");
+    }
+
+    Emit(fn._name);
+    Emit("(");
+    for (size_t i = 0; i < fn._params.size(); ++i) {
+	FunctionParam const& param = fn._params[i];
+	Emit(*param._type);
+	Emit(" ");
+	Emit(param._name);
+
+	if (i != fn._params.size() - 1) {
+	    Emit(", ");
+	}
+    }
+    Emit(") {");
+    EmitNL();
+
+    IncrDepth();
+    EmitInstruction("__asm {");
+    IncrDepth();
+}
+
+void CodeEmitter::EndAssemblyDeclaration() {
+    DecrDepth();
+    EmitTab();
+    Emit("}");
+    EmitNL();
+    DecrDepth();
+    Emit("}");
+}
+
+std::string CodeEmitter::GetMangledName(Function const& fn) {
+    std::ostringstream fullNameStream;
+    if (_currentStructure)
+	fullNameStream << _currentStructure->_name << "::";
+    fullNameStream << fn._name;
+
+    std::string fullName = fullNameStream.str();
+    auto iter = _stubSymbolsMap.find(fullName);
+    if (iter == _stubSymbolsMap.end()) {
+	fprintf(stderr, "[FATAL] Cannot find mangled name for '%s'\n", fullName.c_str());
+	exit(-1);
+    }
+
+    if (iter->second.size() == 1) {
+	return iter->second.front()._mangledName;
+    } else {
+	// fprintf(stderr, "[ERROR] Multiple definitions for '%s'\n", fullName.c_str());
+	// return iter->second.front()._mangledName;
+	
+	/* Despair heuristic: try to disambiguate using only parameter count. */
+	size_t count = fn._params.size();
+	std::vector<SymbolName> candidates;
+	for (SymbolName const& name: iter->second) {
+	    /* Both llvm-nm and dumpbin report the unmangled name as taking a
+	     * single 'void' parameter for 0 parameters functions. We may have
+	     * a mismatch between ZHL and disassemblers in that case.
+	     */
+	    if (name._args.size() == count ||
+	       (count == 0 && name._args.size() == 1 && name._args[0] == "void")) {
+		candidates.push_back(name);
+	    }
+	}
+
+	if (candidates.size() == 1) {
+	    return candidates.front()._mangledName;
+	} else {
+	    for (SymbolName const& name: candidates) {
+		bool ok = true;
+		for (int i = 0; i < name._args.size(); ++i) {
+		    if (!TypeUnifier::AreTypesUnified(*fn._params[i]._type, name._args[i])) {
+			ok = false;
+			break;
+		    }
+
+		    printf("Unified %s with %s\n", name._args[i].c_str(),
+			    fn._params[i]._type->ToString(true).c_str());
+		}
+
+		if (ok) {
+		    return name._mangledName;
+		}
+	    }
+
+	    fprintf(stderr, "[FATAL] Unable to properly unify types for");
+	    if (_currentStructure) {
+		fprintf(stderr, "%s::", _currentStructure->_name.c_str());
+	    }
+	    fprintf(stderr, "%s\n", fn._name.c_str());
+	    exit(-1);
+	}
+    }
+}
+
 void CodeEmitter::EmitAssembly(SigOrFunc const& sig, bool isVirtual, bool isPure) {
     uint32_t depth = _emitDepth;
     _emitDepth = 0;
@@ -793,13 +887,23 @@ void CodeEmitter::EmitAssembly(SigOrFunc const& sig, bool isVirtual, bool isPure
         // Start namespace
         Emit("namespace _fun");
         Emit(std::to_string(_nEmittedFuns));
-        Emit(" {");
+        Emit(" { //");
+	if (_currentStructure) {
+	    Emit(_currentStructure->_name);
+	    Emit("::");
+	}
+	Emit(fn._name);
         EmitNL();
         IncrDepth();
 
         // Function pointer
         EmitTab();
-        Emit("static void* func = 0;");
+	if (_emitAssembly) {
+	    // Emit an extern version to silence warnings
+	    Emit("extern void* func;");
+	    EmitNL();
+	}
+        Emit("void* func = 0;");
         EmitNL();
         EmitTab();
     }
@@ -859,50 +963,39 @@ void CodeEmitter::EmitAssembly(SigOrFunc const& sig, bool isVirtual, bool isPure
         EmitNL();
     }
 
-    // Function implementation
-    Emit("__declspec(naked) ");
-    Emit(*fn._ret);
-    Emit(" ");
-    if (fn._convention) {
-        if (*fn._convention != CallingConventions::THISCALL &&
-	    *fn._convention != CallingConventions::X86_64 &&
-	    *fn._convention != CallingConventions::X86_64_OUTPUT) {
-            Emit(CallingConventionToString(*fn._convention));
-            Emit(" ");
-        }
+    std::string comment("//");
+    if (!_emitAssembly) {
+	EmitAssemblyDeclaration(fn);
+    } else {
+	comment = ";";
+	EmitAsmImpl();
     }
-    else {
-        if (fn._kind == FUNCTION && !fn.IsCleanup()) {
-            Emit("__stdcall ");
-        }
-    }
-
-    if (_currentStructure) {
-        Emit(_currentStructure->_name);
-        Emit("::");
-    }
-
-    Emit(fn._name);
-    Emit("(");
-    for (size_t i = 0; i < fn._params.size(); ++i) {
-        FunctionParam const& param = fn._params[i];
-        Emit(*param._type);
-        Emit(" ");
-        Emit(param._name);
-
-        if (i != fn._params.size() - 1) {
-            Emit(", ");
-        }
-    }
-    Emit(") {");
-    EmitNL();
-
-    IncrDepth();
-    EmitInstruction("__asm {");
-    IncrDepth();
 
     if (!isPure) {
         // Prologue
+	if (_emitAssembly) {
+	    std::string const& name = GetMangledName(fn);
+	    Emit("segment .data");
+	    EmitNL();
+	    std::ostringstream func;
+	    func << "  extern ?func@_fun" << _nEmittedFuns << "@@3PAXA";
+	    Emit(func.str());
+	    EmitNL();
+	    Emit("segment .drectve info");
+	    EmitNL();
+	    std::ostringstream drectve;
+	    drectve << "  db ' /EXPORT:" << name << "'";
+	    Emit(drectve.str());
+	    EmitNL();
+	    Emit("segment .text");
+	    EmitNL();
+	    Emit("  global ");
+	    Emit(name);
+	    EmitNL();
+	    Emit(name);
+	    Emit(":");
+	    EmitNL();
+	}
         EmitInstruction("push ebp");
         EmitInstruction("mov ebp, esp");
         // Save parameters
@@ -963,7 +1056,7 @@ void CodeEmitter::EmitAssembly(SigOrFunc const& sig, bool isVirtual, bool isPure
                 }
 
                 k -= 4;
-                ins << regStr << ", [ebp + " << k << "] // " << param._name;
+                ins << regStr << ", [ebp + " << k << "] " << comment << " " << param._name;
 
                 EmitInstruction(ins.str());
 
@@ -976,7 +1069,7 @@ void CodeEmitter::EmitAssembly(SigOrFunc const& sig, bool isVirtual, bool isPure
                 for (int j = 0; j < count; ++j) {
                     k -= 4;
                     std::ostringstream ins;
-                    ins << "push [ebp + " << k << "] // " << param._name;
+                    ins << "push [ebp + " << k << "] " << comment << " " << param._name;
                     EmitInstruction(ins.str());
                 }
             }
@@ -986,10 +1079,10 @@ void CodeEmitter::EmitAssembly(SigOrFunc const& sig, bool isVirtual, bool isPure
             k -= 4;
             std::ostringstream ins;
             if (fn._convention && *fn._convention == CallingConventions::X86_64_OUTPUT) {
-                ins << "mov ecx, [ebp + " << k << "] // implicit_output";
+                ins << "mov ecx, [ebp + " << k << "] " << comment << " implicit_output";
             }
             else {
-                ins << "push [ebp + " << k << "] // implicit_output";
+                ins << "push [ebp + " << k << "] " << comment << " implicit_output";
             }
             EmitInstruction(ins.str());
         }
@@ -1015,7 +1108,23 @@ void CodeEmitter::EmitAssembly(SigOrFunc const& sig, bool isVirtual, bool isPure
         }
         else {
             std::ostringstream callIns;
-            callIns << "call _fun" << _nEmittedFuns << "::func";
+	    if (_emitAssembly) {
+		/* For future reference, mangling the type information of data
+		 * is: Access Level, Data type, CV-class modifier. Data type
+		 * is a compoung of Type Modifier, CV-class modifier, Type.
+		 *
+		 * For void* outside any context, this yields:
+		 * 3, PAX, A.
+		 * Acces level: 3 (none)
+		 * Data type: P (pointer), A (no cv modifier), X (void)
+		 * CV-class modifier: A
+		 *
+		 * Yes, CV-class modifier appears twice. Stop asking questions.
+		 */
+		callIns << "call ?func@_fun" << _nEmittedFuns << "@@3PAXA";
+	    } else {
+		callIns << "call _fun" << _nEmittedFuns << "::func";
+	    }
             EmitInstruction(callIns.str());
         }
 
@@ -1061,12 +1170,10 @@ void CodeEmitter::EmitAssembly(SigOrFunc const& sig, bool isVirtual, bool isPure
         EmitInstruction(call.str());
     }
 
-    DecrDepth();
-    EmitTab();
-    Emit("}");
-    EmitNL();
-    DecrDepth();
-    Emit("}");
+    if (!_emitAssembly) {
+	EndAssemblyDeclaration();
+    }
+
     EmitNL();
     EmitNL();
 
@@ -1497,6 +1604,7 @@ std::string CodeEmitter::GenerateFunctionPrototype(Function const& fn, bool incl
 
     if (protectName)
 	result += ")";
+
     result += "(";
     for (size_t i = 0; i < fn._params.size(); ++i) {
         FunctionParam const& param = fn._params[i];
@@ -1557,7 +1665,7 @@ void CodeEmitter::EmitParamData(Function const& fn, FunctionParam const& param, 
 void CodeEmitter::EmitStub(FILE* f, SigOrFunc const& fn) {
     Function const* func = FunctionFromSigOrFunc(fn);
     std::string fullName = GenerateFunctionPrototype(*func, true, true, false, true);
-    fprintf(f, "[[noreturn]] %s { abort(); }\n", fullName.c_str());
+    fprintf(f, "%s { abort(); }\n", fullName.c_str());
 }
 
 void CodeEmitter::ComputeMangledNames() {
@@ -1591,15 +1699,29 @@ void CodeEmitter::GenerateStubLibrary() {
 
 	    for (Signature const& sig: s._overridenVirtualFunctions) {
 		EmitStub(f, sig);
+
+		Signature copy = sig;
+		copy._function._name.append("_Original");
+		EmitStub(f, copy);
 	    }
 
 	    for (VTableEntry const& entry: s._virtualFunctions) {
 		if (std::holds_alternative<Skip>(entry)) {
 		    // Skip
 		} else if (std::holds_alternative<Signature>(entry)) {
-		    EmitStub(f, std::get<Signature>(entry));
+		    Signature const& sig = std::get<Signature>(entry);
+		    EmitStub(f, sig);
+
+		    Signature copy = sig;
+		    copy._function._name.append("_Original");
+		    EmitStub(f, copy);
 		} else {
-		    EmitStub(f, std::get<Function>(entry));
+		    Function const& fun = std::get<Function>(entry);
+		    EmitStub(f, fun);
+
+		    Function copy = fun;
+		    copy._name.append("_Original");
+		    EmitStub(f, copy);
 		}
 	    }
 	}
@@ -1671,6 +1793,7 @@ DWORD CodeEmitter::CompileStubLibrary() {
 
 
     printf("Running cl as %ls with params %ls\n", cl.c_str(), cmdStr);
+    fflush(stdout);
     BOOL ok = CreateProcessW(cl.c_str(), cmdStr, NULL, NULL, FALSE,
 			     0, NULL, NULL, &startupInfo, &processInfo);
     if (!ok) {
@@ -1716,6 +1839,7 @@ void CodeEmitter::ExtractMangledNames() {
     std::wstring cmd = Quote(dumpbin) + L" /SYMBOLS " + Quote(NarrowUTF8ToWide(_stubObj));
 
     printf("Running dumpbin as %ls with params %ls\n", dumpbin.c_str(), cmd.c_str());
+    fflush(stdout);
     BOOL ok = CreateProcessW(dumpbin.c_str(), cmd.data(), NULL, NULL, TRUE,
 			     0, NULL, NULL, &startupInfo, &processInfo);
     CloseHandle(writePipe);
@@ -1749,16 +1873,59 @@ void CodeEmitter::ExtractMangledNames() {
     _ExtractMangledNames(out);
 }
 
+/* C++ can and will burn in a fire (\\|). I'm not using R"()". */
+static const std::regex MangledSymbolRegex(
+    "^[0-9A-F]+ [0-9A-F]+ ([A-Z0-9]+).*External.*\\| (\\?[^ ]+) \\((.*)\\)$",
+    std::regex_constants::extended
+);
+
 void CodeEmitter::_ExtractMangledNames(std::string const& s) {
-    printf("Raw mangled lines: %s\n", s.c_str());
+    // printf("_ExtractMangledNames: '%s'\n", s.c_str());
     char* ptr = (char*)malloc(s.size() + 1);
     char* orig = ptr;
     strcpy(ptr, s.c_str());
     char* current = ptr;
-    while (current = strpbrk(ptr, "\n")) {
+    bool error = false;
+
+    while ((current = strchr(ptr, '\n'))) {
 	*current = '\0';
-	printf("Read mangled line %s\n", ptr);
+
+	if (*(current - 1) == '\r')
+	    *(current - 1) = 0;
+
+	printf("_ExtractMangledNames: '%s'\n", ptr);
+	std::match_results<const char*> result;
+	if (std::regex_search(ptr, result, MangledSymbolRegex)) {
+	    std::string sect(result[1].first, result[1].second);
+	    std::string mangled(result[2].first, result[2].second);
+	    std::string demangled(result[3].first, result[3].second);
+
+	    printf("  > %s\n  > %s\n  > %s\n", sect.c_str(), mangled.c_str(), demangled.c_str());
+	    fflush(stdout);
+	    if (sect == "UNDEF") {
+		ptr = current + 1;
+		continue;
+	    }
+
+	    SymbolName symbol;
+	    if (!SymbolNameReader::ReadSymbolName(mangled.c_str(), demangled.c_str(),
+						  symbol)) {
+		fprintf(stderr, "Error while processing %s\n", ptr);
+		error = true;
+	    }
+
+	    printf("Mapping: '%s' => '%s'\n", symbol._mangledName.c_str(), symbol._name.c_str());
+	    fflush(stdout);
+	    _stubSymbols.push_back(symbol);
+	    _stubSymbolsMap[symbol._name].push_back(symbol);
+	}
+
 	ptr = current + 1;
     }
     free(orig);
+
+    if (error) {
+	fprintf(stderr, "[FATAL] Errors encountered while extracting mangled names\n");
+	exit(-1);
+    }
 }

@@ -231,8 +231,8 @@ struct Type {
     // Basic type represents the char, int, bool etc. types and their composites.
     // std::string represents a type that is composed of a single word (minus pointers) that
     // can be a typedef or the name of a class.
-    // unique_ptr<Struct> represent a type defined in a structure.
-    // unique_ptr<FunctionPtr> represents a pointer to function. unique_ptr used because FunctionPtr
+    // Struct represents a type defined in a structure.
+    // FunctionPtr represents a pointer to function. Pointer used because FunctionPtr
     // contains a Type, which would create an infinite structure if it was added here without an
     // indirection.
     // Nested names are not allowed because properly processing them would require interpreting the files.
@@ -256,7 +256,7 @@ struct Type {
     // If set, this overrides computation of the alignment
     std::optional<size_t> _alignment;
 
-    // If set to true, indicates that this is the base for a template. 
+    // If set to true, indicates that this is the base for a template.
     // Such a type is never resolved to anything other than a string, and is
     // used as a base key to get an instanciation of a template type.
     bool _templateBase = false;

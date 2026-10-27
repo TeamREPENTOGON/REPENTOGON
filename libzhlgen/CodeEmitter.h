@@ -8,6 +8,7 @@
 #include <map>
 
 #include "ParserDefinitions.h"
+#include "SymbolNameReader.h"
 #include "TypeMap.h"
 
 #include "logger/logger.h"
@@ -34,21 +35,9 @@ public:
 	void Dump();
 
 private:
-	friend class TypeEmitter;
 	friend class TypeGenerator;
 
 	typedef std::variant<Signature, Function> SigOrFunc;
-
-	class TypeEmitter {
-	public:
-		TypeEmitter(CodeEmitter*);
-
-		template<typename T>
-		void operator()(T const& t);
-
-	private:
-		CodeEmitter* _emitter;
-	};
 
 	class TypeGenerator {
 	public:
@@ -81,6 +70,7 @@ private:
 	void EmitForwardDecl();
 	void EmitJsonPrologue();
 	void EmitJsonEpilogue();
+	void EmitAssemblyFilePrologue();
 	void EmitAsmDefinitions_Decl();
 	void EmitAsmDefinitions_Impl();
 
@@ -100,6 +90,17 @@ private:
 
 	void EmitAssembly(SigOrFunc const& sig, bool isVirtual, bool isPure);
 	void EmitAssembly(VariableSignature const& sig);
+	/* Emit the naked declaration of the function in the implementation file.
+	 * This is only used when emitting directly to the implementation file,
+	 * as naked functions are not supported on clang, and are emitted to
+	 * an assembly file instead.
+	 */
+	void EmitAssemblyDeclaration(Function const& fn);
+	/* End the naked definition of a function in the implementation file.
+	 * Similar to the above, this is only used when emitting directly to the
+	 * implementation file.
+	 */
+	void EndAssemblyDeclaration();
 	void EmitInstruction(std::string const& ins);
 
 	std::string GenerateType(Type const& type);
@@ -111,12 +112,7 @@ private:
 	std::string GenerateType(const PointerDecl& decl);
 
 	void Emit(Type const& type);
-	void EmitType(BasicType const& t);
-	void EmitType(Struct const& s);
-	void EmitType(FunctionPtr* ptr);
-	void EmitType(std::string const& s);
-	void EmitType(EmptyType const&);
-
+	
 	std::tuple<bool, uint32_t, uint32_t> EmitArgData(Function const& fn);
 	void EmitTypeID(Function const& fn);
 	std::string GenerateFunctionPrototype(Function const& fn, bool includeName,
@@ -135,6 +131,8 @@ private:
 	void EmitImpl();
 	void EmitAsmImpl();
 	void EmitJson();
+
+	std::string GetMangledName(Function const& fn);
 
 	inline void IncrDepth() {
 		++_emitDepth;
@@ -197,6 +195,8 @@ private:
 	std::string _genLibCmd;
 	std::string _genLibTc;
 	std::string _stubObj;
+	std::vector<SymbolName> _stubSymbols;
+	std::map<std::string, std::vector<SymbolName>> _stubSymbolsMap;
 	void EmitJson(FunctionJsonData const& data);
 	Function const* FunctionFromSigOrFunc(SigOrFunc const& fn);
 	void ComputeMangledNames();

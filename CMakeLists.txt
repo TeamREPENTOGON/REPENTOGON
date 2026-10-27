@@ -1,44 +1,49 @@
 cmake_minimum_required(VERSION 3.13.0)
 
 function (linux_to_wine_path path result)
-    string (REPLACE "/" "\\\\" path_slash "${path}")
-    string (PREPEND path_slash "Z:")
-    message (STATUS "linux_to_wine_path: path = ${path}, path_slash = ${path_slash}")
-    set (${result} "${path_slash}" PARENT_SCOPE)
+    execute_process(COMMAND winepath -w "${path}" OUTPUT_VARIABLE TRANSLATED_PATH)
+    string(REPLACE "\n" "" TRANSLATED_PATH_NO_NL "${TRANSLATED_PATH}")
+    message (STATUS "linux_to_wine_path: path = ${path}, path_slash = ${TRANSLATED_PATH_NO_NL}")
+    set (${result} "${TRANSLATED_PATH_NO_NL}" PARENT_SCOPE)
 endfunction ()
 
 if (CMAKE_SYSTEM_NAME MATCHES Windows)
   if (CMAKE_HOST_SYSTEM_NAME MATCHES Linux)
     set (CLANG_CL_XCC 1)
     message (STATUS "Cross-compiling from Linux to Windows (assuming clang-cl)")
-    set (ZHLPARSER_RUNNER "wine")
+    set (WINE_RUNNER "wine")
     set (ZHLPARSER_EXEC "zhlparser.exe")
-    set (ZHLGEN_ASM_FILE "${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.asm")
-    set (ZHLGEN_ASM "--output-asm=${ZHLGEN_ASM_FILE}")
-    set (ZHLGEN_LIB_FILE "${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance_stub.cpp")
-    set (ZHLGEN_LIB_FLAG "--output-gen-lib=${ZHLGEN_LIB_FILE}")
+    set (NAKED_ASM_GEN_EXEC "super_asm_generator.exe")
+    set (ZHLGEN_ASM_FILE "${CMAKE_CURRENT_BINARY_DIR}/IsaacRepentance.asm")
+    # linux_to_wine_path("${ZHLGEN_ASM_FILE}" ZHLGEN_ASM_FILE_WINE_PATH)
+    set (ZHLGEN_ASM "--output-asm=\"${ZHLGEN_ASM_FILE}\"")
+    set (ZHLGEN_LIB_FILE "${CMAKE_CURRENT_BINARY_DIR}/IsaacRepentance_stub.cpp")
+    # linux_to_wine_path("${ZHLGEN_LIB_FILE}" ZHLGEN_LIB_FILE_WINE_PATH)
+    set (ZHLGEN_LIB_FLAG "--output-gen-lib=\"${ZHLGEN_LIB_FILE}\"")
     set (ZHLGEN_STUB_LIBRARY_OBJ "${CMAKE_CURRENT_BINARY_DIR}/IsaacRepentance_stub.obj")
-    set (ZHLGEN_NEED_ASM 1)
-    linux_to_wine_path("${CMAKE_SOURCE_DIR}/libs/rapidxml" RAPIDXML_WINE_PATH)
-    linux_to_wine_path("${CMAKE_SOURCE_DIR}/libs/lua" LUA_WINE_PATH)
-    linux_to_wine_path("${ZHLGEN_LIB_FILE}" ZHLGEN_LIB_FILE_WINE_PATH)
-    linux_to_wine_path("${CMAKE_SOURCE_DIR}/include" ZHLGEN_INCLUDE_DIR_WINE_PATH)
-    linux_to_wine_path("${ZHLGEN_STUB_LIBRARY_OBJ}" ZHLGEN_STUB_LIBRARY_OBJ_WINE_PATH)
+    # linux_to_wine_path("${CMAKE_SOURCE_DIR}/libs/rapidxml" RAPIDXML_WINE_PATH)
+    # linux_to_wine_path("${CMAKE_SOURCE_DIR}/libs/lua" LUA_WINE_PATH)
+    # linux_to_wine_path("${CMAKE_SOURCE_DIR}/include" ZHLGEN_INCLUDE_DIR_WINE_PATH)
+    # linux_to_wine_path("${ZHLGEN_STUB_LIBRARY_OBJ}" ZHLGEN_STUB_LIBRARY_OBJ_WINE_PATH)
     # Add libzhl to the include path as it it where we generate the header of
     # the implementation lib. This avoids the need to convert the path from
     # Linux to Wine.
-    set (ZHLGEN_LIB_CMD "--gen-lib-cmd=\"/LD /I${ZHLGEN_INCLUDE_DIR_WINE_PATH} /std:c++17 /I${RAPIDXML_WINE_PATH} /I${LUA_WINE_PATH} /Fo:${ZHLGEN_STUB_LIBRARY_OBJ_WINE_PATH} ${ZHLGEN_LIB_FILE_WINE_PATH}\"")
+    linux_to_wine_path("${ZHLGEN_LIB_FILE}" ZHLGEN_LIB_FILE_WINE)
+    linux_to_wine_path("${ZHLGEN_STUB_LIBRARY_OBJ}" ZHLGEN_STUB_LIBRARY_OBJ_WINE)
+    set (ZHLGEN_LIB_CMD "--gen-lib-cmd=\"/LD /std:c++17 /I${CMAKE_SOURCE_DIR}/include /I${CMAKE_SOURCE_DIR}/libs/rapidxml /I${CMAKE_SOURCE_DIR}/libs/lua /Fo:${ZHLGEN_STUB_LIBRARY_OBJ} /c ${ZHLGEN_LIB_FILE_WINE}\"")
     if (NOT ZHLGEN_TC)
       message (FATAL_ERROR "ZHLGEN_TC is unset, compiling the base library for IsaacRepentance.asm is impossible")
     endif ()
-    linux_to_wine_path("${ZHLGEN_TC}" ZHLGEN_TC_WINE)
-    set (ZHLGEN_LIB_TC "--gen-lib-tc=${ZHLGEN_TC_WINE}")
-    set (ZHLGEN_STUB_FLAG "--stub-obj=${ZHLGEN_STUB_LIBRARY_OBJ_WINE_PATH}")
+    # linux_to_wine_path("${ZHLGEN_TC}" ZHLGEN_TC_WINE)
+    set (ZHLGEN_LIB_TC "--gen-lib-tc=\"${ZHLGEN_TC}\"")
+    set (ZHLGEN_STUB_FLAG "--stub-obj=\"${ZHLGEN_STUB_LIBRARY_OBJ_WINE}\"")
+    set (ZHL_ISAAC_REPENTANCE_ASM_OBJ "${CMAKE_CURRENT_BINARY_DIR}/IsaacRepentance.asm.obj")
   else ()
     message (STATUS "Building natively on Windows")
     set (CLANG_CL_XCC 0)
-    set (ZHLPARSER_RUNNER "")
+    set (WINE_RUNNER "")
     set (ZHLPARSER_EXEC "zhlparser")
+    set (NAKED_ASM_GEN_EXEC "super_asm_generator")
     set (ZHLGEN_ASM "")
     set (ZHLGEN_ASM_FILE "")
     set (ZHLGEN_LIB_FILE "")
@@ -46,15 +51,45 @@ if (CMAKE_SYSTEM_NAME MATCHES Windows)
     set (ZHLGEN_LIB_CMD "")
     set (ZHLGEN_LIB_TC "")
     set (ZHLGEN_STUB_FLAG "")
+    set (ZHL_ISAAC_REPENTANCE_ASM_OBJ "")
   endif ()
 else ()
   message (FATAL_ERROR "Unknown system configuration, CMAKE_SYSTEM_NAME = ${CMAKE_SYSTEM_NAME}, CMAKE_HOST_SYSTEM_NAME = ${CMAKE_HOST_SYSTEM_NAME}")
 endif ()
 
+function (clang_cl_library libname kind)
+    if (CLANG_CL_XCC EQUAL 1)
+	add_library("${libname}_base" OBJECT ${ARGN})
+	target_compile_options("${libname}_base" PRIVATE "/MD")
+	set (ASM_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${libname}.asm")
+	set (ASM_OUTPUT_OBJ "${ASM_OUTPUT}.obj")
+	set (OBJ_FILE_LIST "${CMAKE_CURRENT_BINARY_DIR}/obj_list_$<CONFIG>.txt")
+	file (GENERATE OUTPUT "${OBJ_FILE_LIST}" CONTENT "$<JOIN:$<TARGET_OBJECTS:${libname}_base>,\n>")
+	add_custom_command(
+	    OUTPUT
+		"${ASM_OUTPUT}"
+		"${ASM_OUTPUT_OBJ}"
+	    COMMAND
+		    "$<TARGET_FILE_DIR:super_asm_generator>/${NAKED_ASM_GEN_EXEC}"
+		    --output="${ASM_OUTPUT}"
+		    --toolchain="${ZHLGEN_TC}"
+		    --file-list="${OBJ_FILE_LIST}"
+	    COMMAND
+		    nasm -fwin32 -o "${ASM_OUTPUT_OBJ}" "${ASM_OUTPUT}"
+	)
+	add_library ("${libname}" "${kind}" "${ASM_OUTPUT_OBJ}")
+	target_link_libraries ("${libname}" "${libname}_base")
+    else ()
+	add_library ("${libname}" "${kind}" ${ARGN})
+    endif ()
+endfunction ()
+
 set ("CMAKE_CXX_STANDARD" 17)
 set (ISAAC_DIRECTORY "" CACHE PATH "Path to the root directory of the game")
 set (CMAKE_BUILD_TYPE "Debug")
 set (ZHL_LOG_FILE "" CACHE PATH "Path to the file in which logs will be written")
+
+add_executable (super_asm_generator "${CMAKE_SOURCE_DIR}/scripts/naked_asm_generator.cpp")
 
 if (NOT CMAKE_ZHL_VERSION)
     set (CMAKE_ZHL_VERSION "dev")
@@ -65,8 +100,8 @@ if (NOT CMAKE_REPENTOGON_VERSION)
 endif ()
 
 project(RepExtender)
-add_compile_options("$<$<CONFIG:Release>:/Zi>")
-add_link_options("$<$<CONFIG:Release>:/DEBUG>")
+# add_compile_options("$<$<CONFIG:Release>:/Zi>")
+# add_link_options("$<$<CONFIG:Release>:/DEBUG>")
 
 find_package(OpenGL REQUIRED)
 
@@ -75,10 +110,18 @@ include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/libs/lua"
     "${CMAKE_SOURCE_DIR}/libs/LuaBridge/Source/LuaBridge" 
     "${CMAKE_SOURCE_DIR}/libzhl" "${CMAKE_SOURCE_DIR}/libs/imgui" 
     "${CMAKE_SOURCE_DIR}/libs/imgui/misc/freetype" "${CMAKE_SOURCE_DIR}/libs/imgui/backends" 
-    "${CMAKE_SOURCE_DIR}/libs/NaturalSort" "${CMAKE_SOURCE_DIR}/libs/glad/include" "${CMAKE_SOURCE_DIR}/libs/mINI/src/mini")
+    "${CMAKE_SOURCE_DIR}/libs/NaturalSort" "${CMAKE_SOURCE_DIR}/libs/glad/include" "${CMAKE_SOURCE_DIR}/libs/mINI/src/mini"
+    "${CMAKE_SOURCE_DIR}/libs/zydis/include"
+    "${CMAKE_SOURCE_DIR}/libs/zydis/dependencies/zycore/include"
+)
 
 add_compile_definitions("NOMINMAX")
 
+# Old version of rapidjson does not define this for MSVC, which results in
+# build errors.
+if (CLANG_CL_XCC EQUAL 1)
+    add_compile_definitions("RAPIDJSON_HAS_CXX11_RVALUE_REFS")
+endif ()
 # Zydis
 option(ZYDIS_BUILD_TOOLS "" OFF)
 option(ZYDIS_BUILD_EXAMPLES "" OFF)
@@ -95,6 +138,13 @@ include_directories ("libs/antlr4/runtime/Cpp/runtime/src")
 
 # General logger
 add_library(logger STATIC ${CMAKE_SOURCE_DIR}/logger/logger.cpp)
+
+if (CLANG_CL_CXX EQUAL 1)
+    add_executable(
+	naked_asm_generator
+	${CMAKE_SOURCE_DIR}/scripts/naked_asm_generator.cpp
+    )
+endif ()
 
 # Parser
 FILE(GLOB PARSER_SRC ${CMAKE_SOURCE_DIR}/libzhlgen/*.cpp)
@@ -114,18 +164,24 @@ list(REMOVE_ITEM LUA_SRC "${CMAKE_SOURCE_DIR}/libs/lua/onelua.c")
 add_compile_definitions(LUA_BUILD_AS_DLL)
 add_library(Lua5.3.3r SHARED ${LUA_SRC})
 
+set (ZHL_ISAAC_REPENTANCE_ITF_BASENAME "IsaacRepentance.h")
+set (ZHL_ISAAC_REPENTANCE_ITF "${CMAKE_SOURCE_DIR}/libzhl/${ZHL_ISAAC_REPENTANCE_ITF_BASENAME}")
+set (ZHL_ISAAC_REPENTANCE_IMPL "${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp")
+
 # IsaacRepentance.h/.cpp
 FILE(GLOB ZHL_FILES ${CMAKE_SOURCE_DIR}/libzhl/functions/*.zhl)
 LIST(APPEND ZHL_FILES ${CMAKE_SOURCE_DIR}/libzhl/functions/ExtraTypes)
+
 add_custom_command(
-  OUTPUT
-    ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp
-    ${ZHLGEN_ASM_FILE}
-  COMMAND
-  ${ZHLPARSER_RUNNER} "$<TARGET_FILE_DIR:zhlparser>/${ZHLPARSER_EXEC}"
-	    --output-header="${CMAKE_SOURCE_DIR}/include/IsaacRepentance.h"
+    OUTPUT
+	"${ZHL_ISAAC_REPENTANCE_IMPL}"
+	"${ZHLGEN_ASM_FILE}"
+	"${ZHL_ISAAC_REPENTANCE_ASM_OBJ}"
+    COMMAND
+	${WINE_RUNNER} "$<TARGET_FILE_DIR:zhlparser>/${ZHLPARSER_EXEC}"
+	    --output-header="${ZHL_ISAAC_REPENTANCE_ITF}"
 	    --output-header-base="IsaacRepentance.h"
-	    --output-impl="${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp"
+	    --output-impl="${ZHL_ISAAC_REPENTANCE_IMPL}"
             --output-hooks="${CMAKE_SOURCE_DIR}/libzhl/hooks.json"
 	    "${ZHLGEN_ASM}"
 	    "${ZHLGEN_LIB_FLAG}"
@@ -134,27 +190,28 @@ add_custom_command(
 	    "${ZHLGEN_STUB_FLAG}"
             --folder="${CMAKE_SOURCE_DIR}/libzhl/functions"
             --file="${CMAKE_SOURCE_DIR}/libzhl/functions/ExtraTypes"
-            WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/libzhlgen" DEPENDS ${ZHL_FILES} zhlparser
+    COMMAND
+	nasm -f win32 -o "${ZHL_ISAAC_REPENTANCE_ASM_OBJ}" "${ZHLGEN_ASM_FILE}"
+    WORKING_DIRECTORY
+	"${CMAKE_SOURCE_DIR}/libzhlgen"
+    DEPENDS
+	${ZHL_FILES}
+	zhlparser
 )
-set_source_files_properties(${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp PROPERTIES SYMBOLIC TRUE)
+set_source_files_properties(${ZHL_ISAAC_REPENTANCE_IMPL} PROPERTIES SYMBOLIC TRUE)
 
 # ZHL
 FILE(GLOB ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/*.cpp ${CMAKE_SOURCE_DIR}/libzhl/*.h)
 LIST(REMOVE_ITEM ZHL_SRC "${ZHLGEN_LIB_FILE}")
-LIST(APPEND ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp ${CMAKE_SOURCE_DIR}/libs/glad/src/glad.c)
-if (ZHLGEN_NEED_ASM)
-  LIST (APPEND ZHL_SRC ${ZHLGEN_ASM_FILE})
+LIST(APPEND ZHL_SRC "${ZHL_ISAAC_REPENTANCE_IMPL}" ${CMAKE_SOURCE_DIR}/libs/glad/src/glad.c)
+if (CLANG_CL_XCC EQUAL 1)
+    LIST (APPEND ZHL_SRC "${ZHL_ISAAC_REPENTANCE_IMPL}" "${ZHL_ISAAC_REPENTANCE_ASM_OBJ}")
 endif ()
 add_compile_definitions(GLAD_GLAPI_EXPORT GLAD_GLAPI_EXPORT_BUILD)
 add_library(libzhl SHARED ${ZHL_SRC})
 target_compile_options(libzhl PUBLIC "/MD" "/wd4251" "/wd4996")
 target_compile_options(libzhl PRIVATE "/EHs")
 target_compile_definitions(libzhl PRIVATE CMAKE_ZHL_VERSION="${CMAKE_ZHL_VERSION}")
-
-if (CLANG_CL_XCC EQUAL 1)
-  message(STATUS "Forcing C1XX_FORCEINCLUDE for ehdata_forceinclude.h alternate defines")
-  # target_compile_definitions(libzhl PRIVATE BUILDING_C1XX_FORCEINCLUDE)
-endif ()
 
 add_custom_command(TARGET libzhl POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/libzhl/hooks.json" "$<TARGET_FILE_DIR:zhlparser>")
 # wd4251 ignore warning C4251: 'type' : class 'type1' needs to have dll-interface to be used by clients of class 'type2'
@@ -163,7 +220,12 @@ add_custom_command(TARGET libzhl POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${
 # ZHL Loader
 FILE(GLOB ZHL_LOADER_SRC ${CMAKE_SOURCE_DIR}/loader/*.cpp)
 add_library (zhlLoader SHARED ${ZHL_LOADER_SRC})
-target_link_libraries(zhlLoader Imagehlp libzhl)
+if (CLANG_CL_XCC EQUAL 1)
+  set (IMAGEHLP_NAME imagehlp)
+else ()
+  set (IMAGEHLP_NAME Imagehlp)
+endif ()
+target_link_libraries(zhlLoader "${IMAGEHLP_NAME}" libzhl)
 target_compile_options(zhlLoader PUBLIC "/MD" "/wd4996")
 target_compile_definitions(zhlLoader PRIVATE CMAKE_ZHL_VERSION="${CMAKE_ZHL_VERSION}")
 
@@ -237,7 +299,11 @@ foreach(_source IN ITEMS ${REPENTOGON_SRC})
     string(REPLACE "/" "\\" _group_path "${_group_path}")
     source_group("${_group_path}" FILES "${_source}")
 endforeach()
-add_library(zhlREPENTOGON SHARED ${REPENTOGON_SRC} )
+# add_library(zhlREPENTOGON SHARED ${REPENTOGON_SRC} )
+clang_cl_library(zhlREPENTOGON SHARED ${REPENTOGON_SRC})
+if (CLANG_CL_XCC EQUAL 1)
+    target_compile_definitions(zhlREPENTOGON_base PUBLIC IMGUI_USE_WCHAR32)
+endif ()
 target_compile_options(zhlREPENTOGON PUBLIC "/MD" "/MP" "/wd4251" "/wd4996")
 target_compile_options(zhlREPENTOGON PRIVATE "/EHs")
 target_compile_definitions(zhlREPENTOGON PRIVATE NOMINMAX CMAKE_REPENTOGON_VERSION="${CMAKE_REPENTOGON_VERSION}")
@@ -289,7 +355,7 @@ add_library(stb SHARED stbParser/stbParser.cpp)
 add_executable(stbc stbParser/stbParserc.cpp)
 target_link_libraries(stbc stb)
 target_link_libraries(zhlREPENTOGON Lua5.3.3r libzhl freetype "Zydis" imgui ${OPENGL_LIBRARIES})
-target_link_libraries(libzhl Lua5.3.3r "Zydis" dbghelp Imagehlp)
+target_link_libraries(libzhl Lua5.3.3r "Zydis" dbghelp ${IMAGEHLP_NAME})
 
 # Put libraries into folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
