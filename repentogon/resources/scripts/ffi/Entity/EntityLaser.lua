@@ -1,39 +1,39 @@
 local Entity = require("ffi.Entity.Entity")
 
 ffi.cdef("struct EntityLaser { " .. Entity.Fields .. [[
-    private struct Vector ParentOffsetValue : 0x410;
+    private struct Vector ParentOffset : 0x410;
     float StartAngleDegrees : 0x418;
     float AngleDegrees : 0x41c;
     float LastAngleDegrees : 0x420;
-    private struct BitSet128 TearFlagsValue : 0x428;
+    private struct BitSet128 TearFlags : 0x428;
     int Timeout : 0x458;
-    private bool FirstUpdateValue : 0x45c;
-    private bool SampleLaserValue : 0x45d;
-    private bool ShrinkValue : 0x45e;
+    private bool FirstUpdate : 0x45c;
+    private bool SampleLaser : 0x45d;
+    private bool Shrink : 0x45e;
     float LaserLength : 0x460;
-    private struct HomingLaser HomingLaserValue : 0x464;
+    private struct HomingLaser HomingLaser : 0x464;
     // Samples and NonOptimizedSamples overlap HomingLaser but that's fine by FFI cdef convention, we can alias them if we ever properly implement HomingLaser
-    private struct VectorList SamplesValue : 0x480;
-    private struct VectorList NonOptimizedSamplesValue : 0x48c;
+    private struct VectorList Samples : 0x480;
+    private struct VectorList NonOptimizedSamples : 0x48c;
     float CurveStrength : 0x4b8;
     float Radius : 0x4bc;
-    private bool IsActiveRotatingValue : 0x4c0;
+    private bool IsActiveRotating : 0x4c0;
     unsigned int RotationDelay : 0x4c4;
     float RotationDegrees : 0x4c8;
     float RotationSpd : 0x4cc;
     float MaxDistance : 0x4d0;
     uint32_t HomingType : 0x4d4;
-    private struct Vector EndPointValue : 0x4d8;
-    private float ScaleValue : 0x4e0;
-    private bool DisableFollowParentValue : 0x4e4;
-    private struct Entity* BounceLaserValue : 0x4e8;
+    private struct Vector EndPoint : 0x4d8;
+    private float Scale : 0x4e0;
+    private bool DisableFollowParent : 0x4e4;
+    private struct Entity* BounceLaser : 0x4e8;
     float BlackHpDropChance : 0x4f4;
-    private bool MultidimensionalTouchedValue : 0x500;
-    private bool PrismTouchedValue : 0x514;
-    private bool OneHitValue : 0x515;
-    private bool GridHitValue : 0x516;
-    private float DamageMultiplierValue : 0x51c;
-    private int ChainedLasersValue : 0x560;
+    private bool MultidimensionalTouched : 0x500;
+    private bool PrismTouched : 0x514;
+    private bool OneHit : 0x515;
+    private bool GridHit : 0x516;
+    private float DamageMultiplier : 0x51c;
+    private int ChainedLasers : 0x560;
 } : 0x568;
 typedef struct EntityLaser* EntityLaserPtr;
 ]])
@@ -93,19 +93,19 @@ local getters = {
         return self.AngleDegrees
     end,
     TearFlags = function(self)
-        return CopyStruct("struct BitSet128", ffi.getprivate(self, "TearFlagsValue"))
+        return CopyStruct("struct BitSet128", ffi.getprivate(self, "TearFlags"))
     end,
-    ParentOffset = VectorGetter("ParentOffsetValue"),
-    EndPoint = VectorGetter("EndPointValue"),
-    FirstUpdate = Getter("FirstUpdateValue"),
-    SampleLaser = Getter("SampleLaserValue"),
-    Shrink = Getter("ShrinkValue"),
-    IsActiveRotating = Getter("IsActiveRotatingValue"),
-    DisableFollowParent = Getter("DisableFollowParentValue"),
-    BounceLaser = EntityGetter("BounceLaserValue"),
-    HomingLaser = Getter("HomingLaserValue"),
-    OneHit = Getter("OneHitValue"),
-    GridHit = Getter("GridHitValue"),
+    ParentOffset = VectorGetter("ParentOffset"),
+    EndPoint = VectorGetter("EndPoint"),
+    FirstUpdate = Getter("FirstUpdate"),
+    SampleLaser = Getter("SampleLaser"),
+    Shrink = Getter("Shrink"),
+    IsActiveRotating = Getter("IsActiveRotating"),
+    DisableFollowParent = Getter("DisableFollowParent"),
+    BounceLaser = EntityGetter("BounceLaser"),
+    HomingLaser = Getter("HomingLaser"),
+    OneHit = Getter("OneHit"),
+    GridHit = Getter("GridHit"),
 }
 
 local setters = {
@@ -115,15 +115,15 @@ local setters = {
     end,
     TearFlags = function(self, value)
         ffichecks.checkcdata(1, value, "BitSet128")
-        ffi.setprivate(self, "TearFlagsValue", value)
+        ffi.setprivate(self, "TearFlags", value)
     end,
-    ParentOffset = VectorSetter("ParentOffsetValue"),
-    EndPoint = VectorSetter("EndPointValue"),
-    FirstUpdate = AnyBooleanSetter("FirstUpdateValue"),
-    SampleLaser = AnyBooleanSetter("SampleLaserValue"),
-    Shrink = AnyBooleanSetter("ShrinkValue"),
-    IsActiveRotating = AnyBooleanSetter("IsActiveRotatingValue"),
-    DisableFollowParent = AnyBooleanSetter("DisableFollowParentValue"),
+    ParentOffset = VectorSetter("ParentOffset"),
+    EndPoint = VectorSetter("EndPoint"),
+    FirstUpdate = AnyBooleanSetter("FirstUpdate"),
+    SampleLaser = AnyBooleanSetter("SampleLaser"),
+    Shrink = AnyBooleanSetter("Shrink"),
+    IsActiveRotating = AnyBooleanSetter("IsActiveRotating"),
+    DisableFollowParent = AnyBooleanSetter("DisableFollowParent"),
     BounceLaser = function(self, value)
         repentogon.L_EntityLaser_SetBounceLaser(self, EntityToPointer(value))
     end,
@@ -131,8 +131,8 @@ local setters = {
         ffichecks.checkcdata(1, value, "HomingLaser")
         repentogon.L_EntityLaser_SetHomingLaser(self, value)
     end,
-    OneHit = AnyBooleanSetter("OneHitValue"),
-    GridHit = AnyBooleanSetter("GridHitValue"),
+    OneHit = AnyBooleanSetter("OneHit"),
+    GridHit = AnyBooleanSetter("GridHit"),
 }
 
 local methods = {
@@ -146,9 +146,9 @@ local methods = {
         self.TearFlags = self.TearFlags & ~flags
     end,
     FireSplitTear = Entity.Helpers.FireSplitTear,
-    GetDamageMultiplier = Getter("DamageMultiplierValue"),
-    GetDisableFollowParent = Getter("DisableFollowParentValue"),
-    GetEndPoint = Getter("EndPointValue"),
+    GetDamageMultiplier = Getter("DamageMultiplier"),
+    GetDisableFollowParent = Getter("DisableFollowParent"),
+    GetEndPoint = Getter("EndPoint"),
     GetHitList = function(self)
         local result = {}
         for i = 1, repentogon.L_EntityLaser_GetHitListSize(self) do
@@ -156,15 +156,15 @@ local methods = {
         end
         return result
     end,
-    GetNonOptimizedSamples = Getter("NonOptimizedSamplesValue"),
-    GetNumChainedLasers = Getter("ChainedLasersValue"),
-    GetOneHit = Getter("OneHitValue"),
+    GetNonOptimizedSamples = Getter("NonOptimizedSamples"),
+    GetNumChainedLasers = Getter("ChainedLasers"),
+    GetOneHit = Getter("OneHit"),
     GetRenderZ = function(self)
         local result = repentogon.L_Entity_GetRenderZ(self) return result
     end,
-    GetSamples = Getter("SamplesValue"),
-    GetScale = Getter("ScaleValue"),
-    GetShrink = Getter("ShrinkValue"),
+    GetSamples = Getter("Samples"),
+    GetScale = Getter("Scale"),
+    GetShrink = Getter("Shrink"),
     GetTimeout = function(self)
         return self.Timeout
     end,
@@ -178,9 +178,9 @@ local methods = {
         local subType = self.SubType
         return subType == 1 or subType == 2 or subType == 3
     end,
-    IsMultidimensionalTouched = Getter("MultidimensionalTouchedValue"),
-    IsPrismTouched = Getter("PrismTouchedValue"),
-    IsSampleLaser = Getter("SampleLaserValue"),
+    IsMultidimensionalTouched = Getter("MultidimensionalTouched"),
+    IsPrismTouched = Getter("PrismTouched"),
+    IsSampleLaser = Getter("SampleLaser"),
     RecalculateSamplesNextUpdate = function(self)
         repentogon.L_EntityLaser_RecalculateSamplesNextUpdate(self)
     end,
@@ -204,8 +204,8 @@ local methods = {
         chance = ffichecks.checknumber(1, chance)
         self.BlackHpDropChance = chance
     end,
-    SetDamageMultiplier = NumberSetter("DamageMultiplierValue"),
-    SetDisableFollowParent = BooleanSetter("DisableFollowParentValue"),
+    SetDamageMultiplier = NumberSetter("DamageMultiplier"),
+    SetDisableFollowParent = BooleanSetter("DisableFollowParent"),
     SetHomingType = function(self, homingType)
         homingType = ffichecks.checkinteger(1, homingType)
         self.HomingType = homingType
@@ -220,19 +220,19 @@ local methods = {
         distance = ffichecks.checknumber(1, distance)
         self.MaxDistance = distance
     end,
-    SetMultidimensionalTouched = AnyBooleanSetter("MultidimensionalTouchedValue"),
+    SetMultidimensionalTouched = AnyBooleanSetter("MultidimensionalTouched"),
     SetNumChainedLasers = function(self, count)
         count = ffichecks.checkinteger(1, count)
-        ffi.setprivate(self, "ChainedLasersValue", count)
+        ffi.setprivate(self, "ChainedLasers", count)
     end,
-    SetOneHit = AnyBooleanSetter("OneHitValue"),
-    SetPrismTouched = BooleanSetter("PrismTouchedValue"),
+    SetOneHit = AnyBooleanSetter("OneHit"),
+    SetPrismTouched = BooleanSetter("PrismTouched"),
     SetScale = function(self, scale)
         scale = ffichecks.checknumber(1, scale)
-        ffi.setprivate(self, "ScaleValue", scale)
+        ffi.setprivate(self, "Scale", scale)
         repentogon.L_EntityLaser_ResetSpriteScale(self)
     end,
-    SetShrink = BooleanSetter("ShrinkValue"),
+    SetShrink = BooleanSetter("Shrink"),
     SetTimeout = function(self, timeout)
         timeout = ffichecks.checkinteger(1, timeout)
         self.Timeout = timeout

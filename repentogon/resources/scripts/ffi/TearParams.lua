@@ -2,16 +2,16 @@ ffi.cdef[[
 struct TearParams {
     int TearVariant;
     int BombVariant;
-    private struct Color TearColorValue;
+    private struct Color TearColor;
     padding char[0x04]; // Unused field internally.
-    private struct BitSet128 TearFlagsValue;
+    private struct BitSet128 TearFlags;
     float TearDamage;
     float TearScale;
     float TearHeight;
     float MassMultiplier;
     float KnockbackMultiplier;
     float SpeedMultiplier;
-    private int _TearDisplacement;
+    private int TearDisplacement;
 };
 
 typedef struct TearParams* TearParamsPtr;
@@ -32,13 +32,13 @@ TearParamsMT = {
 
 TearParamsMT.__index = function(self, key)
     if key == "TearDisplacement" then
-        local result = ffi.getprivate(self, "_TearDisplacement") return result
+        local result = ffi.getprivate(self, "TearDisplacement") return result
     end
     if key == "TearColor" then
-        return CopyStruct("struct Color", ffi.getprivate(self, "TearColorValue"))
+        return CopyStruct("struct Color", ffi.getprivate(self, "TearColor"))
     end
     if key == "TearFlags" then
-        return CopyStruct("struct BitSet128", ffi.getprivate(self, "TearFlagsValue"))
+        return CopyStruct("struct BitSet128", ffi.getprivate(self, "TearFlags"))
     end
 
     return TearParamsMT[key]
@@ -53,17 +53,17 @@ TearParamsMT.__newindex = function(self, key, value)
             error("TearDisplacement may only be set to -1 or 1")
         end
 
-        ffi.setprivate(self, "_TearDisplacement", value)
+        ffi.setprivate(self, "TearDisplacement", value)
         return
     end
     if key == "TearColor" then
         ffichecks.checkcdata(1, value, "Color")
-        ffi.setprivate(self, "TearColorValue", value)
+        ffi.setprivate(self, "TearColor", value)
         return
     end
     if key == "TearFlags" then
         ffichecks.checkcdata(1, value, "BitSet128")
-        ffi.setprivate(self, "TearFlagsValue", value)
+        ffi.setprivate(self, "TearFlags", value)
         return
     end
 end

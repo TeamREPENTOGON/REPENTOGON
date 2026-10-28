@@ -10,7 +10,7 @@ ffi.cdef [[
         const float InitialWeight : 0x30;
         const float Weight : 0x34;
         const uint32_t Doors : 0x38;
-        private struct RoomConfigSpawn* _Spawns : 0x40;
+        private struct RoomConfigSpawn* Spawns : 0x40;
         const uint16_t SpawnCount : 0x44;
         const int8_t Width : 0x46;
         const int8_t Height : 0x47;
@@ -36,7 +36,7 @@ RoomConfigRoomMT.__index = function(self, key)
     if key == "Name" then
         return ffichecks.stdstring(ffi.getprivate(self, "NameString"))
     elseif key == "Spawns" then
-        return __RoomConfigSpawns_wrap(ffi.getprivate(self, "_Spawns"), self.SpawnCount)
+        return __RoomConfigSpawns_wrap(ffi.getprivate(self, "Spawns"), self.SpawnCount)
     end
     return RoomConfigRoomMT[key]
 end

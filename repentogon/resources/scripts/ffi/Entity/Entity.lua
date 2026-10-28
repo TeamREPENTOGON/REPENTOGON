@@ -1,76 +1,76 @@
 -- The fields every entity has. Subclasses repeat them at the start of their own struct.
 local ENTITY_FIELDS = [[
     padding void* vtable;
-    private float AccumulatedDamageValue : 0x14;
-    private uint32_t IndexValue : 0x20;
-    private uint32_t TypeValue : 0x28;
-    private uint32_t VariantValue : 0x2c;
+    private float AccumulatedDamage : 0x14;
+    private uint32_t Index : 0x20;
+    private uint32_t Type : 0x28;
+    private uint32_t Variant : 0x2c;
     uint32_t SubType : 0x30;
     uint32_t SpawnerType : 0x34;
     uint32_t SpawnerVariant : 0x38;
-    private struct Vector SpriteOffsetValue : 0xdc;
-    private struct Vector SpriteScaleValue : 0xe4;
-    private struct Color SpriteColorValue : 0xf0;
+    private struct Vector SpriteOffset : 0xdc;
+    private struct Vector SpriteScale : 0xe4;
+    private struct Color SpriteColor : 0xf0;
     float SpriteRotation : 0xec;
-    private bool FlipXValue : 0x148;
-    private float ShadowSizeValue : 0x15c;
-    private uint64_t EntityFlagsValue : 0x168;
-    private bool VisibleValue : 0x171;
-    private bool ExistsValue : 0x172;
-    private bool DeadValue : 0x173;
+    private bool FlipX : 0x148;
+    private float ShadowSize : 0x15c;
+    private uint64_t EntityFlags : 0x168;
+    private bool Visible : 0x171;
+    private bool Exists : 0x172;
+    private bool Dead : 0x173;
     int GridCollisionClass : 0x184;
     int EntityCollisionClass : 0x188;
-    private bool CollidesWithGridValue : 0x190;
-    private struct Color ColorValue : 0x1b8;
-    private struct Color SplatColorValue : 0x1e4;
-    private int FireDamageCooldownValue : 0x210;
-    private int DamageCountdownValue : 0x214;
-    private int FreezeCountdownValue : 0x218;
-    private int PoisonCountdownValue : 0x21c;
-    private int SlowingCountdownValue : 0x220;
-    private int CharmedCountdownValue : 0x224;
-    private int ConfusionCountdownValue : 0x228;
-    private int MidasFreezeCountdownValue : 0x22c;
-    private int FearCountdownValue : 0x230;
-    private int BurnCountdownValue : 0x234;
-    private int BossStatusEffectCooldownValue : 0x238;
-    private int ShrinkCountdownValue : 0x23c;
-    private float PoisonDamageValue : 0x278;
-    private float BurnDamageValue : 0x27c;
-    private int PoisonDamageTimerValue : 0x2e0;
-    private int BurnDamageTimerValue : 0x2e4;
-    private int BleedingCountdownValue : 0x2e8;
-    private int MagnetizedCountdownValue : 0x2f0;
-    private int BaitedCountdownValue : 0x2f4;
-    private int KnockbackCountdownValue : 0x2f8;
-    private int WeaknessCountdownValue : 0x2fc;
-    private int IceCountdownValue : 0x300;
-    private int BrimstoneMarkCountdownValue : 0x304;
-    private struct Vector KnockbackDirectionValue : 0x308;
-    private int PauseTimeValue : 0x31c;
-    private int SpawnGridIndexValue : 0x32c;
-    private struct Vector TargetPositionValue : 0x334;
-    private struct Vector PositionValue : 0x33c;
-    private struct Vector PositionOffsetValue : 0x34c;
+    private bool CollidesWithGrid : 0x190;
+    private struct Color Color : 0x1b8;
+    private struct Color SplatColor : 0x1e4;
+    private int FireDamageCooldown : 0x210;
+    private int DamageCountdown : 0x214;
+    private int FreezeCountdown : 0x218;
+    private int PoisonCountdown : 0x21c;
+    private int SlowingCountdown : 0x220;
+    private int CharmedCountdown : 0x224;
+    private int ConfusionCountdown : 0x228;
+    private int MidasFreezeCountdown : 0x22c;
+    private int FearCountdown : 0x230;
+    private int BurnCountdown : 0x234;
+    private int BossStatusEffectCooldown : 0x238;
+    private int ShrinkCountdown : 0x23c;
+    private float PoisonDamage : 0x278;
+    private float BurnDamage : 0x27c;
+    private int PoisonDamageTimer : 0x2e0;
+    private int BurnDamageTimer : 0x2e4;
+    private int BleedingCountdown : 0x2e8;
+    private int MagnetizedCountdown : 0x2f0;
+    private int BaitedCountdown : 0x2f4;
+    private int KnockbackCountdown : 0x2f8;
+    private int WeaknessCountdown : 0x2fc;
+    private int IceCountdown : 0x300;
+    private int BrimstoneMarkCountdown : 0x304;
+    private struct Vector KnockbackDirection : 0x308;
+    private int PauseTime : 0x31c;
+    private int SpawnGridIndex : 0x32c;
+    private struct Vector TargetPosition : 0x334;
+    private struct Vector Position : 0x33c;
+    private struct Vector PositionOffset : 0x34c;
     int RenderZOffset : 0x354;
     float DepthOffset : 0x358;
     int SortingLayer : 0x35c;
-    private struct Vector VelocityValue : 0x360;
+    private struct Vector Velocity : 0x360;
     float Friction : 0x36c;
-    private float SizeValue : 0x370;
-    private struct Vector SizeMultiValue : 0x374;
+    private float Size : 0x370;
+    private struct Vector SizeMulti : 0x374;
     float Mass : 0x37c;
     float HitPoints : 0x380;
     float MaxHitPoints : 0x384;
-    private float CollisionDamageValue : 0x388;
-    private float SpeedMultiplierValue : 0x39c;
-    private bool InvincibleValue : 0x3b0;
-    private struct Entity* ParentValue : 0x3bc;
-    private struct Entity* ChildValue : 0x3c0;
-    private struct Entity* TargetValue : 0x3c4;
-    private struct Entity* SpawnerEntityValue : 0x3c8;
-    private uint32_t DropSeedValue : 0x3dc;
-    private uint32_t InitSeedValue : 0x3ec;
+    private float CollisionDamage : 0x388;
+    private float SpeedMultiplier : 0x39c;
+    private bool Invincible : 0x3b0;
+    private struct Entity* Parent : 0x3bc;
+    private struct Entity* Child : 0x3c0;
+    private struct Entity* Target : 0x3c4;
+    private struct Entity* SpawnerEntity : 0x3c8;
+    private uint32_t DropSeed : 0x3dc;
+    private uint32_t InitSeed : 0x3ec;
 ]]
 
 ffi.cdef("struct Entity { " .. ENTITY_FIELDS .. " } : 0x410;")
@@ -273,34 +273,34 @@ local function EntityGetter(field)
 end
 
 local getters = {
-    Type = Getter("TypeValue"),
-    Variant = Getter("VariantValue"),
-    Index = Getter("IndexValue"),
-    SpawnGridIndex = Getter("SpawnGridIndexValue"),
-    InitSeed = Getter("InitSeedValue"),
-    DropSeed = Getter("DropSeedValue"),
+    Type = Getter("Type"),
+    Variant = Getter("Variant"),
+    Index = Getter("Index"),
+    SpawnGridIndex = Getter("SpawnGridIndex"),
+    InitSeed = Getter("InitSeed"),
+    DropSeed = Getter("DropSeed"),
     FrameCount = function(self)
         local result = repentogon.L_Entity_GetFrameCount(self) return result
     end,
-    Position = VectorGetter("PositionValue"),
-    Velocity = VectorGetter("VelocityValue"),
-    SizeMulti = VectorGetter("SizeMultiValue"),
-    PositionOffset = VectorReferenceGetter("PositionOffsetValue"),
-    SpriteOffset = VectorReferenceGetter("SpriteOffsetValue"),
-    SpriteScale = VectorReferenceGetter("SpriteScaleValue"),
-    TargetPosition = VectorReferenceGetter("TargetPositionValue"),
+    Position = VectorGetter("Position"),
+    Velocity = VectorGetter("Velocity"),
+    SizeMulti = VectorGetter("SizeMulti"),
+    PositionOffset = VectorReferenceGetter("PositionOffset"),
+    SpriteOffset = VectorReferenceGetter("SpriteOffset"),
+    SpriteScale = VectorReferenceGetter("SpriteScale"),
+    TargetPosition = VectorReferenceGetter("TargetPosition"),
     Color = function(self)
-        return CopyStruct("struct Color", ffi.getprivate(self, "ColorValue"))
+        return CopyStruct("struct Color", ffi.getprivate(self, "Color"))
     end,
-    SplatColor = Getter("SplatColorValue"),
-    Visible = Getter("VisibleValue"),
-    FlipX = Getter("FlipXValue"),
-    Size = Getter("SizeValue"),
-    CollisionDamage = Getter("CollisionDamageValue"),
-    Parent = EntityGetter("ParentValue"),
-    Child = EntityGetter("ChildValue"),
-    Target = EntityGetter("TargetValue"),
-    SpawnerEntity = EntityGetter("SpawnerEntityValue"),
+    SplatColor = Getter("SplatColor"),
+    Visible = Getter("Visible"),
+    FlipX = Getter("FlipX"),
+    Size = Getter("Size"),
+    CollisionDamage = Getter("CollisionDamage"),
+    Parent = EntityGetter("Parent"),
+    Child = EntityGetter("Child"),
+    Target = EntityGetter("Target"),
+    SpawnerEntity = EntityGetter("SpawnerEntity"),
 }
 
 local setters = {
@@ -308,26 +308,26 @@ local setters = {
         value = ffichecks.checkinteger(1, value)
         repentogon.L_Entity_SetVariant(self, value)
     end,
-    Position = VectorSetter("PositionValue"),
-    Velocity = VectorSetter("VelocityValue"),
-    SizeMulti = VectorSetter("SizeMultiValue"),
-    PositionOffset = VectorSetter("PositionOffsetValue"),
-    SpriteOffset = VectorSetter("SpriteOffsetValue"),
-    SpriteScale = VectorSetter("SpriteScaleValue"),
-    TargetPosition = VectorSetter("TargetPositionValue"),
+    Position = VectorSetter("Position"),
+    Velocity = VectorSetter("Velocity"),
+    SizeMulti = VectorSetter("SizeMulti"),
+    PositionOffset = VectorSetter("PositionOffset"),
+    SpriteOffset = VectorSetter("SpriteOffset"),
+    SpriteScale = VectorSetter("SpriteScale"),
+    TargetPosition = VectorSetter("TargetPosition"),
     Color = function(self, value)
         ffichecks.checkcdata(1, value, "Color")
         repentogon.L_Entity_SetColor(self, value, -1, 255, false, true)
     end,
     SplatColor = function(self, value)
         ffichecks.checkcdata(1, value, "Color")
-        ffi.setprivate(self, "SplatColorValue", value)
+        ffi.setprivate(self, "SplatColor", value)
     end,
     Visible = function(self, value)
-        ffi.setprivate(self, "VisibleValue", not not value)
+        ffi.setprivate(self, "Visible", not not value)
     end,
     FlipX = function(self, value)
-        ffi.setprivate(self, "FlipXValue", not not value)
+        ffi.setprivate(self, "FlipX", not not value)
     end,
     Size = function(self, value)
         value = ffichecks.checknumber(1, value)
@@ -354,27 +354,27 @@ local setters = {
 local methods = {}
 
 local COUNTERS = {
-    { "FireDamageCooldown", "FireDamageCooldownValue" },
-    { "FreezeCountdown", "FreezeCountdownValue" },
-    { "PoisonCountdown", "PoisonCountdownValue" },
-    { "SlowingCountdown", "SlowingCountdownValue" },
-    { "CharmedCountdown", "CharmedCountdownValue" },
-    { "ConfusionCountdown", "ConfusionCountdownValue" },
-    { "MidasFreezeCountdown", "MidasFreezeCountdownValue" },
-    { "FearCountdown", "FearCountdownValue" },
-    { "BurnCountdown", "BurnCountdownValue" },
-    { "ShrinkCountdown", "ShrinkCountdownValue" },
-    { "BleedingCountdown", "BleedingCountdownValue" },
-    { "MagnetizedCountdown", "MagnetizedCountdownValue" },
-    { "BaitedCountdown", "BaitedCountdownValue" },
-    { "KnockbackCountdown", "KnockbackCountdownValue" },
-    { "WeaknessCountdown", "WeaknessCountdownValue" },
-    { "IceCountdown", "IceCountdownValue" },
-    { "BrimstoneMarkCountdown", "BrimstoneMarkCountdownValue" },
-    { "PoisonDamageTimer", "PoisonDamageTimerValue" },
-    { "BurnDamageTimer", "BurnDamageTimerValue" },
-    { "BossStatusEffectCooldown", "BossStatusEffectCooldownValue" },
-    { "PauseTime", "PauseTimeValue" },
+    { "FireDamageCooldown", "FireDamageCooldown" },
+    { "FreezeCountdown", "FreezeCountdown" },
+    { "PoisonCountdown", "PoisonCountdown" },
+    { "SlowingCountdown", "SlowingCountdown" },
+    { "CharmedCountdown", "CharmedCountdown" },
+    { "ConfusionCountdown", "ConfusionCountdown" },
+    { "MidasFreezeCountdown", "MidasFreezeCountdown" },
+    { "FearCountdown", "FearCountdown" },
+    { "BurnCountdown", "BurnCountdown" },
+    { "ShrinkCountdown", "ShrinkCountdown" },
+    { "BleedingCountdown", "BleedingCountdown" },
+    { "MagnetizedCountdown", "MagnetizedCountdown" },
+    { "BaitedCountdown", "BaitedCountdown" },
+    { "KnockbackCountdown", "KnockbackCountdown" },
+    { "WeaknessCountdown", "WeaknessCountdown" },
+    { "IceCountdown", "IceCountdown" },
+    { "BrimstoneMarkCountdown", "BrimstoneMarkCountdown" },
+    { "PoisonDamageTimer", "PoisonDamageTimer" },
+    { "BurnDamageTimer", "BurnDamageTimer" },
+    { "BossStatusEffectCooldown", "BossStatusEffectCooldown" },
+    { "PauseTime", "PauseTime" },
 }
 for _, counter in ipairs(COUNTERS) do
     local field = counter[2]
@@ -383,10 +383,10 @@ for _, counter in ipairs(COUNTERS) do
 end
 
 local NUMBERS = {
-    { "PoisonDamage", "PoisonDamageValue" },
-    { "BurnDamage", "BurnDamageValue" },
-    { "SpeedMultiplier", "SpeedMultiplierValue" },
-    { "ShadowSize", "ShadowSizeValue" },
+    { "PoisonDamage", "PoisonDamage" },
+    { "BurnDamage", "BurnDamage" },
+    { "SpeedMultiplier", "SpeedMultiplier" },
+    { "ShadowSize", "ShadowSize" },
 }
 for _, number in ipairs(NUMBERS) do
     local field = number[2]
@@ -451,7 +451,7 @@ local TYPE_EFFECT = 1000
 local classTypes = {}
 
 local function ToClass(self, wantedType)
-    if ffi.getprivate(self, "TypeValue") ~= wantedType then
+    if ffi.getprivate(self, "Type") ~= wantedType then
         return nil
     end
     local result = ffi.cast(classTypes[wantedType], self) return result
@@ -479,7 +479,7 @@ Methods {
     AddConfusion = BossEffect(repentogon.L_Entity_AddConfusion, false),
     AddEntityFlags = function(self, flags)
         flags = ffichecks.checkinteger64(1, flags)
-        ffi.setprivate(self, "EntityFlagsValue", ffi.getprivate(self, "EntityFlagsValue") | flags)
+        ffi.setprivate(self, "EntityFlags", ffi.getprivate(self, "EntityFlags") | flags)
     end,
     AddFear = BossEffect(repentogon.L_Entity_AddFear, false),
     AddFreeze = BossEffect(repentogon.L_Entity_AddFreeze, false),
@@ -522,9 +522,9 @@ Methods {
     CanShutDoors = BoolMethod(repentogon.L_Entity_CanShutDoors),
     ClearEntityFlags = function(self, flags)
         flags = ffichecks.checkinteger64(1, flags)
-        ffi.setprivate(self, "EntityFlagsValue", ffi.getprivate(self, "EntityFlagsValue") & ~ffi.cast("uint64_t", flags))
+        ffi.setprivate(self, "EntityFlags", ffi.getprivate(self, "EntityFlags") & ~ffi.cast("uint64_t", flags))
     end,
-    CollidesWithGrid = Getter("CollidesWithGridValue"),
+    CollidesWithGrid = Getter("CollidesWithGrid"),
     ComputeStatusEffectDuration = function(self, initial, source)
         initial = ffichecks.checkinteger(1, initial)
         ffichecks.checkcdata(2, source, "EntityRef")
@@ -534,9 +534,9 @@ Methods {
         repentogon.L_Entity_CopyStatusEffects(self, EntityToPointer(other), ffichecks.optboolean(overwrite, false))
     end,
     Die = function(self)
-        ffi.setprivate(self, "DeadValue", true)
+        ffi.setprivate(self, "Dead", true)
     end,
-    Exists = Getter("ExistsValue"),
+    Exists = Getter("Exists"),
     ForceCollide = function(self, collider, low)
         low = ffichecks.checkboolean(2, low)
         local result = repentogon.L_Entity_ForceCollide(self, EntityToPointer(collider), low) return result
@@ -550,7 +550,7 @@ Methods {
         repentogon.L_Entity_GetCollisionCapsule(self, offset or Vector(0, 0), capsule)
         return capsule
     end,
-    GetColor = Getter("SpriteColorValue"),
+    GetColor = Getter("SpriteColor"),
     GetColorParams = function(self)
         local result = {}
         for i = 0, repentogon.L_Entity_GetColorParamsCount(self) - 1 do
@@ -558,7 +558,7 @@ Methods {
         end
         return result
     end,
-    GetDamageCountdown = Getter("DamageCountdownValue"),
+    GetDamageCountdown = Getter("DamageCountdown"),
     GetData = function(self)
         return _GetEntityData(self)
     end,
@@ -573,7 +573,7 @@ Methods {
         local result = repentogon.L_Entity_GetEntityConfigEntity(self) return result
     end,
     GetEntityFlags = function(self)
-        return Flags64(ffi.getprivate(self, "EntityFlagsValue"))
+        return Flags64(ffi.getprivate(self, "EntityFlags"))
     end,
     GetHitListIndex = function(self)
         local result = repentogon.L_Entity_GetHitListIndex(self) return result
@@ -616,8 +616,8 @@ Methods {
     end,
     GetPosVel = function(self)
         local result = ffi.new("struct PosVel")
-        ffi.setprivate(result, "PositionValue", ffi.getprivate(self, "PositionValue"))
-        ffi.setprivate(result, "VelocityValue", ffi.getprivate(self, "VelocityValue"))
+        ffi.setprivate(result, "Position", ffi.getprivate(self, "Position"))
+        ffi.setprivate(result, "Velocity", ffi.getprivate(self, "Velocity"))
         return result
     end,
     GetPredictedTargetPosition = function(self, target, delay)
@@ -627,13 +627,13 @@ Methods {
         return result
     end,
     GetKnockbackDirection = function(self)
-        local direction = ffi.getprivate(self, "KnockbackDirectionValue")
+        local direction = ffi.getprivate(self, "KnockbackDirection")
         return Vector(direction.X, direction.Y)
     end,
     GetSprite = function(self)
         local result = repentogon.L_Entity_GetSprite(self) return result
     end,
-    GetType = Getter("TypeValue"),
+    GetType = Getter("Type"),
     GetWaterClipFlags = function(self)
         local result = repentogon.L_Entity_GetWaterClipFlags(self) return result
     end,
@@ -652,13 +652,13 @@ Methods {
     end,
     HasEntityFlags = function(self, flags)
         flags = ffichecks.checkinteger64(1, flags)
-        return (ffi.getprivate(self, "EntityFlagsValue") & ffi.cast("uint64_t", flags)) ~= 0
+        return (ffi.getprivate(self, "EntityFlags") & ffi.cast("uint64_t", flags)) ~= 0
     end,
     HasFullHealth = function(self)
         return self.HitPoints >= self.MaxHitPoints
     end,
     HasMortalDamage = function(self)
-        return ffi.getprivate(self, "AccumulatedDamageValue") >= self.HitPoints
+        return ffi.getprivate(self, "AccumulatedDamage") >= self.HitPoints
     end,
     IgnoreEffectFromFriendly = function(self, source)
         ffichecks.checkcdata(1, source, "EntityRef")
@@ -668,7 +668,7 @@ Methods {
         local result = repentogon.L_Entity_IsActiveEnemy(self, ffichecks.optboolean(includeDead, false)) return result
     end,
     IsBoss = BoolMethod(repentogon.L_Entity_IsBoss),
-    IsDead = Getter("DeadValue"),
+    IsDead = Getter("Dead"),
     IsEnemy = BoolMethod(repentogon.L_Entity_IsEnemy),
     IsFlying = BoolMethod(repentogon.L_Entity_IsFlying),
     IsFrame = function(self, frame, offset)
@@ -676,8 +676,8 @@ Methods {
         offset = ffichecks.checkinteger(2, offset)
         local result = repentogon.L_Entity_IsFrame(self, frame, offset) return result
     end,
-    IsInvincible = Getter("InvincibleValue"),
-    IsVisible = Getter("VisibleValue"),
+    IsInvincible = Getter("Invincible"),
+    IsVisible = Getter("Visible"),
     IsVulnerableEnemy = function(self, source)
         local result = repentogon.L_Entity_IsVulnerableEnemy(self, EntityToPointer(source)) return result
     end,
@@ -735,17 +735,17 @@ Methods {
         if countdown < 0 then
             countdown = 0
         end
-        ffi.setprivate(self, "DamageCountdownValue", countdown)
+        ffi.setprivate(self, "DamageCountdown", countdown)
     end,
     SetDead = function(self, dead)
-        ffi.setprivate(self, "DeadValue", ffichecks.checkboolean(1, dead))
+        ffi.setprivate(self, "Dead", ffichecks.checkboolean(1, dead))
     end,
     SetInvincible = function(self, invincible)
-        ffi.setprivate(self, "InvincibleValue", ffichecks.checkboolean(1, invincible))
+        ffi.setprivate(self, "Invincible", ffichecks.checkboolean(1, invincible))
     end,
     SetKnockbackDirection = function(self, direction)
         ffichecks.checkcdata(1, direction, "Vector")
-        ffi.setprivate(self, "KnockbackDirectionValue", direction)
+        ffi.setprivate(self, "KnockbackDirection", direction)
     end,
     SetSize = function(self, size, sizeMulti, numGridCollisionPoints)
         size = ffichecks.checknumber(1, size)
@@ -805,7 +805,7 @@ Methods {
         return ToClass(self, TYPE_LASER)
     end,
     ToNPC = function(self)
-        local entityType = ffi.getprivate(self, "TypeValue")
+        local entityType = ffi.getprivate(self, "Type")
         if entityType < 10 or entityType == TYPE_EFFECT then
             return nil
         end

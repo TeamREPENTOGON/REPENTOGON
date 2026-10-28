@@ -1,14 +1,14 @@
 local Entity = require("ffi.Entity.Entity")
 
 ffi.cdef("struct EntitySlot { " .. Entity.Fields .. [[
-    private int StateValue : 0x410;
-    private int PrizeTypeValue : 0x414;
-    private int16_t ShellGameAnimationIndexValue : 0x41a;
-    private int16_t TimeoutValue : 0x41c;
-    private int DonationValueValue : 0x420;
-    private uint32_t TriggerTimerNumValue : 0x424;
-    private uint16_t TouchValue : 0x42a;
-    private int PrizeCollectibleValue : 0x540;
+    private int State : 0x410;
+    private int PrizeType : 0x414;
+    private int16_t ShellGameAnimationIndex : 0x41a;
+    private int16_t Timeout : 0x41c;
+    private int DonationValue : 0x420;
+    private uint32_t TriggerTimerNum : 0x424;
+    private uint16_t Touch : 0x42a;
+    private int PrizeCollectible : 0x540;
 } : 0x548;
 typedef struct EntitySlot* EntitySlotPtr;
 ]])
@@ -43,31 +43,31 @@ local methods = {
     CreateDropsFromExplosion = function(self)
         repentogon.L_EntitySlot_CreateDropsFromExplosion(self)
     end,
-    GetDonationValue = Getter("DonationValueValue"),
-    GetPrizeCollectible = Getter("PrizeCollectibleValue"),
+    GetDonationValue = Getter("DonationValue"),
+    GetPrizeCollectible = Getter("PrizeCollectible"),
     GetPrizeSprite = function(self)
         local result = repentogon.L_EntitySlot_GetPrizeSprite(self) return result
     end,
-    GetPrizeType = Getter("PrizeTypeValue"),
-    GetShellGameAnimationIndex = Getter("ShellGameAnimationIndexValue"),
-    GetState = Getter("StateValue"),
-    GetTimeout = Getter("TimeoutValue"),
-    GetTouch = Getter("TouchValue"),
-    GetTriggerTimerNum = Getter("TriggerTimerNumValue"),
+    GetPrizeType = Getter("PrizeType"),
+    GetShellGameAnimationIndex = Getter("ShellGameAnimationIndex"),
+    GetState = Getter("State"),
+    GetTimeout = Getter("Timeout"),
+    GetTouch = Getter("Touch"),
+    GetTriggerTimerNum = Getter("TriggerTimerNum"),
     RandomCoinJamAnim = function(self)
         return COIN_JAM_ANIMS[repentogon.L_EntitySlot_RandomCoinJamIndex()]
     end,
-    SetDonationValue = IntegerSetter("DonationValueValue"),
+    SetDonationValue = IntegerSetter("DonationValue"),
     SetPrizeCollectible = function(self, collectible)
         collectible = ffichecks.checkinteger(1, collectible)
         repentogon.L_EntitySlot_SetPrizeCollectible(self, collectible)
     end,
-    SetPrizeType = IntegerSetter("PrizeTypeValue"),
-    SetShellGameAnimationIndex = IntegerSetter("ShellGameAnimationIndexValue"),
-    SetState = IntegerSetter("StateValue"),
-    SetTimeout = IntegerSetter("TimeoutValue"),
-    SetTouch = IntegerSetter("TouchValue"),
-    SetTriggerTimerNum = IntegerSetter("TriggerTimerNumValue"),
+    SetPrizeType = IntegerSetter("PrizeType"),
+    SetShellGameAnimationIndex = IntegerSetter("ShellGameAnimationIndex"),
+    SetState = IntegerSetter("State"),
+    SetTimeout = IntegerSetter("Timeout"),
+    SetTouch = IntegerSetter("Touch"),
+    SetTriggerTimerNum = IntegerSetter("TriggerTimerNum"),
 }
 
 local SlotMT = Entity.Inherit("EntitySlot", methods)

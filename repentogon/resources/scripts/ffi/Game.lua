@@ -1,15 +1,15 @@
 ffi.cdef [[
     struct Game {
         private struct Room* CurrentRoom : 0x18300;
-        private struct ItemPool ItemPoolValue : 0x1a740;
-        private struct Seeds SeedsValue : 0x1bb84;
-        private struct HUD HUDValue : 0x1d9ac;
+        private struct ItemPool ItemPool : 0x1a740;
+        private struct Seeds Seeds : 0x1bb84;
+        private struct HUD HUD : 0x1d9ac;
         int FrameCount : 0x25a70;
-        private int TimeCounterValue : 0x25a74;
-        private int BossRushParTimeValue : 0x25a78;
-        private int BlueWombParTimeValue : 0x25a7c;
+        private int TimeCounter : 0x25a74;
+        private int BossRushParTime : 0x25a78;
+        private int BlueWombParTime : 0x25a7c;
         private int ScreenShakeCountdown : 0x25a80;
-        private struct Vector ScreenShakeOffsetValue : 0x25a84;
+        private struct Vector ScreenShakeOffset : 0x25a84;
         private int DarknessDuration : 0x25a8c;
         private float DarknessModifier : 0x25a90;
         private float TargetDarkness : 0x25a94;
@@ -24,11 +24,11 @@ ffi.cdef [[
         private int DonationModGreed : 0x25ae4;
         private int DonationModAngel : 0x25ae8;
         private int ShopVisits : 0x25aec;
-        private unsigned int ChallengeValue : 0x25afc;
+        private unsigned int Challenge : 0x25afc;
         private bool Rerun : 0x25b00;
         private int VictoryLap : 0x25cec;
         private int LastLevelWithoutHalfHp : 0x25f38;
-        private unsigned int DifficultyValue : 0x25f40;
+        private unsigned int Difficulty : 0x25f40;
         private int LastLevelWithDamage : 0x25f44;
         private uint8_t* EncounteredBossesBegin : 0x25f4c;
         private uint8_t* EncounteredBossesEnd : 0x25f50;
@@ -216,22 +216,22 @@ local function BoolMethod(export)
 end
 
 local getters = {
-    BlueWombParTime = Getter("BlueWombParTimeValue"),
-    BossRushParTime = Getter("BossRushParTimeValue"),
-    Challenge = Getter("ChallengeValue"),
-    Difficulty = Getter("DifficultyValue"),
-    ScreenShakeOffset = Getter("ScreenShakeOffsetValue"),
-    TimeCounter = Getter("TimeCounterValue"),
+    BlueWombParTime = Getter("BlueWombParTime"),
+    BossRushParTime = Getter("BossRushParTime"),
+    Challenge = Getter("Challenge"),
+    Difficulty = Getter("Difficulty"),
+    ScreenShakeOffset = Getter("ScreenShakeOffset"),
+    TimeCounter = Getter("TimeCounter"),
 }
 
 local setters = {
     BlueWombParTime = function(self, value)
         value = ffichecks.checkinteger(3, value)
-        ffi.setprivate(self, "BlueWombParTimeValue", value)
+        ffi.setprivate(self, "BlueWombParTime", value)
     end,
     BossRushParTime = function(self, value)
         value = ffichecks.checkinteger(3, value)
-        ffi.setprivate(self, "BossRushParTimeValue", value)
+        ffi.setprivate(self, "BossRushParTime", value)
     end,
     Challenge = function(self, value)
         value = ffichecks.checkinteger(3, value)
@@ -240,18 +240,18 @@ local setters = {
     Difficulty = function(self, value)
         value = ffichecks.checkinteger(3, value)
         if value >= 0 and value <= 3 then
-            ffi.setprivate(self, "DifficultyValue", value)
+            ffi.setprivate(self, "Difficulty", value)
         end
     end,
     ScreenShakeOffset = function(self, value)
         ffichecks.checkcdata(3, value, "Vector")
-        local offset = ffi.getprivate(self, "ScreenShakeOffsetValue")
+        local offset = ffi.getprivate(self, "ScreenShakeOffset")
         offset.X = value.X
         offset.Y = value.Y
     end,
     TimeCounter = function(self, value)
         value = ffichecks.checkinteger(3, value)
-        ffi.setprivate(self, "TimeCounterValue", value)
+        ffi.setprivate(self, "TimeCounter", value)
     end,
 }
 
@@ -422,16 +422,16 @@ GameMT = {
         return prompt
     end,
     GetGreedBossWaveNum = function(self)
-        return ffi.getprivate(self, "DifficultyValue") == 3 and 10 or 9
+        return ffi.getprivate(self, "Difficulty") == 3 and 10 or 9
     end,
     GetGreedWavesNum = function(self)
-        return ffi.getprivate(self, "DifficultyValue") == 3 and 12 or 11
+        return ffi.getprivate(self, "Difficulty") == 3 and 12 or 11
     end,
-    GetHUD = Getter("HUDValue"),
+    GetHUD = Getter("HUD"),
     GetItemOverlay = function(self)
         return ItemOverlay
     end,
-    GetItemPool = Getter("ItemPoolValue"),
+    GetItemPool = Getter("ItemPool"),
     GetLastDevilRoomStage = Getter("LastDevilRoomStage"),
     GetLastLevelWithDamage = Getter("LastLevelWithDamage"),
     GetLastLevelWithoutHalfHp = Getter("LastLevelWithoutHalfHp"),
@@ -465,7 +465,7 @@ GameMT = {
     end,
     GetRoom = Getter("CurrentRoom"),
     GetScreenShakeCountdown = Getter("ScreenShakeCountdown"),
-    GetSeeds = Getter("SeedsValue"),
+    GetSeeds = Getter("Seeds"),
     GetShopVisits = Getter("ShopVisits"),
     GetStagesWithoutDamage = Getter("StagesWithoutDamage"),
     GetStagesWithoutHeartsPicked = Getter("StagesWithoutHeartsPicked"),

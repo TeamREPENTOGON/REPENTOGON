@@ -35,7 +35,7 @@ ffi.cdef [[
         private int SecondBossID : 0x1bb4;
         private struct Backdrop Backdrop : 0x1bc8;
         private int ShopLevel : 0x7068;
-        private bool _HasTriggerPressurePlates : 0x7229;
+        private bool HasTriggerPressurePlates : 0x7229;
         private bool FirstEnemyDead : 0x72a0;
         private int WallBloodDuration : 0x7214;
 	    private int WallBloodCount : 0x7218;
@@ -50,7 +50,7 @@ ffi.cdef [[
         private struct Color FloorColor : 0x72a4;
         private struct Color WallColor : 0x72d0;
         private struct TemporaryEffects TemporaryEffects : 0x7310;
-        private bool _StopRain : 0x745c;
+        private bool StopRain : 0x745c;
         private int NumRainSpawners : 0x7454;
         private float RainIntensity : 0x7458;
         private struct Vector WaterCurrent : 0x7460;
@@ -601,7 +601,7 @@ RoomMT = {
         return ffi.getprivate(self, "SlowDownDuration") > 0
     end,
     HasTriggerPressurePlates = function(self)
-        local result = ffi.getprivate(self, "_HasTriggerPressurePlates") return result
+        local result = ffi.getprivate(self, "HasTriggerPressurePlates") return result
     end,
     HasWater = function(self)
         return ffi.getprivate(self, "WaterAmount") > 0
@@ -859,7 +859,7 @@ RoomMT = {
         end
     end,
     StopRain = function(self)
-        ffi.setprivate(self, "_StopRain", true)
+        ffi.setprivate(self, "StopRain", true)
     end,
     TriggerClear = function(self, silent)
         silent = ffichecks.optboolean(silent, false)

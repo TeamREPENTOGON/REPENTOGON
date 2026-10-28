@@ -1,28 +1,28 @@
 local Entity = require("ffi.Entity.Entity")
 
 ffi.cdef("struct EntityTear { " .. Entity.Fields .. [[
-    private float HeightValue : 0x410;
+    private float Height : 0x410;
     float FallingSpeed : 0x414;
     float FallingAcceleration : 0x418;
     float HomingFriction : 0x41c;
-    private float ScaleValue : 0x420;
-    private float BaseScaleValue : 0x424;
-    private struct BitSet128 TearFlagsValue : 0x428;
+    private float Scale : 0x420;
+    private float BaseScale : 0x424;
+    private struct BitSet128 TearFlags : 0x428;
     int WaitFrames : 0x438;
-    private struct Vector ContinueVelocityValue : 0x43c;
-    private int TearIndexValue : 0x450;
-    private float BaseDamageValue : 0x454;
+    private struct Vector ContinueVelocity : 0x43c;
+    private int TearIndex : 0x450;
+    private float BaseDamage : 0x454;
     float Rotation : 0x458;
     float KnockbackMultiplier : 0x460;
-    private float DeadEyeIntensityValue : 0x464;
-    private bool MultidimensionalTouchedValue : 0x468;
-    private bool PrismTouchedValue : 0x469;
-    private struct Entity* StickTargetValue : 0x478;
-    private struct Vector StickDiffValue : 0x47c;
+    private float DeadEyeIntensity : 0x464;
+    private bool MultidimensionalTouched : 0x468;
+    private bool PrismTouched : 0x469;
+    private struct Entity* StickTarget : 0x478;
+    private struct Vector StickDiff : 0x47c;
     int StickTimer : 0x484;
-    private bool CanTriggerStreakEndValue : 0x7e8;
-    private struct Vector PosDisplacementValue : 0x7ec;
-    private struct Vector ParentOffsetValue : 0x7f4;
+    private bool CanTriggerStreakEnd : 0x7e8;
+    private struct Vector PosDisplacement : 0x7ec;
+    private struct Vector ParentOffset : 0x7f4;
 } : 0x848;
 typedef struct EntityTear* EntityTearPtr;
 ]])
@@ -67,20 +67,20 @@ local TYPE_TEAR = 2
 local VARIANT_GRIDENT = 40
 
 local getters = {
-    Height = Getter("HeightValue"),
-    Scale = Getter("ScaleValue"),
-    BaseScale = Getter("BaseScaleValue"),
+    Height = Getter("Height"),
+    Scale = Getter("Scale"),
+    BaseScale = Getter("BaseScale"),
     TearFlags = function(self)
-        return CopyStruct("struct BitSet128", ffi.getprivate(self, "TearFlagsValue"))
+        return CopyStruct("struct BitSet128", ffi.getprivate(self, "TearFlags"))
     end,
-    ContinueVelocity = VectorGetter("ContinueVelocityValue"),
-    TearIndex = Getter("TearIndexValue"),
-    BaseDamage = Getter("BaseDamageValue"),
-    StickTarget = EntityGetter("StickTargetValue"),
-    StickDiff = VectorGetter("StickDiffValue"),
-    CanTriggerStreakEnd = Getter("CanTriggerStreakEndValue"),
-    PosDisplacement = Getter("PosDisplacementValue"),
-    ParentOffset = VectorGetter("ParentOffsetValue"),
+    ContinueVelocity = VectorGetter("ContinueVelocity"),
+    TearIndex = Getter("TearIndex"),
+    BaseDamage = Getter("BaseDamage"),
+    StickTarget = EntityGetter("StickTarget"),
+    StickDiff = VectorGetter("StickDiff"),
+    CanTriggerStreakEnd = Getter("CanTriggerStreakEnd"),
+    PosDisplacement = Getter("PosDisplacement"),
+    ParentOffset = VectorGetter("ParentOffset"),
 }
 
 local setters = {
@@ -94,17 +94,17 @@ local setters = {
     end,
     TearFlags = function(self, value)
         ffichecks.checkcdata(1, value, "BitSet128")
-        ffi.setprivate(self, "TearFlagsValue", value)
+        ffi.setprivate(self, "TearFlags", value)
     end,
-    ContinueVelocity = VectorSetter("ContinueVelocityValue"),
+    ContinueVelocity = VectorSetter("ContinueVelocity"),
     StickTarget = function(self, value)
-        ffi.setprivate(self, "StickTargetValue", EntityToPointer(value))
+        ffi.setprivate(self, "StickTarget", EntityToPointer(value))
     end,
-    StickDiff = VectorSetter("StickDiffValue"),
+    StickDiff = VectorSetter("StickDiff"),
     CanTriggerStreakEnd = function(self, value)
-        ffi.setprivate(self, "CanTriggerStreakEndValue", not not value)
+        ffi.setprivate(self, "CanTriggerStreakEnd", not not value)
     end,
-    ParentOffset = VectorSetter("ParentOffsetValue"),
+    ParentOffset = VectorSetter("ParentOffset"),
 }
 
 local methods = {
@@ -127,12 +127,12 @@ local methods = {
     FireSplitTear = Entity.Helpers.FireSplitTear,
     GetBackdropType = function(self)
         -- only grid entity tears store a backdrop type in the tear index
-        if ffi.getprivate(self, "VariantValue") == VARIANT_GRIDENT then
-            return ffi.getprivate(self, "TearIndexValue")
+        if ffi.getprivate(self, "Variant") == VARIANT_GRIDENT then
+            return ffi.getprivate(self, "TearIndex")
         end
         return 0 -- BACKDROP_NULL
     end,
-    GetDeadEyeIntensity = Getter("DeadEyeIntensityValue"),
+    GetDeadEyeIntensity = Getter("DeadEyeIntensity"),
     GetDeadEyeSprite = function(self)
         local result = repentogon.L_EntityTear_GetDeadEyeSprite(self) return result
     end,
@@ -155,8 +155,8 @@ local methods = {
     InHitList = function(self, entity)
         local result = repentogon.L_EntityTear_InHitList(self, ffichecks.checkentity(1, entity)) return result
     end,
-    IsMultidimensionalTouched = Getter("MultidimensionalTouchedValue"),
-    IsPrismTouched = Getter("PrismTouchedValue"),
+    IsMultidimensionalTouched = Getter("MultidimensionalTouched"),
+    IsPrismTouched = Getter("PrismTouched"),
     MakeMultidimensionalCopy = function(self)
         local result = repentogon.L_EntityTear_MakeMultidimensionalCopy(self) return result
     end,
@@ -168,8 +168,8 @@ local methods = {
     end,
     SetBackdropType = function(self, backdrop)
         backdrop = ffichecks.checkinteger(1, backdrop)
-        if backdrop >= 0 and ffi.getprivate(self, "VariantValue") == VARIANT_GRIDENT then
-            ffi.setprivate(self, "TearIndexValue", backdrop)
+        if backdrop >= 0 and ffi.getprivate(self, "Variant") == VARIANT_GRIDENT then
+            ffi.setprivate(self, "TearIndex", backdrop)
         end
     end,
     SetDeadEyeIntensity = function(self, intensity)
@@ -186,11 +186,11 @@ local methods = {
         multiplier = ffichecks.checknumber(1, multiplier)
         self.KnockbackMultiplier = multiplier
     end,
-    SetMultidimensionalTouched = BooleanSetter("MultidimensionalTouchedValue"),
+    SetMultidimensionalTouched = BooleanSetter("MultidimensionalTouched"),
     SetParentOffset = function(self, offset)
         setters.ParentOffset(self, offset)
     end,
-    SetPrismTouched = BooleanSetter("PrismTouchedValue"),
+    SetPrismTouched = BooleanSetter("PrismTouched"),
     SetWaitFrames = function(self, frames)
         frames = ffichecks.checkinteger(1, frames)
         self.WaitFrames = frames

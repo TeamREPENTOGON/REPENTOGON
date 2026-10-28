@@ -9,9 +9,9 @@ ffi.cdef("struct EntityProjectile { " .. Entity.Fields .. [[
     float HomingStrength : 0x424;
     float CurvingStrength : 0x428;
     float Acceleration : 0x42c;
-    private uint64_t ProjectileFlagsValue : 0x438;
+    private uint64_t ProjectileFlags : 0x438;
     int WiggleFrameOffset : 0x448;
-    private uint64_t ChangeFlagsValue : 0x450;
+    private uint64_t ChangeFlags : 0x450;
     float ChangeVelocity : 0x458;
     int ChangeTimeout : 0x45c;
 } : 0x470;
@@ -57,28 +57,28 @@ end
 
 local getters = {
     ProjectileFlags = function(self)
-        return Flags64(ffi.getprivate(self, "ProjectileFlagsValue"))
+        return Flags64(ffi.getprivate(self, "ProjectileFlags"))
     end,
     ChangeFlags = function(self)
-        return Flags64(ffi.getprivate(self, "ChangeFlagsValue"))
+        return Flags64(ffi.getprivate(self, "ChangeFlags"))
     end,
 }
 
 local setters = {
-    ProjectileFlags = FlagsSetter("ProjectileFlagsValue"),
-    ChangeFlags = FlagsSetter("ChangeFlagsValue"),
+    ProjectileFlags = FlagsSetter("ProjectileFlags"),
+    ChangeFlags = FlagsSetter("ChangeFlags"),
 }
 
 local methods = {
-    AddChangeFlags = FlagsAdder("ChangeFlagsValue"),
+    AddChangeFlags = FlagsAdder("ChangeFlags"),
     AddFallingAccel = Adder("FallingAccel"),
     AddFallingSpeed = Adder("FallingSpeed"),
     AddHeight = Adder("Height"),
-    AddProjectileFlags = FlagsAdder("ProjectileFlagsValue"),
+    AddProjectileFlags = FlagsAdder("ProjectileFlags"),
     AddScale = Adder("Scale"),
     ClearProjectileFlags = function(self, flags)
         flags = ffichecks.checkinteger64(1, flags)
-        ffi.setprivate(self, "ProjectileFlagsValue", ffi.getprivate(self, "ProjectileFlagsValue") & ~ffi.cast("uint64_t", flags))
+        ffi.setprivate(self, "ProjectileFlags", ffi.getprivate(self, "ProjectileFlags") & ~ffi.cast("uint64_t", flags))
     end,
     Deflect = function(self, velocity)
         ffichecks.checkcdata(1, velocity, "Vector")
@@ -86,7 +86,7 @@ local methods = {
     end,
     HasProjectileFlags = function(self, flags)
         flags = ffichecks.checkinteger64(1, flags)
-        return (ffi.getprivate(self, "ProjectileFlagsValue") & ffi.cast("uint64_t", flags)) ~= 0
+        return (ffi.getprivate(self, "ProjectileFlags") & ffi.cast("uint64_t", flags)) ~= 0
     end,
 }
 

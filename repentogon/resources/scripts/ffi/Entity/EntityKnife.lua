@@ -1,21 +1,21 @@
 local Entity = require("ffi.Entity.Entity")
 
 ffi.cdef("struct EntityKnife { " .. Entity.Fields .. [[
-    private struct BitSet128 TearFlagsValue : 0x410;
+    private struct BitSet128 TearFlags : 0x410;
     float Scale : 0x430;
     float Rotation : 0x438;
     float RotationOffset : 0x43c;
-    private float KnifeDistanceValue : 0x444;
-    private float KnifeVelocityValue : 0x448;
+    private float KnifeDistance : 0x444;
+    private float KnifeVelocity : 0x448;
     float MaxDistance : 0x45c;
     float Charge : 0x460;
-    private bool IsFlyingValue : 0x464;
-    private bool IsSwingingValue : 0x465;
+    private bool IsFlying : 0x464;
+    private bool IsSwinging : 0x465;
     float PathOffset : 0x4c4;
     float PathFollowSpeed : 0x4c8;
-    private bool PrismAppliedValue : 0x4e5;
-    private bool MultidimensionalAppliedValue : 0x4e6;
-    private bool IsSpinAttackValue : 0x4ea;
+    private bool PrismApplied : 0x4e5;
+    private bool MultidimensionalApplied : 0x4e6;
+    private bool IsSpinAttack : 0x4ea;
 } : 0xe78;
 typedef struct EntityKnife* EntityKnifePtr;
 ]])
@@ -58,14 +58,14 @@ end
 
 local getters = {
     TearFlags = function(self)
-        return CopyStruct("struct BitSet128", ffi.getprivate(self, "TearFlagsValue"))
+        return CopyStruct("struct BitSet128", ffi.getprivate(self, "TearFlags"))
     end,
 }
 
 local setters = {
     TearFlags = function(self, value)
         ffichecks.checkcdata(1, value, "BitSet128")
-        ffi.setprivate(self, "TearFlagsValue", value)
+        ffi.setprivate(self, "TearFlags", value)
     end,
 }
 
@@ -90,10 +90,10 @@ local methods = {
     GetHitboxParentKnife = function(self)
         local result = repentogon.L_EntityKnife_GetHitboxParentKnife(self) return result
     end,
-    GetIsSpinAttack = Getter("IsSpinAttackValue"),
-    GetIsSwinging = Getter("IsSwingingValue"),
-    GetKnifeDistance = Getter("KnifeDistanceValue"),
-    GetKnifeVelocity = Getter("KnifeVelocityValue"),
+    GetIsSpinAttack = Getter("IsSpinAttack"),
+    GetIsSwinging = Getter("IsSwinging"),
+    GetKnifeDistance = Getter("KnifeDistance"),
+    GetKnifeVelocity = Getter("KnifeVelocity"),
     GetRenderZ = function(self)
         local result = repentogon.L_Entity_GetRenderZ(self) return result
     end,
@@ -107,9 +107,9 @@ local methods = {
         ffichecks.checkcdata(1, direction, "Vector")
         repentogon.L_EntityKnife_InitHomingPath(self, direction, EntityToPointer(source))
     end,
-    IsFlying = Getter("IsFlyingValue"),
-    IsMultidimensionalTouched = Getter("MultidimensionalAppliedValue"),
-    IsPrismTouched = Getter("PrismAppliedValue"),
+    IsFlying = Getter("IsFlying"),
+    IsMultidimensionalTouched = Getter("MultidimensionalApplied"),
+    IsPrismTouched = Getter("PrismApplied"),
     RemoveFromHitList = function(self, entity)
         repentogon.L_EntityKnife_RemoveFromHitList(self, ffichecks.checkentity(1, entity))
     end,
@@ -120,16 +120,16 @@ local methods = {
         ffichecks.checkcdata(1, parent, "EntityKnife", true)
         repentogon.L_EntityKnife_SetHitboxParentKnife(self, parent)
     end,
-    SetIsSpinAttack = BooleanSetter("IsSpinAttackValue"),
-    SetIsSwinging = BooleanSetter("IsSwingingValue"),
-    SetKnifeDistance = NumberSetter("KnifeDistanceValue"),
-    SetKnifeVelocity = NumberSetter("KnifeVelocityValue"),
-    SetMultidimensionalTouched = BooleanSetter("MultidimensionalAppliedValue"),
+    SetIsSpinAttack = BooleanSetter("IsSpinAttack"),
+    SetIsSwinging = BooleanSetter("IsSwinging"),
+    SetKnifeDistance = NumberSetter("KnifeDistance"),
+    SetKnifeVelocity = NumberSetter("KnifeVelocity"),
+    SetMultidimensionalTouched = BooleanSetter("MultidimensionalApplied"),
     SetPathFollowSpeed = function(self, speed)
         speed = ffichecks.checknumber(1, speed)
         self.PathFollowSpeed = speed
     end,
-    SetPrismTouched = BooleanSetter("PrismAppliedValue"),
+    SetPrismTouched = BooleanSetter("PrismApplied"),
     Shoot = function(self, percent, range)
         percent = ffichecks.checknumber(1, percent)
         range = ffichecks.checknumber(2, range)

@@ -1,7 +1,7 @@
 ffi.cdef[[
     struct GridEntityDoor {
         padding void* vtable;
-        private struct GridEntityDesc DescValue;
+        private struct GridEntityDesc Desc;
         private int GridIndex;
         private int SpawnFrame;
         private struct RNG RNG;
@@ -12,7 +12,7 @@ ffi.cdef[[
         int CurrentRoomType;
         int TargetRoomType;
         int Direction;
-        private struct Sprite _ExtraSprite;
+        private struct Sprite ExtraSprite;
         bool ExtraVisible;
         bool Busted;
         private bool CanOpenChallengeRoom;
@@ -71,7 +71,7 @@ GridEntityDoorMT = {
         repentogon.L_GridEntityDoor_Close(self, force)
     end,
     GetExtraSprite = function(self)
-        local result = ffi.getprivate(self, "_ExtraSprite") return result
+        local result = ffi.getprivate(self, "ExtraSprite") return result
     end,
     GetSpriteOffset = function(self)
         return ffi.getprivate(self, "Sprite").Offset
@@ -80,13 +80,13 @@ GridEntityDoorMT = {
         return self.Busted
     end,
     IsKeyFamiliarTarget = function(self)
-        return ffi.getprivate(self, "DescValue").Variant == 5
+        return ffi.getprivate(self, "Desc").Variant == 5
     end,
     IsLocked = function(self)
         local result = repentogon.L_GridEntityDoor_IsLocked(self) return result
     end,
     IsOpen = function(self)
-        return ffi.getprivate(self, "DescValue").State == 2
+        return ffi.getprivate(self, "Desc").State == 2
     end,
     IsRoomType = function(self, roomType)
         roomType = ffichecks.checkinteger(1, roomType)
@@ -137,7 +137,7 @@ local baseNewindex = getmetatable(GridEntity).__class.__newindex
 
 GridEntityDoorMT.__index = function(self, key)
     if key == "ExtraSprite" then
-        return ffi.getprivate(self, "_ExtraSprite"):Copy()
+        return ffi.getprivate(self, "ExtraSprite"):Copy()
     end
     if key == "CloseAnimation" then
         return ffichecks.stdstring(ffi.getprivate(self, "CloseAnimationString"))

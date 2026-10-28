@@ -1,6 +1,6 @@
 ffi.cdef [[
     struct EntitySmartPtr {
-        private struct Entity* RefValue : 0x0;
+        private struct Entity* Ref : 0x0;
     } : 0x4;
 
     void L_EntityPtr_SetReference(struct EntitySmartPtr*, void*);
@@ -24,7 +24,7 @@ EntityPtrMT = {
 
 EntityPtrMT.__index = function(self, key)
     if key == "Ref" then
-        local result = ffi.getprivate(self, "RefValue") return result
+        local result = ffi.getprivate(self, "Ref") return result
     end
     return EntityPtrMT[key]
 end

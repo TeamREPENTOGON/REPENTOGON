@@ -18,12 +18,12 @@ ffi.cdef [[
         private int PreviousRoomIndex : 0x18308;
         private int CurrentDimension : 0x1830c;
         private int LastBossRoomListIndex : 0x18314;
-        private int LeaveDoorValue : 0x18318;
-        private int EnterDoorValue : 0x1831c;
+        private int LeaveDoor : 0x18318;
+        private int EnterDoor : 0x1831c;
         private struct Vector DungeonReturnPos : 0x18320;
-        private int DungeonReturnRoomIndexValue : 0x18328;
+        private int DungeonReturnRoomIndex : 0x18328;
         private uint32_t DungeonPlacementSeed : 0x1832c;
-        private uint32_t GreedModeWaveValue : 0x18334;
+        private uint32_t GreedModeWave : 0x18334;
         private struct EntitiesSaveStateVector MyosotisPickups : 0x183a4;
     } : 0x1890c;
     typedef struct Level* LevelPtr;
@@ -154,16 +154,16 @@ local getters = {
         return ffichecks.copyvector(ffi.getprivate(self, "DungeonReturnPos"))
     end,
     DungeonReturnRoomIndex = function(self)
-        local result = ffi.getprivate(self, "DungeonReturnRoomIndexValue") return result
+        local result = ffi.getprivate(self, "DungeonReturnRoomIndex") return result
     end,
     EnterDoor = function(self)
-        local result = ffi.getprivate(self, "EnterDoorValue") return result
+        local result = ffi.getprivate(self, "EnterDoor") return result
     end,
     GreedModeWave = function(self)
-        local result = ffi.getprivate(self, "GreedModeWaveValue") return result
+        local result = ffi.getprivate(self, "GreedModeWave") return result
     end,
     LeaveDoor = function(self)
-        local result = ffi.getprivate(self, "LeaveDoorValue") return result
+        local result = ffi.getprivate(self, "LeaveDoor") return result
     end,
 }
 
@@ -176,22 +176,22 @@ local setters = {
     end,
     DungeonReturnRoomIndex = function(self, value)
         value = ffichecks.checkinteger(3, value)
-        ffi.setprivate(self, "DungeonReturnRoomIndexValue", ClampInt(value, -20, 168))
+        ffi.setprivate(self, "DungeonReturnRoomIndex", ClampInt(value, -20, 168))
     end,
     EnterDoor = function(self, value)
         value = ffichecks.checkinteger(3, value)
-        ffi.setprivate(self, "EnterDoorValue", ClampInt(value, -1, 7))
+        ffi.setprivate(self, "EnterDoor", ClampInt(value, -1, 7))
     end,
     GreedModeWave = function(self, value)
         value = ffichecks.checkinteger(3, value)
         if value < 0 or value > 12 then
             value = 12
         end
-        ffi.setprivate(self, "GreedModeWaveValue", value)
+        ffi.setprivate(self, "GreedModeWave", value)
     end,
     LeaveDoor = function(self, value)
         value = ffichecks.checkinteger(3, value)
-        ffi.setprivate(self, "LeaveDoorValue", ClampInt(value, -1, 7))
+        ffi.setprivate(self, "LeaveDoor", ClampInt(value, -1, 7))
     end,
 }
 

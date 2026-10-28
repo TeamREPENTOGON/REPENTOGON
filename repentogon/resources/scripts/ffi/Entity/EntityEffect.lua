@@ -4,14 +4,14 @@ ffi.cdef("struct EntityEffect { " .. Entity.Fields .. [[
     float m_Height : 0x410;
     float FallingSpeed : 0x414;
     float FallingAcceleration : 0x418;
-    private struct BitSet128 VarDataValue : 0x420;
+    private struct BitSet128 VarData : 0x420;
     int State : 0x450;
     float MinRadius : 0x454;
     float MaxRadius : 0x458;
     int Timeout : 0x45c;
     int LifeSpan : 0x460;
-    private bool IsFollowingValue : 0x464;
-    private struct Vector ParentOffsetValue : 0x468;
+    private bool IsFollowing : 0x464;
+    private struct Vector ParentOffset : 0x468;
     int DamageSource : 0x470;
     float Rotation : 0x474;
     float Scale : 0x478;
@@ -57,9 +57,9 @@ local function CanAccessTearFlags(self)
 end
 
 local getters = {
-    IsFollowing = Getter("IsFollowingValue"),
+    IsFollowing = Getter("IsFollowing"),
     ParentOffset = function(self)
-        local offset = ffi.getprivate(self, "ParentOffsetValue")
+        local offset = ffi.getprivate(self, "ParentOffset")
         local vector = Vector(offset.X, offset.Y)
         return vector
     end,
@@ -67,11 +67,11 @@ local getters = {
 
 local setters = {
     IsFollowing = function(self, value)
-        ffi.setprivate(self, "IsFollowingValue", not not value)
+        ffi.setprivate(self, "IsFollowing", not not value)
     end,
     ParentOffset = function(self, value)
         ffichecks.checkcdata(1, value, "Vector")
-        ffi.setprivate(self, "ParentOffsetValue", value)
+        ffi.setprivate(self, "ParentOffset", value)
     end,
 }
 
@@ -79,13 +79,13 @@ local methods = {
     AddTearFlags = function(self, flags)
         ffichecks.checkcdata(1, flags, "BitSet128")
         if CanAccessTearFlags(self) then
-            ffi.setprivate(self, "VarDataValue", ffi.getprivate(self, "VarDataValue") | flags)
+            ffi.setprivate(self, "VarData", ffi.getprivate(self, "VarData") | flags)
         end
     end,
     ClearTearFlags = function(self, flags)
         ffichecks.checkcdata(1, flags, "BitSet128")
         if CanAccessTearFlags(self) then
-            ffi.setprivate(self, "VarDataValue", ffi.getprivate(self, "VarDataValue") & ~flags)
+            ffi.setprivate(self, "VarData", ffi.getprivate(self, "VarData") & ~flags)
         end
     end,
     FollowParent = function(self, parent)
@@ -96,13 +96,13 @@ local methods = {
     end,
     GetTearFlags = function(self)
         if CanAccessTearFlags(self) then
-            return CopyStruct("struct BitSet128", ffi.getprivate(self, "VarDataValue"))
+            return CopyStruct("struct BitSet128", ffi.getprivate(self, "VarData"))
         end
         return nil
     end,
     HasTearFlags = function(self, flags)
         ffichecks.checkcdata(1, flags, "BitSet128")
-        return CanAccessTearFlags(self) and (ffi.getprivate(self, "VarDataValue") & flags) ~= TearFlags.TEAR_NORMAL
+        return CanAccessTearFlags(self) and (ffi.getprivate(self, "VarData") & flags) ~= TearFlags.TEAR_NORMAL
     end,
     SetDamageSource = function(self, source)
         source = ffichecks.checkinteger(1, source)
@@ -117,7 +117,7 @@ local methods = {
     SetTearFlags = function(self, flags)
         ffichecks.checkcdata(1, flags, "BitSet128")
         if CanAccessTearFlags(self) then
-            ffi.setprivate(self, "VarDataValue", flags)
+            ffi.setprivate(self, "VarData", flags)
         end
     end,
     SetTimeout = function(self, timeout)

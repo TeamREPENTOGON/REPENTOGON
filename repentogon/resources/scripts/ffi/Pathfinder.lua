@@ -1,9 +1,9 @@
 ffi.cdef [[
     struct PathFinder {
-        private int GridIndexValue : 0x20;
-        private bool HasDirectPathValue : 0x72c;
-        private bool CanCrushRocksValue : 0x738;
-        private int EvadeMovementCountdownValue : 0x73c;
+        private int GridIndex : 0x20;
+        private bool HasDirectPath : 0x72c;
+        private bool CanCrushRocks : 0x738;
+        private int EvadeMovementCountdown : 0x73c;
     } : 0x750;
     typedef struct PathFinder* PathFinderPtr;
 
@@ -52,9 +52,9 @@ local PathFinderMT = {
         pathMarker = ffichecks.checkinteger(3, pathMarker)
         repentogon.L_PathFinder_FindGridPath(self, position, speed, pathMarker, ffichecks.optboolean(useDirectPath, false))
     end,
-    GetEvadeMovementCountdown = Getter("EvadeMovementCountdownValue"),
-    GetGridIndex = Getter("GridIndexValue"),
-    HasDirectPath = Getter("HasDirectPathValue"),
+    GetEvadeMovementCountdown = Getter("EvadeMovementCountdown"),
+    GetGridIndex = Getter("GridIndex"),
+    HasDirectPath = Getter("HasDirectPath"),
     HasPathToPos = function(self, position, ignorePoop)
         ffichecks.checkcdata(1, position, "Vector")
         local result = repentogon.L_PathFinder_HasPathToPos(self, position, ffichecks.optboolean(ignorePoop, false)) return result
@@ -72,7 +72,7 @@ local PathFinderMT = {
     Reset = VoidMethod(repentogon.L_PathFinder_Reset),
     ResetMovementTarget = VoidMethod(repentogon.L_PathFinder_ResetMovementTarget),
     SetCanCrushRocks = function(self, canCrushRocks)
-        ffi.setprivate(self, "CanCrushRocksValue", not not canCrushRocks)
+        ffi.setprivate(self, "CanCrushRocks", not not canCrushRocks)
     end,
     SimulatePlayerMovement = function(self, movement, speed)
         ffichecks.checkcdata(1, movement, "Vector")

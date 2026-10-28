@@ -3,20 +3,20 @@ local Entity = require("ffi.Entity.Entity")
 ffi.cdef("struct EntityPickup { " .. Entity.Fields .. [[
     int Charge : 0x524;
     int OptionsPickupIndex : 0x528;
-    private bool TouchedValue : 0x52c;
-    private int PriceValue : 0x534;
-    private bool AutoUpdatePriceValue : 0x538;
-    private int ShopItemIdValue : 0x53c;
+    private bool Touched : 0x52c;
+    private int Price : 0x534;
+    private bool AutoUpdatePrice : 0x538;
+    private int ShopItemId : 0x53c;
     int Timeout : 0x540;
     int Wait : 0x544;
-    private int DropDelayValue : 0x554;
+    private int DropDelay : 0x554;
     unsigned int State : 0x584;
-    private struct EntityEffect* PickupGhostValue : 0x590;
-    private struct EntityPickup* MegaChestLeftValue : 0x594;
-    private struct EntityPickup* MegaChestRightValue : 0x598;
-    private int VarDataValue : 0x59c;
-    private uint32_t CycleCollectibleListValue[8] : 0x5a0;
-    private uint32_t CycleCollectibleCountValue : 0x5c0;
+    private struct EntityEffect* PickupGhost : 0x590;
+    private struct EntityPickup* MegaChestLeft : 0x594;
+    private struct EntityPickup* MegaChestRight : 0x598;
+    private int VarData : 0x59c;
+    private uint32_t CycleCollectibleList[8] : 0x5a0;
+    private uint32_t CycleCollectibleCount : 0x5c0;
 } : 0x6f0;
 typedef struct EntityPickup* EntityPickupPtr;
 ]])
@@ -104,10 +104,10 @@ local function GetRandomPickupVelocity(position, rng, velocityType)
 end
 
 local getters = {
-    Price = Getter("PriceValue"),
-    ShopItemId = Getter("ShopItemIdValue"),
-    Touched = Getter("TouchedValue"),
-    AutoUpdatePrice = Getter("AutoUpdatePriceValue"),
+    Price = Getter("Price"),
+    ShopItemId = Getter("ShopItemId"),
+    Touched = Getter("Touched"),
+    AutoUpdatePrice = Getter("AutoUpdatePrice"),
 }
 
 local setters = {
@@ -117,13 +117,13 @@ local setters = {
     end,
     ShopItemId = function(self, value)
         value = ffichecks.checkinteger(1, value)
-        ffi.setprivate(self, "ShopItemIdValue", math.min(math.max(value, -2), 7))
+        ffi.setprivate(self, "ShopItemId", math.min(math.max(value, -2), 7))
     end,
     Touched = function(self, value)
-        ffi.setprivate(self, "TouchedValue", not not value)
+        ffi.setprivate(self, "Touched", not not value)
     end,
     AutoUpdatePrice = function(self, value)
-        ffi.setprivate(self, "AutoUpdatePriceValue", not not value)
+        ffi.setprivate(self, "AutoUpdatePrice", not not value)
     end,
 }
 
@@ -162,14 +162,14 @@ local methods = {
         local result = repentogon.L_EntityPickup_GetCoinValue(self) return result
     end,
     GetCollectibleCycle = function(self)
-        local list = ffi.getprivate(self, "CycleCollectibleListValue")
+        local list = ffi.getprivate(self, "CycleCollectibleList")
         local result = {}
-        for i = 0, ffi.getprivate(self, "CycleCollectibleCountValue") - 1 do
+        for i = 0, ffi.getprivate(self, "CycleCollectibleCount") - 1 do
             result[i + 1] = list[i]
         end
         return result
     end,
-    GetDropDelay = Getter("DropDelayValue"),
+    GetDropDelay = Getter("DropDelay"),
     GetFlipCollectible = function(self)
         if repentogon.L_EntityPickup_HasFlipData(self) then
             local result = repentogon.L_EntityPickup_GetFlipCollectible(self) return result
@@ -181,27 +181,27 @@ local methods = {
         repentogon.L_EntityPickup_GetLootList(self, ffichecks.optboolean(shouldAdvance, false), list)
         return list
     end,
-    GetMegaChestLeftCollectible = Getter("MegaChestLeftValue"),
+    GetMegaChestLeftCollectible = Getter("MegaChestLeft"),
     GetMegaChestOtherCollectible = function(self)
-        local left = ffi.getprivate(self, "MegaChestLeftValue")
+        local left = ffi.getprivate(self, "MegaChestLeft")
         if left ~= nil then
             return left, false
         end
-        local right = ffi.getprivate(self, "MegaChestRightValue")
+        local right = ffi.getprivate(self, "MegaChestRight")
         if right ~= nil then
             return right, true
         end
         return nil, nil
     end,
-    GetMegaChestRightCollectible = Getter("MegaChestRightValue"),
-    GetPickupGhost = Getter("PickupGhostValue"),
+    GetMegaChestRightCollectible = Getter("MegaChestRight"),
+    GetPickupGhost = Getter("PickupGhost"),
     GetPriceSprite = function(self)
         local result = repentogon.L_EntityPickup_GetPriceSprite(self) return result
     end,
     GetRandomPickupVelocity = function(self, ...)
         return GetRandomPickupVelocity(...)
     end,
-    GetVarData = Getter("VarDataValue"),
+    GetVarData = Getter("VarData"),
     HasFlipData = function(self)
         local result = repentogon.L_EntityPickup_HasFlipData(self) return result
     end,
@@ -217,7 +217,7 @@ local methods = {
         local result = repentogon.L_EntityPickup_IsBlind(self, ffichecks.optboolean(checkForcedBlindOnly, true)) return result
     end,
     IsShopItem = function(self)
-        return ffi.getprivate(self, "PriceValue") ~= 0
+        return ffi.getprivate(self, "Price") ~= 0
     end,
     MakeShopItem = function(self, shopItemId)
         shopItemId = ffichecks.checkinteger(1, shopItemId)
@@ -240,11 +240,11 @@ local methods = {
         repentogon.L_EntityPickup_ReloadGraphics(self, ignoreBlind)
     end,
     RemoveCollectibleCycle = function(self)
-        local list = ffi.getprivate(self, "CycleCollectibleListValue")
+        local list = ffi.getprivate(self, "CycleCollectibleList")
         for i = 0, 6 do
             list[i] = 0
         end
-        ffi.setprivate(self, "CycleCollectibleCountValue", 0)
+        ffi.setprivate(self, "CycleCollectibleCount", 0)
     end,
     SetAlternatePedestal = function(self, pedestalType)
         pedestalType = ffichecks.checkinteger(1, pedestalType)
@@ -254,7 +254,7 @@ local methods = {
         canReroll = ffichecks.checkboolean(1, canReroll)
         repentogon.L_EntityPickup_SetCanRerollOverride(self, canReroll)
     end,
-    SetDropDelay = IntegerSetter("DropDelayValue"),
+    SetDropDelay = IntegerSetter("DropDelay"),
     SetForceBlind = function(self, blind)
         blind = ffichecks.checkboolean(1, blind)
         repentogon.L_EntityPickup_SetForceBlind(self, blind)
@@ -262,7 +262,7 @@ local methods = {
     SetNewOptionsPickupIndex = function(self)
         local result = repentogon.L_EntityPickup_SetNewOptionsPickupIndex(self) return result
     end,
-    SetVarData = IntegerSetter("VarDataValue"),
+    SetVarData = IntegerSetter("VarData"),
     TriggerTheresOptionsPickup = function(self)
         repentogon.L_EntityPickup_TriggerTheresOptionsPickup(self)
     end,

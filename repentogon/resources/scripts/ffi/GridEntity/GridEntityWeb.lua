@@ -1,7 +1,7 @@
 ffi.cdef[[
     struct GridEntityWeb {
         padding void* vtable;
-        private struct GridEntityDesc DescValue;
+        private struct GridEntityDesc Desc;
         private int GridIndex;
         private int SpawnFrame;
         private struct RNG RNG;

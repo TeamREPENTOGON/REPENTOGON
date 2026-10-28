@@ -2,33 +2,33 @@ local Entity = require("ffi.Entity.Entity")
 
 local NPC_FIELDS = [[
     int StateFrame : 0x410;
-    private struct PathFinder PathfinderValue : 0x414;
+    private struct PathFinder Pathfinder : 0x414;
     unsigned int State : 0xb64;
     int ProjectileCooldown : 0xba0;
     int ProjectileDelay : 0xba4;
-    private struct Vector V1Value : 0xbb0;
-    private struct Vector V2Value : 0xbb8;
+    private struct Vector V1 : 0xbb0;
+    private struct Vector V2 : 0xbb8;
     int I1 : 0xbc0;
     int I2 : 0xbc4;
-    private uint32_t DeliriumBossTypeValue : 0xbc8;
-    private uint32_t DeliriumBossVariantValue : 0xbcc;
-    private uint16_t DeliriumTransformationTimerValue : 0xbd0;
-    private uint8_t DeliriumRemainingAttacksValue : 0xbd2;
-    private uint8_t DeliriumStateValue : 0xbd3;
-    private uint32_t DeliriumAttackIdValue : 0xbd8;
-    private uint8_t DeliriumAttackAngleValue : 0xbdc;
-    private uint32_t DeliriumCycleValue : 0xbe0;
-    private struct Entity* EntityRefValue : 0xbec;
-    private float ScaleValue : 0xc38;
-    private float ShieldStrengthValue : 0xc40;
-    private bool IsChampionValue : 0xc63;
-    private int ChampionColorIdxValue : 0xc64;
-    private uint16_t ChampionRegenTimerValue : 0xc74;
-    private int BossColorIdxValue : 0xc78;
+    private uint32_t DeliriumBossType : 0xbc8;
+    private uint32_t DeliriumBossVariant : 0xbcc;
+    private uint16_t DeliriumTransformationTimer : 0xbd0;
+    private uint8_t DeliriumRemainingAttacks : 0xbd2;
+    private uint8_t DeliriumState : 0xbd3;
+    private uint32_t DeliriumAttackId : 0xbd8;
+    private uint8_t DeliriumAttackAngle : 0xbdc;
+    private uint32_t DeliriumCycle : 0xbe0;
+    private struct Entity* EntityRef : 0xbec;
+    private float Scale : 0xc38;
+    private float ShieldStrength : 0xc40;
+    private bool IsChampion : 0xc63;
+    private int ChampionColorIdx : 0xc64;
+    private uint16_t ChampionRegenTimer : 0xc74;
+    private int BossColorIdx : 0xc78;
     int GroupIdx : 0xc7c;
-    private struct Color DirtColorValue : 0xcac;
-    private int32_t ControllerIdValue : 0xf1c;
-    private struct Entity* SirenPlayerValue : 0xf40;
+    private struct Color DirtColor : 0xcac;
+    private int32_t ControllerId : 0xf1c;
+    private struct Entity* SirenPlayer : 0xf40;
 ]]
 
 ffi.cdef("struct EntityNPC { " .. Entity.Fields .. NPC_FIELDS .. " } : 0xf60;\ntypedef struct EntityNPC* EntityNPCPtr;")
@@ -159,19 +159,19 @@ local getters = {
         local child = self.Child
         return child ~= nil and child:ToNPC() or nil
     end,
-    EntityRef = EntityGetter("EntityRefValue"),
+    EntityRef = EntityGetter("EntityRef"),
     ParentNPC = function(self)
         local parent = self.Parent
         return parent ~= nil and parent:ToNPC() or nil
     end,
     Pathfinder = function(self)
         local copy = ffi.new("struct PathFinder")
-        ffi.copy(copy, ffi.getprivate(self, "PathfinderValue"), pathfinderSize)
+        ffi.copy(copy, ffi.getprivate(self, "Pathfinder"), pathfinderSize)
         return copy
     end,
-    Scale = Getter("ScaleValue"),
-    V1 = VectorGetter("V1Value"),
-    V2 = VectorGetter("V2Value"),
+    Scale = Getter("Scale"),
+    V1 = VectorGetter("V1"),
+    V2 = VectorGetter("V2"),
 }
 
 local setters = {
@@ -183,14 +183,14 @@ local setters = {
     end,
     Pathfinder = function(self, value)
         ffichecks.checkcdata(1, value, "PathFinder")
-        ffi.copy(ffi.getprivate(self, "PathfinderValue"), value, pathfinderSize)
+        ffi.copy(ffi.getprivate(self, "Pathfinder"), value, pathfinderSize)
     end,
     Scale = function(self, value)
         value = ffichecks.checknumber(1, value)
         repentogon.L_EntityNPC_SetScale(self, value)
     end,
-    V1 = VectorSetter("V1Value"),
-    V2 = VectorSetter("V2Value"),
+    V1 = VectorSetter("V1"),
+    V2 = VectorSetter("V2"),
 }
 
 local methods = {
@@ -279,12 +279,12 @@ local methods = {
     GetAliveEnemyCount = function(self)
         local result = repentogon.L_EntityNPC_GetAliveEnemyCount(self) return result
     end,
-    GetBossColorIdx = Getter("BossColorIdxValue"),
-    GetChampionColorIdx = Getter("ChampionColorIdxValue"),
-    GetControllerId = Getter("ControllerIdValue"),
-    GetDarkRedChampionRegenTimer = Getter("ChampionRegenTimerValue"),
+    GetBossColorIdx = Getter("BossColorIdx"),
+    GetChampionColorIdx = Getter("ChampionColorIdx"),
+    GetControllerId = Getter("ControllerId"),
+    GetDarkRedChampionRegenTimer = Getter("ChampionRegenTimer"),
     GetDirtColor = function(self)
-        return CopyStruct("struct Color", ffi.getprivate(self, "DirtColorValue"))
+        return CopyStruct("struct Color", ffi.getprivate(self, "DirtColor"))
     end,
     GetFireplaceLoot = function(self, shouldAdvance)
         local list = LootList()
@@ -310,26 +310,26 @@ local methods = {
         repentogon.L_EntityNPC_GetLootList(self, ffichecks.optboolean(shouldAdvance, false), list)
         return list
     end,
-    GetPathfinder = Getter("PathfinderValue"),
+    GetPathfinder = Getter("Pathfinder"),
     GetPlayerTarget = function(self)
         local result = repentogon.L_EntityNPC_GetPlayerTarget(self) return result
     end,
-    GetShieldStrength = Getter("ShieldStrengthValue"),
+    GetShieldStrength = Getter("ShieldStrength"),
     GetShopkeeperLoot = function(self, shouldAdvance)
         local list = LootList()
         repentogon.L_EntityNPC_GetShopkeeperLoot(self, ffichecks.optboolean(shouldAdvance, false), list)
         return list
     end,
     GetSirenPlayerEntity = function(self)
-        if ffi.getprivate(self, "TypeValue") == SIREN then
-            return ffichecks.pointertoplayer(ffi.getprivate(self, "SirenPlayerValue"))
+        if ffi.getprivate(self, "Type") == SIREN then
+            return ffichecks.pointertoplayer(ffi.getprivate(self, "SirenPlayer"))
         end
         return nil
     end,
     IsBossColor = function(self)
         local result = repentogon.L_EntityNPC_IsBossColor(self) return result
     end,
-    IsChampion = Getter("IsChampionValue"),
+    IsChampion = Getter("IsChampion"),
     KillUnique = function(self)
         repentogon.L_EntityNPC_KillUnique(self)
     end,
@@ -382,7 +382,7 @@ local methods = {
     end,
     SetControllerId = function(self, controllerId)
         controllerId = ffichecks.checknumber(1, controllerId)
-        ffi.setprivate(self, "ControllerIdValue", controllerId)
+        ffi.setprivate(self, "ControllerId", controllerId)
     end,
     SetFlyingOverride = function(self, isFlying)
         isFlying = ffichecks.checkboolean(1, isFlying)
@@ -390,7 +390,7 @@ local methods = {
     end,
     SetShieldStrength = function(self, strength)
         strength = ffichecks.checknumber(1, strength)
-        ffi.setprivate(self, "ShieldStrengthValue", strength)
+        ffi.setprivate(self, "ShieldStrength", strength)
     end,
     SpawnBloodCloud = function(self, position, color)
         ffichecks.checkcdata(1, position, "Vector", true)

@@ -1,28 +1,28 @@
 local Entity = require("ffi.Entity.Entity")
 
 ffi.cdef("struct EntityFamiliar { " .. Entity.Fields .. [[
-    private struct Entity* PlayerValue : 0x410;
-    private int MoveDelayNumValue : 0x5f8;
+    private struct Entity* Player : 0x410;
+    private int MoveDelayNum : 0x5f8;
     int FireCooldown : 0xd4c;
     int HeadFrameDelay : 0xd50;
     int MoveDirection : 0xd54;
     int ShootDirection : 0xd58;
     int LastDirection : 0xd5c;
     float OrbitAngleOffset : 0xd60;
-    private struct Vector OrbitDistanceValue : 0xd64;
+    private struct Vector OrbitDistance : 0xd64;
     float OrbitSpeed : 0xd6c;
     int OrbitLayer : 0xd70;
-    private bool IsFollowerValue : 0xd74;
-    private bool IsDelayedValue : 0xd75;
+    private bool IsFollower : 0xd74;
+    private bool IsDelayed : 0xd75;
     int Coins : 0xd7c;
     int Hearts : 0xd80;
     int Keys : 0xd84;
     int State : 0xd88;
     int RoomClearCount : 0xd8c;
-    private struct Weapon* WeaponValue : 0xdb0;
-    private bool IsLilDeliriumValue : 0xdb4;
-    private struct ItemConfigItem* ItemValue : 0xed4;
-    private struct Color DirtColorValue : 0xedc;
+    private struct Weapon* Weapon : 0xdb0;
+    private bool IsLilDelirium : 0xdb4;
+    private struct ItemConfigItem* Item : 0xed4;
+    private struct Color DirtColor : 0xedc;
 } : 0xf30;
 typedef struct EntityFamiliar* EntityFamiliarPtr;
 ]])
@@ -126,11 +126,11 @@ end
 
 local getters = {
     Player = function(self)
-        return ffichecks.pointertoplayer(ffi.getprivate(self, "PlayerValue"))
+        return ffichecks.pointertoplayer(ffi.getprivate(self, "Player"))
     end,
-    IsDelayed = Getter("IsDelayedValue"),
-    IsFollower = Getter("IsFollowerValue"),
-    OrbitDistance = VectorGetter("OrbitDistanceValue"),
+    IsDelayed = Getter("IsDelayed"),
+    IsFollower = Getter("IsFollower"),
+    OrbitDistance = VectorGetter("OrbitDistance"),
 }
 
 local setters = {
@@ -138,12 +138,12 @@ local setters = {
         repentogon.L_EntityFamiliar_SetPlayer(self, ffichecks.playertopointer(value))
     end,
     IsDelayed = function(self, value)
-        ffi.setprivate(self, "IsDelayedValue", not not value)
+        ffi.setprivate(self, "IsDelayed", not not value)
     end,
     IsFollower = function(self, value)
-        ffi.setprivate(self, "IsFollowerValue", not not value)
+        ffi.setprivate(self, "IsFollower", not not value)
     end,
-    OrbitDistance = VectorSetter("OrbitDistanceValue"),
+    OrbitDistance = VectorSetter("OrbitDistance"),
 }
 
 local methods = {
@@ -177,19 +177,19 @@ local methods = {
         local result = repentogon.L_EntityFamiliar_GetActiveWeaponEntity(self) return result
     end,
     GetActiveWeaponNumFired = function(self)
-        if ffi.getprivate(self, "WeaponValue") == nil then
+        if ffi.getprivate(self, "Weapon") == nil then
             return nil
         end
         local result = repentogon.L_EntityFamiliar_GetActiveWeaponNumFired(self) return result
     end,
     GetDirtColor = function(self)
-        return CopyStruct("struct Color", ffi.getprivate(self, "DirtColorValue"))
+        return CopyStruct("struct Color", ffi.getprivate(self, "DirtColor"))
     end,
     GetFollowerPriority = function(self)
         local result = repentogon.L_EntityFamiliar_GetFollowerPriority(self) return result
     end,
-    GetItemConfig = Getter("ItemValue"),
-    GetMoveDelayNum = Getter("MoveDelayNumValue"),
+    GetItemConfig = Getter("Item"),
+    GetMoveDelayNum = Getter("MoveDelayNum"),
     GetMultiplier = function(self)
         local result = repentogon.L_EntityFamiliar_GetMultiplier(self) return result
     end,
@@ -204,10 +204,10 @@ local methods = {
     GetRandomWisp = function(self, rng)
         return GetRandomWisp(rng)
     end,
-    GetWeapon = Getter("WeaponValue"),
+    GetWeapon = Getter("Weapon"),
     InvalidateCachedMultiplier = VoidMethod(repentogon.L_EntityFamiliar_InvalidateCachedMultiplier),
     IsCharmed = BoolMethod(repentogon.L_EntityFamiliar_IsCharmed),
-    IsLilDelirium = Getter("IsLilDeliriumValue"),
+    IsLilDelirium = Getter("IsLilDelirium"),
     MoveDelayed = IntegerMethod(repentogon.L_EntityFamiliar_MoveDelayed),
     MoveDiagonally = function(self, speed)
         speed = ffichecks.checknumber(1, speed)
@@ -242,7 +242,7 @@ local methods = {
     end,
     SetMoveDelayNum = function(self, frames)
         frames = ffichecks.checkinteger(1, frames)
-        ffi.setprivate(self, "MoveDelayNumValue", frames)
+        ffi.setprivate(self, "MoveDelayNum", frames)
     end,
     Shoot = VoidMethod(repentogon.L_EntityFamiliar_Shoot),
     TryAimAtMarkedTarget = function(self, ...)

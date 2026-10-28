@@ -2,7 +2,7 @@ ffi.cdef [[
     struct RoomConfigSpawn {
         int16_t X : 0x0;
         int16_t Y : 0x2;
-        private struct RoomConfigEntry* _Entries : 0x4;
+        private struct RoomConfigEntry* Entries : 0x4;
         uint8_t EntryCount : 0x8;
         float SumWeights : 0xC;
     } : 0x10;
@@ -62,7 +62,7 @@ RoomConfigSpawnMT = {
 
 RoomConfigSpawnMT.__index = function(self, key)
     if key == "Entries" then
-        return __RoomConfigEntries_wrap(ffi.getprivate(self, "_Entries"), self.EntryCount)
+        return __RoomConfigEntries_wrap(ffi.getprivate(self, "Entries"), self.EntryCount)
     end
     return RoomConfigSpawnMT[key]
 end

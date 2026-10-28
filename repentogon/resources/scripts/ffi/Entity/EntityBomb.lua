@@ -1,19 +1,19 @@
 local Entity = require("ffi.Entity.Entity")
 
 ffi.cdef("struct EntityBomb { " .. Entity.Fields .. [[
-    private int ExplosionCountdownValue : 0x410;
-    private int ExplosionCountdownCopyValue : 0x414;
+    private int ExplosionCountdown : 0x410;
+    private int ExplosionCountdownCopy : 0x414;
     float ExplosionDamage : 0x418;
-    private float FallSpeedValue : 0x41c;
-    private float FallAccelerationValue : 0x420;
-    private float RocketAngleValue : 0x428;
-    private float RocketSpeedValue : 0x42c;
-    private float ScaleValue : 0x434;
-    private struct BitSet128 FlagsValue : 0x438;
-    private bool IsFetusValue : 0x448;
+    private float FallSpeed : 0x41c;
+    private float FallAcceleration : 0x420;
+    private float RocketAngle : 0x428;
+    private float RocketSpeed : 0x42c;
+    private float Scale : 0x434;
+    private struct BitSet128 Flags : 0x438;
+    private bool IsFetus : 0x448;
     float RadiusMultiplier : 0x44c;
-    private bool PrismTouchedValue : 0x45c;
-    private bool LoadCostumesValue : 0x463;
+    private bool PrismTouched : 0x45c;
+    private bool LoadCostumes : 0x463;
 } : 0x9d8;
 typedef struct EntityBomb* EntityBombPtr;
 ]])
@@ -62,24 +62,24 @@ end
 
 local getters = {
     Flags = function(self)
-        return CopyStruct("struct BitSet128", ffi.getprivate(self, "FlagsValue"))
+        return CopyStruct("struct BitSet128", ffi.getprivate(self, "Flags"))
     end,
-    IsFetus = Getter("IsFetusValue"),
+    IsFetus = Getter("IsFetus"),
 }
 
 local setters = {
     Flags = function(self, value)
         ffichecks.checkcdata(1, value, "BitSet128")
-        ffi.setprivate(self, "LoadCostumesValue", true) -- nicalis brand lunacy
-        ffi.setprivate(self, "FlagsValue", value)
+        ffi.setprivate(self, "LoadCostumes", true) -- nicalis brand lunacy
+        ffi.setprivate(self, "Flags", value)
     end,
     IsFetus = function(self, value)
-        ffi.setprivate(self, "IsFetusValue", not not value)
+        ffi.setprivate(self, "IsFetus", not not value)
     end,
 }
 
-local getHeight, setHeight = Deprecated("[WARN] EntityBomb:Get/SetHeight is deprecated - It was mislabeled and actually accesses the FallSpeed. For bomb \"height\", use `PositionOffset.Y`. For falling speed, use EntityBomb:Get/SetFallSpeed.", "FallSpeedValue")
-local getFallingSpeed, setFallingSpeed = Deprecated("[WARN] EntityBomb:Get/SetFallingSpeed is deprecated - It was mislabeled and actually accesses the FallAcceleration. Please use EntityBomb:Get/SetFallSpeed or EntityBomb:Get/SetFallAcceleration instead.", "FallAccelerationValue")
+local getHeight, setHeight = Deprecated("[WARN] EntityBomb:Get/SetHeight is deprecated - It was mislabeled and actually accesses the FallSpeed. For bomb \"height\", use `PositionOffset.Y`. For falling speed, use EntityBomb:Get/SetFallSpeed.", "FallSpeed")
+local getFallingSpeed, setFallingSpeed = Deprecated("[WARN] EntityBomb:Get/SetFallingSpeed is deprecated - It was mislabeled and actually accesses the FallAcceleration. Please use EntityBomb:Get/SetFallSpeed or EntityBomb:Get/SetFallAcceleration instead.", "FallAcceleration")
 
 local methods = {
     AddTearFlags = function(self, flags)
@@ -95,9 +95,9 @@ local methods = {
         end
         local result = repentogon.L_EntityBomb_GetCostumeLayerSprite(self, index) return result
     end,
-    GetExplosionCountdown = Getter("ExplosionCountdownValue"),
-    GetFallAcceleration = Getter("FallAccelerationValue"),
-    GetFallSpeed = Getter("FallSpeedValue"),
+    GetExplosionCountdown = Getter("ExplosionCountdown"),
+    GetFallAcceleration = Getter("FallAcceleration"),
+    GetFallSpeed = Getter("FallSpeed"),
     GetFallingSpeed = getFallingSpeed,
     GetHeight = getHeight,
     GetHitList = function(self)
@@ -107,30 +107,30 @@ local methods = {
         end
         return result
     end,
-    GetRocketAngle = Getter("RocketAngleValue"),
-    GetRocketSpeed = Getter("RocketSpeedValue"),
-    GetScale = Getter("ScaleValue"),
+    GetRocketAngle = Getter("RocketAngle"),
+    GetRocketSpeed = Getter("RocketSpeed"),
+    GetScale = Getter("Scale"),
     HasTearFlags = function(self, flags)
         return (self.Flags & flags) ~= TearFlags.TEAR_NORMAL
     end,
-    IsLoadingCostumes = Getter("LoadCostumesValue"),
-    IsPrismTouched = Getter("PrismTouchedValue"),
+    IsLoadingCostumes = Getter("LoadCostumes"),
+    IsPrismTouched = Getter("PrismTouched"),
     SetExplosionCountdown = function(self, countdown)
         countdown = ffichecks.checkinteger(1, countdown)
-        ffi.setprivate(self, "ExplosionCountdownValue", countdown)
-        ffi.setprivate(self, "ExplosionCountdownCopyValue", countdown)
+        ffi.setprivate(self, "ExplosionCountdown", countdown)
+        ffi.setprivate(self, "ExplosionCountdownCopy", countdown)
     end,
-    SetFallAcceleration = NumberSetter("FallAccelerationValue"),
-    SetFallSpeed = NumberSetter("FallSpeedValue"),
+    SetFallAcceleration = NumberSetter("FallAcceleration"),
+    SetFallSpeed = NumberSetter("FallSpeed"),
     SetFallingSpeed = setFallingSpeed,
     SetHeight = setHeight,
     SetLoadCostumes = function(self, load)
-        ffi.setprivate(self, "LoadCostumesValue", ffichecks.optboolean(load, true))
+        ffi.setprivate(self, "LoadCostumes", ffichecks.optboolean(load, true))
     end,
-    SetPrismTouched = BooleanSetter("PrismTouchedValue"),
-    SetRocketAngle = NumberSetter("RocketAngleValue"),
-    SetRocketSpeed = NumberSetter("RocketSpeedValue"),
-    SetScale = NumberSetter("ScaleValue"),
+    SetPrismTouched = BooleanSetter("PrismTouched"),
+    SetRocketAngle = NumberSetter("RocketAngle"),
+    SetRocketSpeed = NumberSetter("RocketSpeed"),
+    SetScale = NumberSetter("Scale"),
     UpdateDirtColor = function(self)
         repentogon.L_EntityBomb_UpdateDirtColor(self)
     end,

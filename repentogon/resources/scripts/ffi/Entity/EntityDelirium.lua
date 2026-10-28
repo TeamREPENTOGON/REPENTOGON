@@ -28,41 +28,41 @@ end
 local TELEPORTATION_TIMER_MAX = 0x3FF
 
 local getters = {
-    AttackID = Getter("DeliriumAttackIdValue"),
-    Angle = Getter("DeliriumAttackAngleValue"),
-    BossType = Getter("DeliriumBossTypeValue"),
-    BossVariant = Getter("DeliriumBossVariantValue"),
-    Cycle = Getter("DeliriumCycleValue"),
-    RemainingAttacks = Getter("DeliriumRemainingAttacksValue"),
-    StateD = Getter("DeliriumStateValue"),
-    TransformationTimer = Getter("DeliriumTransformationTimerValue"),
+    AttackID = Getter("DeliriumAttackId"),
+    Angle = Getter("DeliriumAttackAngle"),
+    BossType = Getter("DeliriumBossType"),
+    BossVariant = Getter("DeliriumBossVariant"),
+    Cycle = Getter("DeliriumCycle"),
+    RemainingAttacks = Getter("DeliriumRemainingAttacks"),
+    StateD = Getter("DeliriumState"),
+    TransformationTimer = Getter("DeliriumTransformationTimer"),
 }
 
 local setters = {
-    AttackID = IntegerSetter("DeliriumAttackIdValue"),
-    Angle = IntegerSetter("DeliriumAttackAngleValue"),
-    Cycle = IntegerSetter("DeliriumCycleValue"),
-    RemainingAttacks = IntegerSetter("DeliriumRemainingAttacksValue"),
-    StateD = IntegerSetter("DeliriumStateValue"),
-    TransformationTimer = IntegerSetter("DeliriumTransformationTimerValue"),
+    AttackID = IntegerSetter("DeliriumAttackId"),
+    Angle = IntegerSetter("DeliriumAttackAngle"),
+    Cycle = IntegerSetter("DeliriumCycle"),
+    RemainingAttacks = IntegerSetter("DeliriumRemainingAttacks"),
+    StateD = IntegerSetter("DeliriumState"),
+    TransformationTimer = IntegerSetter("DeliriumTransformationTimer"),
 }
 
 local methods = {
     -- Delirium is red if any bit between 7 and 14 (inclusive) is 1
     IsRedMode = function(self)
-        return ((ffi.getprivate(self, "DeliriumCycleValue") >> 7) & 0xFF) ~= 0
+        return ((ffi.getprivate(self, "DeliriumCycle") >> 7) & 0xFF) ~= 0
     end,
     GetTeleportationTimer = function(self)
-        return (ffi.getprivate(self, "DeliriumCycleValue") >> 0xF) & TELEPORTATION_TIMER_MAX
+        return (ffi.getprivate(self, "DeliriumCycle") >> 0xF) & TELEPORTATION_TIMER_MAX
     end,
     SetRedMode = function(self, on)
-        local cycle = ffi.getprivate(self, "DeliriumCycleValue")
+        local cycle = ffi.getprivate(self, "DeliriumCycle")
         if on then
             cycle = cycle | 0x00007F80
         else
             cycle = cycle & ~0x00007F80
         end
-        ffi.setprivate(self, "DeliriumCycleValue", cycle)
+        ffi.setprivate(self, "DeliriumCycle", cycle)
     end,
     SetTeleportationTimer = function(self, timer)
         timer = ffichecks.checkinteger(1, timer)
@@ -73,8 +73,8 @@ local methods = {
         end
 
         -- The timer is bits 15 to 24 of the cycle
-        local cycle = ffi.getprivate(self, "DeliriumCycleValue") & 0xFE007FFF
-        ffi.setprivate(self, "DeliriumCycleValue", cycle | (timer << 0xF))
+        local cycle = ffi.getprivate(self, "DeliriumCycle") & 0xFE007FFF
+        ffi.setprivate(self, "DeliriumCycle", cycle | (timer << 0xF))
     end,
     Transform = function(self, entityType, variant, callback)
         entityType = ffichecks.checkinteger(1, entityType)
@@ -94,14 +94,14 @@ local DeliriumMT = Entity.Inherit("EntityDelirium", methods, getters, setters, N
 ffi.metatype("struct EntityDelirium", DeliriumMT)
 
 Entity.Methods.ToDelirium = function(self)
-    local entityType = ffi.getprivate(self, "TypeValue")
+    local entityType = ffi.getprivate(self, "Type")
     if entityType == TYPE_DELIRIUM then
         local result = ffi.cast(deliriumType, self) return result
     end
 
     local npc = self:ToNPC()
-    if npc ~= nil and ffi.getprivate(npc, "DeliriumBossTypeValue") == entityType
-        and ffi.getprivate(npc, "DeliriumBossVariantValue") == ffi.getprivate(npc, "VariantValue") then
+    if npc ~= nil and ffi.getprivate(npc, "DeliriumBossType") == entityType
+        and ffi.getprivate(npc, "DeliriumBossVariant") == ffi.getprivate(npc, "Variant") then
         local result = ffi.cast(deliriumType, npc) return result
     end
     return nil

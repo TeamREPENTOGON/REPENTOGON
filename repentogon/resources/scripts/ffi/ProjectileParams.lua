@@ -12,11 +12,11 @@ struct ProjectileParams {
     float CurvingStrength;
     float Acceleration;
     float Spread;
-    private struct Color ColorValue;
+    private struct Color Color;
     uint64_t BulletFlags;
-    private struct Vector PositionOffsetValue;
-    private struct Vector TargetPositionValue;
-    private struct Vector FireDirectionLimitValue;
+    private struct Vector PositionOffset;
+    private struct Vector TargetPosition;
+    private struct Vector FireDirectionLimit;
     float DotProductLimit;
     int32_t WiggleFrameOffset;
     uint64_t ChangeFlags;
@@ -25,7 +25,7 @@ struct ProjectileParams {
     float DepthOffset;
     uint32_t Variant;
     padding char[0x4];
-    private float _Damage;
+    private float Damage;
     padding char[0x8];
 };
 
@@ -47,19 +47,19 @@ ProjectileParamsMT = {
 
 ProjectileParamsMT.__index = function(self, key)
     if key == "Damage" then
-        local result = ffi.getprivate(self, "_Damage") return result
+        local result = ffi.getprivate(self, "Damage") return result
     end
     if key == "Color" then
-        return CopyStruct("struct Color", ffi.getprivate(self, "ColorValue"))
+        return CopyStruct("struct Color", ffi.getprivate(self, "Color"))
     end
     if key == "PositionOffset" then
-        return ffichecks.copyvector(ffi.getprivate(self, "PositionOffsetValue"))
+        return ffichecks.copyvector(ffi.getprivate(self, "PositionOffset"))
     end
     if key == "TargetPosition" then
-        return ffichecks.copyvector(ffi.getprivate(self, "TargetPositionValue"))
+        return ffichecks.copyvector(ffi.getprivate(self, "TargetPosition"))
     end
     if key == "FireDirectionLimit" then
-        return ffichecks.copyvector(ffi.getprivate(self, "FireDirectionLimitValue"))
+        return ffichecks.copyvector(ffi.getprivate(self, "FireDirectionLimit"))
     end
 
     return ProjectileParamsMT[key]
@@ -70,27 +70,27 @@ ProjectileParamsMT.__newindex = function(self, key, value)
         if value < 0 then
             value = -1
         end
-        ffi.setprivate(self, "_Damage", value)
+        ffi.setprivate(self, "Damage", value)
         return
     end
     if key == "Color" then
         ffichecks.checkcdata(1, value, "Color")
-        ffi.setprivate(self, "ColorValue", value)
+        ffi.setprivate(self, "Color", value)
         return
     end
     if key == "PositionOffset" then
         ffichecks.checkcdata(1, value, "Vector")
-        ffi.setprivate(self, "PositionOffsetValue", value)
+        ffi.setprivate(self, "PositionOffset", value)
         return
     end
     if key == "TargetPosition" then
         ffichecks.checkcdata(1, value, "Vector")
-        ffi.setprivate(self, "TargetPositionValue", value)
+        ffi.setprivate(self, "TargetPosition", value)
         return
     end
     if key == "FireDirectionLimit" then
         ffichecks.checkcdata(1, value, "Vector")
-        ffi.setprivate(self, "FireDirectionLimitValue", value)
+        ffi.setprivate(self, "FireDirectionLimit", value)
         return
     end
 end
@@ -111,11 +111,11 @@ local ProjectileParamsGlobalMT = {
             CurvingStrength = 0.0049999998882413,
             Acceleration = 1.0099999904633,
             Spread = 1,
-            ColorValue = Color(1, 1, 1, 1),
+            Color = Color(1, 1, 1, 1),
             BulletFlags = 0,
-            PositionOffsetValue = Vector.Zero,
-            TargetPositionValue = Vector.Zero,
-            FireDirectionLimitValue = Vector.Zero,
+            PositionOffset = Vector.Zero,
+            TargetPosition = Vector.Zero,
+            FireDirectionLimit = Vector.Zero,
             DotProductLimit = -1000,
             WiggleFrameOffset = 0,
             ChangeFlags = 0,
@@ -123,7 +123,7 @@ local ProjectileParamsGlobalMT = {
             ChangeTimeout = 30,
             DepthOffset = 0,
             Variant = 0,
-            _Damage = -1,
+            Damage = -1,
         }) return result
     end,
 

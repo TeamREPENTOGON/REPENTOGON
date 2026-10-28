@@ -8,40 +8,40 @@ ffi.cdef [[
 ]]
 
 ffi.cdef("struct EntityPlayer { " .. Entity.Fields .. [[
-    private bool ControlsEnabledValue : 0x410;
+    private bool ControlsEnabled : 0x410;
     int ControlsCooldown : 0x414;
-    private struct CostumeSpriteDesc* CostumeSpriteDescsFirstValue : 0x1220;
-    private struct CostumeSpriteDesc* CostumeSpriteDescsLastValue : 0x1224;
+    private struct CostumeSpriteDesc* CostumeSpriteDescsFirst : 0x1220;
+    private struct CostumeSpriteDesc* CostumeSpriteDescsLast : 0x1224;
     int HeadFrameDelay : 0x1338;
-    private int HeadDirectionTimeValue : 0x133c;
-    private int MaxHeartsValue : 0x1340;
-    private int RedHeartsValue : 0x1344;
-    private int EternalHeartsValue : 0x1348;
-    private int SoulHeartsValue : 0x134c;
-    private int BlackHeartsValue : 0x1350;
-    private int JarHeartsValue : 0x1354;
-    private int JarFliesValue : 0x1358;
-    private int NumKeysValue : 0x135c;
-    private bool HasGoldenKeyValue : 0x1360;
-    private bool HasGoldenBombValue : 0x1361;
-    private int NumBombsValue : 0x1364;
-    private int NumCoinsValue : 0x1368;
-    private int NumBlueFliesValue : 0x136c;
-    private int NumBlueSpidersValue : 0x1370;
-    private int GnawedLeafTimerValue : 0x1374;
-    private uint32_t LastActionTriggersValue : 0x1378;
-    private short BloodLustCounterValue : 0x137c;
-    private int MetronomeCollectibleIDValue : 0x1388;
-    private bool ExtraAnimationAValue : 0x1398;
-    private bool ExtraAnimationBValue : 0x139a;
-    private int DamageCooldownValue : 0x13b8;
-    private int PlayerTypeValue : 0x13bc;
-    private struct StdString NameValue : 0x13c0;
-    private struct EntityEffect* MarkedTargetValue : 0x1408;
-    private struct Entity* HeldEntityValue : 0x140c;
-    private struct Entity* TractorBeamValue : 0x142c;
-    private struct EntityLaser* MegaBlastLaserValue : 0x1454;
-    private int RUAWizardTimerValue : 0x1458;
+    private int HeadDirectionTime : 0x133c;
+    private int MaxHearts : 0x1340;
+    private int RedHearts : 0x1344;
+    private int EternalHearts : 0x1348;
+    private int SoulHearts : 0x134c;
+    private int BlackHearts : 0x1350;
+    private int JarHearts : 0x1354;
+    private int JarFlies : 0x1358;
+    private int NumKeys : 0x135c;
+    private bool HasGoldenKey : 0x1360;
+    private bool HasGoldenBomb : 0x1361;
+    private int NumBombs : 0x1364;
+    private int NumCoins : 0x1368;
+    private int NumBlueFlies : 0x136c;
+    private int NumBlueSpiders : 0x1370;
+    private int GnawedLeafTimer : 0x1374;
+    private uint32_t LastActionTriggers : 0x1378;
+    private short BloodLustCounter : 0x137c;
+    private int MetronomeCollectibleID : 0x1388;
+    private bool ExtraAnimationA : 0x1398;
+    private bool ExtraAnimationB : 0x139a;
+    private int DamageCooldown : 0x13b8;
+    private int PlayerType : 0x13bc;
+    private struct StdString Name : 0x13c0;
+    private struct EntityEffect* MarkedTarget : 0x1408;
+    private struct Entity* HeldEntity : 0x140c;
+    private struct Entity* TractorBeam : 0x142c;
+    private struct EntityLaser* MegaBlastLaser : 0x1454;
+    private int RUAWizardTimer : 0x1458;
     float MaxFireDelay : 0x145c;
     float ShotSpeed : 0x1460;
     float Damage : 0x146c;
@@ -49,128 +49,128 @@ ffi.cdef("struct EntityPlayer { " .. Entity.Fields .. [[
     float TearFallingSpeed : 0x1474;
     float TearFallingAcceleration : 0x1478;
     float TearRange : 0x147c;
-    private struct BitSet128 TearFlagsValue : 0x1480;
-    private struct Color TearColorValue : 0x1490;
-    private struct Color LaserColorValue : 0x14bc;
-    private struct Vector PlayerSpriteScaleValue : 0x14e8;
-    private int SpeedModifierValue : 0x1518;
-    private int FireDelayModifierValue : 0x151c;
-    private int DamageModifierValue : 0x1520;
-    private int TearRangeModifierValue : 0x1524;
-    private int ShotSpeedModifierValue : 0x1528;
-    private int LuckModifierValue : 0x152c;
-    private int DonateLuckValue : 0x1530;
-    private int PotatoPeelerCounterValue : 0x1534;
-    private float EdenSpeedValue : 0x1540;
-    private float EdenFireDelayValue : 0x1544;
-    private float EdenDamageValue : 0x1548;
-    private float EdenTearRangeValue : 0x154c;
-    private float EdenShotSpeedValue : 0x1550;
-    private float EdenLuckValue : 0x1554;
+    private struct BitSet128 TearFlags : 0x1480;
+    private struct Color TearColor : 0x1490;
+    private struct Color LaserColor : 0x14bc;
+    private struct Vector PlayerSpriteScale : 0x14e8;
+    private int SpeedModifier : 0x1518;
+    private int FireDelayModifier : 0x151c;
+    private int DamageModifier : 0x1520;
+    private int TearRangeModifier : 0x1524;
+    private int ShotSpeedModifier : 0x1528;
+    private int LuckModifier : 0x152c;
+    private int DonateLuck : 0x1530;
+    private int PotatoPeelerCounter : 0x1534;
+    private float EdenSpeed : 0x1540;
+    private float EdenFireDelay : 0x1544;
+    private float EdenDamage : 0x1548;
+    private float EdenTearRange : 0x154c;
+    private float EdenShotSpeed : 0x1550;
+    private float EdenLuck : 0x1554;
     float MoveSpeed : 0x155c;
     float Luck : 0x1560;
-    private bool CanFlyValue : 0x1564;
-    private uint32_t CacheFlagsValue : 0x1568;
-    private int8_t TearDisplacementValue : 0x156c;
-    private float TearPoisonDamageValue : 0x1570;
-    private int ItemStateValue : 0x15f4;
-    private int ItemStateCooldownValue : 0x15f8;
-    private uint32_t VampireCharmKillsValue : 0x15fc;
-    private int BombPlaceDelayValue : 0x1604;
-    private int ForgottenSwapFormCooldownValue : 0x1608;
-    private int ControllerIndexValue : 0x160c;
-    private int PlayerIndexValue : 0x1610;
-    private int MoveDirectionValue : 0x1618;
-    private int HeadDirectionValue : 0x161c;
-    private int FireDirectionValue : 0x1620;
-    private struct Vector AimDirectionValue : 0x1624;
-    private bool OpposingShootDirectionsValue : 0x162c;
-    private struct Vector LastDirectionValue : 0x1630;
-    private struct Vector MovementInputValue : 0x1638;
-    private struct Vector TearsOffsetValue : 0x1640;
-    private struct Vector RecentMovementVectorValue : 0x1648;
-    private struct Vector VelocityBeforeUpdateValue : 0x1654;
-    private uint64_t LastDamageFlagsValue : 0x1698;
-    private int TotalDamageTakenValue : 0x16a4;
-    private uint32_t Trinket0Value : 0x16b0;
-    private uint32_t Trinket1Value : 0x16b4;
-    private int* CollectibleCountsFirstValue : 0x16b8;
-    private int* CollectibleCountsLastValue : 0x16bc;
-    private struct SmeltedTrinketDesc* SmeltedTrinketsFirstValue : 0x1738;
-    private struct SmeltedTrinketDesc* SmeltedTrinketsLastValue : 0x173c;
-    private int* VoidedCollectiblesFirstValue : 0x1744;
-    private int* VoidedCollectiblesLastValue : 0x1748;
-    private uint32_t ActionHoldDropValue : 0x17b0;
-    private struct QueueItemData QueuedItemValue : 0x17b4;
-    private bool PostLevelInitFinishedValue : 0x1810;
-    private bool CanShootValue : 0x1811;
+    private bool CanFly : 0x1564;
+    private uint32_t CacheFlags : 0x1568;
+    private int8_t TearDisplacement : 0x156c;
+    private float TearPoisonDamage : 0x1570;
+    private int ItemState : 0x15f4;
+    private int ItemStateCooldown : 0x15f8;
+    private uint32_t VampireCharmKills : 0x15fc;
+    private int BombPlaceDelay : 0x1604;
+    private int ForgottenSwapFormCooldown : 0x1608;
+    private int ControllerIndex : 0x160c;
+    private int PlayerIndex : 0x1610;
+    private int MoveDirection : 0x1618;
+    private int HeadDirection : 0x161c;
+    private int FireDirection : 0x1620;
+    private struct Vector AimDirection : 0x1624;
+    private bool OpposingShootDirections : 0x162c;
+    private struct Vector LastDirection : 0x1630;
+    private struct Vector MovementInput : 0x1638;
+    private struct Vector TearsOffset : 0x1640;
+    private struct Vector RecentMovementVector : 0x1648;
+    private struct Vector VelocityBeforeUpdate : 0x1654;
+    private uint64_t LastDamageFlags : 0x1698;
+    private int TotalDamageTaken : 0x16a4;
+    private uint32_t Trinket0 : 0x16b0;
+    private uint32_t Trinket1 : 0x16b4;
+    private int* CollectibleCountsFirst : 0x16b8;
+    private int* CollectibleCountsLast : 0x16bc;
+    private struct SmeltedTrinketDesc* SmeltedTrinketsFirst : 0x1738;
+    private struct SmeltedTrinketDesc* SmeltedTrinketsLast : 0x173c;
+    private int* VoidedCollectiblesFirst : 0x1744;
+    private int* VoidedCollectiblesLast : 0x1748;
+    private uint32_t ActionHoldDrop : 0x17b0;
+    private struct QueueItemData QueuedItem : 0x17b4;
+    private bool PostLevelInitFinished : 0x1810;
+    private bool CanShoot : 0x1811;
     int ItemHoldCooldown : 0x1870;
-    private int PonyChargeValue : 0x1874;
-    private int PlanCKillCountdownValue : 0x1878;
-    private int HeadColorValue : 0x1880;
-    private int BodyColorValue : 0x1884;
-    private int EpiphoraChargeValue : 0x1890;
-    private uint32_t DeadEyeChargesValue : 0x189c;
-    private uint32_t DeadEyeMissesValue : 0x18a0;
-    private uint32_t MawOfTheVoidChargeTimerValue : 0x18a8;
-    private uint32_t ImExcitedSpeedupCountdownValue : 0x18d4;
-    private int MegaBlastDurationValue : 0x18e0;
-    private int PeeBurstCooldownValue : 0x18e4;
-    private int MaxPeeBurstCooldownValue : 0x18e8;
-    private int BladderChargeValue : 0x18ec;
-    private int MaxBladderChargeValue : 0x18f0;
-    private bool IsUrethraBlockedValue : 0x18f4;
-    private int NextUrethraBlockFrameValue : 0x18f8;
-    private struct EntityDesc FriendBallEnemyValue : 0x18fc;
-    private int PurityStateValue : 0x1918;
-    private int ImmaculateConceptionStateValue : 0x191c;
-    private int CambionConceptionStateValue : 0x1920;
-    private uint32_t ConceptionFamiliarFlagsValue : 0x1924;
-    private float D8DamageModifierValue : 0x1928;
-    private float D8SpeedModifierValue : 0x192c;
-    private float D8RangeModifierValue : 0x1930;
-    private float D8FireDelayModifierValue : 0x1934;
-    private int GoldenHeartsValue : 0x1938;
-    private float SmoothBodyRotationValue : 0x1ad0;
+    private int PonyCharge : 0x1874;
+    private int PlanCKillCountdown : 0x1878;
+    private int HeadColor : 0x1880;
+    private int BodyColor : 0x1884;
+    private int EpiphoraCharge : 0x1890;
+    private uint32_t DeadEyeCharges : 0x189c;
+    private uint32_t DeadEyeMisses : 0x18a0;
+    private uint32_t MawOfTheVoidChargeTimer : 0x18a8;
+    private uint32_t ImExcitedSpeedupCountdown : 0x18d4;
+    private int MegaBlastDuration : 0x18e0;
+    private int PeeBurstCooldown : 0x18e4;
+    private int MaxPeeBurstCooldown : 0x18e8;
+    private int BladderCharge : 0x18ec;
+    private int MaxBladderCharge : 0x18f0;
+    private bool IsUrethraBlocked : 0x18f4;
+    private int NextUrethraBlockFrame : 0x18f8;
+    private struct EntityDesc FriendBallEnemy : 0x18fc;
+    private int PurityState : 0x1918;
+    private int ImmaculateConceptionState : 0x191c;
+    private int CambionConceptionState : 0x1920;
+    private uint32_t ConceptionFamiliarFlags : 0x1924;
+    private float D8DamageModifier : 0x1928;
+    private float D8SpeedModifier : 0x192c;
+    private float D8RangeModifier : 0x1930;
+    private float D8FireDelayModifier : 0x1934;
+    private int GoldenHearts : 0x1938;
+    private float SmoothBodyRotation : 0x1ad0;
     int BabySkin : 0x1ad8;
-    private int BoneHeartsValue : 0x1d74;
-    private int HallowedGroundCountdownValue : 0x1d7c;
-    private struct EntityPlayer* SubPlayerValue : 0x1d84;
-    private int BrokenHeartsValue : 0x1d8c;
-    private int RottenHeartsValue : 0x1d90;
-    private int SoulChargeValue : 0x1d94;
-    private int BloodChargeValue : 0x1d98;
-    private uint32_t UrnSoulsValue : 0x1dbc;
-    private int NumGigaBombsValue : 0x1dc0;
-    private struct EntityPlayer* TwinPlayerValue : 0x1e4c;
-    private struct EntityPlayer* BackupPlayerValue : 0x1e50;
-    private float FallingSpeedValue : 0x1e54;
-    private int RedStewBonusDurationValue : 0x1e58;
-    private float RockBottomMoveSpeedValue : 0x1e94;
-    private float RockBottomMaxFireDelayValue : 0x1e98;
-    private float RockBottomDamageValue : 0x1e9c;
-    private float RockBottomTearRangeValue : 0x1ea0;
-    private float RockBottomShotSpeedValue : 0x1ea4;
-    private float RockBottomLuckValue : 0x1ea8;
-    private uint32_t RevelationChargeTimerValue : 0x1ec0;
-    private uint32_t MontezumaChargeTimerValue : 0x1ec4;
-    private uint32_t MaggyHealthDrainCooldownValue : 0x1ed0;
-    private int MaggySwingCooldownValue : 0x1ed4;
-    private int SuplexStateValue : 0x1f08;
-    private int SuplexAimCountdownValue : 0x1f0c;
-    private struct Vector SuplexTargetPosValue : 0x1f10;
-    private struct Vector SuplexLandPosValue : 0x1f18;
-    private int PoopManaValue : 0x1f30;
-    private int EveSumptoriumChargeValue : 0x1f58;
-    private int ModelingClayEffectValue : 0x1f94;
-    private int KeepersSackBonusValue : 0x1f98;
-    private bool CurseMistEffectValue : 0x2010;
-    private uint8_t WildCardItemTypeValue : 0x2064;
-    private int WildCardItemValue : 0x2068;
+    private int BoneHearts : 0x1d74;
+    private int HallowedGroundCountdown : 0x1d7c;
+    private struct EntityPlayer* SubPlayer : 0x1d84;
+    private int BrokenHearts : 0x1d8c;
+    private int RottenHearts : 0x1d90;
+    private int SoulCharge : 0x1d94;
+    private int BloodCharge : 0x1d98;
+    private uint32_t UrnSouls : 0x1dbc;
+    private int NumGigaBombs : 0x1dc0;
+    private struct EntityPlayer* TwinPlayer : 0x1e4c;
+    private struct EntityPlayer* BackupPlayer : 0x1e50;
+    private float FallingSpeed : 0x1e54;
+    private int RedStewBonusDuration : 0x1e58;
+    private float RockBottomMoveSpeed : 0x1e94;
+    private float RockBottomMaxFireDelay : 0x1e98;
+    private float RockBottomDamage : 0x1e9c;
+    private float RockBottomTearRange : 0x1ea0;
+    private float RockBottomShotSpeed : 0x1ea4;
+    private float RockBottomLuck : 0x1ea8;
+    private uint32_t RevelationChargeTimer : 0x1ec0;
+    private uint32_t MontezumaChargeTimer : 0x1ec4;
+    private uint32_t MaggyHealthDrainCooldown : 0x1ed0;
+    private int MaggySwingCooldown : 0x1ed4;
+    private int SuplexState : 0x1f08;
+    private int SuplexAimCountdown : 0x1f0c;
+    private struct Vector SuplexTargetPos : 0x1f10;
+    private struct Vector SuplexLandPos : 0x1f18;
+    private int PoopMana : 0x1f30;
+    private int EveSumptoriumCharge : 0x1f58;
+    private int ModelingClayEffect : 0x1f94;
+    private int KeepersSackBonus : 0x1f98;
+    private bool CurseMistEffect : 0x2010;
+    private uint8_t WildCardItemType : 0x2064;
+    private int WildCardItem : 0x2068;
     int SamsonBerserkCharge : 0x2070;
     float IBSCharge : 0x2074;
-    private bool IsCoopGhostValue : 0x207d;
-    private struct PlayerHUD* PlayerHUDValue : 0x20a8;
+    private bool IsCoopGhost : 0x207d;
+    private struct PlayerHUD* PlayerHUD : 0x20a8;
 ]] .. "} : 0x2ea0;\ntypedef struct EntityPlayer* EntityPlayerPtr;")
 
 ffi.cdef [[
@@ -808,7 +808,7 @@ local function HeartStatUps(self, soulLocket)
 end
 
 local function SmeltedTrinketDesc(self, trinket)
-    local entry = ffi.getprivate(self, "SmeltedTrinketsFirstValue")[trinket]
+    local entry = ffi.getprivate(self, "SmeltedTrinketsFirst")[trinket]
     return { trinketAmount = entry.TrinketAmount, goldenTrinketAmount = entry.GoldenTrinketAmount }
 end
 
@@ -826,45 +826,45 @@ local function StructSetter(field, name)
 end
 
 local getters = {
-    ControlsEnabled = Getter("ControlsEnabledValue"),
-    ControllerIndex = Getter("ControllerIndexValue"),
-    CanFly = Getter("CanFlyValue"),
+    ControlsEnabled = Getter("ControlsEnabled"),
+    ControllerIndex = Getter("ControllerIndex"),
+    CanFly = Getter("CanFly"),
     FireDelay = function(self)
         local result = repentogon.L_EntityPlayer_GetFireDelayNative(self) return result
     end,
-    TearsOffset = Getter("TearsOffsetValue"),
-    SpriteScale = VectorGetter("PlayerSpriteScaleValue"),
+    TearsOffset = Getter("TearsOffset"),
+    SpriteScale = VectorGetter("PlayerSpriteScale"),
     TearFlags = function(self)
-        return CopyStruct("struct BitSet128", ffi.getprivate(self, "TearFlagsValue"))
+        return CopyStruct("struct BitSet128", ffi.getprivate(self, "TearFlags"))
     end,
-    TearColor = ColorGetter("TearColorValue"),
-    LaserColor = ColorGetter("LaserColorValue"),
+    TearColor = ColorGetter("TearColor"),
+    LaserColor = ColorGetter("LaserColor"),
     QueuedItem = function(self)
-        return CopyStruct("struct QueueItemData", ffi.getprivate(self, "QueuedItemValue"))
+        return CopyStruct("struct QueueItemData", ffi.getprivate(self, "QueuedItem"))
     end,
     FriendBallEnemy = function(self)
-        return CopyStruct("struct EntityDesc", ffi.getprivate(self, "FriendBallEnemyValue"))
+        return CopyStruct("struct EntityDesc", ffi.getprivate(self, "FriendBallEnemy"))
     end,
 }
 
 local setters = {
     ControlsEnabled = function(self, value)
-        ffi.setprivate(self, "ControlsEnabledValue", not not value)
+        ffi.setprivate(self, "ControlsEnabled", not not value)
     end,
     CanFly = function(self, value)
-        ffi.setprivate(self, "CanFlyValue", not not value)
+        ffi.setprivate(self, "CanFly", not not value)
     end,
     FireDelay = function(self, value)
         value = ffichecks.checknumber(1, value)
         repentogon.L_EntityPlayer_SetFireDelayNative(self, value)
     end,
-    TearsOffset = VectorSetter("TearsOffsetValue"),
-    SpriteScale = VectorSetter("PlayerSpriteScaleValue"),
-    TearFlags = StructSetter("TearFlagsValue", "BitSet128"),
-    TearColor = StructSetter("TearColorValue", "Color"),
-    LaserColor = StructSetter("LaserColorValue", "Color"),
-    QueuedItem = StructSetter("QueuedItemValue", "QueueItemData"),
-    FriendBallEnemy = StructSetter("FriendBallEnemyValue", "EntityDesc"),
+    TearsOffset = VectorSetter("TearsOffset"),
+    SpriteScale = VectorSetter("PlayerSpriteScale"),
+    TearFlags = StructSetter("TearFlags", "BitSet128"),
+    TearColor = StructSetter("TearColor", "Color"),
+    LaserColor = StructSetter("LaserColor", "Color"),
+    QueuedItem = StructSetter("QueuedItem", "QueueItemData"),
+    FriendBallEnemy = StructSetter("FriendBallEnemy", "EntityDesc"),
 }
 
 local methods = {
@@ -1766,187 +1766,187 @@ local methods = {
         if slot ~= 2 and slot ~= 3 then ffichecks.argerror(2, "Invalid ActiveSlot - SetPocketActiveItem can only be used for ActiveSlot.SLOT_POCKET or ActiveSlot.SLOT_POCKET2") end
         repentogon.L_EntityPlayer_SetPocketActiveItem(self, collectible, slot, keepInPools)
     end,
-    GetMovementDirection = Getter("MoveDirectionValue"),
-    GetFireDirection = Getter("FireDirectionValue"),
-    GetHeadDirection = Getter("HeadDirectionValue"),
-    AreOpposingShootDirectionsPressed = Getter("OpposingShootDirectionsValue"),
-    GetSmoothBodyRotation = Getter("SmoothBodyRotationValue"),
-    GetTearPoisonDamage = Getter("TearPoisonDamageValue"),
-    SetTearPoisonDamage = NumberSetter("TearPoisonDamageValue"),
-    GetHearts = Getter("RedHeartsValue"),
-    GetMaxHearts = Getter("MaxHeartsValue"),
-    GetSoulHearts = Getter("SoulHeartsValue"),
-    GetBlackHearts = Getter("BlackHeartsValue"),
-    GetEternalHearts = Getter("EternalHeartsValue"),
-    GetJarHearts = Getter("JarHeartsValue"),
-    GetJarFlies = Getter("JarFliesValue"),
-    GetNumBombs = Getter("NumBombsValue"),
-    GetNumKeys = Getter("NumKeysValue"),
-    HasGoldenKey = Getter("HasGoldenKeyValue"),
-    HasGoldenBomb = Getter("HasGoldenBombValue"),
-    GetGoldenHearts = Getter("GoldenHeartsValue"),
-    GetNumCoins = Getter("NumCoinsValue"),
-    GetPlayerType = Getter("PlayerTypeValue"),
-    GetNumBlueFlies = Getter("NumBlueFliesValue"),
-    GetNumBlueSpiders = Getter("NumBlueSpidersValue"),
-    GetItemState = Getter("ItemStateValue"),
-    GetTearRangeModifier = Getter("TearRangeModifierValue"),
-    SetTearRangeModifier = IntegerSetter("TearRangeModifierValue"),
-    GetTractorBeam = Getter("TractorBeamValue"),
-    GetDamageCooldown = Getter("DamageCooldownValue"),
-    GetLastActionTriggers = Getter("LastActionTriggersValue"),
+    GetMovementDirection = Getter("MoveDirection"),
+    GetFireDirection = Getter("FireDirection"),
+    GetHeadDirection = Getter("HeadDirection"),
+    AreOpposingShootDirectionsPressed = Getter("OpposingShootDirections"),
+    GetSmoothBodyRotation = Getter("SmoothBodyRotation"),
+    GetTearPoisonDamage = Getter("TearPoisonDamage"),
+    SetTearPoisonDamage = NumberSetter("TearPoisonDamage"),
+    GetHearts = Getter("RedHearts"),
+    GetMaxHearts = Getter("MaxHearts"),
+    GetSoulHearts = Getter("SoulHearts"),
+    GetBlackHearts = Getter("BlackHearts"),
+    GetEternalHearts = Getter("EternalHearts"),
+    GetJarHearts = Getter("JarHearts"),
+    GetJarFlies = Getter("JarFlies"),
+    GetNumBombs = Getter("NumBombs"),
+    GetNumKeys = Getter("NumKeys"),
+    HasGoldenKey = Getter("HasGoldenKey"),
+    HasGoldenBomb = Getter("HasGoldenBomb"),
+    GetGoldenHearts = Getter("GoldenHearts"),
+    GetNumCoins = Getter("NumCoins"),
+    GetPlayerType = Getter("PlayerType"),
+    GetNumBlueFlies = Getter("NumBlueFlies"),
+    GetNumBlueSpiders = Getter("NumBlueSpiders"),
+    GetItemState = Getter("ItemState"),
+    GetTearRangeModifier = Getter("TearRangeModifier"),
+    SetTearRangeModifier = IntegerSetter("TearRangeModifier"),
+    GetTractorBeam = Getter("TractorBeam"),
+    GetDamageCooldown = Getter("DamageCooldown"),
+    GetLastActionTriggers = Getter("LastActionTriggers"),
     GetBabySkin = function(self)
         return self.BabySkin
     end,
-    GetBoneHearts = Getter("BoneHeartsValue"),
-    GetSubPlayer = Getter("SubPlayerValue"),
-    GetOtherTwin = Getter("TwinPlayerValue"),
-    GetBrokenHearts = Getter("BrokenHeartsValue"),
-    GetRottenHearts = Getter("RottenHeartsValue"),
-    GetSoulCharge = Getter("SoulChargeValue"),
-    SetSoulCharge = IntegerSetter("SoulChargeValue"),
-    GetBloodCharge = Getter("BloodChargeValue"),
-    SetBloodCharge = IntegerSetter("BloodChargeValue"),
-    GetNumGigaBombs = Getter("NumGigaBombsValue"),
-    GetModelingClayEffect = Getter("ModelingClayEffectValue"),
-    HasCurseMistEffect = Getter("CurseMistEffectValue"),
-    IsCoopGhost = Getter("IsCoopGhostValue"),
-    GetPoopMana = Getter("PoopManaValue"),
-    GetBodyColor = Getter("BodyColorValue"),
-    GetHeadColor = Getter("HeadColorValue"),
-    GetTotalDamageTaken = Getter("TotalDamageTakenValue"),
-    CanShoot = Getter("CanShootValue"),
-    SetCanShoot = BooleanSetter("CanShootValue"),
-    GetSpeedModifier = Getter("SpeedModifierValue"),
-    SetSpeedModifier = IntegerSetter("SpeedModifierValue"),
-    GetFireDelayModifier = Getter("FireDelayModifierValue"),
-    SetFireDelayModifier = IntegerSetter("FireDelayModifierValue"),
-    GetDamageModifier = Getter("DamageModifierValue"),
-    SetDamageModifier = IntegerSetter("DamageModifierValue"),
-    GetShotSpeedModifier = Getter("ShotSpeedModifierValue"),
-    SetShotSpeedModifier = IntegerSetter("ShotSpeedModifierValue"),
-    GetLuckModifier = Getter("LuckModifierValue"),
-    SetLuckModifier = IntegerSetter("LuckModifierValue"),
-    GetRedStewBonusDuration = Getter("RedStewBonusDurationValue"),
-    SetRedStewBonusDuration = IntegerSetter("RedStewBonusDurationValue"),
-    GetD8DamageModifier = Getter("D8DamageModifierValue"),
-    SetD8DamageModifier = NumberSetter("D8DamageModifierValue"),
-    GetD8SpeedModifier = Getter("D8SpeedModifierValue"),
-    SetD8SpeedModifier = NumberSetter("D8SpeedModifierValue"),
-    GetD8RangeModifier = Getter("D8RangeModifierValue"),
-    SetD8RangeModifier = NumberSetter("D8RangeModifierValue"),
-    GetD8FireDelayModifier = Getter("D8FireDelayModifierValue"),
-    SetD8FireDelayModifier = NumberSetter("D8FireDelayModifierValue"),
-    GetEpiphoraCharge = Getter("EpiphoraChargeValue"),
-    GetPeeBurstCooldown = Getter("PeeBurstCooldownValue"),
-    GetMaxPeeBurstCooldown = Getter("MaxPeeBurstCooldownValue"),
-    GetMetronomeCollectibleID = Getter("MetronomeCollectibleIDValue"),
-    GetMarkedTarget = Getter("MarkedTargetValue"),
-    GetWildCardItem = Getter("WildCardItemValue"),
-    GetWildCardItemType = Getter("WildCardItemTypeValue"),
-    GetPonyCharge = Getter("PonyChargeValue"),
-    SetPonyCharge = IntegerSetter("PonyChargeValue"),
-    GetEdenSpeed = Getter("EdenSpeedValue"),
-    SetEdenSpeed = NumberSetter("EdenSpeedValue"),
-    GetEdenFireDelay = Getter("EdenFireDelayValue"),
-    SetEdenFireDelay = NumberSetter("EdenFireDelayValue"),
-    GetEdenDamage = Getter("EdenDamageValue"),
-    SetEdenDamage = NumberSetter("EdenDamageValue"),
-    GetEdenRange = Getter("EdenTearRangeValue"),
-    SetEdenRange = NumberSetter("EdenTearRangeValue"),
-    GetEdenShotSpeed = Getter("EdenShotSpeedValue"),
-    SetEdenShotSpeed = NumberSetter("EdenShotSpeedValue"),
-    GetEdenLuck = Getter("EdenLuckValue"),
-    SetEdenLuck = NumberSetter("EdenLuckValue"),
-    GetPurityState = Getter("PurityStateValue"),
-    SetPurityState = IntegerSetter("PurityStateValue"),
-    GetCambionConceptionState = Getter("CambionConceptionStateValue"),
-    SetCambionConceptionState = IntegerSetter("CambionConceptionStateValue"),
-    GetConceptionFamiliarFlags = Getter("ConceptionFamiliarFlagsValue"),
-    SetConceptionFamiliarFlags = IntegerSetter("ConceptionFamiliarFlagsValue"),
-    GetBladderCharge = Getter("BladderChargeValue"),
-    SetBladderCharge = IntegerSetter("BladderChargeValue"),
-    GetMaxBladderCharge = Getter("MaxBladderChargeValue"),
-    SetMaxBladderCharge = IntegerSetter("MaxBladderChargeValue"),
-    IsUrethraBlocked = Getter("IsUrethraBlockedValue"),
-    SetUrethraBlock = BooleanSetter("IsUrethraBlockedValue"),
-    GetNextUrethraBlockFrame = Getter("NextUrethraBlockFrameValue"),
-    SetNextUrethraBlockFrame = IntegerSetter("NextUrethraBlockFrameValue"),
-    GetPlayerIndex = Getter("PlayerIndexValue"),
-    GetRevelationCharge = Getter("RevelationChargeTimerValue"),
-    SetRevelationCharge = IntegerSetter("RevelationChargeTimerValue"),
-    GetMaggySwingCooldown = Getter("MaggySwingCooldownValue"),
-    SetMaggySwingCooldown = IntegerSetter("MaggySwingCooldownValue"),
-    GetEveSumptoriumCharge = Getter("EveSumptoriumChargeValue"),
-    SetEveSumptoriumCharge = IntegerSetter("EveSumptoriumChargeValue"),
-    GetUrnSouls = Getter("UrnSoulsValue"),
-    GetKeepersSackBonus = Getter("KeepersSackBonusValue"),
-    SetKeepersSackBonus = IntegerSetter("KeepersSackBonusValue"),
-    GetGnawedLeafTimer = Getter("GnawedLeafTimerValue"),
-    SetGnawedLeafTimer = IntegerSetter("GnawedLeafTimerValue"),
-    GetBloodLustCounter = Getter("BloodLustCounterValue"),
-    SetBloodLustCounter = IntegerSetter("BloodLustCounterValue"),
-    GetBombPlaceDelay = Getter("BombPlaceDelayValue"),
-    SetBombPlaceDelay = IntegerSetter("BombPlaceDelayValue"),
-    GetHeadDirectionLockTime = Getter("HeadDirectionTimeValue"),
-    SetHeadDirectionLockTime = IntegerSetter("HeadDirectionTimeValue"),
-    GetHallowedGroundCountdown = Getter("HallowedGroundCountdownValue"),
-    SetHallowedGroundCountdown = IntegerSetter("HallowedGroundCountdownValue"),
-    GetActionHoldDrop = Getter("ActionHoldDropValue"),
-    SetActionHoldDrop = IntegerSetter("ActionHoldDropValue"),
-    GetForgottenSwapFormCooldown = Getter("ForgottenSwapFormCooldownValue"),
-    SetForgottenSwapFormCooldown = IntegerSetter("ForgottenSwapFormCooldownValue"),
-    GetRockBottomMoveSpeed = Getter("RockBottomMoveSpeedValue"),
-    SetRockBottomMoveSpeed = NumberSetter("RockBottomMoveSpeedValue"),
-    GetRockBottomMaxFireDelay = Getter("RockBottomMaxFireDelayValue"),
-    SetRockBottomMaxFireDelay = NumberSetter("RockBottomMaxFireDelayValue"),
-    GetRockBottomDamage = Getter("RockBottomDamageValue"),
-    SetRockBottomDamage = NumberSetter("RockBottomDamageValue"),
-    GetRockBottomTearRange = Getter("RockBottomTearRangeValue"),
-    SetRockBottomTearRange = NumberSetter("RockBottomTearRangeValue"),
-    GetRockBottomShotSpeed = Getter("RockBottomShotSpeedValue"),
-    SetRockBottomShotSpeed = NumberSetter("RockBottomShotSpeedValue"),
-    GetRockBottomLuck = Getter("RockBottomLuckValue"),
-    SetRockBottomLuck = NumberSetter("RockBottomLuckValue"),
-    GetSuplexState = Getter("SuplexStateValue"),
-    SetSuplexState = IntegerSetter("SuplexStateValue"),
-    GetSuplexAimCountdown = Getter("SuplexAimCountdownValue"),
-    SetSuplexAimCountdown = IntegerSetter("SuplexAimCountdownValue"),
-    GetSuplexTargetPosition = VectorGetter("SuplexTargetPosValue"),
-    SetSuplexTargetPosition = VectorSetter("SuplexTargetPosValue"),
-    GetSuplexLandPosition = VectorGetter("SuplexLandPosValue"),
-    SetSuplexLandPosition = VectorSetter("SuplexLandPosValue"),
-    GetCharmOfTheVampireKills = Getter("VampireCharmKillsValue"),
-    SetCharmOfTheVampireKills = IntegerSetter("VampireCharmKillsValue"),
-    GetMaggyHealthDrainCooldown = Getter("MaggyHealthDrainCooldownValue"),
-    SetMaggyHealthDrainCooldown = IntegerSetter("MaggyHealthDrainCooldownValue"),
-    IsPostLevelInitFinished = Getter("PostLevelInitFinishedValue"),
-    GetPlanCKillCountdown = Getter("PlanCKillCountdownValue"),
-    SetPlanCKillCountdown = IntegerSetter("PlanCKillCountdownValue"),
-    GetPotatoPeelerUses = Getter("PotatoPeelerCounterValue"),
-    SetPotatoPeelerUses = IntegerSetter("PotatoPeelerCounterValue"),
-    GetMawOfTheVoidCharge = Getter("MawOfTheVoidChargeTimerValue"),
-    SetMawOfTheVoidCharge = IntegerSetter("MawOfTheVoidChargeTimerValue"),
-    GetMontezumaRevengeCharge = Getter("MontezumaChargeTimerValue"),
-    SetMontezumaRevengeCharge = IntegerSetter("MontezumaChargeTimerValue"),
-    GetItemStateCooldown = Getter("ItemStateCooldownValue"),
-    SetItemStateCooldown = IntegerSetter("ItemStateCooldownValue"),
-    GetImExcitedSpeedupCountdown = Getter("ImExcitedSpeedupCountdownValue"),
-    SetImExcitedSpeedupCountdown = IntegerSetter("ImExcitedSpeedupCountdownValue"),
-    GetDonateLuck = Getter("DonateLuckValue"),
-    SetDonateLuck = IntegerSetter("DonateLuckValue"),
-    GetRUAWizardTimer = Getter("RUAWizardTimerValue"),
-    SetRUAWizardTimer = IntegerSetter("RUAWizardTimerValue"),
-    GetDeadEyeCharge = Getter("DeadEyeChargesValue"),
-    GetAimDirection = Getter("AimDirectionValue"),
-    GetLastDirection = Getter("LastDirectionValue"),
-    GetMovementVector = Getter("MovementInputValue"),
-    GetRecentMovementVector = Getter("RecentMovementVectorValue"),
-    GetVelocityBeforeUpdate = Getter("VelocityBeforeUpdateValue"),
-    GetHeldEntity = Getter("HeldEntityValue"),
-    GetFlippedForm = Getter("BackupPlayerValue"),
-    GetImmaculateConceptionState = Getter("ImmaculateConceptionStateValue"),
-    GetMegaBlastDuration = Getter("MegaBlastDurationValue"),
+    GetBoneHearts = Getter("BoneHearts"),
+    GetSubPlayer = Getter("SubPlayer"),
+    GetOtherTwin = Getter("TwinPlayer"),
+    GetBrokenHearts = Getter("BrokenHearts"),
+    GetRottenHearts = Getter("RottenHearts"),
+    GetSoulCharge = Getter("SoulCharge"),
+    SetSoulCharge = IntegerSetter("SoulCharge"),
+    GetBloodCharge = Getter("BloodCharge"),
+    SetBloodCharge = IntegerSetter("BloodCharge"),
+    GetNumGigaBombs = Getter("NumGigaBombs"),
+    GetModelingClayEffect = Getter("ModelingClayEffect"),
+    HasCurseMistEffect = Getter("CurseMistEffect"),
+    IsCoopGhost = Getter("IsCoopGhost"),
+    GetPoopMana = Getter("PoopMana"),
+    GetBodyColor = Getter("BodyColor"),
+    GetHeadColor = Getter("HeadColor"),
+    GetTotalDamageTaken = Getter("TotalDamageTaken"),
+    CanShoot = Getter("CanShoot"),
+    SetCanShoot = BooleanSetter("CanShoot"),
+    GetSpeedModifier = Getter("SpeedModifier"),
+    SetSpeedModifier = IntegerSetter("SpeedModifier"),
+    GetFireDelayModifier = Getter("FireDelayModifier"),
+    SetFireDelayModifier = IntegerSetter("FireDelayModifier"),
+    GetDamageModifier = Getter("DamageModifier"),
+    SetDamageModifier = IntegerSetter("DamageModifier"),
+    GetShotSpeedModifier = Getter("ShotSpeedModifier"),
+    SetShotSpeedModifier = IntegerSetter("ShotSpeedModifier"),
+    GetLuckModifier = Getter("LuckModifier"),
+    SetLuckModifier = IntegerSetter("LuckModifier"),
+    GetRedStewBonusDuration = Getter("RedStewBonusDuration"),
+    SetRedStewBonusDuration = IntegerSetter("RedStewBonusDuration"),
+    GetD8DamageModifier = Getter("D8DamageModifier"),
+    SetD8DamageModifier = NumberSetter("D8DamageModifier"),
+    GetD8SpeedModifier = Getter("D8SpeedModifier"),
+    SetD8SpeedModifier = NumberSetter("D8SpeedModifier"),
+    GetD8RangeModifier = Getter("D8RangeModifier"),
+    SetD8RangeModifier = NumberSetter("D8RangeModifier"),
+    GetD8FireDelayModifier = Getter("D8FireDelayModifier"),
+    SetD8FireDelayModifier = NumberSetter("D8FireDelayModifier"),
+    GetEpiphoraCharge = Getter("EpiphoraCharge"),
+    GetPeeBurstCooldown = Getter("PeeBurstCooldown"),
+    GetMaxPeeBurstCooldown = Getter("MaxPeeBurstCooldown"),
+    GetMetronomeCollectibleID = Getter("MetronomeCollectibleID"),
+    GetMarkedTarget = Getter("MarkedTarget"),
+    GetWildCardItem = Getter("WildCardItem"),
+    GetWildCardItemType = Getter("WildCardItemType"),
+    GetPonyCharge = Getter("PonyCharge"),
+    SetPonyCharge = IntegerSetter("PonyCharge"),
+    GetEdenSpeed = Getter("EdenSpeed"),
+    SetEdenSpeed = NumberSetter("EdenSpeed"),
+    GetEdenFireDelay = Getter("EdenFireDelay"),
+    SetEdenFireDelay = NumberSetter("EdenFireDelay"),
+    GetEdenDamage = Getter("EdenDamage"),
+    SetEdenDamage = NumberSetter("EdenDamage"),
+    GetEdenRange = Getter("EdenTearRange"),
+    SetEdenRange = NumberSetter("EdenTearRange"),
+    GetEdenShotSpeed = Getter("EdenShotSpeed"),
+    SetEdenShotSpeed = NumberSetter("EdenShotSpeed"),
+    GetEdenLuck = Getter("EdenLuck"),
+    SetEdenLuck = NumberSetter("EdenLuck"),
+    GetPurityState = Getter("PurityState"),
+    SetPurityState = IntegerSetter("PurityState"),
+    GetCambionConceptionState = Getter("CambionConceptionState"),
+    SetCambionConceptionState = IntegerSetter("CambionConceptionState"),
+    GetConceptionFamiliarFlags = Getter("ConceptionFamiliarFlags"),
+    SetConceptionFamiliarFlags = IntegerSetter("ConceptionFamiliarFlags"),
+    GetBladderCharge = Getter("BladderCharge"),
+    SetBladderCharge = IntegerSetter("BladderCharge"),
+    GetMaxBladderCharge = Getter("MaxBladderCharge"),
+    SetMaxBladderCharge = IntegerSetter("MaxBladderCharge"),
+    IsUrethraBlocked = Getter("IsUrethraBlocked"),
+    SetUrethraBlock = BooleanSetter("IsUrethraBlocked"),
+    GetNextUrethraBlockFrame = Getter("NextUrethraBlockFrame"),
+    SetNextUrethraBlockFrame = IntegerSetter("NextUrethraBlockFrame"),
+    GetPlayerIndex = Getter("PlayerIndex"),
+    GetRevelationCharge = Getter("RevelationChargeTimer"),
+    SetRevelationCharge = IntegerSetter("RevelationChargeTimer"),
+    GetMaggySwingCooldown = Getter("MaggySwingCooldown"),
+    SetMaggySwingCooldown = IntegerSetter("MaggySwingCooldown"),
+    GetEveSumptoriumCharge = Getter("EveSumptoriumCharge"),
+    SetEveSumptoriumCharge = IntegerSetter("EveSumptoriumCharge"),
+    GetUrnSouls = Getter("UrnSouls"),
+    GetKeepersSackBonus = Getter("KeepersSackBonus"),
+    SetKeepersSackBonus = IntegerSetter("KeepersSackBonus"),
+    GetGnawedLeafTimer = Getter("GnawedLeafTimer"),
+    SetGnawedLeafTimer = IntegerSetter("GnawedLeafTimer"),
+    GetBloodLustCounter = Getter("BloodLustCounter"),
+    SetBloodLustCounter = IntegerSetter("BloodLustCounter"),
+    GetBombPlaceDelay = Getter("BombPlaceDelay"),
+    SetBombPlaceDelay = IntegerSetter("BombPlaceDelay"),
+    GetHeadDirectionLockTime = Getter("HeadDirectionTime"),
+    SetHeadDirectionLockTime = IntegerSetter("HeadDirectionTime"),
+    GetHallowedGroundCountdown = Getter("HallowedGroundCountdown"),
+    SetHallowedGroundCountdown = IntegerSetter("HallowedGroundCountdown"),
+    GetActionHoldDrop = Getter("ActionHoldDrop"),
+    SetActionHoldDrop = IntegerSetter("ActionHoldDrop"),
+    GetForgottenSwapFormCooldown = Getter("ForgottenSwapFormCooldown"),
+    SetForgottenSwapFormCooldown = IntegerSetter("ForgottenSwapFormCooldown"),
+    GetRockBottomMoveSpeed = Getter("RockBottomMoveSpeed"),
+    SetRockBottomMoveSpeed = NumberSetter("RockBottomMoveSpeed"),
+    GetRockBottomMaxFireDelay = Getter("RockBottomMaxFireDelay"),
+    SetRockBottomMaxFireDelay = NumberSetter("RockBottomMaxFireDelay"),
+    GetRockBottomDamage = Getter("RockBottomDamage"),
+    SetRockBottomDamage = NumberSetter("RockBottomDamage"),
+    GetRockBottomTearRange = Getter("RockBottomTearRange"),
+    SetRockBottomTearRange = NumberSetter("RockBottomTearRange"),
+    GetRockBottomShotSpeed = Getter("RockBottomShotSpeed"),
+    SetRockBottomShotSpeed = NumberSetter("RockBottomShotSpeed"),
+    GetRockBottomLuck = Getter("RockBottomLuck"),
+    SetRockBottomLuck = NumberSetter("RockBottomLuck"),
+    GetSuplexState = Getter("SuplexState"),
+    SetSuplexState = IntegerSetter("SuplexState"),
+    GetSuplexAimCountdown = Getter("SuplexAimCountdown"),
+    SetSuplexAimCountdown = IntegerSetter("SuplexAimCountdown"),
+    GetSuplexTargetPosition = VectorGetter("SuplexTargetPos"),
+    SetSuplexTargetPosition = VectorSetter("SuplexTargetPos"),
+    GetSuplexLandPosition = VectorGetter("SuplexLandPos"),
+    SetSuplexLandPosition = VectorSetter("SuplexLandPos"),
+    GetCharmOfTheVampireKills = Getter("VampireCharmKills"),
+    SetCharmOfTheVampireKills = IntegerSetter("VampireCharmKills"),
+    GetMaggyHealthDrainCooldown = Getter("MaggyHealthDrainCooldown"),
+    SetMaggyHealthDrainCooldown = IntegerSetter("MaggyHealthDrainCooldown"),
+    IsPostLevelInitFinished = Getter("PostLevelInitFinished"),
+    GetPlanCKillCountdown = Getter("PlanCKillCountdown"),
+    SetPlanCKillCountdown = IntegerSetter("PlanCKillCountdown"),
+    GetPotatoPeelerUses = Getter("PotatoPeelerCounter"),
+    SetPotatoPeelerUses = IntegerSetter("PotatoPeelerCounter"),
+    GetMawOfTheVoidCharge = Getter("MawOfTheVoidChargeTimer"),
+    SetMawOfTheVoidCharge = IntegerSetter("MawOfTheVoidChargeTimer"),
+    GetMontezumaRevengeCharge = Getter("MontezumaChargeTimer"),
+    SetMontezumaRevengeCharge = IntegerSetter("MontezumaChargeTimer"),
+    GetItemStateCooldown = Getter("ItemStateCooldown"),
+    SetItemStateCooldown = IntegerSetter("ItemStateCooldown"),
+    GetImExcitedSpeedupCountdown = Getter("ImExcitedSpeedupCountdown"),
+    SetImExcitedSpeedupCountdown = IntegerSetter("ImExcitedSpeedupCountdown"),
+    GetDonateLuck = Getter("DonateLuck"),
+    SetDonateLuck = IntegerSetter("DonateLuck"),
+    GetRUAWizardTimer = Getter("RUAWizardTimer"),
+    SetRUAWizardTimer = IntegerSetter("RUAWizardTimer"),
+    GetDeadEyeCharge = Getter("DeadEyeCharges"),
+    GetAimDirection = Getter("AimDirection"),
+    GetLastDirection = Getter("LastDirection"),
+    GetMovementVector = Getter("MovementInput"),
+    GetRecentMovementVector = Getter("RecentMovementVector"),
+    GetVelocityBeforeUpdate = Getter("VelocityBeforeUpdate"),
+    GetHeldEntity = Getter("HeldEntity"),
+    GetFlippedForm = Getter("BackupPlayer"),
+    GetImmaculateConceptionState = Getter("ImmaculateConceptionState"),
+    GetMegaBlastDuration = Getter("MegaBlastDuration"),
     GetEntityConfigPlayer = function(self)
         local result = repentogon.L_EntityPlayer_GetEntityConfigPlayer(self) return result
     end,
@@ -1994,18 +1994,18 @@ local methods = {
         local result = repentogon.L_EntityPlayer_GetPlayerHUD(self) return result
     end,
     GetCostumeSpriteDescs = function(self)
-        return ffichecks.vectortotable(ffi.getprivate(self, "CostumeSpriteDescsFirstValue"), ffi.getprivate(self, "CostumeSpriteDescsLastValue"), COSTUME_SPRITE_DESC_SIZE)
+        return ffichecks.vectortotable(ffi.getprivate(self, "CostumeSpriteDescsFirst"), ffi.getprivate(self, "CostumeSpriteDescsLast"), COSTUME_SPRITE_DESC_SIZE)
     end,
     GetCollectiblesList = function(self)
         local result = {}
-        local first = ffi.getprivate(self, "CollectibleCountsFirstValue")
-        for i = 1, ffichecks.vectorsize(first, ffi.getprivate(self, "CollectibleCountsLastValue"), 4) - 1 do
+        local first = ffi.getprivate(self, "CollectibleCountsFirst")
+        for i = 1, ffichecks.vectorsize(first, ffi.getprivate(self, "CollectibleCountsLast"), 4) - 1 do
             result[i] = first[i]
         end
         return result
     end,
     GetVoidedCollectiblesList = function(self)
-        return ffichecks.vectortotable(ffi.getprivate(self, "VoidedCollectiblesFirstValue"), ffi.getprivate(self, "VoidedCollectiblesLastValue"), 4)
+        return ffichecks.vectortotable(ffi.getprivate(self, "VoidedCollectiblesFirst"), ffi.getprivate(self, "VoidedCollectiblesLast"), 4)
     end,
     GetWispCollectiblesList = function(self)
         return SnapshotPairs(repentogon.L_EntityPlayer_SnapshotWispCollectibles(self))
@@ -2061,8 +2061,8 @@ local methods = {
                 end
             end
         else
-            local first = ffi.getprivate(self, "SmeltedTrinketsFirstValue")
-            for i = 1, ffichecks.vectorsize(first, ffi.getprivate(self, "SmeltedTrinketsLastValue"), 4) - 1 do
+            local first = ffi.getprivate(self, "SmeltedTrinketsFirst")
+            for i = 1, ffichecks.vectorsize(first, ffi.getprivate(self, "SmeltedTrinketsLast"), 4) - 1 do
                 result[i] = { trinketAmount = first[i].TrinketAmount, goldenTrinketAmount = first[i].GoldenTrinketAmount }
             end
         end
@@ -2248,11 +2248,11 @@ local methods = {
         repentogon.L_EntityPlayer_SetFootprintColor(self, color, ffichecks.optboolean(unk, false))
     end,
     GetLaserColor = function(self)
-        return CopyStruct("struct Color", ffi.getprivate(self, "LaserColorValue"))
+        return CopyStruct("struct Color", ffi.getprivate(self, "LaserColor"))
     end,
     SetLaserColor = function(self, color)
         ffichecks.checkcdata(1, color, "Color")
-        ffi.setprivate(self, "LaserColorValue", color)
+        ffi.setprivate(self, "LaserColor", color)
     end,
 
     HasCollectible = function(self, collectible, ignoreModifiers, ignoreSpoof)
@@ -2278,7 +2278,7 @@ local methods = {
     AddCacheFlags = function(self, flags, evaluateItems)
         flags = ffichecks.checkinteger(1, flags)
         evaluateItems = ffichecks.optboolean(evaluateItems, false)
-        ffi.setprivate(self, "CacheFlagsValue", ffi.getprivate(self, "CacheFlagsValue") | flags)
+        ffi.setprivate(self, "CacheFlags", ffi.getprivate(self, "CacheFlags") | flags)
         if evaluateItems then
             repentogon.L_EntityPlayer_EvaluateItems(self)
         end
@@ -2436,16 +2436,16 @@ local methods = {
     end,
     SetImmaculateConceptionState = function(self, state)
         state = ffichecks.checkinteger(1, state)
-        ffi.setprivate(self, "ImmaculateConceptionStateValue", math.max(0, math.min(14, state)))
+        ffi.setprivate(self, "ImmaculateConceptionState", math.max(0, math.min(14, state)))
     end,
     SetTearDisplacement = function(self, displacement)
         displacement = ffichecks.checkinteger(1, displacement)
         if displacement < -1 or displacement > 1 then
             ffichecks.argerror(1, "TearDisplacement may only be set to -1 or 1")
         end
-        ffi.setprivate(self, "TearDisplacementValue", displacement)
+        ffi.setprivate(self, "TearDisplacement", displacement)
     end,
-    GetTearDisplacement = Getter("TearDisplacementValue"),
+    GetTearDisplacement = Getter("TearDisplacement"),
     CreateAfterimage = function(self, duration, position)
         duration = ffichecks.checkinteger(1, duration)
         ffichecks.checkcdata(2, position, "Vector")
@@ -2710,8 +2710,8 @@ local methods = {
         end
         return nil
     end,
-    GetFallingSpeed = Getter("FallingSpeedValue"),
-    SetFallingSpeed = NumberSetter("FallingSpeedValue"),
+    GetFallingSpeed = Getter("FallingSpeed"),
+    SetFallingSpeed = NumberSetter("FallingSpeed"),
     GetBombVariant = function(self, flags, forceSmall)
         ffichecks.checkcdata(1, flags, "BitSet128")
         forceSmall = ffichecks.checkboolean(2, forceSmall)
@@ -2719,54 +2719,54 @@ local methods = {
     end,
 
     GetName = function(self)
-        return ffichecks.stdstring(ffi.getprivate(self, "NameValue"))
+        return ffichecks.stdstring(ffi.getprivate(self, "Name"))
     end,
     HasFullHeartsAndSoulHearts = function(self)
-        return ffi.getprivate(self, "SoulHeartsValue") + ffi.getprivate(self, "RedHeartsValue") >= ffi.getprivate(self, "MaxHeartsValue")
+        return ffi.getprivate(self, "SoulHearts") + ffi.getprivate(self, "RedHearts") >= ffi.getprivate(self, "MaxHearts")
     end,
     RemoveBlueSpider = function(self)
-        ffi.setprivate(self, "NumBlueSpidersValue", ffi.getprivate(self, "NumBlueSpidersValue") - 1)
+        ffi.setprivate(self, "NumBlueSpiders", ffi.getprivate(self, "NumBlueSpiders") - 1)
     end,
     RemoveBlueFly = function(self)
-        ffi.setprivate(self, "NumBlueFliesValue", ffi.getprivate(self, "NumBlueFliesValue") - 1)
+        ffi.setprivate(self, "NumBlueFlies", ffi.getprivate(self, "NumBlueFlies") - 1)
     end,
     IsItemQueueEmpty = function(self)
-        return ffi.getprivate(self, "QueuedItemValue").Item == nil
+        return ffi.getprivate(self, "QueuedItem").Item == nil
     end,
     GetTrinket = function(self, slot)
         slot = ffichecks.checkinteger(1, slot)
         if slot == 0 then
-            local result = ffi.getprivate(self, "Trinket0Value") return result
+            local result = ffi.getprivate(self, "Trinket0") return result
         elseif slot == 1 then
-            local result = ffi.getprivate(self, "Trinket1Value") return result
+            local result = ffi.getprivate(self, "Trinket1") return result
         end
         return 0
     end,
     IsExtraAnimationFinished = function(self)
-        return not (ffi.getprivate(self, "ExtraAnimationAValue") or ffi.getprivate(self, "ExtraAnimationBValue"))
+        return not (ffi.getprivate(self, "ExtraAnimationA") or ffi.getprivate(self, "ExtraAnimationB"))
     end,
     StopExtraAnimation = function(self)
-        ffi.setprivate(self, "ExtraAnimationAValue", false)
-        ffi.setprivate(self, "ExtraAnimationBValue", false)
+        ffi.setprivate(self, "ExtraAnimationA", false)
+        ffi.setprivate(self, "ExtraAnimationB", false)
     end,
     AddControlsCooldown = function(self, cooldown)
         cooldown = ffichecks.checkinteger(1, cooldown)
         self.ControlsCooldown = self.ControlsCooldown + cooldown
     end,
     ResetDamageCooldown = function(self)
-        ffi.setprivate(self, "DamageCooldownValue", 0)
+        ffi.setprivate(self, "DamageCooldown", 0)
     end,
     GetLastDamageFlags = function(self)
-        return Flags64(ffi.getprivate(self, "LastDamageFlagsValue"))
+        return Flags64(ffi.getprivate(self, "LastDamageFlags"))
     end,
     IsP2Appearing = function(self)
-        return ffi.getprivate(self, "VariantValue") == 1 and ffi.getprivate(self, "DamageCooldownValue") > 0
+        return ffi.getprivate(self, "Variant") == 1 and ffi.getprivate(self, "DamageCooldown") > 0
     end,
     CanTurnHead = function(self)
-        return ffi.getprivate(self, "HeadDirectionTimeValue") < 0
+        return ffi.getprivate(self, "HeadDirectionTime") < 0
     end,
     IsSubPlayer = function(self)
-        return ffi.getprivate(self, "PlayerIndexValue") < 0
+        return ffi.getprivate(self, "PlayerIndex") < 0
     end,
     GetBlinkLockTime = function(self)
         return self.HeadFrameDelay

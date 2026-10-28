@@ -7,7 +7,7 @@ ffi.cdef [[
         struct RoomConfigRoom* Data : 0x10;
         struct RoomConfigRoom* OverrideData : 0x14;
         int AllowedDoors : 0x18;
-        private int _Doors[8] : 0x1c;
+        private int Doors[8] : 0x1c;
         unsigned int DisplayFlags : 0x3c;
         unsigned int VisitedCount : 0x40;
         unsigned int Flags : 0x44;
@@ -192,7 +192,7 @@ RoomDescriptorMT.__index = function(self, key)
     if key == "Doors" then
         local result = {}
         for i = 0, DOOR_COUNT - 1 do
-            result[i] = ffi.getprivate(self, "_Doors")[i]
+            result[i] = ffi.getprivate(self, "Doors")[i]
         end
         return result
     end

@@ -20,7 +20,7 @@ ffi.cdef[[
         private int MaxHearts : 0x60;
         private int Coins : 0x64;
         private float AddDamage : 0x68;
-        private bool ShootingEnabled : 0x6c;
+        private bool CanShoot : 0x6c;
         private int Difficulty : 0x70;
         private bool IsMegaSatan : 0x74;
         private float MinFireRate : 0x78;
@@ -50,7 +50,7 @@ local ChallengeParamMT
 ChallengeParamMT = {
     __type = "ChallengeParam",
     CanShoot = function(self)
-        local result = ffi.getprivate(self, "ShootingEnabled") return result
+        local result = ffi.getprivate(self, "CanShoot") return result
     end,
     GetAchievementList = function(self)
         return VectorToTable(ffi.getprivate(self, "AchievementList"))
