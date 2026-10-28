@@ -171,7 +171,7 @@ end
 ffichecks.vectortotable = function(first, last, elemSize)
 	local result = {}
 	for i = 0, ffichecks.vectorsize(first, last, elemSize) - 1 do
-		result[i + 1] = first[i]
+		result[i + 1] = lffi.getprivate(first, i)
 	end
 	return result
 end
