@@ -108,6 +108,7 @@ const std::vector<std::tuple<bool, const char*>>& Definition::GetMissing() {
 void FunctionDefinition::SetName(const char *name, const char *type)
 {
 	ConvertToUniqueName(_name, name, type);
+	ZHL::Log("[HOOKSYS] FunctionDefinition::SetName: %s -> %s\n", name, _name);
 	strcpy_s(_shortName, name);
 }
 
@@ -242,9 +243,11 @@ FunctionDefinition::FunctionDefinition(const char *name,
 	_outFunc(outfunc),
 	_canHook(canHook)
 {
+	ZHL::Log("[HOOKSYS] Adding function %s\n", name);
 	SetName(name, type.raw_name());
-	ZHL::Log("[HOOKSYS] Adding function %s\n", _name);
+	ZHL::Log("[HOOKSYS] Set function name %s\n", _name);
 	Add(_name, internalName, this);
+	ZHL::Log("[HOOKSYS] Added function %s\n", _name);
 }
 
 FunctionDefinition::FunctionDefinition(const char* name,
@@ -407,6 +410,7 @@ const char *FunctionHook_private::GetLastError() {return g_hookLastError;}
 void FunctionHook_private::SetName(const char *name, const char *type)
 {
 	ConvertToUniqueName(_name, name, type);
+	ZHL::Log("[HOOKSYS] FunctionHook_private::SetName %s -> %s\n", name, _name);
 	strcpy_s(_shortName, name);
 }
 
