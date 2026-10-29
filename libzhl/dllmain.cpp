@@ -4,7 +4,7 @@
 #include "libzhl.h"
 
 #include <ehdata_forceinclude.h>
-#include <stdio.h>
+#include <cstdio>
 
 #include "ASMDefinition.h"
 #include "ASMPatcher.hpp"
