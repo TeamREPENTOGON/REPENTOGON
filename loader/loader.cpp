@@ -253,7 +253,7 @@ void DumpThreadsContext(FILE* logFile) {
 
 extern "C" {
 	__declspec(dllexport) int Launch(bool initConsole) {
-		FILE* f = fopen("repentogon.log", "w");
+		FILE* f = fopen("repentogon.log", "a");
 		if (!f) {
 			return -1;
 		}
