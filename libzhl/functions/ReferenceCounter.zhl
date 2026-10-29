@@ -20,3 +20,7 @@ struct KAGE_ReferenceCount_ImageBase : public KAGE_ReferenceCountBase {
 struct KAGE_ReferenceCount_EntitySaveState : public KAGE_ReferenceCountBase {
     EntitySaveState* _saveState : 0x14;
 } : 0x18;
+
+struct KAGE_ReferenceCount_EntitySaveState_ExtraData : public KAGE_ReferenceCountBase {
+    EntitySaveState_ExtraData* _extraData : 0x14;
+} : 0x18;

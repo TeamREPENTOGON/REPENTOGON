@@ -2,6 +2,7 @@
 
 #include <string>
 #include "LuaCore.h"
+#include "IsaacRepentance.h"
 
 enum GameStateSlot
 {
@@ -31,6 +32,8 @@ inline bool IsGlowingHourglassSlot(GameStateSlot slot)
 {
 	return slot == GameStateSlot::GLOWING_HOURGLASS_1 || slot == GameStateSlot::GLOWING_HOURGLASS_2;
 };
+
+GameStateSlot GetGameStateSlot(GameState* state);
 
 namespace SaveStateManager
 {

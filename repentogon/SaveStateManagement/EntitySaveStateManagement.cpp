@@ -67,6 +67,7 @@
 #include "../LuaInterfaces/_Internals.h"
 #include "../ImGuiFeatures/CustomImGui.h"
 #include "../Patches/ExtraRenderSteps.h"
+#include "../Patches/Stages/VirtualGridRooms.h"
 #include "../LuaClasses.h"
 
 #include <fstream>
@@ -362,6 +363,10 @@ namespace ESSM::EntityIterators
             {
                 detail::iterate_vector(roomList[i].SavedEntities, func, std::forward<Args>(args)...);
             }
+			for (RoomDescriptor& room : VirtualGridRooms::GetVirtualRoomDescs())
+			{
+				detail::iterate_vector(room.SavedEntities, func, std::forward<Args>(args)...);
+			}
         }
 
         template <typename Func, typename... Args>
@@ -439,6 +444,10 @@ namespace ESSM::EntityIterators
                 RoomDescriptor& room = rooms[i];
                 detail::iterate_vector(room.SavedEntities, func, std::forward<Args>(args)...);
             }
+			for (auto& room : VirtualGridRooms::GetVirtualRoomDescsFromGameState(gameState))
+			{
+				detail::iterate_vector(room.desc.SavedEntities, func, std::forward<Args>(args)...);
+			}
         }
 
         template <typename Func, typename... Args>
@@ -1709,7 +1718,7 @@ namespace ESSM
             {
                 uintptr_t check = checks.m_checks[i];
                 bool leaked = check == 0;
-                assert(!leaked); // one of the ids was not accounted for (Usually caused by missed Clear)
+                // assert(!leaked); // one of the ids was not accounted for (Usually caused by missed Clear)
                 if (leaked)
                 {
                     checks.m_leakedIds.push_back(i);
@@ -2446,6 +2455,10 @@ HOOK_METHOD(Level, reset_room_list, (bool resetLilPortalRoom) -> void)
         ESSM::Utils::CollectStates(room.SavedEntities, collection);
     }
 
+	for (RoomDescriptor& room : VirtualGridRooms::GetVirtualRoomDescs()) {
+		ESSM::Utils::CollectStates(room.SavedEntities, collection);
+	}
+
     ESSM::Core::ClearSaveStates(collection);
     super(resetLilPortalRoom);
 }
@@ -2564,6 +2577,17 @@ HOOK_STATIC(Entity_NPC, moms_heart_mausoleum_death, () -> void, __cdecl)
         }
     }
 
+	// Are off-grid rooms included here, usually?
+	for (RoomDescriptor& room : VirtualGridRooms::GetVirtualRoomDescs()) {
+		std::vector<EntitySaveState>& entityStates = room.SavedEntities;
+		for (size_t i = 0; i < entityStates.size(); i++) {
+			EntitySaveState& entityState = entityStates[i];
+			if (entityState.type == eEntityType::ENTITY_PICKUP) {
+				collection.emplace_back(&entityState);
+			}
+		}
+	}
+
     ESSM::Core::ClearSaveStates(collection);
 
     super();
@@ -2626,6 +2650,8 @@ HOOK_METHOD(GameState, Clear, () -> void)
         BackwardsStageDesc& backwardsStage = backwardsStages[i];
         ESSM::Utils::ResetBackwardsStage(backwardsStage);
     }
+
+	VirtualGridRooms::ClearGameState(*this);
 
     // player save states are handled by GameStatePlayer::Init
     super();

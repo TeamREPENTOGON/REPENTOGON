@@ -283,6 +283,7 @@ asm GetRandomRoom_VoidCheck "83380c8b45";
 asm EntityNPC_LoadEntityConfig_VoidCheck "8b0d????????83390c";
 asm Level_PlaceRooms_VoidCheck "8bb5????????833e0c";
 asm EntityNPC_DeathSpawnChampion_VoidCheck "833e0c894c24";
+asm Level_ChangeRoom_NegativeGridRoomCheck "0f4ec1b9a8000000";
 
 // Misc patches
 asm Misc_FixOptionsMusicVolumeBoundCheck "f30f1005????????8d45??0f57d2";

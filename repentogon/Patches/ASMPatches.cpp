@@ -28,6 +28,7 @@
 #include "EntityManager.h"
 #include "../SaveStateManagement/EntitySaveStateManagement.h"
 #include "Stages/StagePatches.h"
+#include "Stages/VirtualGridRooms.h"
 
 #include "ASMPatches/ASMBagOfCrafting.h"
 #include "ASMPatches/ASMCallbacks.h"
@@ -305,6 +306,7 @@ void PerformASMPatches() {
 	ASMPatchRedirectToLocalizationFolders();
 	ASMPatchLocalizedPlayerAnimations();
 	StagePatches::ApplyPatches();
+	VirtualGridRooms::ApplyPatches();
 
 	if (!ASMPatches::SkipArchiveChecksums()) {	//want to run this one before localization patch to have bytes patched ahead of time
 		ZHL::Log("[ERROR] Error while applying an archive checksum skip\n");
