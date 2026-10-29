@@ -225,7 +225,7 @@ void generate_assembly(std::vector<mangled_name> const& names,
 		   "segment .text\n"
 		   "global %s\n"
 		   "%s:\n"
-		   "  jmp ?internalSuper@Hook_%d@%s@@3PAXA\n"
+		   "  jmp dword [?internalSuper@Hook_%d@%s@@3PAXA]\n"
 		   "\n",
 		hook_id,
 		name.anonymous_namespace.c_str(),
