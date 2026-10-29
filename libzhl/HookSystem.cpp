@@ -49,7 +49,7 @@ static void Log(const char *format, ...)
 
 template <size_t Size> static const char *ConvertToUniqueName(char (&dst)[Size], const char *name, const char *type)
 {
-	char tmp[128];
+	char tmp[256];
 	strcpy_s(tmp, type);
 
 	const char *p = tmp;
