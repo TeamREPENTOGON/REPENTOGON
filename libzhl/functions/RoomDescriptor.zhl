@@ -7,9 +7,54 @@ __thiscall void RoomDescriptor::destructor();
 "558bec83e4f883ec1453568b75??8bd9":
 __thiscall void RoomDescriptor::InitSeeds(RNG * rng);
 
+"558bec538b5d??56578bf98b03":
+__thiscall void RoomDescriptor::assignment_move(RoomDescriptor&& other);
+
+"558bec6aff68????????64a1????????50515657a1????????33c5508d45??64a3????????8bf18975??8b7d??8b07":
+__thiscall void RoomDescriptor::move_constructor(RoomDescriptor&& other);
+
+"558bec83ec08538b5d??56578bf98b03":
+__thiscall void RoomDescriptor::copy(const RoomDescriptor& other);
+
 struct RoomDescriptor depends (RoomConfig_Room)
 {
 	{{
+        RoomDescriptor() {
+            this->constructor();
+        }
+        // No need to define a destructor
+
+        RoomDescriptor(const RoomDescriptor& other)
+        {
+            this->copy(other);
+        }
+
+        RoomDescriptor(RoomDescriptor&& other)
+        {
+            this->move_constructor(std::move(other));
+        }
+
+        RoomDescriptor& operator=(const RoomDescriptor& other)
+        {
+            if (this != &other)
+            {
+                this->assignment_move(RoomDescriptor(other));
+            }
+
+            return *this;
+        }
+
+        RoomDescriptor& operator=(RoomDescriptor&& other)
+        {
+            if (this != &other)
+            {
+                this->assignment_move(std::move(other));
+            }
+
+            return *this;
+        }
+
+
 		int LIBZHL_API RoomDescriptor::GetErrorTrinketEffect();
 
         void RoomDescriptor::Reset()
@@ -18,6 +63,7 @@ struct RoomDescriptor depends (RoomConfig_Room)
             this->constructor();
         }
 	}}
+
     int32_t GridIndex : 0x0;
     int32_t SafeGridIndex : 0x4;
     int32_t ListIndex : 0x8;

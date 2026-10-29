@@ -84,14 +84,163 @@ public:
 "558bec6aff68????????64a1????????5051535657a1????????33c5508d45??64a3????????8bf16a18e8????????8bf883c404897d??8bcfc745??00000000e8????????8b5d??c707????????895f??c745??ffffffff8b4e??85c974??8b018b40??ffd084c074??a1????????85c074??56ffd083c404897e??8bc6891e8b4d??64890d????????595f5e5b8be55dc20400????????????????????????568bf1576aff8b46??8d4e??ff50??0fb746??6685c074??48668946??6685c075??8b46??8d4e??ff50??8b7e":
 KAGE_SmartPointer_EntitySaveState& KAGE_SmartPointer_EntitySaveState::SetP(EntitySaveState* other);
 
-struct KAGE_SmartPointer_EntitySaveState {
+"558bec6aff68????????64a1????????5056a1????????33c5508d45??64a3????????8bf18b4e??85c974??8b018b40??ffd084c074??a1????????85c074??56ffd083c4048b4d??64890d????????595e8be55dc3????????????????????558bec8b45??53568bf157c70600000000c746??000000008b78??8b1885ff74??8b078bcf8b40??ffd084c074??8b4e??85c974??8b018b40??ffd084c074??a1????????85c074??56ffd083c404897e??891e5f8bc65e5b5dc20400??????558bec6aff":
+void KAGE_SmartPointer_EntitySaveState::DecrRef();
+
+struct KAGE_SmartPointer_EntitySaveState depends (KAGE_ReferenceCount_EntitySaveState) {
     EntitySaveState* saveState : 0x0;
     KAGE_ReferenceCount_EntitySaveState* counter : 0x4;
 
     {{
+private:
+    void copy(const KAGE_SmartPointer_EntitySaveState& other)
+    {
+        if (other.counter)
+        {
+            other.counter->IncrementReference();
+        }
+
+        this->saveState = other.saveState;
+        this->counter = other.counter;
+    }
+
+    void move(KAGE_SmartPointer_EntitySaveState& other)
+    {
+        this->saveState = other.saveState;
+        this->counter = other.counter;
+        other.saveState = nullptr;
+        other.counter = nullptr;
+    }
+
+    void destroy()
+    {
+        DecrRef();
+    }
+
+public:
     KAGE_SmartPointer_EntitySaveState() {
         saveState = nullptr;
         counter = nullptr;
+    }
+
+    ~KAGE_SmartPointer_EntitySaveState() {
+        destroy();
+    }
+
+    KAGE_SmartPointer_EntitySaveState(const KAGE_SmartPointer_EntitySaveState& other)
+    {
+        this->copy(other);
+    }
+
+    KAGE_SmartPointer_EntitySaveState(KAGE_SmartPointer_EntitySaveState&& other)
+    {
+        this->move(other);
+    }
+
+    KAGE_SmartPointer_EntitySaveState& operator=(const KAGE_SmartPointer_EntitySaveState& other)
+    {
+        if (this == &other)
+        {
+            return *this;
+        }
+
+        this->destroy();
+        this->copy(other);
+        return *this;
+    }
+
+    KAGE_SmartPointer_EntitySaveState& operator=(KAGE_SmartPointer_EntitySaveState&& other)
+    {
+        if (this == &other)
+        {
+            return *this;
+        }
+
+        this->destroy();
+        this->move(other);
+        return *this;
+    }
+    }}
+} : 0x8;
+
+"558bec6aff68????????64a1????????5051535657a1????????33c5508d45??64a3????????8bf16a18e8????????8bf883c404897d??8bcfc745??00000000e8????????8b5d??c707????????895f??c745??ffffffff8b4e??85c974??8b018b40??ffd084c074??a1????????85c074??56ffd083c404897e??8bc6891e8b4d??64890d????????595f5e5b8be55dc20400????????????????????????e9":
+KAGE_SmartPointer_EntitySaveState_ExtraData& KAGE_SmartPointer_EntitySaveState_ExtraData::SetP(EntitySaveState_ExtraData* other);
+
+"558bec6aff68????????64a1????????5056a1????????33c5508d45??64a3????????8bf18b4e??85c974??8b018b40??ffd084c074??a1????????85c074??56ffd083c4048b4d??64890d????????595e8be55dc3????????????????????558bec8b45??53568bf157c70600000000c746??000000008b78??8b1885ff74??8b078bcf8b40??ffd084c074??8b4e??85c974??8b018b40??ffd084c074??a1????????85c074??56ffd083c404897e??891e5f8bc65e5b5dc20400??????558bec8b55":
+void KAGE_SmartPointer_EntitySaveState_ExtraData::DecrRef();
+
+struct KAGE_SmartPointer_EntitySaveState_ExtraData depends (KAGE_ReferenceCount_EntitySaveState_ExtraData) {
+    EntitySaveState_ExtraData* extraData : 0x0;
+    KAGE_ReferenceCount_EntitySaveState_ExtraData* counter : 0x4;
+
+    {{
+private:
+    void copy(const KAGE_SmartPointer_EntitySaveState_ExtraData& other)
+    {
+        if (other.counter)
+        {
+            other.counter->IncrementReference();
+        }
+
+        this->extraData = other.extraData;
+        this->counter = other.counter;
+    }
+
+    void move(KAGE_SmartPointer_EntitySaveState_ExtraData& other)
+    {
+        this->extraData = other.extraData;
+        this->counter = other.counter;
+        other.extraData = nullptr;
+        other.counter = nullptr;
+    }
+
+    void destroy()
+    {
+        DecrRef();
+    }
+
+public:
+    KAGE_SmartPointer_EntitySaveState_ExtraData() {
+        extraData = nullptr;
+        counter = nullptr;
+    }
+
+    ~KAGE_SmartPointer_EntitySaveState_ExtraData() {
+        destroy();
+    }
+
+    KAGE_SmartPointer_EntitySaveState_ExtraData(const KAGE_SmartPointer_EntitySaveState_ExtraData& other)
+    {
+        this->copy(other);
+    }
+
+    KAGE_SmartPointer_EntitySaveState_ExtraData(KAGE_SmartPointer_EntitySaveState_ExtraData&& other)
+    {
+        this->move(other);
+    }
+
+    KAGE_SmartPointer_EntitySaveState_ExtraData& operator=(const KAGE_SmartPointer_EntitySaveState_ExtraData& other)
+    {
+        if (this == &other)
+        {
+            return *this;
+        }
+
+        this->destroy();
+        this->copy(other);
+        return *this;
+    }
+
+    KAGE_SmartPointer_EntitySaveState_ExtraData& operator=(KAGE_SmartPointer_EntitySaveState_ExtraData&& other)
+    {
+        if (this == &other)
+        {
+            return *this;
+        }
+
+        this->destroy();
+        this->move(other);
+        return *this;
     }
     }}
 } : 0x8;

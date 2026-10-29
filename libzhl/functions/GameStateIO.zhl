@@ -1,4 +1,6 @@
 struct GameStateIO {
+    //Checksum _checksum : 0xc;
+
     __vtable {
         pure void Free(bool deletePtr); // technically the param is a uint8_t bitflag but this is the only flag
         pure long GetSize();
@@ -16,4 +18,4 @@ struct GameStateIO {
         pure void Close();
         pure const char* GetFilePath();
     };
-};
+} : 0x10;
