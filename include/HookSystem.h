@@ -56,7 +56,7 @@ public:
 #  define HOOK_SYSTEM_EXTERN_SUPER extern void* internalSuper;
 #endif
 
-#define _DEFINE_METHOD_HOOK1(_id, _classname, _name, _priority, _type) \
+#define _DEFINE_METHOD_HOOK1(_id, _classname, _name, _priority, _type, _conv) \
 	namespace { namespace Hook_##_id { \
 		static_assert(std::is_class_v<_classname>, "Cannot HOOK_METHOD on something that is not a class"); \
 		static_assert(std::is_member_function_pointer_v<decltype(&_classname::_name)>, "Cannot HOOK_METHOD on something that is not a method (use HOOK_STATIC for static methods)"); \
@@ -66,12 +66,12 @@ public:
 			auto hook _type ; \
 			auto super _type ; \
 		}; \
-		static FunctionHook hookObj(#_classname "::" #_name, typeid(auto (_classname::*) _type), &wrapper::hook, &internalSuper, _priority); \
+		static FunctionHook hookObj(#_classname "::" #_name, typeid(auto (_classname::*_conv) _type), &wrapper::hook, &internalSuper, _priority); \
 	} } \
 	HOOK_SYSTEM_SUPER_DEF(_id, _type) \
 	auto Hook_##_id ::wrapper::hook _type
 
-#define _DEFINE_OVERLOADED_METHOD_HOOK1(_id, _classname, _name, _ret, _args, _priority, _type) \
+#define _DEFINE_OVERLOADED_METHOD_HOOK1(_id, _classname, _name, _ret, _args, _priority, _type, _conv) \
 	namespace { namespace Hook_##_id { \
 		static_assert(std::is_class_v<_classname>, "Cannot HOOK_METHOD on something that is not a class"); \
 		static_assert(std::is_member_function_pointer_v<decltype(static_cast<_ret (_classname::*)_args>(&_classname::_name))>, "Cannot HOOK_METHOD on something that is not a method (use HOOK_STATIC for static methods)"); \
@@ -81,18 +81,29 @@ public:
 			auto hook _type ; \
 			auto super _type ; \
 		}; \
-		static FunctionHook hookObj(#_classname "::" #_name, typeid(auto (_classname::*) _type), &wrapper::hook, &internalSuper, _priority); \
+		static FunctionHook hookObj(#_classname "::" #_name, typeid(auto (_classname::*_conv) _type), &wrapper::hook, &internalSuper, _priority); \
 	} } \
 	HOOK_SYSTEM_SUPER_DEF(_id, _type) \
 	auto Hook_##_id ::wrapper::hook _type
 
-#define _DEFINE_METHOD_HOOK0(_id, _classname, _name, _priority, _type) _DEFINE_METHOD_HOOK1(_id, _classname, _name, _priority, _type)
-#define _DEFINE_OVERLOADED_METHOD_HOOK0(_id, _classname, _name, _ret, _args, _priority, _type) _DEFINE_OVERLOADED_METHOD_HOOK1(_id, _classname, _name, _ret, _args, _priority, _type)
+#define _DEFINE_METHOD_HOOK0(_id, _classname, _name, _priority, _type) _DEFINE_METHOD_HOOK1(_id, _classname, _name, _priority, _type, __thiscall)
+#define _DEFINE_METHOD_HOOK_CONV0(_id, _classname, _name, _priority, _type, _conv) _DEFINE_METHOD_HOOK1(_id, _classname, _name, _priority, _type, _conv)
+
+#define _DEFINE_OVERLOADED_METHOD_HOOK0(_id, _classname, _name, _ret, _args, _priority, _type) _DEFINE_OVERLOADED_METHOD_HOOK1(_id, _classname, _name, _ret, _args, _priority, _type, __thiscall)
+#define _DEFINE_OVERLOADED_METHOD_HOOK_CONV0(_id, _classname, _name, _ret, _args, _priority, _type) _DEFINE_OVERLOADED_METHOD_HOOK1(_id, _classname, _name, _ret, _args, _priority, _type, _conv)
+
 
 #define HOOK_METHOD(_classname, _name, _type) _DEFINE_METHOD_HOOK0(__LINE__, _classname, _name, 0, _type)
+#define HOOK_METHOD_CONV(_classname, _name, _type, _conv) _DEFINE_METHOD_HOOK_CONV0(__LINE__, _classname, _name, 0, _type, _conv)
+
 #define HOOK_OVERLOADED_METHOD(_classname, _name, _ret, _args, _type) _DEFINE_OVERLOADED_METHOD_HOOK0(__LINE__, _classname, _name, _ret, _args, 0, _type)
+#define HOOK_OVERLOADED_METHOD_CONV(_classname, _name, _ret, _args, _type, _conv) _DEFINE_OVERLOADED_METHOD_HOOK_CONV0(__LINE__, _classname, _name, _ret, _args, 0, _type, _conv)
+
 #define HOOK_METHOD_PRIORITY(_classname, _name, _priority, _type) _DEFINE_METHOD_HOOK0(__LINE__, _classname, _name, _priority, _type)
-#define HOOK_OVERLOADED_METHOD_PRIORITY(_classname, _name, _priority, _ret, _args, _type) _DEFINE_OVERLOADED_METHOD_HOOK(__LINE__, _classname, _name, _ret, _ars, _priority, _type)
+#define HOOK_METHOD_PRIORITY_CONV(_classname, _name, _priority, _type, _conv) _DEFINE_METHOD_HOOK_CONV0(__LINE__, _classname, _name, _priority, _type, _conv)
+
+#define HOOK_OVERLOADED_METHOD_PRIORITY(_classname, _name, _priority, _ret, _args, _type) _DEFINE_OVERLOADED_METHOD_HOOK0(__LINE__, _classname, _name, _ret, _ars, _priority, _type)
+#define HOOK_OVERLOADED_METHOD_PRIORITY_CONV(_classname, _name, _priority, _ret, _args, _type, _conv) _DEFINE_OVERLOADED_METHOD_HOOK_CONV0(__LINE__, _classname, _name, _ret, _ars, _priority, _type, _conv)
 
 //=================================================================================================
 
@@ -107,7 +118,7 @@ public:
 			static auto _conv hook _type ; \
 			static auto _conv super _type ; \
 		}; \
-		static _hookKind hookObj(#_classname "::" #_name, typeid(auto (*) _type), &wrapper::hook, &internalSuper, _priority); \
+		static _hookKind hookObj(#_classname "::" #_name, typeid(auto (_classname::*_conv) _type), &wrapper::hook, &internalSuper, _priority); \
 	} } \
 	HOOK_SYSTEM_SUPER_DEF(_id, _type) \
 	auto Hook_##_id ::wrapper::hook _type
@@ -131,7 +142,7 @@ public:
 		static auto _conv hook _type ; \
 		static auto _conv super _type ; \
 		\
-		static _hookKind hookObj(#_name, typeid(auto (*) _type), &hook, &internalSuper, _priority); \
+		static _hookKind hookObj(#_name, typeid(auto (_conv*) _type), &hook, &internalSuper, _priority); \
 	} } \
 	auto __declspec(naked) _conv Hook_##_id ::super _type {__asm jmp internalSuper} \
 	auto _conv Hook_##_id ::hook _type

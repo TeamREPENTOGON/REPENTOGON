@@ -82,7 +82,7 @@ HOOK_METHOD(Game,Render,(void)->void){
 };
 
 
-HOOK_METHOD(Game, Exit, (bool ShouldSave)->void) {
+HOOK_METHOD_CONV(Game, Exit, (bool ShouldSave)->void, __stdcall) {
 	super(ShouldSave);
 	_init = false;
 };

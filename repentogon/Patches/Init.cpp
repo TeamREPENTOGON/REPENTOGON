@@ -49,6 +49,7 @@ HOOK_GLOBAL(KAGE_EngineStartup, (int numArgs, char** args) -> void, __cdecl)
     else {
         KAGE::_LogMessage(0, "Failed to produce a timestamp string!\n");
     };
+    ZHL::Log("KAGE_EngineStartup\n");
     super(numArgs, args);
     ZHL::Log("REPENTOGON: Initializing OPENGL\n");
     load_gl();

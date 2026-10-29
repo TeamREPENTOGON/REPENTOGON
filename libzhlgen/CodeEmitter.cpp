@@ -172,7 +172,13 @@ void CodeEmitter::EmitAssemblyFilePrologue() {
     std::ofstream* original = _emitContext;
     EmitAsmImpl();
     Emit("bits 32\n\n");
-    Emit("segment .text\n\n");
+    Emit("segment .rdata\n");
+    Emit("global debug_fmt\ndebug_fmt db \"%p\", 0xa, 0\n");
+    Emit("global debug_file\ndebug_file db \"hook_debug.log\", 0\n");
+    Emit("global debug_mode\ndebug_mode db \"a\", 0\n");
+    Emit("segment .text\n");
+    Emit("extern _abort\n");
+    Emit("extern _fopen\nextern _fprintf\nextern _fclose\n");
 
     _emitContext = original;
 }
@@ -897,12 +903,13 @@ void CodeEmitter::EmitAssembly(SigOrFunc const& sig, bool isVirtual, bool isPure
         IncrDepth();
 
         // Function pointer
-        EmitTab();
 	if (_emitAssembly) {
 	    // Emit an extern version to silence warnings
+	    EmitTab();
 	    Emit("extern void* func;");
 	    EmitNL();
 	}
+	EmitTab();
         Emit("void* func = 0;");
         EmitNL();
         EmitTab();
@@ -978,7 +985,10 @@ void CodeEmitter::EmitAssembly(SigOrFunc const& sig, bool isVirtual, bool isPure
 	    Emit("segment .data");
 	    EmitNL();
 	    std::ostringstream func;
-	    func << "  extern ?func@_fun" << _nEmittedFuns << "@@3PAXA";
+	    func << "  extern ?func@_fun" << _nEmittedFuns << "@@3PAXA\n"
+		    "  global func_name_" << _nEmittedFuns << std::endl << 
+		    "  func_name_" << _nEmittedFuns << " db \"" << (_currentStructure ? (_currentStructure->_name + "::") : "") << fn._name <<
+		    "\", 0\n";
 	    Emit(func.str());
 	    EmitNL();
 	    Emit("segment .drectve info");
@@ -996,21 +1006,68 @@ void CodeEmitter::EmitAssembly(SigOrFunc const& sig, bool isVirtual, bool isPure
 	    Emit(":");
 	    EmitNL();
 	}
+
+	std::vector<std::string> savedRegisters;
+
         EmitInstruction("push ebp");
         EmitInstruction("mov ebp, esp");
         // Save parameters
         if (flags & FunctionDefFlags::DEF_VOID) {
             EmitInstruction("push eax");
+	    savedRegisters.push_back("eax");
         }
 
         if (flags & FunctionDefFlags::DEF_VOID || !(flags & FunctionDefFlags::DEF_LONGLONG)) {
             EmitInstruction("push edx");
+	    savedRegisters.push_back("edx");
         }
 
         EmitInstruction("push ebx");
         EmitInstruction("push ecx");
         EmitInstruction("push esi");
         EmitInstruction("push edi");
+
+	savedRegisters.push_back("ebx");
+	savedRegisters.push_back("ecx");
+	savedRegisters.push_back("esi");
+	savedRegisters.push_back("edi");
+
+	std::ostringstream debugIns;
+	/* FILE* eax = fopen(debug_file, debug_mode);
+	 * fprintf(eax, debug_fmt, func_name...);
+	 * restore eax
+	 * fclose(eax);
+	 *
+	 * Registers are saved before. We restore them all and save them again
+	 * before continuing with the hook.
+	 */
+	debugIns <<     "lea ebx, [debug_mode]\n"
+			"push ebx\n"
+			"lea ebx, [debug_file]\n"
+			"push ebx\n"
+			"call _fopen\n"
+			"add esp, 8\n"
+			"push eax\n"
+			"lea ebx, [func_name_" << _nEmittedFuns << "]\n"
+			"push ebx\n"
+			"lea ebx, [debug_fmt]\n"
+			"push ebx\n"
+			"push eax\n"
+			"call _fprintf\n"
+			"add esp, 12\n"
+			"call _fclose\n"
+			"add esp, 4\n";
+
+	for (std::vector<std::string>::reverse_iterator rit = savedRegisters.rbegin();
+		rit != savedRegisters.rend(); ++rit) {
+	    debugIns << "pop " << *rit << std::endl;
+	}
+
+	for (std::string const& reg: savedRegisters) {
+	    debugIns << "push " << reg << std::endl;
+	}
+
+	// Emit(debugIns.str());
 
         // Analyze position of arguments
         std::vector<std::optional<Registers>> placement(fn._params.size());
@@ -1121,7 +1178,8 @@ void CodeEmitter::EmitAssembly(SigOrFunc const& sig, bool isVirtual, bool isPure
 		 *
 		 * Yes, CV-class modifier appears twice. Stop asking questions.
 		 */
-		callIns << "call ?func@_fun" << _nEmittedFuns << "@@3PAXA";
+		// callIns << "mov eax, 0\ncall eax\n";
+		callIns << "call [?func@_fun" << _nEmittedFuns << "@@3PAXA]";
 	    } else {
 		callIns << "call _fun" << _nEmittedFuns << "::func";
 	    }
@@ -1564,9 +1622,54 @@ std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn
 }
 
 void CodeEmitter::EmitTypeID(Function const& fn) {
-    Emit("typeid(");
-    EmitFunctionPrototype(fn, false, false, true, false);
-    Emit(")");
+    std::ostringstream stream;
+    if (_currentStructure) {
+	// typeid(auto (class::*convention)(args...) -> ret)
+	stream << "typeid(auto (";
+	stream << _currentStructure->_name << "::*";
+	if (fn._convention) {
+	    if (*fn._convention != CallingConventions::THISCALL) {
+		stream << CallingConventionToString(*fn._convention);
+	    }
+	} else if (fn.IsStatic()) {
+	    /* Static functions are difficult to handle, due to legacy
+	     * decisions in the design of the ZHL DSL.
+	     *
+	     * By default, static functions are assumed to be __stdcall.
+	     * This breaks the MSVC ABI which assumes that static functions
+	     * are __cdecl.
+	     *
+	     * Functions that are marked cleanup usually have an esoteric
+	     * convention, but we cannot translate that in any way on the
+	     * hooks and definitions side. We will assume they have a __cdecl
+	     * convention, even though it's not the case.
+	     */
+	    stream << (fn.IsCleanup() ? "__cdecl" : "__stdcall");
+	}
+	stream << ")(";
+    } else {
+	// typeid(ret (*convention)(args...))
+	stream << "typeid(" << GenerateType(*fn._ret) << "(";
+	if (fn._convention) {
+	    stream << CallingConventionToString(*fn._convention);
+	}
+	stream << "*)(";
+    }
+
+    for (size_t i = 0; i < fn._params.size(); ++i) {
+	stream << GenerateType(*fn._params[i]._type);
+	if (i != fn._params.size() - 1) {
+	    stream << ", ";
+	}
+    }
+    stream << ")";
+
+    if (_currentStructure) {
+	stream << " -> " << GenerateType(*fn._ret);
+    }
+
+    stream << ")";
+    Emit(stream.str());
 }
 
 std::string CodeEmitter::GenerateFunctionPrototype(Function const& fn, bool includeName,

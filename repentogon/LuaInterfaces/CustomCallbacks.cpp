@@ -5556,7 +5556,7 @@ static inline void run_post_backwards_room_save(lua_State* L, int stage, RoomDes
 }
 
 // POST_BACKWARDS_ROOM_SAVE (1307)
-HOOK_METHOD(Game, SaveBackwardsStage, (int stage) -> void)
+HOOK_METHOD_CONV(Game, SaveBackwardsStage, (int stage) -> void, __stdcall)
 {
 	super(stage);
 	constexpr int callbackId = 1307;

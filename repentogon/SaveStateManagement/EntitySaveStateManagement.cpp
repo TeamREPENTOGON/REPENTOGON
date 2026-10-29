@@ -2501,7 +2501,7 @@ HOOK_METHOD(Level, TryInitializeBlueRoom, (int currentIdx, int destinationIdx, i
     return super(currentIdx, destinationIdx, direction);
 }
 
-HOOK_METHOD(Game, SaveBackwardsStage, (int stage) -> void)
+HOOK_METHOD_CONV(Game, SaveBackwardsStage, (int stage) -> void, __stdcall)
 {
     ScopedDebugContext dbgCtx("Level::SaveBackwardsStage");
 

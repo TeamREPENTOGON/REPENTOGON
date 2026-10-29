@@ -2070,7 +2070,7 @@ HOOK_METHOD(ItemPool, shuffle_pools, () -> void)
 	ItemPoolManager::__FinalizePools();
 }
 
-HOOK_METHOD(Game, Exit, (bool ShouldSave) -> void)
+HOOK_METHOD_CONV(Game, Exit, (bool ShouldSave) -> void, __stdcall)
 {
 	super(ShouldSave);
 	ItemPoolManager::__MarkItemPoolNotInitialized();
