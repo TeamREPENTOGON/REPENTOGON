@@ -20,15 +20,11 @@
 /* StageAPI adds a few callbacks related to bosses, an attempt was made to provide similar callbacks
  * to make the transition simpler:
  *  - PRE_BOSS_SELECT -> MC_PRE_BOSS_SELECT
- *  - POST_SELECT_BOSS_MUSIC -> TODO
- *  - PRE_STAGEAPI_SELECT_BOSS_ITEM -> TODO
+ *  - POST_SELECT_BOSS_MUSIC -> MC_GET_BOSS_MUSIC
+ *  - PRE_STAGEAPI_SELECT_BOSS_ITEM -> MC_GET_BOSS_THEMATIC_ITEM
  */
 
 /* TODO:
- *  - Implement a way to get a Boss's Music
- *  - Implement a callback similar to StageAPI.POST_SELECT_BOSS_MUSIC
- *  - Implement a callback similar to StageAPI.PRE_STAGEAPI_SELECT_BOSS_ITEM
- *      - Maybe MC_GET_BOSS_THEMATIC_ITEM already works for this.
  *  - Implement AddBoss for Custom bosses
  *  - Choose what to display in the Dream Catcher sequence when a boss doesn't have a portrait.
  *      - The game defaults to the Larry Jr. portrait (death portrait 0 in bosses)

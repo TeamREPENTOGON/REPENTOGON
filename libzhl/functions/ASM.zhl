@@ -337,3 +337,6 @@ asm ControllerDisconnected_LoopEnd "8945??3b45??0f82????????85d2";
 // BossManager
 asm RoomTransition_StartBossInto_IsDoubleTroubleBossRoom "8378??050f85????????8b40??2d740e0000"; // EAX: room
 asm NightmareScene_Show_IsDoubleTroubleBossRoom "8378??0575??8b40??2d740e0000"; // EAX: room
+asm Room_PlayMusic_GetRoomBossMusic "8b4b??f641??01"; // EBX: room
+asm Room_PlayMusic_PostGetRoomTypeMusic "8b4c24??8b87????????83f802"; // EBX needs to be the music by this point
+asm Room_TriggerBossDeath_QueueBossOverMusic "c783????????25000000"; // EBX: g_Manager

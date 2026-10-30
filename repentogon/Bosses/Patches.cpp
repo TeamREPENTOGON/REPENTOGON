@@ -1,6 +1,7 @@
 #include "BossManager.h"
 
 #include "IsaacRepentance.h"
+#include "../LuaInterfaces/CustomCallbacks.h"
 #include "HookSystem.h"
 #include "ASMDefinition.h"
 #include "ASMPatcher.hpp"
@@ -227,6 +228,29 @@ static bool __stdcall asm_is_double_trouble_boss_room(const RoomConfig_Room* roo
     return BossManager::IsDoubleTroubleBossRoom(*room);
 };
 
+static int __stdcall asm_get_boss_music(Room* room)
+{
+    auto musicOverride = CustomCallbacks::GET_BOSS_MUSIC(room->_bossId, (room->_descriptor->Flags & 1) != 0);
+    if (!musicOverride)
+    {
+        return -1;
+    }
+
+    return *musicOverride;
+}
+
+static int __stdcall asm_get_boss_clear_music()
+{
+    Room* room = g_Game->_room;
+    auto musicOverride = CustomCallbacks::GET_BOSS_MUSIC(room->_bossId, true);
+    if (!musicOverride)
+    {
+        return -1;
+    }
+
+    return *musicOverride;
+}
+
 static void Patch_RoomTransitionStartBossIntro_IsDoubleTroubleBossRoom()
 {
     // the original IsDoubleTroubleBossRoom is inlined and it contains multiple jumps
@@ -310,10 +334,71 @@ static void Patch_NightmareSceneShow_IsDoubleTroubleBossRoom()
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
+static void Patch_RoomPlayMusic_GetBossRoomMusic()
+{
+    const size_t PATCHED_BYTES = 7;
+    uintptr_t addr = (uintptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_PlayMusic_GetRoomBossMusic);
+    ZHL::Log("[REPENTOGON] Patching Room::PlayMusic (GetRoomBossMusic) at %p\n", (void*)addr);
+
+    uintptr_t skipAddress = (uintptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_PlayMusic_PostGetRoomTypeMusic);
+    uintptr_t resumeAddress = addr + PATCHED_BYTES;
+
+    auto do_fallthrough_case_patch = [](ASMPatch& patch, uintptr_t skipAddress) -> ASMPatch&
+    {
+        return patch.CopyRegister(ASMPatch::Registers::EBX, ASMPatch::Registers::EAX)
+            .AddRelativeJump((void*)skipAddress);
+    };
+
+    ASMPatch fallthroughPatch;
+    intptr_t fallthroughSize = do_fallthrough_case_patch(fallthroughPatch, skipAddress).Length();
+    assert(fallthroughSize < 0x80); // the size should fit in 1 byte
+
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::EAX, true);
+    ASMPatch patch;
+    patch.PreserveRegisters(savedRegisters)
+        .Push(ASMPatch::Registers::EBX) // push room
+        .AddInternalCall(asm_get_boss_music)
+        .RestoreRegisters(savedRegisters)
+        .AddBytes("\x83\xF8\xFF") // CMP EAX, -1
+        .AddBytes("\x74").AddBytes(ASMPatch::ToHexString((int8_t)fallthroughSize)); // JE else branch
+        do_fallthrough_case_patch(patch, skipAddress) // else case (override)
+        .AddBytes(ByteBuffer().AddAny((void*)addr, PATCHED_BYTES))// if case (no override)
+        .AddRelativeJump((void*)resumeAddress);
+
+    sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
+void Patch_RoomTriggerBossDeath_QueueBossOverMusic()
+{
+    const int MUSIC_BOSS_OVER = 37;
+    const size_t PATCHED_BYTES = 10;
+
+    uintptr_t addr = (uintptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_TriggerBossDeath_QueueBossOverMusic);
+    ZHL::Log("[REPENTOGON] Patching Room::TriggerBossDeath (QueueBossOverMusic) at %p\n", (void*)addr);
+
+    uintptr_t resumeAddress = addr + PATCHED_BYTES;
+
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+    ASMPatch patch;
+    patch.PreserveRegisters(savedRegisters)
+        .AddInternalCall(asm_get_boss_clear_music)
+        .AddBytes("\x83\xF8\xFF") // CMP EAX, -1
+        .MoveImmediate(ASMPatch::Registers::ECX, MUSIC_BOSS_OVER, true)
+        .AddBytes("\x0F\x44\xC1") // CMOVE EAX, ECX
+        .AddBytes("\x8B\x1D").AddBytes(ASMPatch::ToHexString((int32_t)__ptr_g_Manager, false)) // MOV EBX, dword ptr [g_Manager]
+        .MoveToMemory(ASMPatch::Registers::EAX, offsetof(Manager, _musicmanager) + offsetof(Music, _queuedId), ASMPatch::Registers::EBX)
+        .RestoreRegisters(savedRegisters)
+        .AddRelativeJump((void*)resumeAddress);
+
+    sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
 void BossManager::detail::ApplyPatches()
 {
     Patch_RoomTransitionStartBossIntro_IsDoubleTroubleBossRoom();
     Patch_NightmareSceneShow_IsDoubleTroubleBossRoom();
+    Patch_RoomPlayMusic_GetBossRoomMusic();
+    Patch_RoomTriggerBossDeath_QueueBossOverMusic();
 }
 
 #pragma endregion

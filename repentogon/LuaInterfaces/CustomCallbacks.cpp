@@ -3862,6 +3862,39 @@ HOOK_METHOD(Room, Init, (RoomConfig_Room* config, RoomDescriptor* descriptor) ->
 	super(config, descriptor);
 }
 
+std::optional<int> CustomCallbacks::GET_BOSS_MUSIC(int bossId, bool isClear)
+{
+    const int CALLBACK_ID = 1202;
+    if (!CallbackState.test(CALLBACK_ID - 1000)) {
+		return {};
+    }
+
+    lua_State* L = g_LuaEngine->_state;
+    lua::LuaStackProtector protector(L);
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+    lua::LuaResults result = lua::LuaCaller(L).push(CALLBACK_ID)
+        .push<int>(bossId)
+        .push<int>(bossId)
+        .push(isClear)
+        .call(1);
+
+    if (result.getResultCode() != LUA_OK || !lua_isinteger(L, -1))
+    {
+		return {};
+    }
+
+    int musicId = (int)lua_tointeger(L, -1);
+    bool inRange = (uint32_t)musicId < g_Manager->_musicmanager._entries.size();
+    if (!inRange)
+    {
+		return {};
+    }
+
+    return std::make_optional<int>(musicId);
+}
+
 HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 	super();
 	const int callbackid = 1210;
