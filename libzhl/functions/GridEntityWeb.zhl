@@ -3,12 +3,16 @@ struct GridEntity_Web : public GridEntity {
 		skip; // Free
 		skip; // PostInit
 		
+		override
 		"558bec83e4f883ec388379??00":
         void Update();
 		
 		skip; // Render
 		skip; // Hurt
-		skip; // Destroy
+		
+		override
+		"8379??0075??56":
+		bool Destroy(bool Immediate, EntityRef* Source);
 		
 		override
 		"558bec8b45??c70026000000":

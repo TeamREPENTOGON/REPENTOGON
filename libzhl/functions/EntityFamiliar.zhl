@@ -15,12 +15,6 @@ __thiscall int Entity_Familiar::GetFollowerPriority();
 "558bec83e4f883ec0c53568bf1578b86":
 __thiscall void Entity_Familiar::GetMultiplier();
 
-"558bec83e4c081ec34010000a1????????33c4898424????????53568b75":
-__thiscall void Entity_Familiar::Render(Vector *offset);
-
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec08020000":
-__thiscall bool Entity_Familiar::HandleCollision(Entity* collider, bool low);
-
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec305657a1????????33c5508d45??64a3????????8bf1":
 __thiscall void Entity_Familiar::Shoot();
 
@@ -70,10 +64,61 @@ static __fastcall int Entity_Familiar::GetRandomWisp(RNG& rng);
 "558bec6aff68????????64a1????????5081ec80000000a1????????33c58945??535657508d45??64a3????????8bf9":
 __thiscall void Entity_Familiar::RestoreState(FamiliarData* saveData);
 
+"558bec8b4d??33c085c90f4ec8":
+static __cdecl Vector* Entity_Familiar::GetOrbitDistance(Vector* buffer, int Layer);
+
+"558bec83e4f883ec0c538bd9565780bb????????00":
+__thiscall Vector* Entity_Familiar::GetOrbitPosition(Vector* buffer, Vector* offset);
+
+"558bec6aff68????????64a1????????5083ec58535657a1????????33c5508d45??64a3????????8bd9":
+__thiscall void Entity_Familiar::PickEnemyTarget(float maxDistance, int frameInterval, int flags, Vector * coneDir, float coneAngle);
+
 "558bec81ecbc000000a1????????33c58945??535657":
 __thiscall void Entity_Familiar::ai_buddy_inbox();
 
-struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder) : public Entity {
+"558bec83e4f883ec0853568bf1":
+__thiscall void Entity_Familiar::SetPlayer(Entity_Player* player);
+
+"558bec83e4f851538b5d??568bf1":
+__thiscall void Entity_Familiar::AddCoins(int coins);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec385657a1????????33c5508d45??64a3????????8bf180be????????00":
+__thiscall void Entity_Familiar::FollowParent();
+
+"558bec80b9????????0074":
+__thiscall void Entity_Familiar::FollowPosition(Vector* position);
+
+"558bec83e4f883ec3ca1????????33c4894424??53568bf1":
+__thiscall void Entity_Familiar::PlayChargeAnim(int direction);
+
+"558bec6aff68????????64a1????????5083ec0c5657a1????????33c5508d45??64a3????????8bf98b47":
+__thiscall void Entity_Familiar::PlayShootAnim(int direction);
+
+"558bec6aff68????????64a1????????5083ec1056a1????????33c5508d45??64a3????????8b41":
+__thiscall void Entity_Familiar::PlayFloatAnim(int direction);
+
+"558bec83e4f85153568bf1578b7d??80be????????00":
+__thiscall void Entity_Familiar::MoveDelayed(int frames);
+
+"558bec83e4f881ec8c000000a1????????33c4898424????????538bd95657895c24??8b43":
+__thiscall void Entity_Familiar::MoveDiagonally(float speed);
+
+"558bec6aff68????????64a1????????5083ec44535657a1????????33c5508d45??64a3????????8bc1":
+__thiscall int Entity_Familiar::RecalculateOrbitOffset(int layer, bool add);
+
+"558bec83e4f851568bf18b86????????85c0":
+__thiscall void Entity_Familiar::AddToOrbit(int layer);
+
+"558bec83ec1453568bf157":
+__thiscall void Entity_Familiar::RemoveFromFollowers();
+
+"558bec83ec0c53568bf15780be????????00":
+__thiscall void Entity_Familiar::RemoveFromDelayed();
+
+"568bf18b86????????85c078??6a0050e8????????c786????????ffffffff":
+__thiscall void Entity_Familiar::RemoveFromOrbit();
+
+struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder, Vector, Entity_Player) : public Entity {
 {{
 	inline Entity_Player* GetPlayer() { return this->_player; }
 	inline NPCAI_Pathfinder* GetPathFinder() { return &this->_pathfinder; }
@@ -83,6 +128,7 @@ struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder) : p
 	Entity_Player* _player : 0x410;
 	int _moveDelayNum: 0x5f8;
 	NPCAI_Pathfinder _pathfinder : 0x5fc;
+	Vector _orbitDistance : 0xd64;
 	bool _isFollower : 0xd74;
 	bool _isDelayed : 0xd75;
 	int _state : 0xd88;
@@ -93,7 +139,9 @@ struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder) : p
 	int _wispCollectibleType : 0xf0c;
 	
     __vtable {
-		skip; // Free
+		override
+		"558bec568bf1e8????????f645??0174??68300f0000":
+		void Free(unsigned int flags);
 
 		override
 		"558bec6aff68????????64a1????????5081ec2c030000":
@@ -106,25 +154,57 @@ struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder) : p
         void Update();
 		
 		skip; // Interpolate
-		skip; // Render
-		skip; // RenderShadowLayer
+		
+		override
+		"558bec83e4c081ec34010000a1????????33c4898424????????53568b75":
+		void Render(Vector* offset);
+		
+		override
+		"558bec568bf1e8????????84c074":
+		bool RenderShadowLayer(Vector* offset);
+		
 		skip; // PostRender
-		skip; // TakeDamage
-		skip; // Kill
-		skip; // Remove
+		
+		override
+		"558bec83e4f88b45??83ec14":
+		bool TakeDamage(float Damage, unsigned long long DamageFlags, EntityRef *Source, int DamageCountdown);
+		
+		override
+		"558bec83e4f881ec34010000a1????????33c4898424????????5356578bf9897c24":
+		void Kill(EntityRef* Source);
+		
+		override	
+		"558bec83e4f851568bf1e8????????8b86":
+		void Remove();
+		
 		skip; // TriggerGlowingHourglass
 		skip; // ???
 		skip; // GetRenderZ
 		skip; // CanOverwrite
 		skip; // SetColor
 		skip; // SetCollisionDamage
-		skip; // ClearReferences
-		skip; // CanShutDoors
+		
+		override
+		"558bec83ec10568bf18b46??3d84030000":
+		void ClearReferences();
+		
+		override
+		"8179??f200000075":
+		bool CanShutDoors();
+		
 		skip; // IsBoss
 		skip; // IsValidTarget
-		skip; // TryThrow
+		
+		override
+		"558bec8b41??3dc9000000":
+		bool TryThrow(const EntityRef& Source, Vector* dir, float force);
+		
 		skip; // GetForwardVector
-		skip; // HandleCollision
+		
+		override
+		"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec08020000":
+		bool HandleCollision(Entity* Collider, bool Low);
+		
 		skip; // ResetColor
 		skip; // LoadEntityConfig
     };

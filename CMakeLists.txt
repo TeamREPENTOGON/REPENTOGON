@@ -16,15 +16,22 @@ endif ()
 project(RepExtender)
 add_compile_options("$<$<CONFIG:Release>:/Zi>")
 add_link_options("$<$<CONFIG:Release>:/DEBUG>")
+add_compile_definitions(_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR)
 
 find_package(OpenGL REQUIRED)
 
-include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/libs/lua" 
-    "${CMAKE_SOURCE_DIR}/libs/rapidxml" "${CMAKE_SOURCE_DIR}/libs/rapidjson/include/rapidjson" 
-    "${CMAKE_SOURCE_DIR}/libs/LuaBridge/Source/LuaBridge" 
+include_directories(${CMAKE_SOURCE_DIR}/include 
+    "${CMAKE_SOURCE_DIR}/libs/LuaJIT/src"
+    "${CMAKE_SOURCE_DIR}/libs/rgon_lua51_extras" 
+    "${CMAKE_SOURCE_DIR}/libs/lua-compat-5.3/c-api"
+    "${CMAKE_SOURCE_DIR}/libs/rapidxml" 
+    "${CMAKE_SOURCE_DIR}/libs/rapidjson/include/rapidjson" 
     "${CMAKE_SOURCE_DIR}/libzhl" "${CMAKE_SOURCE_DIR}/libs/imgui" 
-    "${CMAKE_SOURCE_DIR}/libs/imgui/misc/freetype" "${CMAKE_SOURCE_DIR}/libs/imgui/backends" 
-    "${CMAKE_SOURCE_DIR}/libs/NaturalSort" "${CMAKE_SOURCE_DIR}/libs/glad/include" "${CMAKE_SOURCE_DIR}/libs/mINI/src/mini")
+    "${CMAKE_SOURCE_DIR}/libs/imgui/misc/freetype" 
+    "${CMAKE_SOURCE_DIR}/libs/imgui/backends" 
+    "${CMAKE_SOURCE_DIR}/libs/NaturalSort" 
+    "${CMAKE_SOURCE_DIR}/libs/glad/include" 
+    "${CMAKE_SOURCE_DIR}/libs/mINI/src/mini")
 
 # Zydis
 option(ZYDIS_BUILD_TOOLS "" OFF)
@@ -55,11 +62,47 @@ target_compile_options(antlr4_shared PUBLIC "/wd4100" "/wd4244" "/wd4251" "/wd42
 
 add_custom_command(TARGET zhlparser POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:antlr4_shared>/antlr4-runtime.dll" "$<TARGET_FILE_DIR:zhlparser>")
 
-# Lua
-FILE(GLOB LUA_SRC ${CMAKE_SOURCE_DIR}/libs/lua/*.c)
-list(REMOVE_ITEM LUA_SRC "${CMAKE_SOURCE_DIR}/libs/lua/onelua.c")
-add_compile_definitions(LUA_BUILD_AS_DLL)
-add_library(Lua5.3.3r SHARED ${LUA_SRC})
+# LuaJIT
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS OFF)
+set(LUAJIT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/LuaJIT")
+set(LUAJIT_SOURCE_DIR "${LUAJIT_DIR}/src")
+set(DASM_DIR "${LUAJIT_DIR}/dynasm")
+
+set(LJ_FLAGS "/nologo /c /O2 /W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline")
+
+add_executable(minilua "${LUAJIT_SOURCE_DIR}/host/minilua.c")
+target_compile_options(minilua PUBLIC ${LJ_FLAGS})
+
+set(DASM_FLAGS -D WIN -D JIT -D FFI -D ENDIAN_LE -D FPU)
+add_custom_command(OUTPUT "${LUAJIT_SOURCE_DIR}/host/buildvm_arch.h" COMMAND minilua ${DASM_DIR}/dynasm.lua ${DASM_FLAGS} -o "${LUAJIT_SOURCE_DIR}/host/buildvm_arch.h" "${LUAJIT_SOURCE_DIR}/vm_x86.dasc" WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS "${LUAJIT_SOURCE_DIR}/host/buildvm_arch.h" minilua)
+
+FILE(GLOB BUILDVM_SRC "${LUAJIT_SOURCE_DIR}/host/buildvm*.c")
+LIST(APPEND BUILDVM_SRC "${LUAJIT_SOURCE_DIR}/host/buildvm_arch.h")
+add_executable(buildvm ${BUILDVM_SRC})
+target_include_directories(buildvm PUBLIC ${LUAJIT_SOURCE_DIR})
+target_compile_definitions(buildvm PRIVATE LUAJIT_ENABLE_LUA52COMPAT)
+add_custom_command(TARGET buildvm PRE_BUILD COMMAND powershell "git show -s --format=%%ct | Out-File -encoding ASCII luajit_relver.txt" WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}")
+add_custom_command(TARGET buildvm PRE_BUILD COMMAND minilua "${LUAJIT_SOURCE_DIR}/host/genversion.lua" WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS minilua)	
+
+target_compile_options(minilua PUBLIC ${LJ_FLAGS})
+
+FILE(GLOB ALL_LIB "${LUAJIT_SOURCE_DIR}/lib_*.c")
+list(REMOVE_ITEM LUA_SRC "${LUAJIT_SOURCE_DIR}/lib_aux.c" "${LUAJIT_SOURCE_DIR}/lib_init.c")
+
+set(LJ_GEN ${LUAJIT_SOURCE_DIR}/lj_vm.obj ${LUAJIT_SOURCE_DIR}/lj_bcdef.h ${LUAJIT_SOURCE_DIR}/lj_ffdef.h ${LUAJIT_SOURCE_DIR}/lj_libdef.h ${LUAJIT_SOURCE_DIR}/lj_recdef.h ${LUAJIT_SOURCE_DIR}/lj_vmdef.h)
+set_source_files_properties(${LJ_GEN} PROPERTIES GENERATED TRUE)
+FILE(GLOB LUAJIT_SRC "${LUAJIT_SOURCE_DIR}/lj_*.c" "${LUAJIT_SOURCE_DIR}/lib_*.c" "${CMAKE_SOURCE_DIR}/libs/lua-compat-5.3/c-api/*.c" "${CMAKE_SOURCE_DIR}/libs/lua-compat-5.3/*.c" "${CMAKE_SOURCE_DIR}/libs/rgon_lua51_extras/*.c")
+LIST(APPEND LUAJIT_SRC ${LJ_GEN})
+add_library(Lua5.3.3r SHARED ${LUAJIT_SRC})
+target_compile_options(Lua5.3.3r PUBLIC "/MD")
+target_compile_definitions(Lua5.3.3r PRIVATE LUA_BUILD_AS_DLL LUA_CORE LUAJIT_ENABLE_LUA52COMPAT)
+add_custom_command(TARGET Lua5.3.3r PRE_BUILD COMMAND buildvm -m peobj -o "${LUAJIT_SOURCE_DIR}/lj_vm.obj" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
+add_custom_command(TARGET Lua5.3.3r PRE_BUILD COMMAND buildvm -m bcdef -o "${LUAJIT_SOURCE_DIR}/lj_bcdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
+add_custom_command(TARGET Lua5.3.3r PRE_BUILD COMMAND buildvm -m ffdef -o "${LUAJIT_SOURCE_DIR}/lj_ffdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
+add_custom_command(TARGET Lua5.3.3r PRE_BUILD COMMAND buildvm -m libdef -o "${LUAJIT_SOURCE_DIR}/lj_libdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
+add_custom_command(TARGET Lua5.3.3r PRE_BUILD COMMAND buildvm -m recdef -o "${LUAJIT_SOURCE_DIR}/lj_recdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
+add_custom_command(TARGET Lua5.3.3r PRE_BUILD COMMAND buildvm -m vmdef -o "${LUAJIT_SOURCE_DIR}/lj_vmdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
+add_custom_command(TARGET Lua5.3.3r PRE_BUILD COMMAND buildvm -m folddef -o "${LUAJIT_SOURCE_DIR}/lj_folddef.h" "${LUAJIT_SOURCE_DIR}/lj_opt_fold.c" WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
 
 # IsaacRepentance.h/.cpp
 FILE(GLOB ZHL_FILES ${CMAKE_SOURCE_DIR}/libzhl/functions/*.zhl)
@@ -77,7 +120,7 @@ FILE(GLOB ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/*.cpp ${CMAKE_SOURCE_DIR}/libzhl/*.
 LIST(APPEND ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp ${CMAKE_SOURCE_DIR}/libs/glad/src/glad.c)
 add_compile_definitions(GLAD_GLAPI_EXPORT GLAD_GLAPI_EXPORT_BUILD)
 add_library(libzhl SHARED ${ZHL_SRC})
-target_compile_options(libzhl PUBLIC "/MD" "/wd4251" "/wd4996")
+target_compile_options(libzhl PUBLIC "/MD" "/wd4251" "/wd4996" "/FI${CMAKE_SOURCE_DIR}/libs/rgon_lua51_extras/extras.h")
 target_compile_options(libzhl PRIVATE "/EHs")
 target_compile_definitions(libzhl PRIVATE CMAKE_ZHL_VERSION="${CMAKE_ZHL_VERSION}")
 add_custom_command(TARGET libzhl POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/libzhl/hooks.json" "$<TARGET_FILE_DIR:zhlparser>")
@@ -181,6 +224,7 @@ target_compile_options(zhlDelirium PRIVATE "/EHs")
 
 add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/repentogon/resources" "$<TARGET_FILE_DIR:zhlREPENTOGON>/resources")
 add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/repentogon/resources-repentogon" "$<TARGET_FILE_DIR:zhlREPENTOGON>/resources-repentogon")
+add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/libs/lua-compat-5.3/compat53" "$<TARGET_FILE_DIR:zhlREPENTOGON>/resources/scripts/compat53")
 # add_custom_command(TARGET zhlDelirium POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/delirium/resources-delirium" "$<TARGET_FILE_DIR:zhlDelirium>/resources-delirium")
 
 add_subdirectory("libs/injector")
@@ -198,6 +242,7 @@ if(NOT ISAAC_DIRECTORY STREQUAL "")
     add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:zhlREPENTOGON>/zhlREPENTOGON.dll" "${ISAAC_DIRECTORY}")
 	add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/repentogon/resources" "${ISAAC_DIRECTORY}/resources")
     add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/repentogon/resources-repentogon" "${ISAAC_DIRECTORY}/resources-repentogon")
+    add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/libs/lua-compat-5.3/compat53" "${ISAAC_DIRECTORY}/resources/scripts/compat53")
     # add_custom_command(TARGET zhlDelirium POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:zhlDelirium>/zhlDelirium.dll" "${ISAAC_DIRECTORY}")
     # add_custom_command(TARGET zhlDelirium POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/delirium/resources-delirium" "${ISAAC_DIRECTORY}/resources-delirium")
 endif()

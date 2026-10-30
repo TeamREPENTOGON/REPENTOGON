@@ -1,4 +1,5 @@
 #include <filesystem>
+#include <new>
 #include <fstream>
 #include <sstream>
 #include <variant>
@@ -14,883 +15,18 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "LuaRender.h"
-#include "LuaBlendMode.h"
-#include "../Utils/StringUtils.h"
 #include "../ShaderLoader.h"
 #include "../Utils/ImageUtils.h"
 #include "../Utils/ShaderUtils.h"
+#include "../LuaClasses.h"
 
 using LuaRender::LuaImage;
-using LuaRender::LuaTransformer;
-using LuaRender::Transformation;
 
 LuaRender::ContextQueue LuaRender::RenderContextQueue;
 LuaRender::RenderContext LuaRender::ElementsRenderContext;
 LuaRender::RenderContext LuaRender::VerticesRenderContext;
 
 static constexpr bool EnableCustomRendering = false;
-
-// ============================================================================
-// Utils
-
-template <typename Func>
-static void RenderToSurface(KAGE_Graphics_ImageBase& surface, Func&& renderFn)
-{
-	auto& manager = g_KAGE_Graphics_Manager;
-
-	Rendering::PushCurrentRenderTarget();
-	manager.SetCurrentRenderTarget(&surface, false);
-	
-	renderFn();
-
-	manager.Present();
-	Rendering::RestorePreviousRenderTarget();
-}
-
-static void fill_shader_vertices(float* vertexBuffer, const KAGE_Graphics_ShaderBase& shader, lua_State* L, int tableIdx, std::vector<const char*>& errorFields)
-{
-	lua::LuaStackProtector protector(L);
-	tableIdx = lua_absindex(L, tableIdx);
-
-	auto fill_single_float = [&](const char* name, size_t attributeOffset, size_t vertexSize)
-	{
-		lua_getfield(L, tableIdx, name);
-		if (!lua_isnumber(L, -1))
-		{
-			errorFields.push_back(name);
-			lua_pop(L, 1);
-			return;
-		}
-
-		float data = (float)lua_tonumber(L, -1);
-		lua_pop(L, 1);
-
-		for (size_t i = 0; i < 4; i++)
-		{
-			vertexBuffer[attributeOffset + (i * vertexSize)] = data;
-		}
-	};
-
-	auto fill_vector = [&](const char* name, size_t attributeOffset, size_t vectorSize, size_t vertexSize)
-	{
-		lua_getfield(L, tableIdx, name);
-		if (!lua_istable(L, -1))
-		{
-			errorFields.push_back(name);
-			lua_pop(L, 1); // pop table field
-			return;
-		}
-
-		float* data = (float*)alloca(vectorSize * sizeof(float));
-
-		for (size_t i = 0; i < vectorSize; i++)
-		{
-			lua_rawgeti(L, -1, i + 1);
-			if (!lua_isnumber(L, -1))
-			{
-				errorFields.push_back(name);
-				lua_pop(L, 2);
-				return;
-			}
-
-			data[i] = (float)lua_tonumber(L, -1);
-			lua_pop(L, 1);
-		}
-
-		lua_pop(L, 1);
-
-		for (size_t i = 0; i < 4; i++)
-		{
-			std::memcpy(&vertexBuffer[attributeOffset + (i * vertexSize)], data, vectorSize * sizeof(float));
-		}
-	};
-
-	const KAGE_Graphics_VertexAttributeDescriptor* attributes = shader._vertexAttributes;
-	size_t numAttributes = shader._numVertexAttributes;
-	size_t vertexSize = ShaderUtils::GetVertexSize(attributes, numAttributes);
-	size_t attributeOffset = 0;
-	for (size_t i = 0; i < numAttributes; i++)
-	{
-		auto& attribute = attributes[i];
-
-		size_t formatSize = 0;
-		switch (attribute.format)
-		{
-		case (uint32_t)eVertexAttributeFormat::FLOAT:
-			formatSize = 1;
-			fill_single_float(attribute.name, attributeOffset, vertexSize);
-			break;
-		case (uint32_t)eVertexAttributeFormat::VEC_2:
-			formatSize = 2;
-			fill_vector(attribute.name, attributeOffset, formatSize, vertexSize);
-			break;
-		case (uint32_t)eVertexAttributeFormat::VEC_3:
-			formatSize = 3;
-			fill_vector(attribute.name, attributeOffset, formatSize, vertexSize);
-			break;
-		case (uint32_t)eVertexAttributeFormat::VEC_4:
-			formatSize = 4;
-			fill_vector(attribute.name, attributeOffset, formatSize, vertexSize);
-			break;
-		default:
-			formatSize = ShaderUtils::GetFormatSize(attribute.format);
-			break;
-		}
-
-		attributeOffset += formatSize;
-	}
-}
-
-static RenderMatrix get_render_matrix(lua_State* L, int idx)
-{
-	if (!lua_istable(L, idx))
-	{
-		luaL_argerror(L, idx, "render matrix is not a table");
-	}
-
-	RenderMatrix matrix;
-
-	int luaMatrix = lua_absindex(L, idx);
-	lua_rawgeti(L, luaMatrix, 1);
-	lua_rawgeti(L, luaMatrix, 2);
-	
-	int xTransform = lua_absindex(L, -2);
-	int yTransform = lua_absindex(L, -1);
-
-	if (!lua_istable(L, xTransform) || !lua_istable(L, yTransform))
-	{
-		luaL_argerror(L, luaMatrix, "render matrix row is not a table");
-	}
-
-	auto assign_matrix_field = [](float& field, lua_State* L, int luaMatrix, int row, int columnIdx)
-	{
-		lua_rawgeti(L, row, columnIdx);
-		if (!lua_isnumber(L, -1))
-		{
-			luaL_argerror(L, luaMatrix, "render matrix element is not a number!");
-		}
-
-		field = (float)lua_tonumber(L, -1);
-		lua_pop(L, 1);
-	};
-
-	assign_matrix_field(matrix.a, L, luaMatrix, xTransform, 1);
-	assign_matrix_field(matrix.b, L, luaMatrix, xTransform, 2);
-	assign_matrix_field(matrix.tx, L, luaMatrix, xTransform, 3);
-
-	assign_matrix_field(matrix.c, L, luaMatrix, yTransform, 1);
-	assign_matrix_field(matrix.d, L, luaMatrix, yTransform, 2);
-	assign_matrix_field(matrix.ty, L, luaMatrix, yTransform, 3);
-
-	lua_pop(L, 2); // pop xTransform, yTransform
-	
-	return matrix;
-}
-
-// ===========================================================================
-// Shader
-namespace LuaShader {
-	struct Userdata {
-		static constexpr char* MT = "Shader";
-		KAGE_Graphics_Shader* shader = nullptr;
-
-		Userdata(KAGE_Graphics_Shader* shader)
-			: shader(shader) {
-		}
-	};
-
-	static Userdata* GetUserdata(lua_State* L, int idx) {
-		return lua::GetRawUserdata<Userdata*>(L, idx, Userdata::MT);
-	}
-
-	static Userdata* NewUserdata(lua_State* L, KAGE_Graphics_Shader* shader)
-	{
-		Userdata* userdata = new (lua_newuserdata(L, sizeof(Userdata))) Userdata(shader);
-		luaL_setmetatable(L, Userdata::MT);
-		return userdata;
-	}
-
-	static void RegisterUserdataClass(lua_State* L) {
-		luaL_Reg functions[] = {
-			{ NULL, NULL }
-		};
-
-		lua::RegisterNewClass(L, Userdata::MT, Userdata::MT, functions);
-	}
-}
-
-// ============================================================================
-// Image
-
-LuaImage* LuaRender::GetLuaImage(lua_State* L, int idx) {
-	return lua::GetRawUserdata<LuaImage*>(L, idx, LuaRender::ImageMT);
-}
-
-LUA_FUNCTION(lua_Image_gc) {
-	LuaImage* image = LuaRender::GetLuaImage(L);
-	image->image.DecrRef();
-	return 0;
-}
-
-LUA_FUNCTION(Lua_Image_GetWidth)
-{
-	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
-	lua_pushinteger(L, luaImage->image.image->GetWidth());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Image_GetHeight)
-{
-	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
-	lua_pushinteger(L, luaImage->image.image->GetHeight());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Image_GetPaddedWidth)
-{
-	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
-	lua_pushinteger(L, luaImage->image.image->GetPaddedWidth());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Image_GetPaddedHeight)
-{
-	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
-	lua_pushinteger(L, luaImage->image.image->GetPaddedHeight());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Image_GetName)
-{
-	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
-	lua_pushstring(L, luaImage->image.image->_name);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Image_Render)
-{
-	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
-	SourceQuad* sourceQuad = LuaRender::GetSourceQuad(L, 2);
-	DestinationQuad* destQuad = LuaRender::GetDestQuad(L, 3);
-	KColor color = *lua::GetLuabridgeUserdata<KColor*>(L, 4, lua::Metatables::KCOLOR, "KColor");
-	ColorMod colorMod =
-		lua_isnoneornil(L, 5)
-		? ColorMod()
-		: *lua::GetLuabridgeUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
-
-	auto& image = *luaImage->image.image;
-
-	auto& shader = *__ptr_g_AllShaders[ShaderType::SHADER_COLOR_OFFSET];
-	float* vertexBuffer = ImageUtils::SubmitQuadForShader(image, shader, *sourceQuad, *destQuad, ImageUtils::QuadColor(color));
-	if (vertexBuffer)
-	{
-		ShaderUtils::ColorOffset::FillVertices(vertexBuffer, image, colorMod);
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_Image_RenderWithShader)
-{
-	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
-	SourceQuad* sourceQuad = LuaRender::GetSourceQuad(L, 2);
-	DestinationQuad* destQuad = LuaRender::GetDestQuad(L, 3);
-	KColor color = *lua::GetLuabridgeUserdata<KColor*>(L, 4, lua::Metatables::KCOLOR, "KColor");
-	LuaShader::Userdata* luaShader = LuaShader::GetUserdata(L, 5);
-	if (!lua_istable(L, 6))
-	{
-		return luaL_typeerror(L, 6, lua_typename(L, LUA_TTABLE));
-	}
-
-	auto& shader = *luaShader->shader;
-	if (!shader._initialized)
-	{
-		// shader was shutdown or never successfully compiled.
-		return luaL_argerror(L, 5, "invalid shader used");
-	}
-
-	auto& image = *luaImage->image.image;
-
-	float* vertexBuffer = ImageUtils::SubmitQuadForShader(image, shader, *sourceQuad, *destQuad, ImageUtils::QuadColor(color));
-	if (!vertexBuffer)
-	{
-		return 0;
-	}
-
-	// no reserve, since the error path should be a rare and non desirable occurrence.
-	std::vector<const char*> errorFields;
-	fill_shader_vertices(vertexBuffer, shader, L, 6, errorFields);
-
-	if (!errorFields.empty())
-	{
-		std::string errorMessage = "some fields were not properly set :";
-		for (size_t i = 0; i < errorFields.size(); i++)
-		{
-			const char* separator = i == 0 ? " " : ", ";
-			errorMessage += std::string(separator) + errorFields[i];
-		}
-
-		// field not being setup correctly is purely the caller's fault, so even tho we can safely continue it's better to error.
-		return luaL_argerror(L, 6, errorMessage.c_str());
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_Image_GetTexelRegion)
-{
-	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
-	int x = (int)luaL_checkinteger(L, 2);
-	int y = (int)luaL_checkinteger(L, 3);
-	uint32_t width = (uint32_t)luaL_checkinteger(L, 4);
-	uint32_t height = (uint32_t)luaL_checkinteger(L, 5);
-
-	auto& image = *luaImage->image.image;
-	uint32_t size = width * height * 4; // (RGBA)
-	luaL_Buffer buffer;
-	luaL_buffinit(L, &buffer);
-
-	uint8_t* dst = (uint8_t*)luaL_prepbuffsize(&buffer, size);
-	image.GetTexelRegion(x, y, width, height, dst);
-
-	luaL_addsize(&buffer, size);
-	luaL_pushresult(&buffer);
-	return 1;
-}
-
-static void RegisterImageClass(lua_State* L) {
-	luaL_Reg functions[] = {
-		{ "GetWidth", Lua_Image_GetWidth },
-		{ "GetHeight", Lua_Image_GetHeight },
-		{ "GetPaddedWidth", Lua_Image_GetPaddedWidth },
-		{ "GetPaddedHeight", Lua_Image_GetPaddedHeight },
-		{ "GetName", Lua_Image_GetName },
-		{ "GetTexelRegion", Lua_Image_GetTexelRegion },
-		{ "Render", Lua_Image_Render },
-		{ "RenderWithShader", Lua_Image_RenderWithShader },
-		{ NULL, NULL }
-	};
-	lua::RegisterNewClass(L, "Image", "Image", functions, lua_Image_gc);
-}
-
-// ===========================================================================
-// SurfaceRenderController
-
-// Used for functions that only make sense during a Surface render operation
-namespace LuaSurfaceRenderController {
-	struct Userdata {
-		static constexpr char* MT = "SurfaceRenderController";
-		bool valid = true;
-
-		Userdata() = default;
-	};
-	
-	static Userdata* get_userdata(lua_State* L, int idx) {
-		return lua::GetRawUserdata<Userdata*>(L, idx, Userdata::MT);
-	}
-
-	static Userdata* get_valid_surface_render_controller(lua_State* L, int idx) {
-		Userdata* controller = get_userdata(L, idx);
-		if (!controller->valid)
-		{
-			luaL_argerror(L, idx, "This surface render controller has already been applied and cannot be used again");
-		}
-	
-		return controller;
-	}
-
-	LUA_FUNCTION(Lua_Clear)
-	{
-		Userdata* controller = get_valid_surface_render_controller(L, 1);
-		g_KAGE_Graphics_Manager.Clear();
-		// Set Normal BlendMode since Clear sets BlendMode to Constant, which is rarely used.
-		g_KAGE_Graphics_Manager._blendMode = BlendMode();
-		return 0;
-	}
-
-	LUA_FUNCTION(Lua_SetBlendMode)
-	{
-		Userdata* controller = get_valid_surface_render_controller(L, 1);
-		g_KAGE_Graphics_Manager._blendMode = *LuaBlendMode::Get(L, 2);
-		return 0;
-	}
-
-	static Userdata* NewUserdata(lua_State* L)
-	{
-		Userdata* userdata = new (lua_newuserdata(L, sizeof(Userdata))) Userdata;
-		luaL_setmetatable(L, Userdata::MT);
-		return userdata;
-	}
-
-	static void RegisterUserdataClass(lua_State* L) {
-		luaL_Reg functions[] = {
-			{ "Clear", Lua_Clear },
-			{ "SetBlendMode", Lua_SetBlendMode },
-			{ NULL, NULL }
-		};
-		lua::RegisterNewClass(L, Userdata::MT, Userdata::MT, functions);
-	}
-}
-
-// ============================================================================
-// Transformer
-
-LuaTransformer* LuaRender::GetTransformer(lua_State* L, int idx) {
-	return lua::GetRawUserdata<LuaTransformer*>(L, idx, LuaRender::TransformerMT);
-}
-
-LUA_FUNCTION(lua_Transformer_gc) {
-	LuaTransformer* transformer = LuaRender::GetTransformer(L);
-	for (Transformation& transformation : transformer->_transformations) {
-		transformation._input.DecrRef();
-	}
-
-	transformer->_output.DecrRef();
-}
-
-LUA_FUNCTION(lua_Transformer_Render) {
-	LuaTransformer* transformer = LuaRender::GetTransformer(L);
-	if (!transformer->_valid) {
-		return luaL_error(L, "No operations allowed after a transformer has been applied");
-	}
-	LuaImage* image = LuaRender::GetLuaImage(L, 2);
-	SourceQuad* source = LuaRender::GetSourceQuad(L, 3);
-	DestinationQuad* dest = LuaRender::GetDestQuad(L, 4);
-	KColor mod = *lua::GetLuabridgeUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
-
-	Transformation trans;
-	trans._input = image->image;
-	trans._source = *source;
-	trans._dest = *dest;
-	trans._color1 = trans._color2 = trans._color3 = trans._color4 = mod;
-
-	transformer->_transformations.push_back(trans);
-	return 0;
-}
-
-LUA_FUNCTION(lua_Transformer_RenderEx) {
-	LuaTransformer* transformer = LuaRender::GetTransformer(L);
-	if (!transformer->_valid) {
-		return luaL_error(L, "No operations allowed after a transformed has been applied");
-	}
-	LuaImage* image = LuaRender::GetLuaImage(L, 2);
-	SourceQuad* source = LuaRender::GetSourceQuad(L, 3);
-	DestinationQuad* dest = LuaRender::GetDestQuad(L, 4);
-	KColor mod = *lua::GetLuabridgeUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
-	KColor mod2 = *lua::GetLuabridgeUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
-	KColor mod3 = *lua::GetLuabridgeUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
-	KColor mod4 = *lua::GetLuabridgeUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
-
-	Transformation trans;
-	trans._input = image->image;
-	trans._source = *source;
-	trans._dest = *dest;
-	trans._color1 = mod;
-	trans._color2 = mod2;
-	trans._color3 = mod3;
-	trans._color4 = mod4;
-
-	transformer->_transformations.push_back(trans);
-
-	return 0;
-}
-
-LUA_FUNCTION(lua_Transformer_Apply) {
-	LuaTransformer* transformer = LuaRender::GetTransformer(L);
-	if (!transformer->_valid) {
-		return luaL_error(L, "No operations allowed after a transformer had been applied");
-	}
-
-	RenderToSurface(*transformer->_output.image, [&](){
-		// __ptr_g_KAGE_Graphics_Manager->Clear();
-		for (Transformation& transformation : transformer->_transformations) {
-			KAGE_Graphics_ImageBase* image = transformation._input.image;
-			image->Render(transformation._source, transformation._dest, transformation._color1, transformation._color2, transformation._color3, transformation._color4);
-		}
-	});
-
-	transformer->_valid = false;
-	return 0;
-}
-
-LUA_FUNCTION(lua_Transformer_IsValid) {
-	LuaTransformer* transformer = LuaRender::GetTransformer(L);
-	lua_pushboolean(L, transformer->_valid);
-	return 1;
-}
-
-static void RegisterTransformerClass(lua_State* L) {
-	luaL_Reg functions[] = {
-		{ "Render", lua_Transformer_Render },
-		{ "RenderEx", lua_Transformer_RenderEx },
-		{ "Apply", lua_Transformer_Apply },
-		{ "IsValid", lua_Transformer_IsValid },
-		{ NULL, NULL }
-	};
-	lua::RegisterNewClass(L, LuaRender::TransformerMT, LuaRender::TransformerMT, functions);
-}
-
-// ============================================================================
-// Quads
-
-// DestinationQuad is used as the generic quad.
-static DestinationQuad* get_quad(lua_State* L, int idx)
-{
-	DestinationQuad* ud = (DestinationQuad*)luaL_testudata(L, idx, LuaRender::SourceQuadMT);
-	if (ud)
-	{
-		return ud;
-	}
-
-	ud = (DestinationQuad*)luaL_checkudata(L, idx, LuaRender::DestinationQuadMT);
-	return ud;
-}
-
-SourceQuad* LuaRender::GetSourceQuad(lua_State* L, int idx) {
-	return (SourceQuad*)luaL_checkudata(L, idx, LuaRender::SourceQuadMT);
-}
-
-DestinationQuad* LuaRender::GetDestQuad(lua_State* L, int idx) {
-	return (DestinationQuad*)luaL_checkudata(L, idx, LuaRender::DestinationQuadMT);
-}
-
-LUA_FUNCTION(Lua_DestinationQuad_Copy)
-{
-	DestinationQuad* quad = LuaRender::GetDestQuad(L, 1);
-
-	DestinationQuad* result = (DestinationQuad*)lua_newuserdata(L, sizeof(DestinationQuad));
-	luaL_setmetatable(L, LuaRender::DestinationQuadMT);
-	*result = *quad;
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SourceQuad_Copy)
-{
-	SourceQuad* quad = LuaRender::GetSourceQuad(L, 1);
-
-	SourceQuad* result = (SourceQuad*)lua_newuserdata(L, sizeof(SourceQuad));
-	luaL_setmetatable(L, LuaRender::SourceQuadMT);
-	*result = *quad;
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_Quad_GetTopLeft) {
-	DestinationQuad* quad = get_quad(L, 1);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), quad->_topLeft);
-	return 1;
-}
-
-LUA_FUNCTION(lua_Quad_GetTopRight) {
-	DestinationQuad* quad = get_quad(L, 1);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), quad->_topRight);
-	return 1;
-}
-
-LUA_FUNCTION(lua_Quad_GetBottomLeft) {
-	DestinationQuad* quad = get_quad(L, 1);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), quad->_bottomLeft);
-	return 1;
-}
-
-LUA_FUNCTION(lua_Quad_GetBottomRight) {
-	DestinationQuad* quad = get_quad(L, 1);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), quad->_bottomRight);
-	return 1;
-}
-
-LUA_FUNCTION(lua_Quad_SetTopLeft) {
-	DestinationQuad* quad = get_quad(L, 1);
-	quad->_topLeft = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	return 0;
-}
-
-LUA_FUNCTION(lua_Quad_SetTopRight) {
-	DestinationQuad* quad = get_quad(L, 1);
-	quad->_topRight = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	return 0;
-}
-
-LUA_FUNCTION(lua_Quad_SetBottomLeft) {
-	DestinationQuad* quad = get_quad(L, 1);
-	quad->_bottomLeft = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	return 0;
-}
-
-LUA_FUNCTION(lua_Quad_SetBottomRight) {
-	DestinationQuad* quad = get_quad(L, 1);
-	quad->_bottomRight = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	return 0;
-}
-
-LUA_FUNCTION(Lua_Quad_Translate)
-{
-	DestinationQuad* quad = get_quad(L, 1);
-	Vector offset = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	
-	quad->Translate(offset);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_Quad_Scale)
-{
-	DestinationQuad* quad = get_quad(L, 1);
-	Vector scale = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	Vector anchor = *lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
-
-	quad->Scale(scale, anchor);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_Quad_Rotate)
-{
-	DestinationQuad* quad = get_quad(L, 1);
-	float rotation = (float)luaL_checknumber(L, 2);
-	Vector anchor = *lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
-
-	quad->RotateDegrees(anchor, rotation);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_Quad_Shear)
-{
-	DestinationQuad* quad = get_quad(L, 1);
-	Vector shear = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	Vector anchor = *lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
-
-	quad->Shear(shear, anchor);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_Quad_ApplyMatrix)
-{
-	DestinationQuad* quad = get_quad(L, 1);
-	if (!lua_istable(L, 2))
-	{
-		luaL_typeerror(L, 2, lua_typename(L, LUA_TTABLE));
-	}
-	RenderMatrix matrix = get_render_matrix(L, 2);
-	Vector anchor = *lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
-
-	quad->ApplyMatrix(matrix, anchor);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_Quad_Flip)
-{
-	DestinationQuad* quad = get_quad(L, 1);
-	bool flipX = lua_isnoneornil(L, 2) ? true : lua_toboolean(L, 2);
-	bool flipY = lua_isnoneornil(L, 3) ? true : lua_toboolean(L, 3);
-
-	if (flipX)
-	{
-		quad->FlipX();
-	}
-
-	if (flipY)
-	{
-		quad->FlipY();
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_DestQuad_ToString)
-{
-	DestinationQuad* quad = LuaRender::GetDestQuad(L, 1);
-
-	lua_pushfstring(L, "[DestQuad: TopLeft %f %f | TopRight %f %f | BottomLeft %f %f | BottomRight %f %f]",
-		quad->_topLeft.x, quad->_topLeft.y,
-		quad->_topRight.x, quad->_topRight.y,
-		quad->_bottomLeft.x, quad->_bottomLeft.y,
-		quad->_bottomRight.x, quad->_bottomRight.y);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SourceQuad_IsUVSpace)
-{
-	SourceQuad* quad = LuaRender::GetSourceQuad(L, 1);
-	lua_pushboolean(L, quad->_coordinateSpace == SourceQuad::eCoordinateSpace::NORMALIZED_UV);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SourceQuad_ConvertToPixelSpace)
-{
-	SourceQuad* quad = LuaRender::GetSourceQuad(L, 1);
-	LuaImage* luaImage = LuaRender::GetLuaImage(L, 2);
-
-	quad->ConvertToPixelSpace(*luaImage->image.image);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_SourceQuad_ConvertToUVSpace)
-{
-	SourceQuad* quad = LuaRender::GetSourceQuad(L, 1);
-	LuaImage* luaImage = LuaRender::GetLuaImage(L, 2);
-
-	quad->ConvertToUVSpace(*luaImage->image.image);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_SourceQuad_ToString)
-{
-	SourceQuad* quad = LuaRender::GetSourceQuad(L, 1);
-
-	lua_pushfstring(L, "[SourceQuad: TopLeft %f %f | TopRight %f %f | BottomLeft %f %f | BottomRight %f %f | UV %s]",
-		quad->_topLeft.x, quad->_topLeft.y,
-		quad->_topRight.x, quad->_topRight.y,
-		quad->_bottomLeft.x, quad->_bottomLeft.y,
-		quad->_bottomRight.x, quad->_bottomRight.y,
-		quad->_coordinateSpace == SourceQuad::eCoordinateSpace::NORMALIZED_UV ? "true" : "false");
-
-	return 1;
-}
-
-static void RegisterQuadClasses(lua_State* L) {
-	luaL_Reg destinationQuadFunctions[] = {
-		{ "Copy", Lua_DestinationQuad_Copy },
-		{ "GetTopLeft", lua_Quad_GetTopLeft },
-		{ "GetTopRight", lua_Quad_GetTopRight },
-		{ "GetBottomLeft", lua_Quad_GetBottomLeft },
-		{ "GetBottomRight", lua_Quad_GetBottomRight },
-		{ "SetTopLeft", lua_Quad_SetTopLeft },
-		{ "SetTopRight", lua_Quad_SetTopRight },
-		{ "SetBottomLeft", lua_Quad_SetBottomLeft },
-		{ "SetBottomRight", lua_Quad_SetBottomRight },
-		{ "Translate", Lua_Quad_Translate },
-		{ "Scale", Lua_Quad_Scale },
-		{ "Rotate", Lua_Quad_Rotate },
-		{ "Shear", Lua_Quad_Shear },
-		{ "ApplyMatrix", Lua_Quad_ApplyMatrix },
-		{ "Flip", Lua_Quad_Flip },
-		{ "__tostring", Lua_DestQuad_ToString },
-		{ NULL, NULL }
-	};
-
-	luaL_Reg sourceQuadFunctions[] = {
-		{ "Copy", Lua_SourceQuad_Copy },
-		{ "IsUVSpace", Lua_SourceQuad_IsUVSpace },
-		{ "ConvertToPixelSpace", Lua_SourceQuad_ConvertToPixelSpace },
-		{ "ConvertToUVSpace", Lua_SourceQuad_ConvertToUVSpace },
-		{ "__tostring", Lua_SourceQuad_ToString },
-		{ NULL, NULL }
-	};
-
-	lua::RegisterNewClass(L, LuaRender::DestinationQuadMT, LuaRender::DestinationQuadMT, destinationQuadFunctions);
-
-	lua::RegisterNewClass(L, LuaRender::SourceQuadMT, LuaRender::SourceQuadMT, sourceQuadFunctions);
-	luaL_getmetatable(L, LuaRender::SourceQuadMT);
-	luaL_setmetatable(L, LuaRender::DestinationQuadMT);
-	lua_pop(L, 1);
-}
-
-static void FillQuad(lua_State* L, DestinationQuad& quad, int startIdx) {
-	quad._topLeft = *lua::GetLuabridgeUserdata<Vector*>(L, startIdx + 0, lua::Metatables::VECTOR, "Vector");
-	quad._topRight = *lua::GetLuabridgeUserdata<Vector*>(L, startIdx + 1, lua::Metatables::VECTOR, "Vector");
-	quad._bottomLeft = *lua::GetLuabridgeUserdata<Vector*>(L, startIdx + 2, lua::Metatables::VECTOR, "Vector");
-	quad._bottomRight = *lua::GetLuabridgeUserdata<Vector*>(L, startIdx + 3, lua::Metatables::VECTOR, "Vector");
-}
-
-static void init_from_bounds(lua_State* L, DestinationQuad& quad, int startIdx)
-{
-	quad._topLeft = *lua::GetLuabridgeUserdata<Vector*>(L, startIdx + 0, lua::Metatables::VECTOR, "Vector");
-	quad._bottomRight = *lua::GetLuabridgeUserdata<Vector*>(L, startIdx + 1, lua::Metatables::VECTOR, "Vector");
-	quad._topRight = Vector(quad._bottomRight.x, quad._topLeft.y);
-	quad._bottomLeft = Vector(quad._topLeft.x, quad._bottomRight.y);
-}
-
-static void init_from_aa_rect(lua_State* L, DestinationQuad& quad, int startIdx)
-{
-	quad._topLeft = *lua::GetLuabridgeUserdata<Vector*>(L, startIdx + 0, lua::Metatables::VECTOR, "Vector");
-	Vector pos = quad._topLeft;
-	float width = (float)luaL_checknumber(L, startIdx + 1);
-	float height = (float)luaL_checknumber(L, startIdx + 2);
-
-	quad._topRight = Vector(pos.x + width, pos.y);
-	quad._bottomLeft = Vector(pos.x, pos.y + height);
-	quad._bottomRight = Vector(pos.x + width, pos.y + height);
-}
-
-LUA_FUNCTION(lua_SourceQuad_new) {
-	SourceQuad quad;
-	// __call passes the table itself as the first arg
-	FillQuad(L, quad, 2);
-	bool uvSpace = lua_toboolean(L, 6);
-	quad._coordinateSpace = uvSpace ? SourceQuad::eCoordinateSpace::NORMALIZED_UV : SourceQuad::eCoordinateSpace::PIXEL;
-
-	SourceQuad* result = (SourceQuad*)lua_newuserdata(L, sizeof(SourceQuad));
-	luaL_setmetatable(L, LuaRender::SourceQuadMT);
-	memcpy(result, &quad, sizeof(SourceQuad));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SourceQuad_NewFromBounds)
-{
-	SourceQuad quad;
-	init_from_bounds(L, quad, 1);
-	bool uvSpace = lua_toboolean(L, 3);
-	quad._coordinateSpace = uvSpace ? SourceQuad::eCoordinateSpace::NORMALIZED_UV : SourceQuad::eCoordinateSpace::PIXEL;
-
-	SourceQuad* result = (SourceQuad*)lua_newuserdata(L, sizeof(SourceQuad));
-	luaL_setmetatable(L, LuaRender::SourceQuadMT);
-	memcpy(result, &quad, sizeof(SourceQuad));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SourceQuad_NewFromRectangle)
-{
-	SourceQuad quad;
-	init_from_aa_rect(L, quad, 1);
-	bool uvSpace = lua_toboolean(L, 4);
-	quad._coordinateSpace = uvSpace ? SourceQuad::eCoordinateSpace::NORMALIZED_UV : SourceQuad::eCoordinateSpace::PIXEL;
-
-	SourceQuad* result = (SourceQuad*)lua_newuserdata(L, sizeof(SourceQuad));
-	luaL_setmetatable(L, LuaRender::SourceQuadMT);
-	memcpy(result, &quad, sizeof(SourceQuad));
-	return 1;
-}
-
-LUA_FUNCTION(lua_DestinationQuad_new) {
-	DestinationQuad quad;
-	// __call passes the table itself as the first arg
-	FillQuad(L, quad, 2);
-
-	DestinationQuad* result = (DestinationQuad*)lua_newuserdata(L, sizeof(DestinationQuad));
-	luaL_setmetatable(L, LuaRender::DestinationQuadMT);
-	memcpy(result, &quad, sizeof(DestinationQuad));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_DestinationQuad_NewFromBounds)
-{
-	DestinationQuad quad;
-	init_from_bounds(L, quad, 1);
-
-	DestinationQuad* result = (DestinationQuad*)lua_newuserdata(L, sizeof(DestinationQuad));
-	luaL_setmetatable(L, LuaRender::DestinationQuadMT);
-	memcpy(result, &quad, sizeof(DestinationQuad));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_DestinationQuad_NewFromRectangle)
-{
-	DestinationQuad quad;
-	init_from_aa_rect(L, quad, 1);
-
-	DestinationQuad* result = (DestinationQuad*)lua_newuserdata(L, sizeof(DestinationQuad));
-	luaL_setmetatable(L, LuaRender::DestinationQuadMT);
-	memcpy(result, &quad, sizeof(DestinationQuad));
-	return 1;
-}
 
 // ============================================================================
 // Custom rendering
@@ -2252,60 +1388,60 @@ namespace GL {
 		}
 
 		void operator()(Entity_Bomb* b) {
-			Expose(b, LuaRender::RENDER_CTX_ENTITY_BOMB, lua::Metatables::ENTITY_BOMB);
+			Expose(b, LuaRender::RENDER_CTX_ENTITY_BOMB, lua::ffi::CData[lua::ffi::CDataID::ENTITY_BOMB_PTR]);
 		}
 
 		void operator()(Entity_Effect* e) {
-			Expose(e, LuaRender::RENDER_CTX_ENTITY_EFFECT, lua::Metatables::ENTITY_EFFECT);
+			Expose(e, LuaRender::RENDER_CTX_ENTITY_EFFECT, lua::ffi::CData[lua::ffi::CDataID::ENTITY_EFFECT_PTR]);
 		}
 
 		void operator()(Entity_Familiar* f) {
-			Expose(f, LuaRender::RENDER_CTX_ENTITY_FAMILIAR, lua::Metatables::ENTITY_FAMILIAR);
+			Expose(f, LuaRender::RENDER_CTX_ENTITY_FAMILIAR, lua::ffi::CData[lua::ffi::CDataID::ENTITY_FAMILIAR_PTR]);
 		}
 
 		void operator()(Entity_Knife* k) {
-			Expose(k, LuaRender::RENDER_CTX_ENTITY_KNIFE, lua::Metatables::ENTITY_KNIFE);
+			Expose(k, LuaRender::RENDER_CTX_ENTITY_KNIFE, lua::ffi::CData[lua::ffi::CDataID::ENTITY_KNIFE_PTR]);
 		}
 
 		void operator()(Entity_Laser* l) {
-			Expose(l, LuaRender::RENDER_CTX_ENTITY_LASER, lua::Metatables::ENTITY_LASER);
+			Expose(l, LuaRender::RENDER_CTX_ENTITY_LASER, lua::ffi::CData[lua::ffi::CDataID::ENTITY_LASER_PTR]);
 		}
 
 		void operator()(Entity_NPC* n) {
-			Expose(n, LuaRender::RENDER_CTX_ENTITY_NPC, lua::Metatables::ENTITY_NPC);
+			Expose(n, LuaRender::RENDER_CTX_ENTITY_NPC, lua::ffi::CData[lua::ffi::CDataID::ENTITY_NPC_PTR]);
 		}
 
 		void operator()(Entity_Pickup* p) {
-			Expose(p, LuaRender::RENDER_CTX_ENTITY_PICKUP, lua::Metatables::ENTITY_PICKUP);
+			Expose(p, LuaRender::RENDER_CTX_ENTITY_PICKUP, lua::ffi::CData[lua::ffi::CDataID::ENTITY_PICKUP_PTR]);
 		}
 
 		void operator()(Entity_Player* p) {
-			Expose(p, LuaRender::RENDER_CTX_ENTITY_PLAYER, lua::Metatables::ENTITY_PLAYER);
+			Expose(p, LuaRender::RENDER_CTX_ENTITY_PLAYER, lua::ffi::CData[lua::ffi::CDataID::ENTITY_PLAYER_PTR]);
 		}
 
 		void operator()(Entity_Projectile* p) {
-			Expose(p, LuaRender::RENDER_CTX_ENTITY_PROJECTILE, lua::Metatables::ENTITY_PROJECTILE);
+			Expose(p, LuaRender::RENDER_CTX_ENTITY_PROJECTILE, lua::ffi::CData[lua::ffi::CDataID::ENTITY_PROJECTILE_PTR]);
 		}
 
 		void operator()(Entity_Slot* s) {
 			OpenTable();
 			PushType(LuaRender::RENDER_CTX_ENTITY_SLOT);
 			lua_pushstring(L, "Data");
-			lua::luabridge::UserdataPtr::push(L, s, lua::metatables::EntitySlotMT);
+			LuaEntitySlot::PushPtr(L, s);
 			lua_rawset(L, -3);
 			CloseTable();
 		}
 
 		void operator()(Entity_Tear* t) {
-			Expose(t, LuaRender::RENDER_CTX_ENTITY_TEAR, lua::Metatables::ENTITY_TEAR);
+			Expose(t, LuaRender::RENDER_CTX_ENTITY_TEAR, lua::ffi::CData[lua::ffi::CDataID::ENTITY_TEAR_PTR]);
 		}
 
 		void operator()(GridEntity_Rock* r) {
-			Expose(r, LuaRender::RENDER_CTX_GRIDENTITY_ROCK, lua::Metatables::GRID_ENTITY_ROCK);
+			Expose(r, LuaRender::RENDER_CTX_GRIDENTITY_ROCK, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_ROCK_PTR]);
 		}
 
 		void operator()(AnimationState* s) {
-			Expose(s->_animation, LuaRender::RENDER_CTX_ANIMATION_STATE, lua::Metatables::SPRITE);
+			Expose(s->_animation, LuaRender::RENDER_CTX_ANIMATION_STATE, lua::ffi::CData[lua::ffi::CDataID::SPRITE_PTR]);
 		}
 
 		void operator()(AnimationLayer* l) {
@@ -2331,11 +1467,11 @@ namespace GL {
 			lua::TableAssoc(L, "Type", ctx);
 		}
 
-		void Expose(void* p, LuaRender::ContextType ctx, lua::Metatables mt) {
+		void Expose(void* p, LuaRender::ContextType ctx, lua_CTypeId cd) {
 			OpenTable();
 			lua::TableAssoc(L, "Type", ctx);
 			lua_pushstring(L, "Data");
-			lua::luabridge::UserdataPtr::push(L, p, mt);
+			lua::ffi::pushCdataPtr(L, p, cd);
 			lua_rawset(L, -3);
 			CloseTable();
 		}
@@ -2685,142 +1821,142 @@ struct ContextDataVisitor {
 	}
 };
 
-void __stdcall LuaPreDrawElements(KAGE_Graphics_RenderBatch* descriptor, GLenum mode, GLsizei count, GLenum type, const void* indices) {
-	float* vertexBuffer = (float*)descriptor->_vertexBuffer.GetBase();
-	size_t size = 0;
-	switch (type) {
-	case GL_UNSIGNED_BYTE:
-		size = 1;
-		break;
+// void __stdcall LuaPreDrawElements(KAGE_Graphics_RenderBatch* descriptor, GLenum mode, GLsizei count, GLenum type, const void* indices) {
+// 	float* vertexBuffer = (float*)descriptor->_vertexBuffer.GetBase();
+// 	size_t size = 0;
+// 	switch (type) {
+// 	case GL_UNSIGNED_BYTE:
+// 		size = 1;
+// 		break;
 
-	case GL_UNSIGNED_SHORT:
-		size = 2;
-		break;
+// 	case GL_UNSIGNED_SHORT:
+// 		size = 2;
+// 		break;
 
-	case GL_UNSIGNED_INT:
-		size = 4;
-		break;
+// 	case GL_UNSIGNED_INT:
+// 		size = 4;
+// 		break;
 
-	default:
-		throw std::runtime_error("Bad.");
-	}
+// 	default:
+// 		throw std::runtime_error("Bad.");
+// 	}
 
-	const int callbackId = 1136;
-	if (CallbackState.test(callbackId - 1000) && __ptr_g_KAGE_Graphics_Manager->currentRenderTarget != 0) {
-		GL::InitProjectionMatrix();
+// 	const int callbackId = 1136;
+// 	if (CallbackState.test(callbackId - 1000) && __ptr_g_KAGE_Graphics_Manager->currentRenderTarget != 0) {
+// 		GL::InitProjectionMatrix();
 
-		int currentShader; 
-		glGetIntegerv(GL_CURRENT_PROGRAM, &currentShader);
+// 		int currentShader; 
+// 		glGetIntegerv(GL_CURRENT_PROGRAM, &currentShader);
 
-		int shaderId = -1;
-		if (currentShader != 0) {
-			for (int i = 0; i < SHADER_MAX; ++i) {
-				if (__ptr_g_AllShaders[i]->GetShaderId() == currentShader) {
-					shaderId = i;
-					break;
-				}
-			}
-		}
+// 		int shaderId = -1;
+// 		if (currentShader != 0) {
+// 			for (int i = 0; i < SHADER_MAX; ++i) {
+// 				if (__ptr_g_AllShaders[i]->GetShaderId() == currentShader) {
+// 					shaderId = i;
+// 					break;
+// 				}
+// 			}
+// 		}
 
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua::LuaCaller caller(L);
+// 		lua_State* L = g_LuaEngine->_state;
+// 		lua::LuaStackProtector protector(L);
+// 		lua::LuaCaller caller(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+// 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		caller.push(callbackId).pushnil();
-		GL::VertexBuffer* buffer = new GL::VertexBuffer(vertexBuffer, (ShaderType)shaderId, GL::GetNumberOfVertices(type, indices, count), indices, count, type);
-		GL::VertexBuffer** bufferUd = (GL::VertexBuffer**)caller.pushUd(sizeof(buffer), LuaRender::VertexBufferMT);
-		*bufferUd = buffer;
-		caller.push(shaderId);
+// 		caller.push(callbackId).pushnil();
+// 		GL::VertexBuffer* buffer = new GL::VertexBuffer(vertexBuffer, (ShaderType)shaderId, GL::GetNumberOfVertices(type, indices, count), indices, count, type);
+// 		GL::VertexBuffer** bufferUd = (GL::VertexBuffer**)caller.pushUd(sizeof(buffer), LuaRender::VertexBufferMT);
+// 		*bufferUd = buffer;
+// 		caller.push(shaderId);
 
-		auto vertexBufferDescriptor = &descriptor->_vertexBuffer;
-		auto it = LuaRender::VerticesRenderContext.find(vertexBufferDescriptor);
-		if (it != LuaRender::VerticesRenderContext.end()) {
-			// ZHL::Log("Found %d contexts for vertex buffer %p (from descriptor %p)\n", it->second.size(), vertexBufferDescriptor, descriptor);
-			caller.pushUd<GL::RenderOperationContext>(LuaRender::ContextMT, &it->second);
-		}
-		else {
-			// ZHL::Log("No context found for vertex buffer %p (from descriptor %p\n", vertexBufferDescriptor, descriptor);
-			caller.pushnil();
-		}
+// 		auto vertexBufferDescriptor = &descriptor->_vertexBuffer;
+// 		auto it = LuaRender::VerticesRenderContext.find(vertexBufferDescriptor);
+// 		if (it != LuaRender::VerticesRenderContext.end()) {
+// 			// ZHL::Log("Found %d contexts for vertex buffer %p (from descriptor %p)\n", it->second.size(), vertexBufferDescriptor, descriptor);
+// 			caller.pushUd<GL::RenderOperationContext>(LuaRender::ContextMT, &it->second);
+// 		}
+// 		else {
+// 			// ZHL::Log("No context found for vertex buffer %p (from descriptor %p\n", vertexBufferDescriptor, descriptor);
+// 			caller.pushnil();
+// 		}
 
-		// If the return value is a pipeline, override the default rendering.
-		lua::LuaResults results = caller.call(1);
-		if (!results) {
-			switch (lua_type(L, -1)) {
-			case LUA_TNUMBER:
-			{
-				int retShaderId = (int) lua_tointeger(L, -1);
-				if (retShaderId < 0 || retShaderId >= ShaderType::SHADER_MAX) {
-					if (retShaderId == -1)
-						break;
+// 		// If the return value is a pipeline, override the default rendering.
+// 		lua::LuaResults results = caller.call(1);
+// 		if (!results) {
+// 			switch (lua_type(L, -1)) {
+// 			case LUA_TNUMBER:
+// 			{
+// 				int retShaderId = (int) lua_tointeger(L, -1);
+// 				if (retShaderId < 0 || retShaderId >= ShaderType::SHADER_MAX) {
+// 					if (retShaderId == -1)
+// 						break;
 
-					bool ok = false;
-					for (std::unique_ptr<GL::Shader> const& shader : GL::Shader::_shaders) {
-						if (retShaderId == shader->GetProgram()) {
-							shader->Use();
-							buffer->Bind();
-							ok = true;
-							break;
-						}
-					}
+// 					bool ok = false;
+// 					for (std::unique_ptr<GL::Shader> const& shader : GL::Shader::_shaders) {
+// 						if (retShaderId == shader->GetProgram()) {
+// 							shader->Use();
+// 							buffer->Bind();
+// 							ok = true;
+// 							break;
+// 						}
+// 					}
 
-					if (!ok) {
-						ZHL::Log("[FATAL] Invalid shader ID %d (neither a native shader, nor a registered shader)\n", retShaderId);
-					}
-				}
-				else {
-					glUseProgram(__ptr_g_AllShaders[retShaderId]->GetShaderId());
-					buffer->Bind();
-				}
-				break;
-			}
+// 					if (!ok) {
+// 						ZHL::Log("[FATAL] Invalid shader ID %d (neither a native shader, nor a registered shader)\n", retShaderId);
+// 					}
+// 				}
+// 				else {
+// 					glUseProgram(__ptr_g_AllShaders[retShaderId]->GetShaderId());
+// 					buffer->Bind();
+// 				}
+// 				break;
+// 			}
 
-			case LUA_TUSERDATA:
-				lua_getmetatable(L, -1);
-				luaL_getmetatable(L, LuaRender::GLShaderMT);
-				if (lua_rawequal(L, -1, -2)) {
-					lua_pop(L, 2);
-					GL::Shader* shader = *lua::GetRawUserdata<GL::Shader**>(L, -1, LuaRender::GLShaderMT);
-					shader->Use();
-					auto loc = glGetUniformLocation(shader->GetProgram(), "Transform");
-					glUniformMatrix4fv(loc, 1, GL_TRUE, GL::ProjectionMatrix.data);
-					buffer->Bind();
-				}
-				else {
-					lua_pop(L, 1);
-					luaL_getmetatable(L, LuaRender::PipelineMT);
-					if (lua_rawequal(L, -1, -2)) {
-						lua_pop(L, 2);
-						GL::Pipeline* pipeline = lua::GetRawUserdata<GL::Pipeline*>(L, -1, LuaRender::PipelineMT);
-						pipeline->Render();
-					}
-					else {
-						lua_pop(L, 2);
-						ZHL::Log("[ERROR] Invalid return value for MC_PRE_OPENGL_RENDER\n");
-					}
-				}
-				break;
+// 			case LUA_TUSERDATA:
+// 				lua_getmetatable(L, -1);
+// 				luaL_getmetatable(L, LuaRender::GLShaderMT);
+// 				if (lua_rawequal(L, -1, -2)) {
+// 					lua_pop(L, 2);
+// 					GL::Shader* shader = *lua::GetRawUserdata<GL::Shader**>(L, -1, LuaRender::GLShaderMT);
+// 					shader->Use();
+// 					auto loc = glGetUniformLocation(shader->GetProgram(), "Transform");
+// 					glUniformMatrix4fv(loc, 1, GL_TRUE, GL::ProjectionMatrix.data);
+// 					buffer->Bind();
+// 				}
+// 				else {
+// 					lua_pop(L, 1);
+// 					luaL_getmetatable(L, LuaRender::PipelineMT);
+// 					if (lua_rawequal(L, -1, -2)) {
+// 						lua_pop(L, 2);
+// 						GL::Pipeline* pipeline = lua::GetRawUserdata<GL::Pipeline*>(L, -1, LuaRender::PipelineMT);
+// 						pipeline->Render();
+// 					}
+// 					else {
+// 						lua_pop(L, 2);
+// 						ZHL::Log("[ERROR] Invalid return value for MC_PRE_OPENGL_RENDER\n");
+// 					}
+// 				}
+// 				break;
 
-			case LUA_TNIL:
-			case LUA_TNONE:
-				break;
+// 			case LUA_TNIL:
+// 			case LUA_TNONE:
+// 				break;
 
-			default:
-			{
-				ZHL::Log("[ERROR] Invalid return value for MC_PRE_OPENGL_RENDER\n");
-				break;
-			}
-			}
-		}
-	}
+// 			default:
+// 			{
+// 				ZHL::Log("[ERROR] Invalid return value for MC_PRE_OPENGL_RENDER\n");
+// 				break;
+// 			}
+// 			}
+// 		}
+// 	}
 
-	glDrawElements(mode, count, type, indices);
+// 	glDrawElements(mode, count, type, indices);
 
-	LuaRender::ElementsRenderContext[&descriptor->_indexBuffer].clear();
-	LuaRender::VerticesRenderContext[&descriptor->_vertexBuffer].clear();
-}
+// 	LuaRender::ElementsRenderContext[&descriptor->_indexBuffer].clear();
+// 	LuaRender::VerticesRenderContext[&descriptor->_vertexBuffer].clear();
+// }
 
 static void RegisterCustomRenderMetatables(lua_State* L) {
 	lua::LuaStackProtector protector(L);
@@ -2838,136 +1974,6 @@ static void RegisterCustomRenderMetatables(lua_State* L) {
 
 // ============================================================================
 // Renderer
-
-LUA_FUNCTION(lua_Renderer_LoadImage) {
-	const char* path = luaL_checkstring(L, 1);
-	std::filesystem::path p = path;
-	if (!p.is_relative())
-	{
-		return luaL_error(L, "Image %s does not exist", path);
-	}
-	
-	KAGE_SmartPointer_ImageBase image;
-	Manager::LoadImage(&image, path, __ptr_g_VertexAttributeDescriptor_Position, false);
-
-	if (!image.image) {
-		return luaL_error(L, "Image %s does not exist", path);
-	}
-
-	LuaImage* ud = new (lua_newuserdata(L, sizeof(LuaImage))) LuaImage;
-	memset(ud, 0, sizeof(LuaImage));
-	luaL_setmetatable(L, LuaRender::ImageMT);
-	ud->image = image;
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Renderer_CreateImage) {
-	uint32_t width = (uint32_t)luaL_checkinteger(L, 1);
-	uint32_t height = (uint32_t)luaL_checkinteger(L, 2);
-	const char* name = luaL_checkstring(L, 3);
-	KColor color = KColor(0.0, 0.0, 0.0, 0.0);
-
-	// prevent name clashes with real images (since these are added to the cache for some reason, even though they are never loaded)
-	std::string trueName = REPENTOGON::StringFormat("%s.procedural", name);
-	KAGE_SmartPointer_ImageBase pointer = KAGE_Graphics_ImageManager::CreateProceduralImage(width, height, trueName.c_str(), color);
-
-	if (!pointer.image) {
-		return luaL_error(L, "Unable to create Image");
-	}
-
-	LuaImage* ud = new (lua_newuserdata(L, sizeof(LuaImage))) LuaImage;
-	memset(ud, 0, sizeof(LuaImage));
-	luaL_setmetatable(L, LuaRender::ImageMT);
-	ud->image = pointer;
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Renderer_RenderToImage);
-
-LUA_FUNCTION(Lua_RenderToImage_ErrorHandler)
-{
-	const char* msg = lua_tostring(L, -1);
-	lua::TracebackTillFunction(L, msg, 2, Lua_Renderer_RenderToImage);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Renderer_RenderToImage) {
-	LuaImage* luaImage = LuaRender::GetLuaImage(L);
-	auto* image = luaImage->image.image;
-	if ((image->_flags & (uint64_t)eImageFlag::PROCEDURAL) == 0)
-	{
-		return luaL_error(L, "Cannot use a non procedural image as the render target");
-	}
-
-	luaL_checktype(L, 2, LUA_TFUNCTION);
-	int renderFnAbs = lua_absindex(L, 2);
-	std::optional<std::string> error = std::nullopt;
-
-	{
-		lua::LuaStackProtector protector(L);
-		auto* renderController = LuaSurfaceRenderController::NewUserdata(L);
-		int renderControllerAbs = lua_absindex(L, -1);
-
-		RenderToSurface(*image, [&]() {
-			auto& graphics = g_KAGE_Graphics_Manager;
-			BlendMode previous_blendMode = graphics._blendMode;
-
-			// push errorHandler
-			lua_pushcfunction(L, Lua_RenderToImage_ErrorHandler);
-			int errorHandlerAbs = lua_absindex(L, -1);
-
-			int numArgs = 0; lua_pushvalue(L, renderFnAbs);
-			numArgs++; lua_pushvalue(L, renderControllerAbs);
-
-			int n = lua_gettop(L) - numArgs - 1; // Expected amount after poping everything (number of params + function)
-			int resultCode = lua_pcall(L, numArgs, 0, errorHandlerAbs);
-			int numResults = lua_gettop(L) - n;
-
-			if (resultCode != LUA_OK)
-			{
-				if (lua_isstring(L, -1))
-				{
-					const char* msg = lua_tostring(L, -1);
-					error = REPENTOGON::StringFormat("An error occurred while Rendering to Surface \"%s\": (%s)", image->_name, msg);
-				}
-				else
-				{
-					error = REPENTOGON::StringFormat("An error occurred while Rendering to Surface \"%s\"", image->_name);
-				}
-			}
-
-			lua_pop(L, numResults + 1); // pop results + errorHandler
-
-			renderController->valid = false;
-			graphics._blendMode = previous_blendMode;
-			});
-
-		lua_pop(L, 1); // pop renderController
-	}
-
-	if (error.has_value())
-	{
-		luaL_error(L, error.value().c_str());
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(lua_Renderer_StartTransformation) {
-	LuaImage* luaImage = LuaRender::GetLuaImage(L);
-	auto& pointer = luaImage->image;
-	if ((pointer.image->_flags & (uint64_t)eImageFlag::PROCEDURAL) == 0)
-	{
-		return luaL_error(L, "Cannot use a non procedural image as the render target");
-	}
-
-	LuaTransformer* transformer = new (lua_newuserdata(L, sizeof(LuaTransformer))) LuaTransformer;
-	transformer->_valid = true;
-	luaL_setmetatable(L, LuaRender::TransformerMT);
-	transformer->_output = pointer;
-	return 1;
-}
 
 LUA_FUNCTION(Lua_Renderer_GLShader) {
 	std::string vertexShader(luaL_checkstring(L, 1));
@@ -2989,83 +1995,6 @@ LUA_FUNCTION(Lua_Renderer_GLShader) {
 		luaL_error(L, "Error while creating shader: %s", error);
 	}
 	
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Renderer_LoadShader)
-{
-	std::string path = luaL_checkstring(L, 1);
-	if (!lua_istable(L, 2))
-	{
-		return luaL_typeerror(L, 2, lua_typename(L, LUA_TTABLE));
-	}
-	
-	int descTbl = lua_absindex(L, 2);
-
-	size_t numAttributes = (size_t)lua_rawlen(L, descTbl);
-	std::vector<KAGE_Graphics_VertexAttributeDescriptor> descriptor;
-	descriptor.reserve(numAttributes + 1); // + 1 for terminator
-
-	// lua table to descriptor
-	for (size_t i = 0; i < numAttributes; i++)
-	{
-		int type = lua_rawgeti(L, descTbl, i + 1);
-		if (!lua_istable(L, -1))
-		{
-			lua_pop(L, 1);
-			return luaL_error(L, "Invalid vertex attribute %d (table expected)", i + 1);
-		}
-
-		lua_rawgeti(L, -1, 1);
-		if (!lua_isstring(L, -1))
-		{
-			lua_pop(L, 2);
-			return luaL_error(L, "Invalid name for vertex attribute %d (string expected)", i + 1);
-		}
-		const char* name = lua_tostring(L, -1);
-		lua_pop(L, 1); // pop name
-
-		lua_rawgeti(L, -1, 2);
-		if (!lua_isinteger(L, -1))
-		{
-			lua_pop(L, 2);
-			return luaL_error(L, "Invalid format for vertex attribute \"%s\" (integer expected)", name);
-		}
-		int format = (int)lua_tointeger(L, -1);
-		if (!(1 <= format && format <= 8))
-		{
-			lua_pop(L, 2);
-			return luaL_error(L, "Invalid format for vertex attribute \"%s\"", name);
-		}
-		lua_pop(L, 1); // pop format
-		
-		descriptor.emplace_back(name, format);
-		lua_pop(L, 1); // pop attribute
-	}
-
-	auto& terminator = descriptor.emplace_back();
-
-	auto shader = ShaderLoader::LoadShader(path, descriptor.data());
-	if (shader.is_err())
-	{
-		luaL_error(L, "Unable to load shader \"%s\": %s", path.c_str(), shader.unwrap_err().c_str());
-	}
-
-	LuaShader::NewUserdata(L, shader.unwrap());
-	
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Renderer_GetShaderByType)
-{
-	int shaderType = (int)luaL_checkinteger(L, 1);
-
-	if (!(0 <= shaderType && shaderType < ShaderType::SHADER_MAX))
-	{
-		return luaL_argerror(L, 2, "invalid shader type");
-	}
-
-	LuaShader::Userdata* ud = LuaShader::NewUserdata(L, __ptr_g_AllShaders[shaderType]);
 	return 1;
 }
 
@@ -3114,24 +2043,6 @@ LUA_FUNCTION(Lua_Renderer_RenderSet) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_Renderer_GetPixelationAmount)
-{
-	lua_pushnumber(L, g_ANM2_PixelationAmount);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Renderer_GetClipPaneNormal)
-{
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), g_ANM2_ClipPaneNormal);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Renderer_GetClipPaneThreshold)
-{
-	lua_pushnumber(L, g_ANM2_ClipPaneThreshold);
-	return 1;
-}
-
 // ============================================================================
 // Hooks
 
@@ -3169,180 +2080,85 @@ HOOK_METHOD(KAGE_Graphics_GraphicsBufferObject, Allocate, (uint32_t n) -> void*)
 }
 
 HOOK_METHOD(GridEntity_Rock, Render, (Vector& offset) -> void) {
-	LuaRender::ScopedContext<GridEntity_Rock*> context(this);
-	super(offset);
+	if constexpr (EnableCustomRendering) {
+		LuaRender::ScopedContext<GridEntity_Rock*> context(this);
+		super(offset);
+	}
+	else {
+		super(offset);
+	}
 }
 
 HOOK_METHOD(AnimationState, Render, (Vector const& position, Vector const& topLeftClamp, Vector const& bottomRightClamp) -> void) {
-	LuaRender::ScopedContext<AnimationState*> context(this);
-	super(position, topLeftClamp, bottomRightClamp);
+	if constexpr (EnableCustomRendering) {
+		LuaRender::ScopedContext<AnimationState*> context(this);
+		super(position, topLeftClamp, bottomRightClamp);
+	}
+	else {
+		super(position, topLeftClamp, bottomRightClamp);
+	}
 }
 
 HOOK_METHOD(AnimationLayer, RenderFrame, (Vector const& position, int unk, Vector const& topLeftClamp, Vector const& bottomRightClamp, ANM2* animation) -> void) {
-	LuaRender::ScopedContext<AnimationLayer*> context(this);
-	super(position, unk, topLeftClamp, bottomRightClamp, animation);
+	if constexpr (EnableCustomRendering) {
+		LuaRender::ScopedContext<AnimationLayer*> context(this);
+		super(position, unk, topLeftClamp, bottomRightClamp, animation);
+	}
+	else {
+		super(position, unk, topLeftClamp, bottomRightClamp, animation);
+	}
 }
 
 HOOK_METHOD(Entity_NPC, Render, (Vector* offset) -> void) {
-	LuaRender::ScopedContext<Entity_NPC*> context(this);
-	super(offset);
+	if constexpr (EnableCustomRendering) {
+		LuaRender::ScopedContext<Entity_NPC*> context(this);
+		super(offset);
+	}
+	else {
+		super(offset);
+	}
 }
 
 HOOK_METHOD(Entity_Player, Render, (Vector* offset) -> void) {
-	LuaRender::ScopedContext<Entity_Player*> context(this);
-	super(offset);
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-
-	lua_State* L = _state;
-	lua::LuaStackProtector protector(L);
-	RegisterImageClass(L);
-	LuaShader::RegisterUserdataClass(L);
-	LuaSurfaceRenderController::RegisterUserdataClass(L);
-	RegisterTransformerClass(L);
-	RegisterQuadClasses(L);
-	RegisterCustomRenderMetatables(L);
-
-	// SourceQuad static methods
-
-	lua_createtable(L, 0, 2); // table
-	lua_createtable(L, 0, 1); // metatable
-
-	lua_pushcfunction(L, lua_SourceQuad_new);
-	lua_setfield(L, -2, "__call");
-
-	lua_setmetatable(L, -2);
-
-	lua_pushcfunction(L, Lua_SourceQuad_NewFromBounds);
-	lua_setfield(L, -2, "NewFromBounds");
-
-	lua_pushcfunction(L, Lua_SourceQuad_NewFromRectangle);
-	lua_setfield(L, -2, "NewFromRectangle");
-
-	lua_setglobal(L, "SourceQuad");
-
-	// DestinationQuad static methods
-
-	lua_createtable(L, 0, 2); // table
-	lua_createtable(L, 0, 1); // metatable
-
-	lua_pushcfunction(L, lua_DestinationQuad_new);
-	lua_setfield(L, -2, "__call");
-
-	lua_setmetatable(L, -2);
-
-	lua_pushcfunction(L, Lua_DestinationQuad_NewFromBounds);
-	lua_setfield(L, -2, "NewFromBounds");
-
-	lua_pushcfunction(L, Lua_DestinationQuad_NewFromRectangle);
-	lua_setfield(L, -2, "NewFromRectangle");
-
-	lua_setglobal(L, "DestinationQuad");
-
-	lua_newtable(L);
-
-	luaL_Reg renderFunctions[] = {
-		{ "LoadImage", lua_Renderer_LoadImage },
-		{ "CreateImage", Lua_Renderer_CreateImage },
-		{ "RenderToImage", Lua_Renderer_RenderToImage },
-		{ "StartTransformation", lua_Renderer_StartTransformation },
-		// { "GLShader", Lua_Renderer_GLShader },
-		{ "GetShaderByType", Lua_Renderer_GetShaderByType },
-		{ "LoadShader", Lua_Renderer_LoadShader },
-		// { "Vec2", Lua_Renderer_Vec2 },
-		// { "Vec3", Lua_Renderer_Vec3 },
-		// { "Vec4", Lua_Renderer_Vec4 },
-		// { "ProjectionMatrix", Lua_Renderer_ProjectionMatrix },
-		// { "Pipeline", Lua_Renderer_Pipeline },
-		// { "VertexDescriptor", Lua_Renderer_VertexDescriptor},
-		// { "RenderSet", Lua_Renderer_RenderSet },
-		{ "GetPixelationAmount", Lua_Renderer_GetPixelationAmount },
-		{ "GetClipPaneNormal", Lua_Renderer_GetClipPaneNormal },
-		{ "GetClipPaneThreshold", Lua_Renderer_GetClipPaneThreshold },
-		{ NULL, NULL }
-	};
-
-	luaL_setfuncs(L, renderFunctions, 0);
-
-	// GLSLType table
-	lua_pushstring(L, "GLSLType");
-	lua_newtable(L);
-	lua::TableAssoc(L, "Float", GL::GLSLType::GLSL_FLOAT);
-	lua::TableAssoc(L, "Vec2", GL::GLSLType::GLSL_VEC2);
-	lua::TableAssoc(L, "Vec3", GL::GLSLType::GLSL_VEC3);
-	lua::TableAssoc(L, "Vec4", GL::GLSLType::GLSL_VEC4);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "ShaderType");
-	lua_newtable(L);
-	lua::TableAssoc(L, "SHADER_COLOR_OFFSET", SHADER_COLOR_OFFSET);
-	lua::TableAssoc(L, "SHADER_PIXELATION", SHADER_PIXELATION);
-	lua::TableAssoc(L, "SHADER_BLOOM", SHADER_BLOOM);
-	lua::TableAssoc(L, "SHADER_COLOR_CORRECTION", SHADER_COLOR_CORRECTION);
-	lua::TableAssoc(L, "SHADER_HQ4X", SHADER_HQ4X);
-	lua::TableAssoc(L, "SHADER_SHOCKWAVE", SHADER_SHOCKWAVE);
-	lua::TableAssoc(L, "SHADER_OLDTV", SHADER_OLDTV);
-	lua::TableAssoc(L, "SHADER_WATER", SHADER_WATER);
-	lua::TableAssoc(L, "SHADER_HALLUCINATION", SHADER_HALLUCINATION);
-	lua::TableAssoc(L, "SHADER_COLOR_MOD", SHADER_COLOR_MOD);
-	lua::TableAssoc(L, "SHADER_COLOR_OFFSET_CHAMPION", SHADER_COLOR_OFFSET_CHAMPION);
-	lua::TableAssoc(L, "SHADER_WATER_V2", SHADER_WATER_V2);
-	lua::TableAssoc(L, "SHADER_BACKGROUND", SHADER_BACKGROUND);
-	lua::TableAssoc(L, "SHADER_WATER_OVERLAY", SHADER_WATER_OVERLAY);
-	lua::TableAssoc(L, "SHADER_UNK", SHADER_UNK);
-	lua::TableAssoc(L, "SHADER_COLOR_OFFSET_DOGMA", SHADER_COLOR_OFFSET_DOGMA);
-	lua::TableAssoc(L, "SHADER_COLOR_OFFSET_GOLD", SHADER_COLOR_OFFSET_GOLD);
-	lua::TableAssoc(L, "SHADER_DIZZY", SHADER_DIZZY);
-	lua::TableAssoc(L, "SHADER_HEAT_WAVE", SHADER_HEAT_WAVE);
-	lua::TableAssoc(L, "SHADER_MIRROR", SHADER_MIRROR);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "VertexAttributeFormat");
-	lua_newtable(L);
-	lua::TableAssoc(L, "FLOAT", (int)eVertexAttributeFormat::FLOAT);
-	lua::TableAssoc(L, "VEC2", (int)eVertexAttributeFormat::VEC_2);
-	lua::TableAssoc(L, "VEC3", (int)eVertexAttributeFormat::VEC_3);
-	lua::TableAssoc(L, "VEC4", (int)eVertexAttributeFormat::VEC_4);
-	lua::TableAssoc(L, "POSITION", (int)eVertexAttributeFormat::POSITION);
-	lua::TableAssoc(L, "COLOR", (int)eVertexAttributeFormat::COLOR);
-	lua::TableAssoc(L, "TEX_COORD", (int)eVertexAttributeFormat::TEX_COORD);
-	lua_rawset(L, -3);
-
-	lua_setglobal(L, "Renderer");
+	if constexpr (EnableCustomRendering) {
+		LuaRender::ScopedContext<Entity_Player*> context(this);
+		super(offset);
+	}
+	else {
+		super(offset);
+	}
 }
 
 // ============================================================================
 // Globals
 
 namespace LuaRender {
-	void PatchglDrawElements() {
-		// Call to glDrawElements in the second loop in Manager::apply_frame_images
-		SigScan secondLoopScan("ff15????????8b0d????????ff75f8ff75ec8b0157");
-		// Call to glDrawElements in ImageBase::apply_image
-		SigScan applyImageScan("ff15????????8b0d????????ff75e8ff75f48b0157");
+	// void PatchglDrawElements() {
+	// 	// Call to glDrawElements in the second loop in Manager::apply_frame_images
+	// 	SigScan secondLoopScan("ff15????????8b0d????????ff75f8ff75ec8b0157");
+	// 	// Call to glDrawElements in ImageBase::apply_image
+	// 	SigScan applyImageScan("ff15????????8b0d????????ff75e8ff75f48b0157");
 
-		secondLoopScan.Scan();
-		applyImageScan.Scan();
+	// 	secondLoopScan.Scan();
+	// 	applyImageScan.Scan();
 
-		void* secondLoop = secondLoopScan.GetAddress();
-		void* applyImage = applyImageScan.GetAddress();
+	// 	void* secondLoop = secondLoopScan.GetAddress();
+	// 	void* applyImage = applyImageScan.GetAddress();
 
-		ASMPatch secondLoopPatch, applyImagePatch;
-		secondLoopPatch.Push(ASMPatch::Registers::ESI, 0); // render descriptor
-		secondLoopPatch.AddInternalCall(LuaPreDrawElements);
-		secondLoopPatch.AddRelativeJump((char*)secondLoop + 0x6);
+	// 	ASMPatch secondLoopPatch, applyImagePatch;
+	// 	secondLoopPatch.Push(ASMPatch::Registers::ESI, 0); // render descriptor
+	// 	secondLoopPatch.AddInternalCall(LuaPreDrawElements);
+	// 	secondLoopPatch.AddRelativeJump((char*)secondLoop + 0x6);
 
-		applyImagePatch.Push(ASMPatch::Registers::ESI); // render descriptor
-		applyImagePatch.AddInternalCall(LuaPreDrawElements);
-		applyImagePatch.AddRelativeJump((char*)applyImage + 0x6);
+	// 	applyImagePatch.Push(ASMPatch::Registers::ESI); // render descriptor
+	// 	applyImagePatch.AddInternalCall(LuaPreDrawElements);
+	// 	applyImagePatch.AddRelativeJump((char*)applyImage + 0x6);
 
-		if (EnableCustomRendering) {
-			sASMPatcher.PatchAt(secondLoop, &secondLoopPatch);
-			sASMPatcher.PatchAt(applyImage, &applyImagePatch);
-		}
-	}
+	// 	if (EnableCustomRendering) {
+	// 		sASMPatcher.PatchAt(secondLoop, &secondLoopPatch);
+	// 		sASMPatcher.PatchAt(applyImage, &applyImagePatch);
+	// 	}
+	// }
 
 #define PAD(D, T, N) D.AddAttribute(T, N)
 

@@ -76,11 +76,6 @@ namespace RoomConfigUtility
     
     std::optional<StbRoomSet> ParseStb(const std::string& filePath, int stageId);
 
-	std::optional<RoomConfig_Room> BuildRoomFromLua(lua_State* L, int index, LogContext& logContext);
-	int GetDoorSlotFromLua(lua_State* L, int index, int shape, LogContext& logContext);
-	std::optional<RoomSpawn> BuildSpawnFromLua(lua_State* L, int index, RoomConfig_Room& room, LogContext& logContext);
-	std::optional<RoomEntry> BuildSpawnEntryFromLua(lua_State* L, int index, LogContext& logContext);
-
 	std::optional<RoomConfig_Room> DeserializeRoom(const rapidjson::Value& roomNode, LogContext& logContext);
 	std::optional<RoomSpawn> DeserializeRoomSpawn(const rapidjson::Value& spawnNode, RoomConfig_Room& room, LogContext& logContext);
 	std::optional<RoomEntry> DeserializeRoomSpawnEntry(const rapidjson::Value& spawnEntryNode, LogContext& logContext);

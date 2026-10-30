@@ -7,6 +7,7 @@
 
 #include "../XMLData.h"
 #include "../../LuaInit.h"
+#include "../../LuaClasses.h"
 #include "Log.h"
 #include "../../Patches/MainMenuBlock.h"
 #include "../../Patches/EntityManager.h"
@@ -130,8 +131,8 @@ bool __stdcall RunPreLaserCollisionCallback(Entity_Laser* laser, Entity* entity)
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*laser->GetVariant())
-			.push(laser, lua::Metatables::ENTITY_LASER)
-			.push(entity, lua::Metatables::ENTITY)
+			.pushClassPtr<LuaEntityLaser>(laser)
+			.pushClassPtr<LuaEntity>(entity)
 			.call(1);
 
 		if (!result) {
@@ -290,16 +291,16 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, float* damage, int* dama
 		lua::LuaCaller caller(L);
 		caller.push(callbackid)
 			.push(entityType)
-			.push(entity, lua::Metatables::ENTITY);
+			.pushClassPtr<LuaEntity>(entity);
 		if (isPlayer && damageHearts) {
 			caller.push(*damageHearts);
 		} else {
 			caller.push(*damage);
 		}
 		caller.push(*damageFlags)
-			.push(source, lua::Metatables::ENTITY_REF)
+			.pushClassPtr<LuaEntityRef>(source)
 			.push(*damageCountdown)
-			.push(extraSource, lua::Metatables::ENTITY_REF);
+			.pushClassPtr<LuaEntityRef>(extraSource);
 		lua::LuaResults lua_result = caller.call(1);
 
 		if (!lua_result) {
@@ -450,16 +451,16 @@ void __stdcall ProcessPostDamageCallback(Entity* entity, const float damage, con
 		lua::LuaCaller caller(L);
 		caller.push(callbackid)
 			.push(*entity->GetType())
-			.push(entity, lua::Metatables::ENTITY);
+			.pushClassPtr<LuaEntity>(entity);
 		if (isPlayer) {
 			caller.push((int)std::round(damage));
 		} else {
 			caller.push(damage);
 		}
 		caller.push(damageFlags)
-			.push(source, lua::Metatables::ENTITY_REF)
+			.pushClassPtr<LuaEntityRef>(source)
 			.push(damageCountdown)
-			.push(extraSource, lua::Metatables::ENTITY_REF)
+			.pushClassPtr<LuaEntityRef>(extraSource)
 			.call(1);
 	}
 };
@@ -542,7 +543,7 @@ bool __stdcall ProcessPrePlayerUseBombCallback(Entity_Player* player) {
 
 		lua::LuaResults lua_result = lua::LuaCaller(L).push(callbackid)
 			.push(*player->GetVariant())
-			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.pushClassPtr<LuaEntityPlayer>(player)
 			.call(1);
 
 		if (!lua_result && lua_isboolean(L, -1)) {
@@ -589,8 +590,8 @@ void __stdcall ProcessPostPlayerUseBombCallback(Entity_Player* player, Entity_Bo
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 		lua::LuaCaller(L).push(callbackid)
 			.push(*player->GetVariant())
-			.push(player, lua::Metatables::ENTITY_PLAYER)
-			.push(bomb, lua::Metatables::ENTITY_BOMB)
+			.pushClassPtr<LuaEntityPlayer>(player)
+			.pushClassPtr<LuaEntityBomb>(bomb)
 			.call(0);
 	}
 }
@@ -634,7 +635,7 @@ int __stdcall RunPreMMorphActiveCallback(Entity_Player* player, int collectibleI
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
 			.pushnil()
-			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.pushClassPtr<LuaEntityPlayer>(player)
 			.push(collectibleId)
 			.call(1);
 
@@ -692,7 +693,7 @@ void __stdcall TrySplitTrampoline(Entity_NPC* npc, bool result) {
 
 			lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 				.push(npc->_type)
-				.push(npc, lua::Metatables::ENTITY_NPC)
+				.pushClassPtr<LuaEntityNPC>(npc)
 				.push(resSplit)
 
 				.call(1);
@@ -776,7 +777,6 @@ void __stdcall RunPostNightmareSceneRender(NightmareScene* ns) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			//.push(ns, lua::metatables::NightmareSceneMT)
 			.call(1);
 	}
 }
@@ -810,7 +810,7 @@ void __stdcall RunPrePickupVoided(std::vector<Entity_Pickup*>* voidedItems, Enti
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*pickup->GetVariant())
-			.push(pickup, lua::Metatables::ENTITY_PICKUP)
+			.pushClassPtr<LuaEntityPickup>(pickup)
 			.push(false)
 			.call(1);
 
@@ -857,7 +857,7 @@ bool __stdcall RunPrePickupVoidedBlackRune(Entity_Pickup* pickup) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*pickup->GetVariant())
-			.push(pickup, lua::Metatables::ENTITY_PICKUP)
+			.pushClassPtr<LuaEntityPickup>(pickup)
 			.push(true)
 			.call(1);
 
@@ -905,7 +905,7 @@ bool __stdcall RunPrePickupVoidedAbyss(Entity_Pickup* pickup) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*pickup->GetVariant())
-			.push(pickup, lua::Metatables::ENTITY_PICKUP)
+			.pushClassPtr<LuaEntityPickup>(pickup)
 			.call(1);
 
 		if (!result) {
@@ -952,7 +952,7 @@ bool __stdcall RunPrePickupComposted(Entity_Pickup* pickup) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*pickup->GetVariant())
-			.push(pickup, lua::Metatables::ENTITY_PICKUP)
+			.pushClassPtr<LuaEntityPickup>(pickup)
 			.call(1);
 
 		if (!result) {
@@ -1000,7 +1000,7 @@ void __stdcall RunPostChampionRegenCallback(Entity_NPC* npc) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 		lua::LuaCaller(L).push(callbackid)
 			.push(*npc->GetType())
-			.push(npc, lua::Metatables::ENTITY_NPC)
+			.pushClassPtr<LuaEntityNPC>(npc)
 			.call(0);
 	}
 }
@@ -1066,24 +1066,35 @@ bool __stdcall RunTrinketRenderCallback(PlayerHUD* playerHUD, uint32_t slot, Vec
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(slot)
 			.push(slot)
-			.pushUserdataValue(*position, lua::Metatables::VECTOR)
+			.pushClass<LuaVector>(*position)
 			.push(*scale)
-			.push(player, lua::Metatables::ENTITY_PLAYER)
-			.pushUserdataValue(cropOffset, lua::Metatables::VECTOR)
+			.pushClassPtr<LuaEntityPlayer>(player)
+			.pushClass<LuaVector>(cropOffset)
 			.call(1);
 
 		if (!result) {
 			if (lua_istable(L, -1)) {
 				lua_pushnil(L);
 				while (lua_next(L, -2) != 0) {
-					if (lua_isstring(L, -2) && lua_isuserdata(L, -1)) {
-						const std::string key = lua_tostring(L, -2);
-						if (key == "Position") {
-							Vector *new_pos = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
-							*(position) = *(new_pos);
-						}
-						else if (key == "CropOffset") {
-							cropOffset = *lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+					if (lua_isstring(L, -2) && LuaVector::IsUnderlyingType(L, -1)) {
+						size_t len;
+						const char* str = lua_tolstring(L, -2, &len);
+						std::string_view key(str, len);
+
+						Vector* target = nullptr;
+						if (key == "Position")
+							target = position;
+						else if (key == "CropOffset")
+							target = &cropOffset;
+
+						if (target) {
+							auto luaReturn = LuaVector::TryGet(L, -1);
+							if (luaReturn.is_err()) {
+								KAGE::LogMessage(2, REPENTOGON::StringFormat("bad return in MC_PRE_PLAYERHUD_TRINKET_RENDER for \"%s\": %s", key.data(), luaReturn.unwrap_err().message().c_str()).c_str());
+							}
+							else {
+								*target = *luaReturn.unwrap();
+							}
 						}
 					}
 					else if (lua_isstring(L, -2) && lua_isnumber(L, -1)) {
@@ -1180,7 +1191,7 @@ bool __stdcall RunPickupUpdatePickupGhostsCallback(Entity_Pickup* pickup) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(pickup->_variant)
-			.push(pickup, lua::Metatables::ENTITY_PICKUP)
+			.pushClassPtr<LuaEntityPickup>(pickup)
 			.call(1);
 
 		if (!result) {
@@ -1258,9 +1269,9 @@ bool __stdcall RunNpcUpdatePickupGhostsCallback(Entity_NPC* npc) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(npc->_type)
-			.push(npc, lua::Metatables::ENTITY_NPC)
+			.pushClassPtr<LuaEntityNPC>(npc)
 			.call(1);
-
+		
 		if (!result) {
 			if (lua_isboolean(L, -1)) {
 				return (bool)lua_toboolean(L, -1);
@@ -1309,7 +1320,7 @@ void __stdcall RunProjectileDeathCallback(Entity_Projectile* proj) {
 
 		lua::LuaCaller(L).push(callbackid)
 			.push(proj->_variant)
-			.push(proj, lua::Metatables::ENTITY_PROJECTILE)
+			.pushClassPtr<LuaEntityProjectile>(proj)
 			.call(1);
 	}
 
@@ -1347,7 +1358,7 @@ void __stdcall RunTearDeathCallback(Entity_Tear* tear) {
 
 		lua::LuaCaller(L).push(callbackid)
 			.push(tear->_variant)
-			.push(tear, lua::Metatables::ENTITY_TEAR)
+			.pushClassPtr<LuaEntityTear>(tear)
 			.call(1);
 	}
 
@@ -1385,7 +1396,7 @@ bool __stdcall RunPrePlayerGiveBirthCallback(Entity_Player* player, const uint32
 
 		lua::LuaResults results = lua::LuaCaller(L).push(callbackid)
 			.push(flag)
-			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.pushClassPtr<LuaEntityPlayer>(player)
 			.push(flag)
 			.call(1);
 
@@ -1439,7 +1450,7 @@ bool __stdcall RunPreTriggerBedSleepEffectCallback(Entity_Player* player) {
 
 			lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 				.pushnil()
-				.push(player, lua::Metatables::ENTITY_PLAYER)
+				.pushClassPtr<LuaEntityPlayer>(player)
 				.call(1);
 
 
@@ -1482,7 +1493,7 @@ void __stdcall RunPostTriggerBedSleepEffectCallback(Entity_Player* player) {
 
 		lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.pushClassPtr<LuaEntityPlayer>(player)
 			.call(1);
 
 	}
@@ -1516,8 +1527,8 @@ bool __stdcall RunPreBedSleepCallback(Entity_Player* player, Entity_Pickup* bed)
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(bed->_subtype)
-			.push(player, lua::Metatables::ENTITY_PLAYER)
-			.push(bed, lua::Metatables::ENTITY_PICKUP)
+			.pushClassPtr<LuaEntityPlayer>(player)
+			.pushClassPtr<LuaEntityPickup>(bed)
 			.call(1);
 
 
@@ -1570,7 +1581,7 @@ bool __stdcall RunPrePlayerPocketItemSwapCallback(Entity_Player* player) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.pushClassPtr<LuaEntityPlayer>(player)
 			.call(1);
 
 
@@ -1652,15 +1663,21 @@ void RunRenderCharacterWheelCallbacks(ANM2* sprite, Vector* pos, const int playe
 		lua::LuaResults result = lua::LuaCaller(L).push(precallbackid)
 			.push(playerType)
 			.push(playerType)
-			.push(sprite, lua::Metatables::SPRITE)
-			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
-			.push(&scaleCopy, lua::Metatables::VECTOR)
-			.push(&colorCopy, lua::Metatables::COLOR)
+			.pushClassPtr<LuaSprite>(sprite)
+			.pushClass<LuaVector>(*pos)
+			.pushClass<LuaVector>(scaleCopy)
+			.pushClassPtr<LuaColor>(&colorCopy)
 			.call(1);
 
 		if (!result) {
-			if (lua_isuserdata(L, -1)) {
-				*pos = *lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+			if (LuaVector::IsUnderlyingType(L, -1)) {
+				auto luaReturn = LuaVector::TryGet(L, -1);
+				if (luaReturn.is_err()) {
+					KAGE::LogMessage(2, REPENTOGON::StringConcat("bad return in MC_PRE_RENDER_CHARACTER_SELECT_PORTRAIT : ", luaReturn.unwrap_err().message()).c_str());
+				}
+				else {
+					*pos = *luaReturn.unwrap();
+				}
 			} else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
 				return;
 			}
@@ -1679,10 +1696,10 @@ void RunRenderCharacterWheelCallbacks(ANM2* sprite, Vector* pos, const int playe
 		lua::LuaCaller(L).push(postcallbackid)
 			.push(playerType)
 			.push(playerType)
-			.push(sprite, lua::Metatables::SPRITE)
-			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
-			.push(&scaleCopy, lua::Metatables::VECTOR)
-			.push(&colorCopy, lua::Metatables::COLOR)
+			.pushClassPtr<LuaSprite>(sprite)
+			.pushClass<LuaVector>(*pos)
+			.pushClass<LuaVector>(scaleCopy)
+			.pushClassPtr<LuaColor>(&colorCopy)
 			.call(1);
 	}
 }
@@ -1751,9 +1768,9 @@ bool RunPreRenderCharacterMenuCallback(const int playerType, Vector* pos, ANM2* 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(playerType)
 			.push(playerType)
-			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
-			.push(vanillaSprite, lua::Metatables::SPRITE)
-			.push(customSprite, lua::Metatables::SPRITE)
+			.pushClass<LuaVector>(*pos)
+			.pushClassPtr<LuaSprite>(vanillaSprite)
+			.pushClassPtr<LuaSprite>(customSprite)
 			.push(renderCustomBackground)
 			.call(1);
 
@@ -1778,8 +1795,8 @@ void RunPostRenderCharacterMenuCallback(const int playerType, Vector* pos, ANM2*
 			lua::LuaCaller(L).push(legacycallbackid)
 				.push(playerType)
 				.push(playerType)
-				.pushUserdataValue(*pos, lua::Metatables::VECTOR)
-				.push(vanillaSprite, lua::Metatables::SPRITE)
+				.pushClass<LuaVector>(*pos)
+				.pushClassPtr<LuaSprite>(vanillaSprite)
 				.call(1);
 		}
 	}
@@ -1795,9 +1812,9 @@ void RunPostRenderCharacterMenuCallback(const int playerType, Vector* pos, ANM2*
 		lua::LuaCaller(L).push(callbackid)
 			.push(playerType)
 			.push(playerType)
-			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
-			.push(vanillaSprite, lua::Metatables::SPRITE)
-			.push(customSprite, lua::Metatables::SPRITE)
+			.pushClass<LuaVector>(*pos)
+			.pushClassPtr<LuaSprite>(vanillaSprite)
+			.pushClassPtr<LuaSprite>(customSprite)
 			.push(renderCustomBackground)
 			.call(1);
 	}
@@ -2208,12 +2225,12 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector&
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 		lua::LuaResults result = lua::LuaCaller(L).push(precallbackid)
 			.push(activeItemID)
-			.push(this->GetPlayer(), lua::Metatables::ENTITY_PLAYER)
+			.pushClassPtr<LuaEntityPlayer>(this->GetPlayer())
 			.push(activeSlot)
-			.pushUserdataValue(itemPos, lua::Metatables::VECTOR)
+			.pushClass<LuaVector>(itemPos)
 			.push(alpha)
 			.push(actualSize)
-			.pushUserdataValue(chargeBarPos, lua::Metatables::VECTOR)
+			.pushClass<LuaVector>(chargeBarPos)
 			.call(1);
 
 		if (!result) {
@@ -2230,8 +2247,14 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector&
 							_hideActiveItemOutline = (bool)lua_toboolean(L, -1);
 						} else if (key == "HideChargeBar" && lua_isboolean(L, -1)) {
 							_hideActiveItemChargeBar = (bool)lua_toboolean(L, -1);
-						} else if (key == "CropOffset" && lua_isuserdata(L, -1)) {
-							cropOffset = *lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+						} else if (key == "CropOffset" && LuaVector::IsUnderlyingType(L, -1)) {
+							auto luaReturn = LuaVector::TryGet(L, -1);
+							if (luaReturn.is_err()) {
+								KAGE::LogMessage(2, REPENTOGON::StringConcat("bad return in MC_PRE_RENDER_CHARACTER_SELECT_PORTRAIT : ", luaReturn.unwrap_err().message()).c_str());
+							}
+							else {
+								cropOffset = *luaReturn.unwrap();
+							}
 						}
 					}
 					lua_pop(L, 1);
@@ -2259,12 +2282,12 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector&
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 		lua::LuaCaller(L).push(postcallbackid)
 			.push(activeItemID)
-			.push(this->GetPlayer(), lua::Metatables::ENTITY_PLAYER)
+			.pushClassPtr<LuaEntityPlayer>(this->GetPlayer())
 			.push(activeSlot)
-			.pushUserdataValue(itemPos, lua::Metatables::VECTOR)
+			.pushClass<LuaVector>(itemPos)
 			.push(alpha)
 			.push(actualSize)
-			.pushUserdataValue(chargeBarPos, lua::Metatables::VECTOR)
+			.pushClass<LuaVector>(chargeBarPos)
 			.call(1);
 	}
 }
@@ -2412,7 +2435,7 @@ static inline void run_post_backwards_room_restore(int stage, RoomDescriptor& ro
 	lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
 		.pushnil()
 		.push(stage)
-		.push(&roomDesc, lua::Metatables::ROOM_DESCRIPTOR)
+		.pushClassPtr<LuaRoomDescriptor>(&roomDesc)
 		.pushfstring("%s_%d", key, index)
 		.call(1);
 }
@@ -2483,17 +2506,17 @@ static RoomConfig_Room* __stdcall RunWaveRoomCallback(RoomConfig_Room* room, boo
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			.push(room, lua::Metatables::ROOM_CONFIG_ROOM)
+			.pushClassPtr<LuaRoomConfigRoom>(room)
 			.push(seed)
 			.call(1);
 
-		if (!result && lua_isuserdata(L, -1)) {
-			auto opt = lua::TestUserdata<RoomConfig_Room*>(L, -1, lua::Metatables::ROOM_CONFIG_ROOM);
+		if (!result && LuaRoomConfigRoom::IsUnderlyingType(L, -1)) {
+			auto opt = LuaRoomConfigRoom::TryGet(L, -1);
 
-			if (!opt.has_value()) {
-				KAGE::_LogMessage(2, "Invalid userdata returned in %s\n", callbackName);
+			if (opt.is_err()) {
+				KAGE::_LogMessage(2, "Invalid return in %s\n", callbackName);
 			} else {
-				RoomConfig_Room* newRoom = *opt;
+				RoomConfig_Room* newRoom = opt.unwrap();
 
 				if (newRoom == room) {
 					return room;

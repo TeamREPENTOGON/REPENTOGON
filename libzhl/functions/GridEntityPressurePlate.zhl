@@ -1,8 +1,13 @@
+"558bec6aff68????????64a1????????5083ec64a1????????33c58945??535657508d45??64a3????????8bd9":
+__thiscall void GridEntity_PressurePlate::Reward();
+
+
 struct GridEntity_PressurePlate : public GridEntity {
 	__vtable {
 		skip; // Free
 		skip; // PostInit
 		
+		override
 		"558bec83e4f851568bf180be????????0074":
         void Update();
 		
@@ -22,4 +27,4 @@ struct GridEntity_PressurePlate : public GridEntity {
 		skip; // EndBatches
 		skip; // InitSubclass
     };
-} : 0x27c;
+} : 0x2d0;

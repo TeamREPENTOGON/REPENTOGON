@@ -1,0 +1,97 @@
+local Entity = require("ffi.Entity.Entity")
+
+ffi.cdef("struct EntityProjectile { " .. Entity.Fields .. [[
+    float Height : 0x410;
+    float FallingSpeed : 0x414;
+    float FallingAccel : 0x418;
+    float Damage : 0x41c;
+    float Scale : 0x420;
+    float HomingStrength : 0x424;
+    float CurvingStrength : 0x428;
+    float Acceleration : 0x42c;
+    private uint64_t ProjectileFlags : 0x438;
+    int WiggleFrameOffset : 0x448;
+    private uint64_t ChangeFlags : 0x450;
+    float ChangeVelocity : 0x458;
+    int ChangeTimeout : 0x45c;
+} : 0x470;
+typedef struct EntityProjectile* EntityProjectilePtr;
+]])
+
+ffi.cdef [[
+    void L_EntityProjectile_Deflect(struct EntityProjectile*, struct Vector*);
+]]
+
+local ffi = ffi
+local repentogon = ffidll
+
+local MAX_EXACT = 9007199254740992LL
+local function Flags64(value)
+    local signed = ffi.cast("int64_t", value)
+    if signed >= -MAX_EXACT and signed <= MAX_EXACT then
+        local result = tonumber(signed) return result
+    end
+    return signed
+end
+
+local function FlagsSetter(field)
+    return function(self, value)
+        value = ffichecks.checkinteger64(1, value)
+        ffi.setprivate(self, field, value)
+    end
+end
+
+local function Adder(field)
+    return function(self, amount)
+        amount = ffichecks.checknumber(1, amount)
+        self[field] = self[field] + amount
+    end
+end
+
+local function FlagsAdder(field)
+    return function(self, flags)
+        flags = ffichecks.checkinteger64(1, flags)
+        ffi.setprivate(self, field, ffi.getprivate(self, field) | flags)
+    end
+end
+
+local getters = {
+    ProjectileFlags = function(self)
+        return Flags64(ffi.getprivate(self, "ProjectileFlags"))
+    end,
+    ChangeFlags = function(self)
+        return Flags64(ffi.getprivate(self, "ChangeFlags"))
+    end,
+}
+
+local setters = {
+    ProjectileFlags = FlagsSetter("ProjectileFlags"),
+    ChangeFlags = FlagsSetter("ChangeFlags"),
+}
+
+local methods = {
+    AddChangeFlags = FlagsAdder("ChangeFlags"),
+    AddFallingAccel = Adder("FallingAccel"),
+    AddFallingSpeed = Adder("FallingSpeed"),
+    AddHeight = Adder("Height"),
+    AddProjectileFlags = FlagsAdder("ProjectileFlags"),
+    AddScale = Adder("Scale"),
+    ClearProjectileFlags = function(self, flags)
+        flags = ffichecks.checkinteger64(1, flags)
+        ffi.setprivate(self, "ProjectileFlags", ffi.getprivate(self, "ProjectileFlags") & ~ffi.cast("uint64_t", flags))
+    end,
+    Deflect = function(self, velocity)
+        ffichecks.checkcdata(1, velocity, "Vector")
+        repentogon.L_EntityProjectile_Deflect(self, velocity)
+    end,
+    HasProjectileFlags = function(self, flags)
+        flags = ffichecks.checkinteger64(1, flags)
+        return (ffi.getprivate(self, "ProjectileFlags") & ffi.cast("uint64_t", flags)) ~= 0
+    end,
+}
+
+local ProjectileMT = Entity.Inherit("EntityProjectile", methods, getters, setters)
+ffi.metatype("struct EntityProjectile", ProjectileMT)
+Entity.SetProjectileType(ffi.typeof("struct EntityProjectile*"))
+
+EntityProjectile = setmetatable({}, { __class = ProjectileMT })

@@ -118,9 +118,6 @@ __thiscall void Entity_Player::UseCard(int cardType, unsigned int useFlag);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec78010000a1????????33c58945??5657508d45??64a3????????8bf989bd????????8b0d":
 __thiscall void Entity_Player::UsePill(int ePillEffect, int ePillColor, unsigned int useFlag);
 
-"558bec6aff68????????64a1????????5081ecdc010000":
-__thiscall void Entity_Player::Render(Vector *offset);
-
 "8b81????????83c0fc83f824":
 __thiscall int Entity_Player::GetHealthType();
 
@@ -289,9 +286,6 @@ __thiscall PocketItem* Entity_Player::GetPocketItem(int SlotID);
 /*"a1????????568b90????????8bb0":
 __thiscall bool Entity_Player::IsLocalPlayer();
 */
-
-"558bec83e4f881ecc8000000a1????????33c4898424????????5657ff75":
-__thiscall bool Entity_Player::HandleCollision(Entity* collider, bool low);
 
 "558bec6aff68????????64a1????????5083ec6ca1????????33c58945??5657508d45??64a3????????8bf9":
 __thiscall void Entity_Player::InitPreLevelInitStats();
@@ -610,7 +604,337 @@ __thiscall void Entity_Player::GetTearMovementInheritance(Vector* out, Vector* d
 "558bec83e4f883ec1453568bf157897424":
 __thiscall Entity_Pickup* Entity_Player::DropTrinket(Vector* DropPos, bool ReplaceTick);
 
-struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc, GameStatePlayer, EntityPtr) : public Entity { {{
+"558bec83e4f883ec0c5356578bd96a5e":
+__thiscall Entity* Entity_Player::AddBlueFlies(int Amount, Vector* Position, Entity* Target);
+
+"558bec83e4f851568bf1ff86":
+__thiscall Entity* Entity_Player::AddBlueSpider(Vector* position);
+
+"558bec8b55??518b4d??e8????????83c4045dc20800????????????????????558becff75":
+__thiscall Entity_Familiar* Entity_Player::AddFriendlyDip(int subtype, Vector* position);
+
+"558bec83ec40a1????????33c58945??53568bc1":
+__thiscall Entity_Familiar* Entity_Player::AddItemWisp(CollectibleType collectible, Vector* position, bool adjustOrbitLayer);
+
+"558bec83e4f881ec8c000000a1????????33c4898424????????538a5d":
+__thiscall Entity_Familiar* Entity_Player::AddMinisaac(Vector* position, bool playAnim);
+
+"558bec6aff68????????64a1????????5083ec18535657a1????????33c5508d45??64a3????????8bd9c745??00000000":
+__thiscall Entity_Familiar* Entity_Player::AddSwarmFlyOrbital(Vector* position);
+
+"558bec6aff68????????64a1????????5083ec64a1????????33c58945??535657508d45??64a3????????894d":
+__thiscall Entity_Familiar* Entity_Player::AddWisp(CollectibleType collectible, Vector* position, bool adjustOrbitLayer, bool dontUpdate);
+
+"558bec83e4f883ec4ca1????????33c4894424??5356578bf9e8":
+__thiscall void Entity_Player::DoZitEffect(Vector* direction);
+
+"558bec83e4f881ec84000000a1????????33c4898424????????f30f1045":
+__thiscall Entity_Laser* Entity_Player::FireDelayedBrimstone(float angle, Entity* source);
+
+"558bec83e4f85153568b35????????578bf9c74424??aa010000":
+__thiscall Entity_Laser* Entity_Player::SpawnMawOfVoid(int timeout);
+
+"558bec83ec34a1????????33c58945??8b45":
+__thiscall Entity_Laser* Entity_Player::FireBrimstone(Vector* direction, Entity* source, float damageMultiplier);
+
+"558bec83e4f881ec90000000a1????????33c4898424????????8b45??568b75":
+__thiscall Entity_Tear* Entity_Player::FireTear(Vector* Position, Vector Velocity, unsigned int flags, Entity* source, float DamageMultiplier);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec90000000a1????????33c58945??5657508d45??64a3????????8bd1":
+__thiscall Vector* Entity_Player::GetCostumeNullPos(Vector* buffer, std_string* NullFrameName, bool headScale, Vector* Direction);
+
+"558beca1????????83ec0c8b80":
+__thiscall Vector* Entity_Player::GetFlyingOffset(Vector* buffer);
+
+"558bec83e4f883ec18568bf1578b86????????83f814":
+__thiscall Vector* Entity_Player::GetMovementJoystick(Vector* buffer);
+
+"558bec83e4f883ec28568b75??578bf9":
+__thiscall Vector* Entity_Player::GetShootingJoystick(Vector* buffer);
+
+"558bec83e4f883ec188b45":
+__thiscall bool Entity_Player::IsPosInSpotLight(Vector* position);
+
+"558bec51568bf15780be????????00":
+__thiscall void Entity_Player::RenderGlow(Vector* position);
+
+"558bec568bf180be????????0074??e8????????84c075??8b86????????68????????68????????ff75??85c078??ffb6????????69c830010000038e????????e8????????5e5dc204006a0b":
+__thiscall void Entity_Player::RenderTop(Vector* position);
+
+"558becff81":
+__thiscall Entity* Entity_Player::ThrowBlueSpider(Vector* position, Vector* target);
+
+"558bec83e4f883ec1c8b45??535657f30f10008bfa":
+static __x86_64 Entity_Familiar* Entity_Player::ThrowFriendlyDip(int subtype, Vector* position, Entity_Player* player, Vector* target);
+
+"558bec568bf1e8????????8b45??8b4d":
+__thiscall void Entity_Player::QueueItem(ItemConfig_Item* item, int charge, int flags, int varData, int unk);
+
+"558bec83ec0853568bf1578975":
+__thiscall void Entity_Player::ReplaceCostumeSprite(ItemConfig_Item* item, std_string* spritePath, int spriteId);
+
+"558bec83e4f881ec74010000":
+__thiscall void Entity_Player::AnimatePickup(ANM2* anm2, bool hideShadow, std_string* animName);
+
+"558bec83e4f881ec14010000a1????????33c4898424????????5356":
+__thiscall int Entity_Player::GetBombFlags(BitSet128* buffer, bool isFetus);
+
+"558bec568b75??578bf985f678??8b87????????2b87????????c1f8043bf07c??68????????6a03e8????????83c4088b97????????33c98b87????????2bc2c1f804483bce5f1bc923ce3bc85e0f42c1c1e00403c25dc20400????????????8b81":
+__thiscall RNG* Entity_Player::GetCardRNG(int id);
+
+"558bec568b75??578bf985f678??8b87????????2b87????????c1f8043bf07c??68????????6a03e8????????83c4088b97????????33c98b87????????2bc2c1f804483bce5f1bc923ce3bc85e0f42c1c1e00403c25dc20400????????????558bec56":
+__thiscall RNG* Entity_Player::GetPillRNG(int id);
+
+"8bd1e8????????83f80174??83f80274??8b8a????????8b82????????8d04??3982":
+__thiscall bool Entity_Player::HasFullHearts();
+
+"558bec8b55??568bf13b96":
+__thiscall void Entity_Player::RemoveBlackHeart(int heart);
+
+"558bec8b45??568bf13b86":
+__thiscall bool Entity_Player::IsBlackHeart(int heart);
+
+"6a08c681????????01":
+__thiscall void Entity_Player::AddGoldenKey();
+
+"6a08c681????????00":
+__thiscall void Entity_Player::RemoveGoldenKey();
+
+"6a10c681????????01":
+__thiscall void Entity_Player::AddGoldenBomb();
+
+"6a10c681????????00":
+__thiscall void Entity_Player::RemoveGoldenBomb();
+
+"558bec83ec0856578bf980bf????????00":
+__thiscall bool Entity_Player::TryUseKey();
+
+"558bec83ec0c8b45??8d55??56578bf9c745??630000008d4d??c745??000000008bb7????????03c683f8638945??8d45??0f4ed18bcf56833a000f4dc28b008987????????e8????????6a20":
+__thiscall void Entity_Player::AddSoulCharge(int amount);
+
+"558bec83ec0c8b45??8d55??56578bf9c745??630000008d4d??c745??000000008bb7????????03c683f8638945??8d45??0f4ed18bcf56833a000f4dc28b008987????????e8????????6800010000":
+__thiscall void Entity_Player::AddBloodCharge(int amount);
+
+"83b9????????1275":
+__thiscall int Entity_Player::GetEffectiveSoulCharge();
+
+"83b9????????24":
+__thiscall int Entity_Player::GetEffectiveBloodCharge();
+
+"8bd1e8????????83f80174??83f80274??8b8a????????8b82????????8d04??c3":
+__thiscall int Entity_Player::GetEffectiveMaxHearts();
+
+"558bec83e4f85153568bf15783be????????11":
+__thiscall void Entity_Player::SetFullHearts();
+
+"558bec8bd183ba????????007e":
+__thiscall bool Entity_Player::IsBoneHeart(int heart);
+
+"8b81????????83f824":
+__thiscall bool Entity_Player::CanPickRedHearts();
+
+"558bec83e4f85153568bf18b0d????????5783b9????????020f8d":
+__thiscall bool Entity_Player::CanPickSoulHearts();
+
+"558bec83e4f851a1????????53565783b8????????028bf10f8d":
+__thiscall bool Entity_Player::CanPickBlackHearts();
+
+"a1????????83b8????????027d??6690":
+__thiscall bool Entity_Player::CanPickGoldenHearts();
+
+"558bec83e4f851a1????????568bf183b8????????02":
+__thiscall bool Entity_Player::CanPickBoneHearts();
+
+"a1????????568bf183b8????????027d??8b86":
+__thiscall bool Entity_Player::CanPickRottenHearts();
+
+"558bec8b45??0181????????8189????????00040000":
+__thiscall void Entity_Player::DonateLuck(int amount);
+
+"558bec516a01":
+__thiscall void Entity_Player::AddCard(int card);
+
+"558bec516a00ff75":
+__thiscall void Entity_Player::AddPill(int pill);
+
+"558bec8b45??85c078??83f80473??83bc??????????01":
+__thiscall int Entity_Player::GetCard(int slot);
+
+"558bec8b45??85c078??83f80473??83bc??????????00":
+__thiscall int Entity_Player::GetPill(int slot);
+
+"558bec83ec2453568bf157":
+__thiscall bool Entity_Player::FlushQueueItem();
+
+"566a00688b000000":
+__thiscall int Entity_Player::GetMaxTrinkets();
+
+"558bec83e4f883ec1c538bd956578b83":
+__thiscall void Entity_Player::ClearTemporaryEffects();
+
+"558bec80b9????????008b45":
+__thiscall bool Entity_Player::HasPlayerForm(int form);
+
+"558bec8b45??568bf185c0":
+__thiscall bool Entity_Player::CanAddCollectible(int collectible);
+
+"558bec83ec08538bc156":
+__thiscall bool Entity_Player::TryHoldTrinket(int trinket);
+
+"558bec6aff68????????64a1????????5081ecec060000":
+__thiscall void Entity_Player::RespawnFamiliars();
+
+"558bec8b45??83f810":
+__thiscall bool Entity_Player::HasWeaponType(int weaponType);
+
+"558bec83e4f85153568b75??578bf985f674":
+__thiscall void Entity_Player::TryRemoveCollectibleCostume(int collectible, bool unk);
+
+"558beca1????????8b55??56":
+__thiscall void Entity_Player::TryRemoveTrinketCostume(int trinket);
+
+"558bec8b55??5685d278??a1????????8bb0????????8b80????????2bc6c1f8023bd07d??8b04??5e8945??5de9????????33c05e8945??5de9????????????558bec83e4f8":
+__thiscall void Entity_Player::TryRemoveNullCostume(int nullItem);
+
+"5356578bf98bb7????????85f6":
+__thiscall void Entity_Player::RemoveSkinCostume();
+
+"538bd956578bbb????????8bb3":
+__thiscall void Entity_Player::ClearCostumes();
+
+"558bec8b55??56578bf9":
+__thiscall void Entity_Player::AddPlayerFormCostume(int form);
+
+"558bec83e4f8515356576a006848020000":
+__thiscall void Entity_Player::TriggerBookOfVirtues(int collectible, int charge);
+
+"558bec83e4f851568bf183be????????000f84":
+__thiscall void Entity_Player::SwapActiveItems();
+
+"558bec83ec08568bf1578b86????????83f831":
+__thiscall void Entity_Player::ResetItemState();
+
+"ffb1????????8b0d????????8d89":
+__thiscall bool Entity_Player::HasTimedItem();
+
+"558bec515356578bd9e8":
+__thiscall void Entity_Player::AddDollarBillEffect();
+
+"558bec83e4f883ec24568bf180be????????00":
+__thiscall void Entity_Player::AddCurseMistEffect();
+
+"558bec83e4f8515356578bf980bf????????000f84????????8b8f":
+__thiscall void Entity_Player::RemoveCurseMistEffect();
+
+"538b1d????????568bf1578bbe":
+__thiscall void Entity_Player::InitBabySkin();
+
+"558bec83ec0853568bf1578b3d":
+__thiscall void Entity_Player::UpdateCanShoot();
+
+"568bf18b86????????83f8087d":
+__thiscall void Entity_Player::AddDeadEyeCharge();
+
+"558bec83e4f883ec1056576a006888010000":
+__thiscall int Entity_Player::GetZodiacEffect();
+
+"558bec516a00e8":
+__thiscall float Entity_Player::GetGreedDonationBreakChance();
+
+"568bf16871020000":
+__thiscall bool Entity_Player::IsFullSpriteRendering();
+
+"558bec83e4f083ec58a1????????33c4894424??8b45":
+__thiscall void Entity_Player::UsePoopSpell(int spell);
+
+"8b0d????????6a198d89":
+__thiscall int Entity_Player::GetMaxPoopMana();
+
+"558bec83ec0c568b75??578bf98b0d":
+__thiscall void Entity_Player::AddPoopMana(int amount);
+
+"558bec8b45??83f806":
+__thiscall int Entity_Player::GetPoopSpell(int slot);
+
+"8b81????????85c075??8b81????????85c075":
+__thiscall Entity* Entity_Player::GetNPCTarget();
+
+"8bc18b88????????85c975??8b88":
+__thiscall Entity* Entity_Player::GetActiveWeaponEntity();
+
+"8b81????????85c074??8b90????????83faff74??3b91????????7c":
+__thiscall Entity_Player* Entity_Player::GetMainTwin();
+
+"56578bf98b77??85f674??837e??1072":
+__thiscall bool Entity_Player::CanPickupItem();
+
+"8b81????????85c074??8378??10":
+__thiscall bool Entity_Player::IsHoldingItem();
+
+"568bf1e8????????84c074??83be????????00":
+__thiscall bool Entity_Player::IsHeldItemVisible();
+
+"558bec83e4f851538bd9565783bb????????000f85":
+__thiscall bool Entity_Player::TryHoldEntity(Entity* entity);
+
+"558bec8b45??8d91????????3b02":
+__thiscall void Entity_Player::SetShootingCooldown(int cooldown);
+
+"558bec8b81????????8d91????????3b45??8d4d??0f4dca8b0189025dc204008b81????????c3??????????????????558bec8b45":
+__thiscall void Entity_Player::SetMinDamageCooldown(int cooldown);
+
+"80b9????????0074??83b9????????007f??b001c332c0c3????????????????a1":
+__thiscall bool Entity_Player::AreControlsEnabled();
+
+"558bec6aff68????????64a1????????5083ec18535657a1????????33c5508d45??64a3????????8bd98b0d":
+__thiscall void Entity_Player::AnimateCollectible(int collectible, const char* animName, const char* spriteAnimName);
+
+"558bec83e4f883ec14a1????????8b55":
+__thiscall void Entity_Player::AnimateTrinket(int trinket, const char* animName, const char* spriteAnimName);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec48a1????????33c58945??5657508d45??64a3????????8bf9897d??8b4b??8db7":
+__thiscall void Entity_Player::AnimateCard(int card, const char* animName);
+
+"558bec83e4f851538bd956578dbb":
+__thiscall void Entity_Player::AnimatePill(int pill, const char* animName);
+
+"5168????????e8????????59c3??????51":
+__thiscall void Entity_Player::AnimateTrapdoor();
+
+"5168????????e8????????59c3??????558bec51538a5d??56":
+__thiscall void Entity_Player::AnimateLightTravel();
+
+"5168????????e8????????59c3??????558bec51538a5d??ba":
+__thiscall void Entity_Player::AnimateAppear();
+
+"558bec51538a5d??ba":
+__thiscall void Entity_Player::AnimateTeleport(bool up);
+
+"558bec83ec08568b35????????578bf9c745??0c010000":
+__thiscall void Entity_Player::AnimateHappy();
+
+"558bec83ec08568b35????????578bf9c745??0b010000":
+__thiscall void Entity_Player::AnimateSad();
+
+"558bec51538a5d08568bf184db":
+__thiscall void Entity_Player::AnimatePitfallIn(bool force);
+
+"5168????????c781????????03000000":
+__thiscall void Entity_Player::AnimatePitfallOut();
+
+"558bec5156578bf98d8f":
+__thiscall void Entity_Player::PlayExtraAnimation(const char* animName);
+
+"558bec8b55??8bc256578bf18d78??908a084084c975??2bc78d8e":
+__thiscall void Entity_Player::QueueExtraAnimation(const char* animName);
+
+"558bec518b81????????85c0":
+__thiscall float Entity_Player::GetFireDelay();
+
+"558bec8b81????????85c0":
+__thiscall void Entity_Player::SetFireDelay(float delay);
+
+struct Entity_Player depends (QueueItemData, Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc, GameStatePlayer, EntityPtr, BitSet128, EntityRef) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }
 	inline int* GetEternalHearts() {return &this->_eternalHearts; }
@@ -665,7 +989,9 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 }} 
 
     __vtable {
-		skip; // Free
+		override
+		"558bec568bf1e8????????f645??0174??68a02e0000":
+		void Free(unsigned int flags);
 		
         override
         "558bec6aff68????????64a1????????5081ec98010000":
@@ -678,8 +1004,15 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
         void Update();
 		
 		skip; // Interpolate
-		skip; // Render
-		skip; // RenderShadowLayer
+		
+		override
+		"558bec6aff68????????64a1????????5081ecdc010000":
+		void Render(Vector* offset);
+		
+		override
+		"558bec83e4f851566a0068b1010000":
+		bool RenderShadowLayer(Vector* offset);
+		
 		skip; // PostRender
 		
         override
@@ -694,8 +1027,15 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 		skip; // CanOverwrite
 		skip; // SetColor
 		skip; // SetCollisionDamage
-		skip; // ClearReferences
-		skip; // CanShutDoors
+		
+		override
+		"568bf1e8????????6a008bcee8????????5ec3":
+		void ClearReferences();
+		
+		override
+		"a1????????83b8????????020f9dc0":
+		bool CanShutDoors();
+		
 		skip; // IsBoss
 		skip; // IsValidTarget
 		
@@ -704,7 +1044,10 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 		bool TryThrow(const EntityRef& Source, Vector* pos, float unk);
 		
 		skip; // GetForwardVector
-		skip; // HandleCollision
+		
+		override
+		"558bec83e4f881ecc8000000a1????????33c4898424????????5657ff75":
+		bool HandleCollision(Entity* Collider, bool Low);
 		
 		override
 		"558bec0f1081":
@@ -748,6 +1091,8 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	Weapon* _weapon[5] : 0x13d8;
 	Entity_Effect* _markedTarget : 0x1408;
 	Entity* _heldEntity : 0x140c;
+	EntityPtr _trinityShield : 0x1424;
+	EntityPtr _spearOfDestiny : 0x1428;
 	Entity_Laser* _megaBlastLaser : 0x1454;
 	int _rUaWizardTimer : 0x1458;
 	float _maxfiredelay : 0x145c;
@@ -757,7 +1102,10 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	float _tearfallspeed : 0x1474;
 	float _tearfallaccel : 0x1478;
 	float _tearrange : 0x147c;
+	ColorMod _tearColor : 0x1490;
+	BitSet128 _tearFlags : 0x1480;
 	ColorMod _laserColor : 0x14bc;
+	Vector _spriteScale : 0x14e8;
 	TemporaryEffects _temporaryeffects : 0x1500;
 	int _speedModifier : 0x1518, _fireDelayModifier : 0x151c, _damageModifier : 0x1520, _tearRangeModifier : 0x1524, _shotSpeedModifier : 0x1528, _luckModifier : 0x152c;
 	int _donateLuck : 0x1530;
@@ -778,10 +1126,18 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	int _playerIndex : 0x1610;
 	int _moveDirection : 0x1618;
 	int _headDirection: 0x161c;
+	Vector _aimDirection : 0x1624;
+	Vector _lastDirection : 0x1630;
+	Vector _movementInput : 0x1638;
+	Vector _tearsOffset : 0x1640;
+	Vector _recentMovementVector : 0x1648;
+	Vector _velocityBeforeUpdate : 0x1654;
+	EntityRef _lastDamageSource : 0x1670;
 	uint32_t _trinketsID[2] : 0x16b0;
 	std_vector_int _collectibleCounts: 0x16b8;
 	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1738;
 	std_vector_int _voidedCollectibles : 0x1744;
+	QueueItemData _queuedItem : 0x17B4;
 	uint32_t _actionHoldDrop : 0x17b0;
 	int _playerForms[15] : 0x17cc;
 	bool _postLevelInitFinished : 0x1810;

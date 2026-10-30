@@ -3,6 +3,7 @@
 #include "IsaacRepentance.h"
 #include "XMLData.h"
 #include "LuaCore.h"
+#include "../LuaClasses.h"
 #include "HookSystem.h"
 #include "ASMPatches.h"
 #include "EntityPlus.h"
@@ -43,7 +44,7 @@ float RunEvaluateStatCallback(Entity_Player* player, const float currentStatValu
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push((int)evalStatStage)
-			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.pushClassPtr<LuaEntityPlayer>(player)
 			.push((int)evalStatStage)
 			.push(currentStatValue)
 			.call(1);

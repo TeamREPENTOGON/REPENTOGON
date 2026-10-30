@@ -125,9 +125,6 @@ static cleanup int Room::GetItemPool(uint32_t seed<ecx>, RoomDescriptor* roomDes
 "a1????????83b8????????16b802000000":
 __thiscall uint32_t Room::GetBrokenWatchState();
 
-"558bec83e4f883ec0c538bd9568b75??578b43??8148??00400000":
-__thiscall void Room::MamaMegaExplosion(Vector * Position);
-
 "558bec83e4f883ec1c5356578bf98b47":
 __thiscall LRoomAreaDesc * Room::GetLRoomAreaDesc(LRoomAreaDesc * buffer);
 
@@ -151,6 +148,132 @@ __thiscall bool Room::GetBossThematicItem(int* retCollectibleType, int* retTrink
 
 "8b41??8b40??c1e80d":
 __thiscall bool Room::HasCurseMist();
+
+"558bec83e4f883ec4ca1????????33c4894424??8b45":
+__thiscall bool Room::CheckLine(Vector* pos1, Vector* pos2, int linecheckMode, int linePathThreshold, bool ignoreWalls, bool ignoreCrushable, Vector* returnPos);
+
+"558bec83ec38f30f1005":
+__thiscall Vector * Room::FindFreePickupSpawnPosition(Vector* buffer, Vector* pos, float initialStep, bool avoidActiveEntities, bool allowPits, bool unk);
+
+"558bec83e4f8f30f100d????????83ec14":
+__thiscall Vector * Room::FindFreeTilePosition(Vector* buffer, Vector* pos, float distanceThreshold);
+
+"558beca1????????8b88????????8b41":
+__thiscall Vector * Room::GetCenterPos(Vector * buffer);
+
+"558bec8b45??f30f1015":
+__thiscall int Room::GetClampedGridIndex(Vector* position);
+
+"558bec83e4f883ec34568bf10f28c3":
+__thiscall Vector * Room::GetClampedPosition (Vector* ret, Vector* pos, float topLeftXMargin<xmm3>, float topLeftYMargin, float bottomRightXMargin, float bottomRightYMargin);
+
+"558bec8b45??83f80777":
+__thiscall Vector * Room::GetDoorSlotPosition(Vector * buffer, int slot);
+
+"558becf30f1015????????f30f1045":
+__thiscall int Room::GetGridCollisionAtPos(Vector pos);
+
+"558bec8b55??f30f100d????????f30f1015????????56f30f1002f30f5cc1f30f5ec1f30f58c2f30f2cf085f678??8b41??3bf07d??f30f1042??f30f5c05????????f30f5ec1f30f58c2f30f2cd085d278??3b51??7d??0fafc203c63dbf01000077??8b44":
+__thiscall GridEntity* Room::GetGridEntityFromPos(Vector* pos);
+
+"558becf30f100d????????568bf1f30f1015":
+__thiscall int Room::GetGridIndex(Vector * pos);
+
+"558bec8b55??f30f100d????????f30f1015????????56f30f1002f30f5cc1f30f5ec1f30f58c2f30f2cf085f678??8b41??3bf07d??f30f1042??f30f5c05????????f30f5ec1f30f58c2f30f2cd085d278??3b51??7d??0fafc203c63dbf01000077??8b84":
+__thiscall int Room::GetGridPathFromPos(Vector* pos);
+
+"558bec8b45??99":
+__thiscall Vector* Room::GetGridPosition(Vector* buffer, int gridIdx);
+
+"558bec83e4f883ec3cf30f1015":
+__thiscall Vector* Room::GetLaserTarget(Vector* buffer, Vector* pos, Vector* dir);
+
+"558bec83e4f883ec4856578bf98b47":
+__thiscall Vector* Room::GetRandomPosition(Vector* buffer, float margin);
+
+"558bec83e4f88b41??83ec0c":
+__thiscall bool Room::IsPositionInRoom(Vector* pos, float margin);
+
+"558bec83e4f883ec0c538bd9568b75??578b43??8148??00400000":
+__thiscall void Room::MamaMegaExplosion(Vector* position, Entity_Player* player);
+
+"558bec83e4f883ec10f30f1045":
+__thiscall Vector* Room::ScreenWrapPosition (Vector* ret, Vector* pos, float topLeftXMargin<xmm3>, float topLeftYMargin, float bottomRightXMargin, float bottomRightYMargin);
+
+"558bec83ec08f30f100d":
+__thiscall Vector* Room::WorldToScreenPosition(Vector* buffer, Vector pos);
+
+"558bec83e4f8518b45??53568bf157":
+__thiscall bool Room::TryMakeBridge(GridEntity_Pit* pit, GridEntity_Rock* rock);
+
+"558bec83ec28f30f100d????????8bc1":
+__thiscall bool Room::DamageGrid(unsigned int index, float damage);
+
+"558bec8b45??3dbf01000077??8b4c":
+__thiscall bool Room::DamageGrid(unsigned int index, float damage, EntityRef* source);
+
+"558bec83ec2cf30f100d????????8bc1":
+__thiscall bool Room::DestroyGrid(unsigned int index, int damage, bool immediate);
+
+"558bec8bc18b4d??81f9bf01000077??8b4c????85c974??807d??00":
+__thiscall bool Room::DestroyGrid(unsigned int index, int damage, bool immediate, EntityRef* source);
+
+"8b0d????????6affffb1????????e8????????8b48??a1????????3b88????????0f94c0":
+static cleanup bool Room::IsCurrentRoomLastBoss();
+
+"8b0d????????83b9????????018b01":
+static cleanup bool Room::IsMirrorWorld();
+
+"558bec83e4f883ec2c535657":
+__thiscall void Room::PlayMusic();
+
+"558bec6aff68????????64a1????????50535657a1????????33c5508d45??64a3????????8bd98b45":
+__thiscall void Room::RemoveDoor(int slot);
+
+"558bec83e4f88b55??83ec08":
+__thiscall void Room::RemoveGridEntity(int gridIndex, int pathTrail, bool keepDecoration);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecb0020000a1????????33c58945??5657508d45??64a3????????8bf9":
+__thiscall void Room::Render();
+
+"558bec6aff68????????64a1????????5083ec6c535657a1????????33c5508d45??64a3????????8bd98b43":
+__thiscall void Room::RespawnEnemies();
+
+"558bec83ec24a1????????33c58945??f30f7e05":
+__thiscall void Room::ShopReshuffle(bool keepCollectibleIdx, bool reselectSaleItem);
+
+"558bec6aff68????????64a1????????5081ece0000000a1????????33c58945??5657508d45??64a3????????8bf989bd":
+__thiscall void Room::SpawnClearAward();
+
+"558bec6aff68????????64a1????????5083ec14535657a1????????33c5508d45??64a3????????894d??8a5d":
+__thiscall bool Room::TrySpawnBlueWombDoor(bool firstTime, bool ignoreTime, bool force);
+
+"558bec6aff68????????64a1????????5083ec1c535657a1????????33c5508d45??64a3????????894d??807d??00":
+__thiscall bool Room::TrySpawnBossRushDoor(bool ignoreTime, bool force);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec68a1????????33c58945??5657508d45??64a3????????8bf18975":
+__thiscall bool Room::TrySpawnDevilRoomDoor(bool animate, bool force);
+
+"558bec51568b35????????578bf98bce":
+__thiscall bool Room::TrySpawnMegaSatanRoomDoor(bool force);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec83ec40807b??00":
+__thiscall bool Room::TrySpawnSecretExit(bool animate, bool force);
+
+"558bec6aff68????????64a1????????5083ec08535657a1????????33c5508d45??64a3????????8bf9807d??00":
+__thiscall bool Room::TrySpawnSecretShop(bool force);
+
+"558bec6aff68????????64a1????????5083ec08535657a1????????33c5508d45??64a3????????894d??807d??00":
+__thiscall bool Room::TrySpawnTheVoidDoor(bool force);
+
+"558bec83e4f081ecc80000000f280d":
+__thiscall void Room::TurnGold();
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecc00a0000":
+__thiscall void Room::Update();
+
+"558bec83e4f883ec2c538bd95657895c24??8b43":
+__thiscall int Room::GetRandomTileIndex(unsigned int seed);
 
 "558bec83e4f883ec2453568bf157897424":
 __thiscall void Room::RecomputeRoomBounds(bool init);
@@ -184,18 +307,21 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, 
 	uint32_t _roomType : 0x8;
 	uint32_t _gridWidth : 0xC;
 	uint32_t _gridHeight : 0x10;
+	Vector _topLeftPos : 0x14;
+	Vector _bottomRightPos : 0x1c;
     GridEntity* _gridEntities[0x1BF] : 0x24;
     GridEntity* _doors[8] : 0x724;
     uint32_t _doorGridPositions[8] : 0x744;
 	int _gridPaths[456] : 0x76c;
 	int _roomClearDelay : 0x11ec;
     Camera* _Camera : 0x11f8;
-	uint32_t _bossId : 0x1bb0;
-	Backdrop _backdrop : 0x1bc8;
+	Vector _renderSurfaceTopLeft : 0x11fc;
 	Vector _renderScrollOffset : 0x1204;
     bool _redHeartDamage : 0x120c;
     EntityList _entityList : 0x1218;
 	FXLayers _fxLayers: 0x1618;
+	uint32_t _bossId : 0x1bb0;
+	Backdrop _backdrop : 0x1bc8;
 	deque_ShopRestockDesc _shopItemDeque : 0x7070;
 	int _slowdownDuration : 0x7220;
 	int _greedWaveTimer : 0x723c;

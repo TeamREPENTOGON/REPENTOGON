@@ -4,9 +4,6 @@ __thiscall void Entity_Pickup::Morph(int EntityType,int Variant,int SubType,bool
 "558bec6aff68????????64a1????????5083ec54535657a1????????33c5508d45??64a3????????8bd9":
 __thiscall void Entity_Pickup::TriggerShopPurchase(Entity_Player* player, int spentMoney);
 
-"558bec83e4c083ec3453568bf15780be????????000f84????????80be????????000f84????????83be????????00":
-__thiscall void Entity_Pickup::Render(Vector *offset);
-
 "558bec83e4f883ec145356578bf9837f??640f85????????8b5d":
 __thiscall void Entity_Pickup::SetAlternatePedestal(int pedestalType);
 
@@ -18,9 +15,6 @@ __thiscall void Entity_Pickup::SetForceBlind(bool setBlind);
 
 "558bec83e4f883ec145356576a006a00":
 __thiscall int Entity_Pickup::SetNewOptionsPickupIndex();
-
-"558bec6aff68????????64a1????????5081eca8010000a1????????33c58945??5657508d45??64a3????????8bf1":
-__thiscall bool Entity_Pickup::HandleCollision(Entity* collider, bool low);
 
 "558bec83ec1456578bf9837f??64":
 __thiscall bool Entity_Pickup::TryInitOptionCycle(int numCycle);
@@ -87,6 +81,18 @@ __thiscall void Entity_Pickup::ReloadGraphics(bool ignoreBlind);
 "8b0d(????????)565741":
 reference uint32_t s_EntityPickup_IgnoreModifiers;
 
+"558bec8b45??83ec1053":
+__thiscall void Entity_Pickup::SetPrice(int price);
+
+"558bec518bd1":
+__thiscall void Entity_Pickup::PlayDropSound();
+
+"558bec83ec145356578bf98b47":
+__thiscall void Entity_Pickup::PlayPickupSound();
+
+"8379??1456":
+__thiscall void Entity_Pickup::AppearFast();
+
 struct Entity_Pickup depends (ANM2, KAGE_SmartPointer_EntitySaveState) : public Entity { {{
 	inline bool IsBlind() { return this->_isForceBlind; }
 	inline int* GetDropDelay() { return &this->_dropDelay; }
@@ -98,10 +104,13 @@ struct Entity_Pickup depends (ANM2, KAGE_SmartPointer_EntitySaveState) : public 
 }} 
 
 	__vtable {
-		skip; // Free
+		override
+		"558bec568bf1e8????????f645??0174??68f0060000":
+		void Free(unsigned int flags);
 
+		override
 		"558bec6aff68????????64a1????????5083ec74a1????????33c58945??5657508d45??64a3????????8bf9897d??8b45":
-		void Init(uint32_t Type, int Variant, int Subtype, uint32_t Seed);
+		void Init(unsigned int Type, unsigned int Variant, unsigned int Subtype, unsigned int Seed);
 
 		skip; // PreUpdate
 		
@@ -110,10 +119,18 @@ struct Entity_Pickup depends (ANM2, KAGE_SmartPointer_EntitySaveState) : public 
 		void Update();
 		
 		skip; // Interpolate
-		skip; // Render
+		
+		override
+		"558bec83e4c083ec3453568bf15780be????????000f84????????80be????????000f84????????83be????????00":
+		void Render(Vector* offset);
+		
 		skip; // RenderShadowLayer
 		skip; // PostRender
-		skip; // TakeDamage
+		
+		override
+		"558bec83e4f883ec6ca1????????33c4894424??f30f104d":
+		bool TakeDamage(float Damage, unsigned long long DamageFlags, EntityRef *Source, int DamageCountdown);
+		
 		skip; // Kill
 		
         override
@@ -126,13 +143,25 @@ struct Entity_Pickup depends (ANM2, KAGE_SmartPointer_EntitySaveState) : public 
 		skip; // CanOverwrite
 		skip; // SetColor
 		skip; // SetCollisionDamage
-		skip; // ClearReferences
+		
+		override
+		"558bec51568bf18b8e":
+		void ClearReferences();
+		
 		skip; // CanShutDoors
 		skip; // IsBoss
 		skip; // IsValidTarget
-		skip; // TryThrow
+		
+		override
+		"558bec83e4f88bd1":
+		bool TryThrow(const EntityRef& Source, Vector* dir, float force);
+		
 		skip; // GetForwardVector
-		skip; // HandleCollision
+		
+		override
+		"558bec6aff68????????64a1????????5081eca8010000a1????????33c58945??5657508d45??64a3????????8bf1":
+		bool HandleCollision(Entity* Collider, bool Low);
+		
 		skip; // ResetColor
 		skip; // LoadEntityConfig	
 	};
