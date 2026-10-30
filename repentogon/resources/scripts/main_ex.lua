@@ -15,7 +15,32 @@ collectgarbage("setstepmul", 200)
 jit.opt.start('maxtrace=20000', 'maxmcode=32768')
 local builtinIpairs = ipairs
 local string_find, string_gmatch, string_gsub, string_match = string.find, string.gmatch, string.gsub, string.match
+local table_move = table.move
 require("compat53.init")
+
+-- compat53's table.move doesn't properly follow 5.3.3 behavior, so mods written against 5.3.3 fail if the table position is negative.
+-- LuaJIT's builtin one works, but doesn't traverse metatables. Use compat53's for metatables, but LuaJIT's for everything else.
+do
+	local gmt = type(debug) == "table" and debug.getmetatable or getmetatable
+	local function hasMetatable(t)
+		return type(t) ~= "string" and gmt(t) ~= nil
+	end
+	table.move = function(a1, f, e, t, a2)
+		if a2 == nil then a2 = a1 end
+		if not hasMetatable(a1) and not hasMetatable(a2) then
+			return table_move(a1, f, e, t, a2)
+		end
+		if e >= f then
+			local d = t - f
+			if t > e or t <= f or a2 ~= a1 then
+				for i = f, e do a2[i + d] = a1[i] end
+			else
+				for i = e, f, -1 do a2[i + d] = a1[i] end
+			end
+		end
+		return a2
+	end
+end
 
 -- Use the original LuaJIT string.x functions unless a pattern contains NUL, at which point use compat53's.
 -- We're doing this because compat53's doesn't trace as efficiently, it rewrites NUL to %z which takes time!
