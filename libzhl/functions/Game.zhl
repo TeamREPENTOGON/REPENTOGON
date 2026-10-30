@@ -81,7 +81,7 @@ __thiscall bool Game::GetDebugFlag(unsigned int flag);
 __thiscall void Game::BombDamage(Vector* pos, float damage, float radius, bool lineCheck, Entity* source, BitSet128 tearFlags, uint64_t damageFlags, bool damageSource);
 
 "558bec83e4f081ecf8000000a1":
-__thiscall void Game::BombExplosionEffects(Vector* pos, float damage, BitSet128 tearFlags, ColorMod* Color, Entity* source, float radiusMult, bool lineCheck,  bool damageSource, uint64_t damageFlags);
+__thiscall void Game::BombExplosionEffects(Vector* pos, float damage, BitSet128 tearFlags, ColorMod* Color, Entity* source, float radiusMult, bool lineCheck, uint64_t damageFlags, bool damageSource);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecd8000000a1????????33c58945??5657508d45??64a3????????894d":
 __thiscall void Game::BombTearflagEffects(Vector* pos, float radius, BitSet128 tearFlags, Entity* source, float radiusMult);
