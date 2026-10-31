@@ -57,13 +57,16 @@ else ()
   message (FATAL_ERROR "Unknown system configuration, CMAKE_SYSTEM_NAME = ${CMAKE_SYSTEM_NAME}, CMAKE_HOST_SYSTEM_NAME = ${CMAKE_HOST_SYSTEM_NAME}")
 endif ()
 
-function (clang_cl_library libname kind)
+function (clang_cl_library libname kind export)
+  # message(STATUS "Adding clang-cl library with objects: ${ARGN}")
+    add_library("${libname}_config" INTERFACE)
     if (CLANG_CL_XCC EQUAL 1)
 	add_library("${libname}_base" OBJECT ${ARGN})
-	target_compile_options("${libname}_base" PRIVATE "/MD")
+	target_compile_definitions("${libname}_base" PUBLIC "${export}")
+	target_link_libraries("${libname}_base" PUBLIC "${libname}_config")
 	set (ASM_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${libname}.asm")
 	set (ASM_OUTPUT_OBJ "${ASM_OUTPUT}.obj")
-	set (OBJ_FILE_LIST "${CMAKE_CURRENT_BINARY_DIR}/obj_list_$<CONFIG>.txt")
+	set (OBJ_FILE_LIST "${CMAKE_CURRENT_BINARY_DIR}/obj_list_${libname}_$<CONFIG>.txt")
 	file (GENERATE OUTPUT "${OBJ_FILE_LIST}" CONTENT "$<JOIN:$<TARGET_OBJECTS:${libname}_base>,\n>")
 	add_custom_command(
 	    OUTPUT
@@ -76,11 +79,16 @@ function (clang_cl_library libname kind)
 		    --file-list="${OBJ_FILE_LIST}"
 	    COMMAND
 		    nasm -fwin32 -o "${ASM_OUTPUT_OBJ}" "${ASM_OUTPUT}"
+	    DEPENDS
+		$<TARGET_OBJECTS:${libname}_base>
+		${OBJ_FILE_LIST}
+		super_asm_generator
 	)
 	add_library ("${libname}" "${kind}" "${ASM_OUTPUT_OBJ}")
-	target_link_libraries ("${libname}" "${libname}_base")
+	target_link_libraries ("${libname}" PRIVATE "${libname}_base")
     else ()
 	add_library ("${libname}" "${kind}" ${ARGN})
+	target_link_libraries("${libname}" PUBLIC "${libname}_config")
     endif ()
 endfunction ()
 
@@ -205,13 +213,15 @@ FILE(GLOB ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/*.cpp ${CMAKE_SOURCE_DIR}/libzhl/*.
 LIST(REMOVE_ITEM ZHL_SRC "${ZHLGEN_LIB_FILE}")
 LIST(APPEND ZHL_SRC "${ZHL_ISAAC_REPENTANCE_IMPL}" ${CMAKE_SOURCE_DIR}/libs/glad/src/glad.c)
 if (CLANG_CL_XCC EQUAL 1)
+    message (STATUS "Appending some stuff")
     LIST (APPEND ZHL_SRC "${ZHL_ISAAC_REPENTANCE_IMPL}" "${ZHL_ISAAC_REPENTANCE_ASM_OBJ}")
 endif ()
 add_compile_definitions(GLAD_GLAPI_EXPORT GLAD_GLAPI_EXPORT_BUILD)
-add_library(libzhl SHARED ${ZHL_SRC})
-target_compile_options(libzhl PUBLIC "/MD" "/wd4251" "/wd4996")
-target_compile_options(libzhl PRIVATE "/EHs")
-target_compile_definitions(libzhl PRIVATE CMAKE_ZHL_VERSION="${CMAKE_ZHL_VERSION}")
+clang_cl_library(libzhl SHARED libzhl_EXPORTS ${ZHL_SRC})
+target_sources(libzhl PRIVATE "${ZHL_ISAAC_REPENTANCE_ASM_OBJ}")
+target_compile_options(libzhl_config INTERFACE "/MD" "/wd4251" "/wd4996")
+target_compile_options(libzhl_config INTERFACE "/EHs")
+target_compile_definitions(libzhl_config INTERFACE CMAKE_ZHL_VERSION="${CMAKE_ZHL_VERSION}")
 
 add_custom_command(TARGET libzhl POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/libzhl/hooks.json" "$<TARGET_FILE_DIR:zhlparser>")
 # wd4251 ignore warning C4251: 'type' : class 'type1' needs to have dll-interface to be used by clients of class 'type2'
@@ -300,13 +310,11 @@ foreach(_source IN ITEMS ${REPENTOGON_SRC})
     source_group("${_group_path}" FILES "${_source}")
 endforeach()
 # add_library(zhlREPENTOGON SHARED ${REPENTOGON_SRC} )
-clang_cl_library(zhlREPENTOGON SHARED ${REPENTOGON_SRC})
-if (CLANG_CL_XCC EQUAL 1)
-    target_compile_definitions(zhlREPENTOGON_base PUBLIC IMGUI_USE_WCHAR32)
-endif ()
-target_compile_options(zhlREPENTOGON PUBLIC "/MD" "/MP" "/wd4251" "/wd4996")
-target_compile_options(zhlREPENTOGON PRIVATE "/EHs")
-target_compile_definitions(zhlREPENTOGON PRIVATE NOMINMAX CMAKE_REPENTOGON_VERSION="${CMAKE_REPENTOGON_VERSION}")
+clang_cl_library(zhlREPENTOGON SHARED zhlREPENTOGON_EXPORTS ${REPENTOGON_SRC})
+target_compile_definitions(zhlREPENTOGON_config INTERFACE IMGUI_USE_WCHAR32)
+target_compile_options(zhlREPENTOGON_config INTERFACE "/MD" "/MP" "/wd4251" "/wd4996")
+target_compile_options(zhlREPENTOGON_config INTERFACE "/EHs")
+target_compile_definitions(zhlREPENTOGON_config INTERFACE NOMINMAX CMAKE_REPENTOGON_VERSION="${CMAKE_REPENTOGON_VERSION}")
 
 # Delirium
 FILE(GLOB_RECURSE DELIRIUM_SRC ${CMAKE_SOURCE_DIR}/delirium/*.*)
@@ -354,8 +362,8 @@ add_dependencies(zhlREPENTOGON libzhl)
 add_library(stb SHARED stbParser/stbParser.cpp)
 add_executable(stbc stbParser/stbParserc.cpp)
 target_link_libraries(stbc stb)
-target_link_libraries(zhlREPENTOGON Lua5.3.3r libzhl freetype "Zydis" imgui ${OPENGL_LIBRARIES})
-target_link_libraries(libzhl Lua5.3.3r "Zydis" dbghelp ${IMAGEHLP_NAME})
+target_link_libraries(zhlREPENTOGON PRIVATE Lua5.3.3r libzhl freetype "Zydis" imgui ${OPENGL_LIBRARIES})
+target_link_libraries(libzhl PRIVATE Lua5.3.3r "Zydis" dbghelp ${IMAGEHLP_NAME})
 
 # Put libraries into folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
