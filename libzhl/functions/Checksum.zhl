@@ -4,5 +4,23 @@ static __x86_64 uint32_t Checksum::Generate(int unused, KAGE_Filesys_FileStream*
 //"558bec8b41??53":
 //__thiscall void Checksum::Add(char* data, int length);
 
+// There are two valid values for _mode: 0 or 1
+// Only mode 0 uses _unk1 and _unk2
+// Mode 1 seems to be the one typically used by the game, though?
+// Could be a different algorithm. Mode 0 seems to have something to do with 4-byte alignment.
 struct Checksum {
+	{{
+		// Matches the initialization performed in Checksum::Generate.
+		Checksum() {
+			this->_unk1 = 0;
+			this->_unk2 = 0;
+			this->_checksum = 0xfedcba76;
+			this->_mode = 1;
+		}
+	}}
+
+	uint32_t _unk1 : 0x0;
+	uint8_t _unk2 : 0x4;  // Byte counter? Goes from 0 to 3
+	uint32_t _checksum : 0x8;
+	int _mode : 0xc;
 } : 0x10;

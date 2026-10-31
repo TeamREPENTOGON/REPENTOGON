@@ -25,12 +25,22 @@ __thiscall bool GameState::write_room(const GameStateRoomConfig* configState, co
 "558bec6aff68????????64a1????????5083ec40535657a1????????33c5508d45??64a3????????8965":
 __thiscall bool GameState::read_room(GameStateRoomConfig* configState, RoomDescriptor* desc, GameStateIO* io);
 
-struct GameState depends (RoomDescriptor, GameStateRoomConfig, GameStatePlayer, GameStateItemPool, GameStateBossPool, Seeds, BackwardsStageDesc) {
+struct GameState depends (RoomDescriptor, GameStateRoomConfig, GameStatePlayer, GameStateItemPool, GameStateBossPool, Seeds, BackwardsStageDesc, Vector) {
     uint32_t _roomCount : 0x19c;
     RoomDescriptor _rooms[527] : 0x1a0;
     GameStateRoomConfig _roomConfigs[527] : 0x17c68;
     int _roomIdx : 0x19d1c;
     int _lastRoomIdx : 0x19d20;
+    uint8_t _dimension : 0x19d24;
+    uint8_t _lastDimension : 0x19d25;
+    Vector _dungeonReturnPos : 0x19d28;
+    int _dungeonRoomIdx : 0x19d30;
+    int _backupLastDoorSlot : 0x19d34;
+    int _backupRoomIdx : 0x19d38;
+    int _backupDimension : 0x19d3c;
+    int _backupLastRoomIdx : 0x19d40;
+    int _backupLastDimension : 0x19d44;
+    int _enterDoor : 0x19d48;
     uint32_t _playerCount : 0x19d70;
     GameStatePlayer _players[8] : 0x19d74;
     GameStatePlayer _esauJrStates[4] : 0x1cb54;

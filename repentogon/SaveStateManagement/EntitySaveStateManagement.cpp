@@ -2652,8 +2652,6 @@ HOOK_METHOD(GameState, Clear, () -> void)
         ESSM::Utils::ResetBackwardsStage(backwardsStage);
     }
 
-	VirtualGridRooms::ClearGameState(*this);
-
     // player save states are handled by GameStatePlayer::Init
     super();
 }
