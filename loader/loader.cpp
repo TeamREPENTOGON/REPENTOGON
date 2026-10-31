@@ -251,8 +251,22 @@ void DumpThreadsContext(FILE* logFile) {
 	} while (Thread32Next(snapshot, &threadEntry));
 }
 
+static volatile int __trap = 1;
+
 extern "C" {
 	__declspec(dllexport) int Launch(bool initConsole) {
+		int numArgs = 0;
+		LPWSTR* args = CommandLineToArgvW(GetCommandLineW(), &numArgs);
+		if (args) {
+			for (int i = 0; i < numArgs; ++i) {
+				if (!wcscmp(args[i], L"--trap-zhl-loader")) {
+					while (__trap)
+						;
+					break;
+				}
+			}
+		}
+
 		FILE* f = fopen("repentogon.log", "a");
 		if (!f) {
 			return -1;

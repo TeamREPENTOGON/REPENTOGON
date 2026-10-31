@@ -92,10 +92,23 @@ void HookMain(void** poisonPtr, char* poisonValue) {
 	ZHL::DumpMemory(addr, 0x20, false, true);
 }
 
+static volatile int __trap = 1;
+
 extern "C" {
 	__declspec(dllexport) int InitZHL(void (__stdcall*loaderFinishPtr)(),
 		void** poisonPtr, char* poisonValue)
 	{
+		int numArgs = 0;
+		LPWSTR* args = CommandLineToArgvW(GetCommandLineW(), &numArgs);
+		if (args) {
+			for (int i = 0; i < numArgs; ++i) {
+				if (!wcscmp(args[i], L"--trap-zhl")) {
+					while (__trap)
+						;
+					break;
+				}
+			}
+		}
 #ifdef ZHL_LOG_FILE
 		std::ofstream f(ZHL_LOG_FILE, std::ios_base::app);
 		f.close();

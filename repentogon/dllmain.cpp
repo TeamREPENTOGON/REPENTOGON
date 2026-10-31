@@ -240,8 +240,22 @@ static void FixLuaDump()
 char REPENTOGON::stocktitle[256]="";
 char REPENTOGON::moddedtitle[256] = "";
 
+static volatile int __trap = 1;
+
 MOD_EXPORT int InitRepentogon(void* poisonAddr, char poisonedValue)
 {
+	int numArgs = 0;
+	LPWSTR* args = CommandLineToArgvW(GetCommandLineW(), &numArgs);
+	if (args) {
+		for (int i = 0; i < numArgs; ++i) {
+			if (!wcscmp(args[i], L"--trap-repentogon")) {
+				while (__trap)
+					;
+				break;
+			}
+		}
+	}
+
 	ZHL::Logger logger(true);
 	logger.Log("REPENTOGON: ModInit\n");
 
