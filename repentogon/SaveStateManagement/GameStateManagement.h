@@ -4,6 +4,9 @@
 #include "LuaCore.h"
 #include "IsaacRepentance.h"
 
+// Vanilla GameState version number used in v1.9.7.12
+constexpr uint32_t ISAAC_GAME_STATE_VERSION = 163;
+
 enum GameStateSlot
 {
 	NULL_SLOT = -1,

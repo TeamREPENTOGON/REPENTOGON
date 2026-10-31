@@ -1,6 +1,8 @@
 "558bec51568bf157807e??0075":
-__thiscall void* KAGE_Filesys_SaveManager::OpenSaveFileForReading(int param_1);
+__thiscall GameStateIO* KAGE_Filesys_SaveManager::OpenSaveFileForReading(const char* path);
 
+"558bec83ec185356578bf9897d??807f??00":
+__thiscall GameStateIO* SaveDataManagerBase::OpenSaveFileForWriting(const char* path);
 
 struct KAGE_Filesys_SaveManager  {
 };

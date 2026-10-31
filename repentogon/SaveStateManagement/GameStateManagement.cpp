@@ -116,7 +116,10 @@ static uint32_t get_state_slot(GameState* gameState, GameStateIO* io, bool isRer
 	const char* filePath = nullptr;
 	if (io)
 	{
-		filePath = io->GetFilePath();
+		// TODO: Need to clean up some stuff related to GameStateIO
+		// GameStateIO** io -> GameStateIO* io
+		// GameStateIO* io -> KAGE_Filesys_File* file
+		filePath = ((KAGE_Filesys_File*)io)->GetFilePath();
 	}
 
 	if (!filePath)

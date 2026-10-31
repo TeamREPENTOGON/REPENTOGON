@@ -272,11 +272,11 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	uint32_t _startingRoomIdx : 0x182d0;
 	RNG _generationRNG : 0x182d4;
 	Room* _room : 0x18300;
-	uint32_t _currentRoomIdx : 0x18304;
-	uint32_t _lastRoomIdx : 0x18308;
-	uint32_t _currentDimensionIdx : 0x1830c;
-	uint32_t _lastRoomDimensionIdx : 0x18310;
-	uint32_t _lastBossRoomListIdx : 0x18314;
+	int _currentRoomIdx : 0x18304;
+	int _lastRoomIdx : 0x18308;
+	int _currentDimensionIdx : 0x1830c;
+	int _lastRoomDimensionIdx : 0x18310;
+	int _lastBossRoomListIdx : 0x18314;
 	uint32_t _leaveDoor : 0x18318;
 	uint32_t _enterDoor : 0x1831c;
 	uint32_t _dungeonPlacementSeed : 0x1832c;
@@ -285,6 +285,10 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	unsigned int _levelStateFlags : 0x1839c;
 	vector_EntitySaveState _myosotisPickups : 0x183a4;
 	uint32_t _greedModeTreasureRoomIdx : 0x18370;
+	int _backupRoomIdx : 0x18900;
+	int _backupDimensionIdx : 0x18904;
+	int _backupLastRoomIdx : 0x18908;
+	int _backupLastDimensionIdx : 0x1890c;
 	RoomConfig _roomConfig : 0x18910;
 	ItemPool _itemPool : 0x1a740;
 	BossPool _bossPool: 0x1af70;
