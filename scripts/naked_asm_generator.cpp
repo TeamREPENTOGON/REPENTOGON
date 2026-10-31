@@ -42,6 +42,7 @@ struct mangled_name {
      */
     std::string hook_namespace;
     std::string anonymous_namespace;
+    std::string file;
 };
 
 static std::wstring quote(std::wstring const& src) {
@@ -150,9 +151,27 @@ std::string run_dumpbin(const char* file, std::wstring const& dumpbin) {
     return out;
 }
 
-const char* super_needle = "?super@wrapper@Hook_";
+/* Look for hook rather than super. This is because super is only exposed as
+ * a symbol if a reference to it is found anywhere in the call graph starting
+ * from the hook. The hook, on the other hand, is always defined by construction,
+ * so its symbol will always be present.
+ *
+ * Because super and hook have the exact same signature, we can regenerate the
+ * mangled name of super by replacing ?hook with ?super.
+ */
+const char* hook_needle = "| ?hook@wrapper@Hook_";
+const char* hook_no_wrapper_needle = "| ?hook@Hook_";
+/* Number of characters to skip when registering the mangled part of the name. */
+const size_t hook_needle_offset = 7;
 
-void process_dumpbin(std::string const& output,
+/* HOW MANY SYMBOLS DO WE NEED FOR EXCEPTION HANDLING AAAAAAAAAAAAAAAAAAAH ! */
+const char* ehhandler = "___ehhandler$?";
+const char* state_unwind_map = "$stateUnwindMap$?";
+const char* try_map = "$tryMap$?";
+const char* handler_map = "$handlerMap$";
+
+void process_dumpbin(std::string const& file,
+		     std::string const& output,
 		     std::vector<mangled_name>& names) {
     std::unique_ptr<char[]> _ptr(new char[output.size() + 1]);
 
@@ -165,13 +184,18 @@ void process_dumpbin(std::string const& output,
 	if (*(current - 1) == '\r')
 	    *(current - 1) = '\0';
 
-	char* super = strstr(ptr, super_needle);
-	if (!super) {
-	    ptr = current + 1;
-	    continue;
+	const char** needle = &hook_needle;
+	char* hook = strstr(ptr, *needle);
+	if (!hook) {
+	    needle = &hook_no_wrapper_needle;
+	    hook = strstr(ptr, *needle);
+	    if (!hook) {
+		ptr = current + 1;
+		continue;
+	    }
 	}
 
-	char* start = super + strlen(super_needle);
+	char* start = hook + strlen(*needle);
 	char* end = nullptr;
 	errno = 0;
 
@@ -179,16 +203,34 @@ void process_dumpbin(std::string const& output,
 	if (end != start && *end == '@') {
 	    char* space = strchr(start, ' ');
 	    if (!space) {
-		fprintf(stderr, "[FATAL] Inconsistent state, should have found a space\n");
+		if (strstr(ptr, ehhandler) || strstr(ptr, state_unwind_map) ||
+		    strstr(ptr, try_map) || strstr(ptr, handler_map)) {
+		    ptr = current + 1;
+		    continue;
+		}
+
+		fprintf(stderr, "[FATAL] Inconsistent state, should have found a space (%s: %s)\n", file.c_str(), ptr);
 		exit(-1);
 	    }
 
-	    char* anonymous_namespace = strchr(end + 1, '@');
+	    /* Look specifically for the next @@, otherwise we may miss some
+	     * decorations (in case the hook is located inside additional
+	     * namespace layers).
+	     */
+	    char* anonymous_namespace = strstr(end + 1, "@@");
+	    if (!anonymous_namespace) {
+		anonymous_namespace = strchr(end + 1, '@');
+		if (!anonymous_namespace) {
+		    fprintf(stderr, "Couldn't find the end of the namespace... (%s)\n", ptr);
+		    exit(-1);
+		}
+	    }
 	    *space = '\0';
 	    mangled_name name;
-	    name.name = std::string(super);
+	    name.name = std::string(hook + hook_needle_offset);
 	    name.hook_namespace = std::string(start, end);
 	    name.anonymous_namespace = std::string(end + 1, anonymous_namespace);
+	    name.file = file;
 	    names.push_back(std::move(name));
 	}
 
@@ -200,7 +242,7 @@ void process_file(const char* file, std::wstring const& dumpbin,
 	std::vector<mangled_name>& names) {
     std::string output = run_dumpbin(file, dumpbin);
     size_t before = names.size();
-    process_dumpbin(output, names);
+    process_dumpbin(file, output, names);
     size_t after = names.size();
     printf("Read %lu from %s (%lu -> %lu)\n", after - before, file, before, after);
 }
@@ -223,14 +265,16 @@ void generate_assembly(std::vector<mangled_name> const& names,
 		   "global ?internalSuper@Hook_%d@%s@@3PAXA\n"
 		   "?internalSuper@Hook_%d@%s@@3PAXA dd 0\n"
 		   "segment .text\n"
-		   "global %s\n"
-		   "%s:\n"
+		   "; %s\n"
+		   "global ?super%s\n"
+		   "?super%s:\n"
 		   "  jmp dword [?internalSuper@Hook_%d@%s@@3PAXA]\n"
 		   "\n",
 		hook_id,
 		name.anonymous_namespace.c_str(),
 		hook_id,
 		name.anonymous_namespace.c_str(),
+		name.file.c_str(),
 		name.name.c_str(),
 		name.name.c_str(),
 		hook_id,

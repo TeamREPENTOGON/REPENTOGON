@@ -43,25 +43,25 @@ public:
 
 #if LIBZHL_COMPILER == LIBZHL_MSVC
 #  define HOOK_SYSTEM_SUPER_DEF(_id, _type) auto __declspec(naked) Hook_##_id :: wrapper::super _type {__asm jmp internalSuper}
+#  define HOOK_SYSTEM_SUPER_DEF_CONV(_id, _type, _conv) auto __declspec(naked) _conv Hook_##_id :: wrapper::super _type {__asm jmp internalSuper}
 #  define HOOK_SYSTEM_DECLARE_SUPER static void* internalSuper = 0;
 #else
 /* Do not expand anything for super. We insert the symbol as UNDEF in the object
  * file and subsequently parse the symbol table to generate assembly for it.
  */
 #  define HOOK_SYSTEM_SUPER_DEF(_id, _type)
+#  define HOOK_SYSTEM_SUPER_DEF_CONV(_id, _type, _conv)
 /* Do not make the symbol static, otherwise we won't be able to retrieve it in
  * the symbol table.
  */
-#  define HOOK_SYSTEM_INTERNAL_SUPER_SCOPE
-#  define HOOK_SYSTEM_EXTERN_SUPER extern void* internalSuper;
+#  define HOOK_SYSTEM_DECLARE_SUPER extern void* internalSuper;
 #endif
 
 #define _DEFINE_METHOD_HOOK1(_id, _classname, _name, _priority, _type, _conv) \
 	namespace { namespace Hook_##_id { \
 		static_assert(std::is_class_v<_classname>, "Cannot HOOK_METHOD on something that is not a class"); \
 		static_assert(std::is_member_function_pointer_v<decltype(&_classname::_name)>, "Cannot HOOK_METHOD on something that is not a method (use HOOK_STATIC for static methods)"); \
-		HOOK_SYSTEM_EXTERN_SUPER \
-		HOOK_SYSTEM_INTERNAL_SUPER_SCOPE void *internalSuper = NULL; \
+		HOOK_SYSTEM_DECLARE_SUPER \
 		struct wrapper : public _classname { \
 			auto hook _type ; \
 			auto super _type ; \
@@ -75,8 +75,7 @@ public:
 	namespace { namespace Hook_##_id { \
 		static_assert(std::is_class_v<_classname>, "Cannot HOOK_METHOD on something that is not a class"); \
 		static_assert(std::is_member_function_pointer_v<decltype(static_cast<_ret (_classname::*)_args>(&_classname::_name))>, "Cannot HOOK_METHOD on something that is not a method (use HOOK_STATIC for static methods)"); \
-		HOOK_SYSTEM_EXTERN_SUPER \
-		HOOK_SYSTEM_INTERNAL_SUPER_SCOPE void *internalSuper = NULL; \
+		HOOK_SYSTEM_DECLARE_SUPER \
 		struct wrapper : public _classname { \
 			auto hook _type ; \
 			auto super _type ; \
@@ -112,16 +111,15 @@ public:
 	static_assert(!std::is_member_function_pointer_v<decltype(&_classname::_name)>, "Cannot HOOK_STATIC on something that is not a static method (use HOOK_METHOD for a non static method)"); \
 	static_assert(IsCallerCleanup<decltype(&_classname::_name)>::value == IsCallerCleanup<void (_conv*)(void)>::value, "Inconsistent calling convention"); \
 	namespace { namespace Hook_##_id { \
-		HOOK_SYSTEM_EXTERN_SUPER \
-		HOOK_SYSTEM_INTERNAL_SUPER_SCOPE void *internalSuper = NULL; \
+		HOOK_SYSTEM_DECLARE_SUPER \
 		struct wrapper : public _classname { \
 			static auto _conv hook _type ; \
 			static auto _conv super _type ; \
 		}; \
 		static _hookKind hookObj(#_classname "::" #_name, typeid(auto (_classname::*_conv) _type), &wrapper::hook, &internalSuper, _priority); \
 	} } \
-	HOOK_SYSTEM_SUPER_DEF(_id, _type) \
-	auto Hook_##_id ::wrapper::hook _type
+	HOOK_SYSTEM_SUPER_DEF_CONV(_id, _type, _conv) \
+	auto /* _conv */ Hook_##_id ::wrapper::hook _type
 
 #define _DEFINE_STATIC_HOOK0(_id, _classname, _name, _priority, _type, _conv) _DEFINE_STATIC_HOOK1(_id, _classname, _name, _priority, _type, _conv, FunctionHook)
 
@@ -138,14 +136,14 @@ public:
 #define _DEFINE_GLOBAL_HOOK1(_id, _name, _priority, _type, _conv, _hookKind) \
 	namespace { namespace Hook_##_id { \
 		static_assert(IsCallerCleanup<decltype(&_name)>::value == IsCallerCleanup<void (_conv*)(void)>::value, "Inconsistent calling convention"); \
-		static void *internalSuper = NULL; \
+		HOOK_SYSTEM_DECLARE_SUPER \
 		static auto _conv hook _type ; \
 		static auto _conv super _type ; \
 		\
 		static _hookKind hookObj(#_name, typeid(auto (_conv*) _type), &hook, &internalSuper, _priority); \
 	} } \
-	auto __declspec(naked) _conv Hook_##_id ::super _type {__asm jmp internalSuper} \
-	auto _conv Hook_##_id ::hook _type
+	HOOK_SYSTEM_SUPER_DEF_CONV(_id, _type, _conv) \
+	auto /* _conv */ Hook_##_id ::hook _type
 
 #define _DEFINE_GLOBAL_HOOK0(_id, _name, _priority, _type, _conv) _DEFINE_GLOBAL_HOOK1(_id, _name, _priority, _type, _conv, FunctionHook)
 
