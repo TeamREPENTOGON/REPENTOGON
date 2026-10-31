@@ -188,7 +188,7 @@ HOOK_METHOD(Entity_Pickup, CanReroll, ()->bool) {
 // ----------------------------------------------------------------------------------------------------
 // -- ASM Patches
 
-namespace {
+namespace ASMPatches {
 
 // EntityLaserPlus.recalculateSamplesNextUpdate
 void __stdcall CheckRecalculateSamples(Entity_Laser* laser) {
@@ -307,8 +307,8 @@ static void Patch_InitTear_PlaySound()
 }  // namespace
 
 void ASMPatchesForEntityPlus() {
-	PatchRecalculateLaserSamples("f30f108f????????0f2e8f", 8);  // update_laser
-	PatchRecalculateLaserSamples("8b97????????8d8f????????52", 6);  // update_circle_laser
-	PatchPlayerForceCamo(); // update_effects
-	Patch_InitTear_PlaySound();
+	ASMPatches::PatchRecalculateLaserSamples("f30f108f????????0f2e8f", 8);  // update_laser
+	ASMPatches::PatchRecalculateLaserSamples("8b97????????8d8f????????52", 6);  // update_circle_laser
+	ASMPatches::PatchPlayerForceCamo(); // update_effects
+	ASMPatches::Patch_InitTear_PlaySound();
 }
