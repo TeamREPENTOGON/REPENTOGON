@@ -2,6 +2,8 @@
 #include "../Patches/XMLData.h"
 #include "../Patches/AchievementsStuff.h"
 
+#undef max
+
 namespace BossPortraits
 {
     const char* IMAGE_ROOT = "root"; // string
@@ -194,6 +196,8 @@ void BossManager::detail::LoadModBosses(EntityConfig& config)
 
     // copy the lookup table.
     BossManager::m_data.bossMap = xmlData.byname;
+    size_t numCustomBosses = std::max(config._bosses.size(), (size_t)NUM_BOSSES) - NUM_BOSSES;
+    BossManager::m_data.defeatedCustomBosses.resize(numCustomBosses, false);
 }
 
 void BossManager::detail::PatchEntityBossId(xml_document<char>& doc, xml_node<char>& node, XMLAttributes& entity)

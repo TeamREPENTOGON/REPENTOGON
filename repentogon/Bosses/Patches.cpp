@@ -14,8 +14,6 @@
 /// @param room /// the room is expected to be a DoubleTroubleBossRoom
 static bool IsDoubleTroubleBossRoomUnlocked(const RoomConfig_Room& room);
 
-/// Records the boss as defeated.
-static void AddCustomBoss(PersistentGameData& persistentData, int bossID);
 /// @brief resizes the boss bitsets to the proper size
 static void BossPool_PostInit(BossPool& pool);
  
@@ -128,29 +126,19 @@ static RoomConfig_Room* get_dads_note_room(RNG& rng)
     return roomConfig->GetRandomRoomFromOptionalStage(rng.Next(), true, g_Game->GetStageID(0), STB_MAUSOLEUM, ROOM_BOSS, NUM_ROOMSHAPES, 0, -1, 1, 10, &doors, BOSS_MOM_MAUSOLEUM, -1);
 }
 
-void AddCustomBoss(PersistentGameData& persistentData, int bossID)
-{
-    if (persistentData.readonly)
-    {
-        return;
-    }
-
-    // TODO
-}
-
 static void BossPool_PostInit(BossPool& pool)
 {
     assert(pool._removedBosses.size() == NUM_BOSSES);
     assert(pool._levelBlacklist.size() == NUM_BOSSES);
 
-    size_t numBosses = std::max((size_t)NUM_BOSSES, g_Manager->GetEntityConfig()->GetBosses()->size());
+    size_t numBosses = std::max((size_t)NUM_BOSSES, BossManager::GetNumBosses());
     pool._removedBosses.resize(numBosses, false);
     pool._levelBlacklist.resize(numBosses, false);
 }
 
 static void BossPool_RestoreGameState(BossPool& pool, const GameStateBossPool& state)
 {
-    size_t numBosses = g_Manager->GetEntityConfig()->GetBosses()->size();
+    size_t numBosses = BossManager::GetNumBosses();
     assert(state._removedBosses.size() == numBosses);
 
     // restore seeds
@@ -200,7 +188,7 @@ HOOK_METHOD(PersistentGameData, AddBoss, (int bossID) -> void)
 {
     if (bossID >= NUM_BOSSES)
     {
-        AddCustomBoss(*this, bossID);
+        BossManager::detail::AddCustomBossDefeated(bossID);
         return;
     }
 
@@ -221,6 +209,11 @@ HOOK_METHOD(BossPool, Init, (uint32_t seed) -> void)
 HOOK_METHOD_PRIORITY(BossPool, RestoreGameState, 9999, (GameStateBossPool* state) -> void)
 {
     BossPool_RestoreGameState(*this, *state);
+}
+
+HOOK_METHOD(Manager, SetSaveSlot, (unsigned int slot) -> void) {
+	super(slot);
+    BossManager::detail::LoadPersistentGameData(slot);
 }
 
 static bool __stdcall asm_is_double_trouble_boss_room(const RoomConfig_Room* room)

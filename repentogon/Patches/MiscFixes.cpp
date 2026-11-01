@@ -317,3 +317,10 @@ HOOK_METHOD_PRIORITY(ModManager, UpdateRooms, -9999, (int id, int mode) -> void)
 
     super(id, mode);
 }
+
+// set the current save slot early in the SetSaveSlot function, that way other hooks can
+// get the correct slot.
+HOOK_METHOD_PRIORITY(Manager, SetSaveSlot, -9999, (unsigned int slot) -> void) {
+	this->_currentSaveSlot = slot;
+    super(slot);
+}
