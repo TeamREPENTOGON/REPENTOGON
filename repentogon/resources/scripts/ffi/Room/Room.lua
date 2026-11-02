@@ -65,8 +65,8 @@ ffi.cdef [[
     bool L_Room_CanSpawnObstacleAtPosition(struct Room*, int, bool);
     bool L_Room_CheckLine(struct Room*, struct Vector*, struct Vector*, int, int, bool, bool, struct Vector*);
     void L_Room_ClearBossHazards(struct Room*, bool, struct Entity*);
-    bool L_Room_DamageGrid(struct Room*, int, float);
-    bool L_Room_DamageGridWithSource(struct Room*, int, float, struct EntityRef*);
+    bool L_Room_DamageGrid(struct Room*, int, int);
+    bool L_Room_DamageGridWithSource(struct Room*, int, int, struct EntityRef*);
     bool L_Room_DestroyGrid(struct Room*, int, int, bool);
     bool L_Room_DestroyGridWithSource(struct Room*, int, int, bool, struct EntityRef*);
     void L_Room_FindFreePickupSpawnPosition(struct Room*, struct Vector*, float, bool, bool, struct Vector*);
@@ -222,13 +222,13 @@ RoomMT = {
     end,
     DamageGrid = function(self, index, damage)
         index = ffichecks.checkinteger(1, index)
-        damage = ffichecks.checknumber(2, damage)
+        damage = ffichecks.checkinteger(2, damage)
 
         local result = repentogon.L_Room_DamageGrid(self, index, damage) return result
     end,
     DamageGridWithSource = function(self, index, damage, source)
         index = ffichecks.checkinteger(1, index)
-        damage = ffichecks.checknumber(2, damage)
+        damage = ffichecks.checkinteger(2, damage)
         ffichecks.checkcdata(3, source, "EntityRef")
 
         local result = repentogon.L_Room_DamageGridWithSource(self, index, damage, source) return result

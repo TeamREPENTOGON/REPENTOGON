@@ -49,11 +49,11 @@ extern "C" {
 		source->ClearBossHazards(excludeNPCs);
 	}
 
-	__declspec(dllexport) bool L_Room_DamageGrid(Room* room, int index, float damage) {
+	__declspec(dllexport) bool L_Room_DamageGrid(Room* room, int index, int damage) {
 		return room->DamageGrid(index, damage);
 	}
 
-	__declspec(dllexport) bool L_Room_DamageGridWithSource(Room* room, int index, float damage, EntityRef* source) {
+	__declspec(dllexport) bool L_Room_DamageGridWithSource(Room* room, int index, int damage, EntityRef* source) {
 		return room->DamageGrid(index, damage, source);
 	}
 

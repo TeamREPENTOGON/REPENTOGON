@@ -207,10 +207,10 @@ __thiscall Vector* Room::WorldToScreenPosition(Vector* buffer, Vector pos);
 __thiscall bool Room::TryMakeBridge(GridEntity_Pit* pit, GridEntity_Rock* rock);
 
 "558bec83ec28f30f100d????????8bc1":
-__thiscall bool Room::DamageGrid(unsigned int index, float damage);
+__thiscall bool Room::DamageGrid(unsigned int index, int damage);
 
 "558bec8b45??3dbf01000077??8b4c":
-__thiscall bool Room::DamageGrid(unsigned int index, float damage, EntityRef* source);
+__thiscall bool Room::DamageGrid(unsigned int index, int damage, EntityRef* source);
 
 "558bec83ec2cf30f100d????????8bc1":
 __thiscall bool Room::DestroyGrid(unsigned int index, int damage, bool immediate);
