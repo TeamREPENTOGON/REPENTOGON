@@ -34,6 +34,18 @@ struct EntityConfig depends (EntityConfig_Entity, EntityConfig_Player, EntityCon
             return &this->GetBabies()->at(id);
         }
         inline std::vector<EntityConfig_Boss>* GetBosses() { return &this->_bosses; }
+        inline EntityConfig_Entity* GetEntityByName(std::string_view name)
+        {
+            for (auto& entry : this->_entities)
+            {
+                if (name == entry.second.entity.name)
+                {
+                    return &entry.second.entity;
+                }
+            }
+
+            return nullptr;
+        }
     }}
 
     std_map_uint_EntityConfigEntityEntry _entities: 0x0;

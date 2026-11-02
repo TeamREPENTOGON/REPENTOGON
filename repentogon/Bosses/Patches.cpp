@@ -8,7 +8,7 @@
 
 #undef max
 
-#pragma region Definitions
+#pragma region Declarations
 
 /// @brief returns whether or not the double trouble room can appear, given the current game progress
 /// @param room /// the room is expected to be a DoubleTroubleBossRoom
@@ -16,7 +16,15 @@ static bool IsDoubleTroubleBossRoomUnlocked(const RoomConfig_Room& room);
 
 /// @brief resizes the boss bitsets to the proper size
 static void BossPool_PostInit(BossPool& pool);
- 
+
+/// @brief Reimplementation of StoreGameState to account for custom boss ids.
+///
+/// The game only iterates up to NUM_BOSSES, so we need to patch this behavior to account for custom bosses.
+///
+/// The function has been reimplemented due it's simplicity, and because it makes it
+/// easier to maintain compared to using ASM patches.
+static void BossPool_StoreGameState(const BossPool& pool, GameStateBossPool& state);
+
 /// @brief Reimplementation of RestoreGameState to account for custom boss ids.
 ///
 /// The game hardcodes the size of the removedBosses vector to NUM_BOSSES and only iterates
@@ -136,6 +144,20 @@ static void BossPool_PostInit(BossPool& pool)
     pool._levelBlacklist.resize(numBosses, false);
 }
 
+static void BossPool_StoreGameState(const BossPool& pool, GameStateBossPool& state)
+{
+    assert(pool._removedBosses.size() == BossManager::GetNumBosses());
+
+    // store seeds
+    for (size_t i = 0; i < NUM_STB; i++)
+    {
+        state._poolSeeds[i] = pool._pool[i]._rng._seed;
+    }
+
+    // store removed
+    state._removedBosses = pool._removedBosses;
+}
+
 static void BossPool_RestoreGameState(BossPool& pool, const GameStateBossPool& state)
 {
     size_t numBosses = BossManager::GetNumBosses();
@@ -206,6 +228,11 @@ HOOK_METHOD(BossPool, Init, (uint32_t seed) -> void)
     BossPool_PostInit(*this);
 }
 
+HOOK_METHOD_PRIORITY(BossPool, StoreGameState, 9999, (GameStateBossPool* state) -> void)
+{
+    BossPool_StoreGameState(*this, *state);
+}
+
 HOOK_METHOD_PRIORITY(BossPool, RestoreGameState, 9999, (GameStateBossPool* state) -> void)
 {
     BossPool_RestoreGameState(*this, *state);
@@ -269,7 +296,7 @@ static void Patch_RoomTransitionStartBossIntro_IsDoubleTroubleBossRoom()
     bool valid = ja[0] == 0x0F && ja[1] == 0x87 && finalJaNext + ja_rel32 == falseDestination; // the op code leads to false destination
     if (!valid)
     {
-        ZHL::Log("[FATAL] checks for RoomTransition::StartBossIntro (IsDoubleTroubleBossRoom) patch failed");
+        ZHL::Log("[FATAL] checks for RoomTransition::StartBossIntro (IsDoubleTroubleBossRoom) patch failed\n");
         std::abort();
     }
 
@@ -310,7 +337,7 @@ static void Patch_NightmareSceneShow_IsDoubleTroubleBossRoom()
     bool valid = ja[0] == 0x77 && finalJaNext + ja[1] == falseDestination; // the op code leads to false destination
     if (!valid)
     {
-        ZHL::Log("[FATAL] checks for NightmareScene::Show (IsDoubleTroubleBossRoom) patch failed");
+        ZHL::Log("[FATAL] checks for NightmareScene::Show (IsDoubleTroubleBossRoom) patch failed\n");
         std::abort();
     }
 

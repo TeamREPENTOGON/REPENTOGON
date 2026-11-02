@@ -3,8 +3,12 @@
 #include "../RoomConfigUtility.h"
 #include "../Utils/Array.h"
 
+#pragma region Declarations
+
 /// @brief Loads, finalizes and adds the rooms from the passed stb.
 static void load_stb_custom_bosses(VirtualRoomSet::ScopedRoomLoader& loader, const std::string& filePath, const XMLBossPortrait::BossStbDesc& desc, const ModEntry& mod);
+
+#pragma endregion
 
 static void load_stb_custom_bosses(VirtualRoomSet::ScopedRoomLoader& loader, const std::string& filePath, const XMLBossPortrait::BossStbDesc& desc, const ModEntry& mod)
 {

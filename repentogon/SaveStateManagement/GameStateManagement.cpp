@@ -8,6 +8,7 @@
 #include "../LuaInterfaces/_Internals.h"
 #include "../LuaInterfaces/CustomCallbacks.h"
 #include "../VirtualRoomConfig/VirtualRoomSetManager.h"
+#include "../Bosses/BossManager.h"
 
 #include "EntitySaveStateManagement.h"
 
@@ -313,6 +314,7 @@ static inline bool write_save(GameState& gameState, const GameStateSaveInfo& inf
 	}
 
 	ItemPoolManager::__SaveToDisk(fileName, isRerun);
+    BossManager::detail::SaveGameState(info, isRerun);
 	return true;
 }
 
@@ -327,6 +329,7 @@ static inline bool read_save(GameState& gameState, const GameStateSaveInfo& info
 	}
 
 	ItemPoolManager::__LoadFromDisk(fileName, isRerun);
+    BossManager::detail::LoadGameState(info, isRerun);
 	return true;
 }
 
@@ -338,6 +341,7 @@ static inline void delete_save(const GameStateSaveInfo& info, bool isRerun)
 	ItemPoolManager::__DeleteGameState(fileName);
 	VirtualRoomSetManager::detail::DeleteSave(info, isRerun);
 	ESSM::detail::SaveData::DeleteGameState(fileName);
+    BossManager::detail::DeleteGameState(info, isRerun);
 }
 
 void SaveStateManager::detail::BindLuaCallbacks(lua_State *L, int tbl)

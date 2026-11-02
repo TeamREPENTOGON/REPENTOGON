@@ -33,9 +33,7 @@
  */
 
 /* TODO:
- *  - Save Game State Data:
- *      - Save EncounteredBosses (through a conversion map)
- *      - Save RemovedBosses (through a conversion map)
+ *  - Add modded support for DoubleTrouble rooms.
  */
 
 class BossManager
@@ -82,32 +80,45 @@ public:
         static void ClearPersistentGameData();
         static void SavePersistentGameData(uint32_t saveSlot);
         static void LoadPersistentGameData(uint32_t saveSlot);
-        static void SaveGameState(const GameStateSaveInfo& info);
-        static void LoadGameState(const GameStateSaveInfo& info);
+        /// @brief Saves the custom boss ids used in the GameState using a persistent id (name)
+        static void SaveGameState(const GameStateSaveInfo& info, bool isRerun);
+        /// @brief Remaps values tied to a boss id to the new boss ids.
+        static void LoadGameState(const GameStateSaveInfo& info, bool isRerun);
+        static void DeleteGameState(const GameStateSaveInfo& info, bool isRerun);
         static void ApplyPatches();
-        static void AddCustomBossDefeated(int bossId);
+        static void AddCustomBossDefeated(uint32_t bossId);
     };
 
     static size_t GetNumBosses();
+    static uint32_t ToCustomBossId(uint32_t bossId);
     static const EntityConfig_Boss* GetBossConfig(uint32_t bossId);
     static std::optional<uint32_t> GetBossIdByName(const std::string& name);
     static bool IsDoubleTroubleBossRoom(const RoomConfig_Room& room);
-    static void AddBossDefeated(int bossId);
-    static bool IsBossDefeated(int bossId);
+    static void AddBossDefeated(uint32_t bossId);
+    static bool IsBossDefeated(uint32_t bossId);
+    static bool WasBossRemoved(uint32_t bossId);
 };
 
 inline size_t BossManager::GetNumBosses()
 {
-    return (std::max)(g_Manager->GetEntityConfig()->GetBosses()->size(), (size_t)NUM_BOSSES);
+    size_t numBosses = g_Manager->GetEntityConfig()->GetBosses()->size();
+    assert(numBosses >= NUM_BOSSES); // most code expects the amount of bosses to be at least NUM_BOSSES
+    return numBosses;
 }
 
-inline void BossManager::detail::AddCustomBossDefeated(int bossId)
+inline uint32_t BossManager::ToCustomBossId(uint32_t bossId)
+{
+    assert(NUM_BOSSES <= bossId && bossId < BossManager::GetNumBosses());
+    return bossId - NUM_BOSSES;
+}
+
+inline void BossManager::detail::AddCustomBossDefeated(uint32_t bossId)
 {
     assert(NUM_BOSSES <= (size_t)bossId && (size_t)bossId < BossManager::GetNumBosses());
 
     if (!g_Manager->_persistentGameData.readonly)
     {
-        BossManager::m_data.defeatedCustomBosses[bossId - NUM_BOSSES] = true;
+        BossManager::m_data.defeatedCustomBosses[BossManager::ToCustomBossId(bossId)] = true;
         BossManager::detail::SavePersistentGameData(g_Manager->_currentSaveSlot);
     }
 }
@@ -138,13 +149,13 @@ inline bool BossManager::IsDoubleTroubleBossRoom(const RoomConfig_Room& room)
         && (RoomConfig_Room::BOSS_DOUBLE_TROUBLE_START <= room.Variant && room.Variant < RoomConfig_Room::BOSS_DOUBLE_TROUBLE_END);
 }
 
-inline void BossManager::AddBossDefeated(int bossId)
+inline void BossManager::AddBossDefeated(uint32_t bossId)
 {
     assert(0 <= (size_t)bossId && (size_t)bossId < BossManager::GetNumBosses());
     g_Manager->_persistentGameData.AddBoss(bossId);
 }
 
-inline bool BossManager::IsBossDefeated(int bossId)
+inline bool BossManager::IsBossDefeated(uint32_t bossId)
 {
     assert(0 <= (size_t)bossId && (size_t)bossId < BossManager::GetNumBosses());
     if (bossId < NUM_BOSSES)
@@ -153,6 +164,12 @@ inline bool BossManager::IsBossDefeated(int bossId)
     }
     else
     {
-        return BossManager::m_data.defeatedCustomBosses[bossId - NUM_BOSSES];
+        return BossManager::m_data.defeatedCustomBosses[BossManager::ToCustomBossId(bossId)];
     }
+}
+
+inline bool BossManager::WasBossRemoved(uint32_t bossId)
+{
+    assert(0 <= (size_t)bossId && (size_t)bossId < BossManager::GetNumBosses());
+    return g_Game->_bossPool.WasBossRemoved(bossId);
 }
