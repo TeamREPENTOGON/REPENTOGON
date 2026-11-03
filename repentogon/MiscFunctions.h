@@ -26,7 +26,7 @@ namespace REPENTOGON {
 	extern char moddedtitle[256];
 
 	static void ChangeWindowTitle(const char* text) {
-		sprintf(stocktitle, "The Binding of Isaac: Repentance+ %s (+ REPENTOGON %s)%s", &g_GameVersionString, CMAKE_REPENTOGON_VERSION, text);
+		snprintf(stocktitle, sizeof(stocktitle), "The Binding of Isaac: Repentance+ %s (+ REPENTOGON %s)%s", &g_GameVersionString, CMAKE_REPENTOGON_VERSION, text);
 		if (_GLFWwindow* window = g_KAGE_Graphics_Manager._window) {
 			SetWindowTextA((HWND)window->HWND, stocktitle);
 		}
@@ -123,7 +123,7 @@ namespace REPENTOGON {
 		ZHL::Log("STARTUP PROGRESS: %s\t%s\n", text, formattedDiff.c_str());
 
 		char newText[128];
-		sprintf(newText, " - %s (cur startup time: %s s)", text, formattedDiff.c_str());
+		snprintf(newText, sizeof(newText), " - %s (cur startup time: %s s)", text, formattedDiff.c_str());
 		ChangeWindowTitle(newText);
 		LoadingScreen::SetStatus(text);
 	}
