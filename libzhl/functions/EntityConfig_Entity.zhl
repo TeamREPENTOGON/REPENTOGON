@@ -37,4 +37,5 @@ struct EntityConfig_Entity depends (Vector, ModEntry, Devolve) {
 	int bestiaryParentType : 0x158;
 	int bestiaryParentVariant : 0x15C;
 	ModEntry* modEntry : 0x160;
+    bool hasModPortrait : 0x164; // the portrait index is for the mod's death enemies anm2, instead of the vanilla anm2
 } : 0x168;

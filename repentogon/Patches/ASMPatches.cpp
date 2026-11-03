@@ -27,6 +27,7 @@
 #include "ExtraRenderSteps.h"
 #include "EntityManager.h"
 #include "../SaveStateManagement/EntitySaveStateManagement.h"
+#include "../Bosses/BossManager.h"
 
 #include "ASMPatches/ASMBagOfCrafting.h"
 #include "ASMPatches/ASMCallbacks.h"
@@ -286,6 +287,7 @@ void PerformASMPatches() {
 	MinimapPatches::ApplyPatches();
 	EntitySaveStateManagement::detail::Patches::ApplyPatches();
 	EntityManager::detail::Patches::ApplyPatches();
+    BossManager::detail::ApplyPatches();
 
 	// External
 	ASMPatchesForFamiliarCustomTags();

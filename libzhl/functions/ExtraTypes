@@ -189,6 +189,11 @@ TypeInfo std_map_CharBlocks {
     Align 4;
 };
 
+TypeInfo vector_EncounteredBoss {
+    Size 12;
+    Align 4;
+};
+
 TypeInfo vector_ErasedEntities {
     Size 12;
     Align 4;
