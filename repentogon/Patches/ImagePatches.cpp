@@ -155,6 +155,75 @@ HOOK_METHOD(KAGE_Graphics_ImageManager, ReleaseImageCache, () -> void) {
 
 #pragma endregion
 
+#pragma region Image reference count overflow
+
+/** The strong refcount for Images is only 16 bits; it will overflow if a mod has >65,535 references to one spritesheet
+ *  which can happen if GC hasn't collected old ones yet. This never happed in vanilla because of its
+ *  silly forced GC stepping that it did. MSVC very mercifully left us three padding bytes after a bool, though :)
+ *  Extend the refcount to 24 bits. This gives us 16,777,215 references to burn- plenty.
+ */
+namespace {
+	constexpr size_t STRONG_EX_OFFSET = offsetof(KAGE_ReferenceCountBase, mutex) + offsetof(KAGE_System_Mutex, initialized) + 1;
+
+	uint32_t GetStrongEx(const KAGE_ReferenceCountBase* counter) {
+		const uint8_t* bytes = (const uint8_t*)counter + STRONG_EX_OFFSET;
+		return bytes[0] | (bytes[1] << 8) | (bytes[2] << 16);
+	}
+
+	void SetStrongEx(KAGE_ReferenceCountBase* counter, uint32_t count) {
+		uint8_t* bytes = (uint8_t*)counter + STRONG_EX_OFFSET;
+		bytes[0] = (uint8_t)count;
+		bytes[1] = (uint8_t)(count >> 8);
+		bytes[2] = (uint8_t)(count >> 16);
+	}
+
+	uint32_t GetStrong(const KAGE_ReferenceCountBase* counter) {
+		return counter->strong == 0xFFFF ? GetStrongEx(counter) : counter->strong;
+	}
+
+	void SetStrong(KAGE_ReferenceCountBase* counter, uint32_t count) {
+		if (count >= 0xFFFF) {
+			counter->strong = 0xFFFF;
+			SetStrongEx(counter, count);
+		}
+		else {
+			counter->strong = (uint16_t)count;
+		}
+	}
+}
+
+HOOK_METHOD(KAGE_ReferenceCount_ImageBase, IncrementReference, () -> void) {
+	this->mutex.Lock(-1);
+	const uint32_t count = GetStrong(this);
+	if (count < 0xFFFFFF) {
+		SetStrong(this, count + 1);
+	}
+	this->mutex.Unlock();
+}
+
+HOOK_METHOD(KAGE_ReferenceCount_ImageBase, DecrementReference, () -> bool) {
+	this->mutex.Lock(-1);
+	uint32_t count = GetStrong(this);
+	if (count == 0) {
+		this->mutex.Unlock();
+		return true;
+	}
+
+	SetStrong(this, --count);
+	this->mutex.Unlock();
+	if (count != 0) {
+		return true;
+	}
+
+	if (KAGE_Graphics_ImageBase* image = this->image) {
+		image->Free(1);
+		this->image = nullptr;
+	}
+	return this->DecrementWeakReference();
+}
+
+#pragma endregion
+
 void ImagePatches::ApplyPatches()
 {
     patch_invalidate_last_transparent_render_batch();
