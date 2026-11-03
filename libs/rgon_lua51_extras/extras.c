@@ -86,6 +86,10 @@ LUA_API int luaopen_utf8(lua_State* L) {
     return luaopen_compat53_utf8(L);
 }
 
+LUA_API int luaopen_string_pack(lua_State* L) {
+    return luaopen_compat53_string(L);
+}
+
 #undef lua_pcallk
 LUA_API int lua_pcallk(lua_State* L, int nargs, int nresults, int errfunc,
     intptr_t ctx, void* k) {

@@ -21,6 +21,7 @@
 #include "LuaInit.h"
 
 extern "C" int luaopen_utf8(lua_State* L);
+extern "C" int luaopen_string_pack(lua_State* L);
 
 int LuaKeys::runCallbackWithTwoParams = LUA_NOREF;
 int LuaKeys::clearEntityData = LUA_NOREF;
@@ -81,6 +82,15 @@ HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, INT_MAX, () -> void) {
 	// For whatever rhyme or reason, string functions don't work in luadebug without us explicitly opening utf8 :shrugging:
 	luaL_requiref(L, "utf8", luaopen_utf8, 1);
 	lua_pop(L, 1);
+
+	// LuaJIT has no string.pack/packsize/unpack, merge compat53's into the string library.
+	lua_getglobal(L, "string");
+	luaopen_string_pack(L);
+	for (const char* name : { "pack", "packsize", "unpack" }) {
+		lua_getfield(L, -1, name);
+		lua_setfield(L, -3, name);
+	}
+	lua_pop(L, 2);
 
 	this->RunBundledScript("resources/scripts/ffi/main.lua");
 }
