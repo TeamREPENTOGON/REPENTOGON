@@ -15,7 +15,6 @@
  *      - FLAG_DONT_COUNT_BOSS_HP can be used to achieve a similar effect.
  *      - Also sounds risky, given that this prevents the normal boss reward from being spawned if used incorrectly.
  *  - Boss::HasNoBossBar
- *      - Though there's no direct way to replicate, without causing other side-effects 
  *  - Boss::CustomVersusScreen
  *      - MC_POST_BOSS_INTRO_SHOW can be used to achieve a similar effect.
  */

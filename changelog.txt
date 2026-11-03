@@ -22,12 +22,17 @@ Added:
 		Can be used to override whether or not the entity should be saved.
 	- MC_ENTITY_SAVE(Entity)
 	- MC_ENTITY_RESTORE(Entity)
+    - MC_GET_BOSS_MUSIC(int bossID, bool isClear)
 * Isaac:
 	- Added overloads for the ModData functions that accept a custom filename.
+    - GetBossIdByName(string)
 * Room:
 	- RecomputeRoomBounds()
 * ModReference:
     - Added overloads for the Data functions that accept a custom filename.
+* EntityConfig:
+    - GetBoss(int bossID)
+    - GetMaxBossID()
 * EntityPlayer:
 	- Get/SetFallingSpeed
 * EntityNPC:
@@ -48,6 +53,9 @@ Added:
 	- GetButtonFrame(int button, int ControllerIndex)
 		Returns the animation frame in `(controls_)buttons.anm2` to use for the given button (-1 for invalid buttons).
 * Added SaveStateManager class to automatically manage modded save data for the current run.
+* Added support for Custom Bosses in bossportraits.xml
+* Added EntityConfigBoss class.
+* Added EntityConfigBossAlt class.
 /newline/
 Modified:
 * ModCallbacks:

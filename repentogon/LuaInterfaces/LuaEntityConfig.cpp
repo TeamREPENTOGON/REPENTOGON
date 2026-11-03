@@ -3,100 +3,21 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../Bosses/BossManager.h"
 #include "../Patches/XMLData.h"
 #include "../Patches/EntityConfigEx.h"
+#include "../LuaClasses.h"
 
 static void lua_push_string(lua_State* L, const std::string& string)
 {
 	lua_pushlstring(L, string.c_str(), string.length());
 }
 
-class LuaEntityConfigBoss
-{
-public:
-    struct Userdata
-    {
-	public:
-        static constexpr char* MT = "EntityConfigBoss";
-	private:
-		uint32_t id = 0;
-
-	public:
-		EntityConfig_Boss* GetBossConfig() const;
-	private:
-        private: Userdata(uint32_t id);
-		private: Userdata(const EntityConfig_Boss& boss);
-		friend LuaEntityConfigBoss;
-    };
-
-    static Userdata* NewUserdata(lua_State* L, uint32_t id);
-    static Userdata* NewUserdata(lua_State* L, const EntityConfig_Boss& boss);
-    static Userdata* GetUserdata(lua_State* L, int idx);
-};
-
-class LuaEntityConfigBossAlt
-{
-public:
-    struct Userdata
-    {
-	public:
-        static constexpr char* MT = "EntityConfigBossAlt";
-	private:
-		uint32_t bossId = 0;
-		uint32_t altIdx = 0;
-
-	public:
-		EntityConfig_Boss_Alt* GetBossAlt() const;
-	private:
-		private: Userdata(const EntityConfig_Boss& boss, size_t idx);
-		friend LuaEntityConfigBossAlt;
-    };
-
-    static Userdata* NewUserdata(lua_State* L, const EntityConfig_Boss& boss, size_t idx);
-    static Userdata* GetUserdata(lua_State* L, int idx);
-};
-
 #pragma region EntityConfigBoss
-
-LuaEntityConfigBoss::Userdata::Userdata(uint32_t id)
-	: id(id)
-{}
-
-LuaEntityConfigBoss::Userdata::Userdata(const EntityConfig_Boss& boss)
-	: id(boss.bossID)
-{}
-
-EntityConfig_Boss* LuaEntityConfigBoss::Userdata::GetBossConfig() const
-{
-	auto& bosses = *g_Manager->GetEntityConfig()->GetBosses();
-	return &bosses[this->id];
-}
-
-LuaEntityConfigBoss::Userdata* LuaEntityConfigBoss::NewUserdata(lua_State* L, uint32_t id)
-{
-	void* newUserdata = lua_newuserdata(L, sizeof(Userdata));
-	Userdata* userdata = new (newUserdata) Userdata(id);
-	luaL_setmetatable(L, Userdata::MT);
-	return userdata;
-}
-
-LuaEntityConfigBoss::Userdata* LuaEntityConfigBoss::NewUserdata(lua_State* L, const EntityConfig_Boss& boss)
-{
-	void* newUserdata = lua_newuserdata(L, sizeof(Userdata));
-	Userdata* userdata = new (newUserdata) Userdata(boss);
-	luaL_setmetatable(L, Userdata::MT);
-	return userdata;
-}
-
-LuaEntityConfigBoss::Userdata* LuaEntityConfigBoss::GetUserdata(lua_State* L, int idx)
-{
-	return lua::GetRawUserdata<Userdata*>(L, idx, Userdata::MT);
-}
 
 static EntityConfig_Boss* get_boss_config_ud(lua_State* L, int idx)
 {
-	const LuaEntityConfigBoss::Userdata* ud = LuaEntityConfigBoss::GetUserdata(L, idx);
-	return ud->GetBossConfig();
+    return LuaEntityConfigBoss::Get(L, idx);
 }
 
 LUA_FUNCTION(Lua_Boss_GetBossId)
@@ -139,7 +60,7 @@ LUA_FUNCTION(Lua_Boss_GetAchievement)
 LUA_FUNCTION(Lua_Boss_GetAlt)
 {
 	EntityConfig_Boss* boss = get_boss_config_ud(L, 1);
-	size_t idx = (size_t)lua_tointeger(L, 2);
+	size_t idx = (size_t)luaL_checkinteger(L, 2);
 
 	bool inRange = idx < boss->alts.size();
 	if (!inRange)
@@ -147,7 +68,7 @@ LUA_FUNCTION(Lua_Boss_GetAlt)
 		luaL_argerror(L, 2, "index out of range");
 	}
 
-	LuaEntityConfigBossAlt::NewUserdata(L, *boss, idx);
+	LuaEntityConfigBossAlt::PushPtr(L, &boss->alts[idx]);
 	return 1;
 }
 
@@ -171,40 +92,16 @@ static void Boss_RegisterClass(lua_State* L)
 		{ NULL, NULL }
 	};
 
-	lua::RegisterNewClass(L, LuaEntityConfigBoss::Userdata::MT, LuaEntityConfigBoss::Userdata::MT, functions);
+	lua::RegisterNewClass(L, LuaEntityConfigBoss::MT, LuaEntityConfigBoss::MT, functions);
 }
 
 #pragma endregion
 
 #pragma region EntityConfigBossAlt
 
-LuaEntityConfigBossAlt::Userdata::Userdata(const EntityConfig_Boss& boss, size_t idx)
-	: bossId(boss.bossID), altIdx(idx)
-{}
-
-EntityConfig_Boss_Alt* LuaEntityConfigBossAlt::Userdata::GetBossAlt() const
-{
-	auto& bosses = *g_Manager->GetEntityConfig()->GetBosses();
-	return &bosses[this->bossId].alts[this->altIdx];
-}
-
-LuaEntityConfigBossAlt::Userdata* LuaEntityConfigBossAlt::NewUserdata(lua_State* L, const EntityConfig_Boss& boss, size_t idx)
-{
-	void* newUserdata = lua_newuserdata(L, sizeof(Userdata));
-	Userdata* userdata = new (newUserdata) Userdata(boss, idx);
-	luaL_setmetatable(L, Userdata::MT);
-	return userdata;
-}
-
-LuaEntityConfigBossAlt::Userdata* LuaEntityConfigBossAlt::GetUserdata(lua_State* L, int idx)
-{
-	return lua::GetRawUserdata<Userdata*>(L, idx, Userdata::MT);
-}
-
 static EntityConfig_Boss_Alt* get_boss_alt_ud(lua_State* L, int idx)
 {
-	const LuaEntityConfigBossAlt::Userdata* ud = LuaEntityConfigBossAlt::GetUserdata(L, idx);
-	return ud->GetBossAlt();
+	return LuaEntityConfigBossAlt::Get(L, idx);
 }
 
 LUA_FUNCTION(Lua_BossAlt_GetStageId)
@@ -227,7 +124,7 @@ static void BossAlt_RegisterClass(lua_State* L)
 		{ NULL, NULL }
 	};
 
-	lua::RegisterNewClass(L, LuaEntityConfigBossAlt::Userdata::MT, LuaEntityConfigBossAlt::Userdata::MT, functions);
+	lua::RegisterNewClass(L, LuaEntityConfigBossAlt::MT, LuaEntityConfigBossAlt::MT, functions);
 }
 
 #pragma endregion
@@ -324,13 +221,13 @@ LUA_FUNCTION(Lua_EntityConfig_GetBoss)
 		luaL_argerror(L, 1, "id out of range");
 	}
 
-	LuaEntityConfigBoss::NewUserdata(L, bosses[id]);
+	LuaEntityConfigBoss::PushPtr(L, &bosses[id]);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfig_GetMaxBossId)
 {
-	lua_pushinteger(L, g_Manager->GetEntityConfig()->GetBosses()->size() - 1);
+	lua_pushinteger(L, BossManager::GetNumBosses() - 1);
 	return 1;
 }
 
