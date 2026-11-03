@@ -196,6 +196,7 @@ void PerformASMPatches() {
 	ASMPatchMainMenuCallback();
 	ASMPatchPreModUnloadCallbackDuringShutdown();
 	ASMPatchPostRoomRenderEntitiesCallback();
+	ASMPatchPreRoomRenderEntities();
 	ASMPatchPreItemTextDisplayCallback();
 	ASMPatchHideChargeBar();
 	ASMPatchPostBackwardsRoomRestore();
