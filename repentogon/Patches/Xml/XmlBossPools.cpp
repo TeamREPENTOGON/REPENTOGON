@@ -299,8 +299,7 @@ bool process_boss_node(ParseContext& ctx, rapidxml::xml_node<char>* parent, rapi
         }
         else
         {
-            // bossId = XMLStuff.BossPortraitData->GetIdByName(XML::GetValue(attribute));
-            bossId = std::nullopt; // don't add support for id by name yet.
+            bossId = XMLStuff.BossPortraitData->GetIdByName(XML::GetValue(attribute));
             if (bossId)
             {
                 auto [it, inserted] = parsed.all.insert_or_assign("id", std::to_string(bossId.value()));
