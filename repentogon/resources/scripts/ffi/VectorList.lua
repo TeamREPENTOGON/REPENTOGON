@@ -19,12 +19,19 @@ VectorListMT.__len = function(self) return el_size(self) end
 
 function VectorListMT:Get(idx)
     idx = ffichecks.checkinteger(1, idx)
-    if idx < 0 or idx >= el_size(self) then return nil end
-    return ffichecks.copyvector(ffi.getprivate(ffi.getprivate(self, "_first"), idx))
+    if idx < 0 or idx >= el_size(self) then
+        ffichecks.argerror(1, "invalid vector subscript")
+    end
+    local result = ffi.ptradd(ffi.getprivate(self, "_first"), idx) return result
 end
 
 setmetatable(VectorListMT, { __index = function() end })
-VectorListMT.__index = VectorListMT
+VectorListMT.__index = function(self, key)
+    if key == "Size" then
+        return el_size(self)
+    end
+    return VectorListMT[key]
+end
 
 ffi.metatype("struct VectorList", VectorListMT)
 VectorList = setmetatable({}, { __class = VectorListMT })
