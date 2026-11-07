@@ -103,7 +103,6 @@ void ASMPatchConsoleRunCommand() {
 }
 
 
-
 void goUpTogon(char* str) {
 	const char* variants[] = {
 		"/Repentogon/",
@@ -226,6 +225,7 @@ void PerformASMPatches() {
 	ASMPatchInputConfigsPaths();
 	ASMPatchLogMessage();
 	ASMPatchConsoleRunCommand();
+	ASMPatches::ASMPatchSkipSoundPreload();
 
 	ASMPatchResetLuaEntityData(&AsmDefinitions::GetData_Entity_Destructor, ASMPatch::Registers::EDI, ASMPatch::Registers::ESI);
 	ASMPatchResetLuaEntityData(&AsmDefinitions::GetData_Entity_Remove, ASMPatch::Registers::ESI, ASMPatch::Registers::EDI);
@@ -392,6 +392,7 @@ void PerformASMPatches() {
 	if (!ASMPatches::FixTearDetonatorEntityList()) {
 		ZHL::Log("[ERROR] Unable to find signature for Tear Detonator EntityList_EL in UseActiveItem\n");
 	}
+
 
 	//patch disabled, due to bugged steam details
 	/*if (!ASMPatches::LeaderboarEntryCheckerUpdate()) {

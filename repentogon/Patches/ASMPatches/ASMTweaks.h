@@ -19,4 +19,5 @@ namespace ASMPatches {
 	void PatchOptionsSetMusicBound();
 
 	void ReEnableGameLanguageSettings();
+	void ASMPatchSkipSoundPreload();
 }
