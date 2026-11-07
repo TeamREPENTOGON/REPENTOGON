@@ -4,6 +4,7 @@
 #include "../ASMPatches.h"
 
 #include "ASMDelirium.h"
+#include "../../LuaClasses.h"
 #include "../../REPENTOGONDelirium.h"
 
 
@@ -21,7 +22,7 @@ static bool __stdcall PreTransformationCallback(Box<Entity_NPC*> deliriumBox) {
 	lua::LuaResults results = // caller.pushCallbackID("PRE_TRANSFORMATION", "DeliriumCallbacks")
 		caller.push("DeliriumPreTransformation")
 		.pushnil()
-		.pushLuabridge(delirium, delirium::DeliriumMetatable)
+		.pushClassPtr<LuaEntityDelirium>(delirium)
 		.call(1);
 
 	if (!results) {
@@ -77,7 +78,7 @@ static void __stdcall TransformationCallback(Box<DeliriumTransformationData*> bd
 	lua::LuaCaller caller(L);
 	lua::LuaResults results = caller.pushCallbackID("TRANSFORMATION", "DeliriumCallbacks")
 		.pushnil()
-		.pushLuabridge(delirium, delirium::DeliriumMetatable)
+		.pushClassPtr<LuaEntityDelirium>(delirium)
 		.push(type)
 		.push(variant)
 		.push(forced)
@@ -145,13 +146,11 @@ static void __stdcall PostTransformationCallback(Box<Entity_NPC*> bdelirium) {
 	lua::LuaCaller caller(L);
 	caller.pushCallbackID("POST_TRANSFORMATION", "DeliriumCallbacks")
 		.pushnil()
-		.pushLuabridge(delirium, delirium::DeliriumMetatable)
+		.pushClassPtr<LuaEntityDelirium>(delirium)
 		.call(0);
 }
 
 namespace delirium {
-	const char* DeliriumMetatable = "DeliriumMT";
-
 	void AddPreTransformationCallback() {
 		SigScan scanner("0f8551080000ffb3380b0000");
 		scanner.Scan();

@@ -13,6 +13,12 @@ struct KAGE_ReferenceCountBase depends (KAGE_System_Mutex) {
     KAGE_System_Mutex mutex : 0x8;
 } : 0x14;
 
+"568bf1576aff8b46??8d4e??ff50??66ff46??8d4e??8b46??5f5eff60??????5657":
+__thiscall void KAGE_ReferenceCount_ImageBase::IncrementReference();
+
+"568bf1576aff8b46??8d4e??ff50??0fb746??6685c074??48668946??6685c075??8b46??8d4e??ff50??8b4e??85c974??8b016a01ff50":
+__thiscall bool KAGE_ReferenceCount_ImageBase::DecrementReference();
+
 struct KAGE_ReferenceCount_ImageBase : public KAGE_ReferenceCountBase {
     KAGE_Graphics_ImageBase* image : 0x14;
 } : 0x18;

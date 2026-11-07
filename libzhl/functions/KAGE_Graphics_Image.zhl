@@ -47,7 +47,7 @@ struct KAGE_Graphics_ImageBase depends (SourceQuad, DestinationQuad, KColor) {
 		void GetTexelRegion(int x, int y, uint32_t width, uint32_t height, void* buffer);
 
 		skip; // RenderTexturedTriangle
-		skip; // Free?
+		pure void Free(unsigned int flags);
 		skip; // Load
 		skip; // Load
 		skip; // Load

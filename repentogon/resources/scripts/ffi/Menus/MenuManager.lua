@@ -1,0 +1,86 @@
+ffi.cdef [[
+    int L_MenuManager_GetActiveMenu();
+    struct ColorModifier* L_MenuManager_GetColorModifierLerpAmount();
+    struct ColorModifier* L_MenuManager_GetCurrentColorModifier();
+    unsigned int L_MenuManager_GetInputMask();
+    struct Seeds* L_MenuManager_GetSeeds();
+    struct Sprite* L_MenuManager_GetShadowSprite();
+    struct ColorModifier* L_MenuManager_GetTargetColorModifier();
+    struct Vector* L_MenuManager_GetViewPosition();
+    bool L_MenuManager_IsActive();
+    void L_MenuManager_SetActiveMenu(int);
+    void L_MenuManager_SetColorModifier(struct ColorModifier*, bool, float);
+    void L_MenuManager_SetInputMask(unsigned int);
+    void L_MenuManager_SetViewPosition(struct Vector*);
+]]
+local ffi = ffi
+local repentogon = ffidll
+
+ffichecks.checkmainmenu = function(className)
+	if not repentogon.L_MenuManager_IsActive() then
+		error(className .. " functions can only be used in the main menu", 3)
+	end
+end
+
+MenuManager = {
+    GetActiveMenu = function()
+        ffichecks.checkmainmenu("MenuManager")
+        local result = repentogon.L_MenuManager_GetActiveMenu() return result
+    end,
+    GetColorModifierLerpAmount = function()
+        ffichecks.checkmainmenu("MenuManager")
+        local p = repentogon.L_MenuManager_GetColorModifierLerpAmount();
+        local result = ffi.new("struct ColorModifier", ffi.getprivate(p, 0)) return result
+    end,
+    GetCurrentColorModifier = function()
+        ffichecks.checkmainmenu("MenuManager")
+        local p = repentogon.L_MenuManager_GetCurrentColorModifier()
+        local result = ffi.new("struct ColorModifier", ffi.getprivate(p, 0)) return result
+    end,
+    GetInputMask = function()
+        ffichecks.checkmainmenu("MenuManager")
+        local result = repentogon.L_MenuManager_GetInputMask() return result
+    end,
+    GetSeeds = function()
+        ffichecks.checkmainmenu("MenuManager")
+        local result = repentogon.L_MenuManager_GetSeeds() return result
+    end,
+    GetShadowSprite = function()
+        ffichecks.checkmainmenu("MenuManager")
+        local result = repentogon.L_MenuManager_GetShadowSprite() return result
+    end,
+    GetTargetColorModifier = function()
+        ffichecks.checkmainmenu("MenuManager")
+        local p = repentogon.L_MenuManager_GetTargetColorModifier();
+        local result = ffi.new("struct ColorModifier", ffi.getprivate(p, 0)) return result
+    end,
+    GetViewPosition = function()
+        ffichecks.checkmainmenu("MenuManager")
+        return ffichecks.copyvector(repentogon.L_MenuManager_GetViewPosition())
+    end,
+    IsActive = function()
+        local result = repentogon.L_MenuManager_IsActive() return result
+    end,
+    SetActiveMenu = function(menu)
+        ffichecks.checkmainmenu("MenuManager")
+        menu = ffichecks.checkinteger(1, menu)
+        repentogon.L_MenuManager_SetActiveMenu(menu);
+    end,
+    SetColorModifier = function(colorModifier, lerp, rate)
+        ffichecks.checkmainmenu("MenuManager")
+        ffichecks.checkcdata(1, colorModifier, "ColorModifier")
+        lerp = ffichecks.optboolean(lerp, true)
+        rate = ffichecks.optnumber(rate, 0.015)
+        repentogon.L_MenuManager_SetColorModifier(colorModifier, lerp, rate);
+    end,
+    SetInputMask = function(inputMask)
+        ffichecks.checkmainmenu("MenuManager")
+        inputMask = ffichecks.checkinteger(1, inputMask)
+        repentogon.L_MenuManager_SetInputMask(inputMask);
+    end,
+    SetViewPosition = function(position)
+        ffichecks.checkmainmenu("MenuManager")
+        ffichecks.checkcdata(1, position, "Vector")
+        repentogon.L_MenuManager_SetViewPosition(position);
+    end,
+}

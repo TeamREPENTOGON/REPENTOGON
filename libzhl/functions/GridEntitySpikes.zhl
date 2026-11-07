@@ -3,6 +3,7 @@ struct GridEntity_Spikes : public GridEntity {
 		skip; // Free
 		skip; // PostInit
 		
+		override
 		"558bec83e4f8568bf157837e??00":
         void Update();
 		

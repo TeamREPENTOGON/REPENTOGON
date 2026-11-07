@@ -1,17 +1,15 @@
-//#include "HookSystem.h"
-//#include "IsaacRepentance.h"
-//#include "LuaCore.h"
+#include "IsaacRepentance.h"
 
-// Stub
-/*
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
+extern "C" {
+	__declspec(dllexport) bool L_GridEntityTNT_Destroy(GridEntity_TNT* tnt, bool immediate, EntityRef* source) {
+		return tnt->Destroy(immediate, source);
+	}
 
-	lua::LuaStackProtector protector(_state);
+	__declspec(dllexport) bool L_GridEntityTNT_Hurt(GridEntity_TNT* tnt, int damage, EntityRef* source) {
+		return tnt->Hurt(damage, source);
+	}
 
-	luaL_Reg functions[] = {
-		{ NULL, NULL }
-	};
-	lua::RegisterFunctions(_state, lua::Metatables::GRID_ENTITY_TNT, functions);
+	__declspec(dllexport) void L_GridEntityTNT_Update(GridEntity_TNT* tnt) {
+		tnt->Update();
+	}
 }
-*/

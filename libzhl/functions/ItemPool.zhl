@@ -70,6 +70,24 @@ __thiscall void ItemPool::IdentifyPill(uint32_t pillColor);
 "558bec8b45??33d225ff0700003bd01bd223d0b80e0000003bd00f42c28a84":
 __thiscall bool ItemPool::IsPillIdentified(uint32_t pillColor);
 
+"558bec83e4f85153568b75??578bf985f679":
+__thiscall bool ItemPool::RemoveCollectible(int collectible, bool param2, bool param3);
+
+"558bec8b55??5685d27e":
+__thiscall bool ItemPool::RemoveTrinket(int trinket);
+
+"51568bf15733ff":
+__thiscall void ItemPool::ResetTrinkets();
+
+"558bec83ec18a1????????33c58945??8b55":
+__thiscall int ItemPool::GetCard(unsigned int seed, bool includePlayingCards, bool includeRunes, bool onlyRunes);
+
+"558bec83ec18f30f7e05":
+__thiscall int ItemPool::GetPill(unsigned int seed);
+
+"558bec83e4f856578bf933c0":
+__thiscall void ItemPool::ResetRoomBlacklist();
+
 struct ItemPool depends (ItemPool_Item, RNG) {
 	{{
 		inline std::vector<bool>* GetRemovedCollectibles() { return &this->_removedCollectibles; }
