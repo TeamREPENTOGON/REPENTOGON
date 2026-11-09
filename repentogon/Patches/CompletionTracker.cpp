@@ -980,15 +980,17 @@ HOOK_METHOD(PauseScreen, Render, () -> void) {
 
 
 HOOK_METHOD(CompletionWidget, Render, (Vector* pos, Vector* scale) -> void) {
-	const int playertype = g_MenuManager->GetMenuCharacter()->GetSelectedPlayerType();
-	if (playertype >= NUM_PLAYER_TYPES) {
-		ANM2* anm = this->GetANM2();
+	if (!(g_Manager->GetState() == 2 && g_Game)) { //not ingame (no pause menu)
+		const int playertype = g_MenuManager->GetMenuCharacter()->GetSelectedPlayerType();
+		if (playertype >= NUM_PLAYER_TYPES) {
+			ANM2* anm = this->GetANM2();
 
-		bool hidemarks = false;
-		array marks = GetMarksForPlayer(playertype, anm, true, &hidemarks);
-		this->CharacterId = playertype;
-		if (hidemarks) {
-			return;
+			bool hidemarks = false;
+			array marks = GetMarksForPlayer(playertype, anm, true, &hidemarks);
+			this->CharacterId = playertype;
+			if (hidemarks) {
+				return;
+			}
 		}
 	}
 	super(pos, scale);
