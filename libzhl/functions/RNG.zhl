@@ -25,4 +25,9 @@ struct RNG
     unsigned int _shift1 : 0x4;
     unsigned int _shift2 : 0x8;
     unsigned int _shift3 : 0xC;
+
+    {{
+        RNG() = default;
+        RNG(uint32_t seed, uint32_t shiftIdx) { this->game_constructor(seed, shiftIdx); }
+    }}
 } : 0x10; //0x10

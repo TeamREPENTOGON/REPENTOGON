@@ -3,8 +3,131 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../Bosses/BossManager.h"
 #include "../Patches/XMLData.h"
 #include "../Patches/EntityConfigEx.h"
+#include "../LuaClasses.h"
+
+static void lua_push_string(lua_State* L, const std::string& string)
+{
+	lua_pushlstring(L, string.c_str(), string.length());
+}
+
+#pragma region EntityConfigBoss
+
+static EntityConfig_Boss* get_boss_config_ud(lua_State* L, int idx)
+{
+    return LuaEntityConfigBoss::Get(L, idx);
+}
+
+LUA_FUNCTION(Lua_Boss_GetBossId)
+{
+	lua_pushinteger(L, get_boss_config_ud(L, 1)->bossID);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Boss_GetName)
+{
+	lua_push_string(L, get_boss_config_ud(L, 1)->name);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Boss_GetNamePath)
+{
+	lua_push_string(L, get_boss_config_ud(L, 1)->namePath);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Boss_GetPortraitPath)
+{
+	lua_push_string(L, get_boss_config_ud(L, 1)->portraitPath);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Boss_GetPivot)
+{
+	Vector& pivot = get_boss_config_ud(L, 1)->pivot;
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::CONST_VECTOR), pivot);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Boss_GetAchievement)
+{
+	lua_pushinteger(L, get_boss_config_ud(L, 1)->achievement);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Boss_GetAlt)
+{
+	EntityConfig_Boss* boss = get_boss_config_ud(L, 1);
+	size_t idx = (size_t)luaL_checkinteger(L, 2);
+
+	bool inRange = idx < boss->alts.size();
+	if (!inRange)
+	{
+		luaL_argerror(L, 2, "index out of range");
+	}
+
+	LuaEntityConfigBossAlt::PushPtr(L, &boss->alts[idx]);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Boss_GetNumAlts)
+{
+	lua_pushinteger(L, get_boss_config_ud(L, 1)->alts.size());
+	return 1;
+}
+
+static void Boss_RegisterClass(lua_State* L)
+{
+	luaL_Reg functions[] = {
+		{ "GetBossID", Lua_Boss_GetBossId },
+		{ "GetName", Lua_Boss_GetName },
+		{ "GetNamePath", Lua_Boss_GetNamePath },
+		{ "GetPortraitPath", Lua_Boss_GetPortraitPath },
+		{ "GetPivot", Lua_Boss_GetPivot },
+		{ "GetAchievement", Lua_Boss_GetAchievement },
+		{ "GetAlt", Lua_Boss_GetAlt },
+		{ "GetNumAlts", Lua_Boss_GetNumAlts },
+		{ NULL, NULL }
+	};
+
+	lua::RegisterNewClass(L, LuaEntityConfigBoss::MT, LuaEntityConfigBoss::MT, functions);
+}
+
+#pragma endregion
+
+#pragma region EntityConfigBossAlt
+
+static EntityConfig_Boss_Alt* get_boss_alt_ud(lua_State* L, int idx)
+{
+	return LuaEntityConfigBossAlt::Get(L, idx);
+}
+
+LUA_FUNCTION(Lua_BossAlt_GetStageId)
+{
+	lua_pushinteger(L, get_boss_alt_ud(L, 1)->stageId);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BossAlt_GetPortraitPath)
+{
+	lua_push_string(L, get_boss_alt_ud(L, 1)->portraitPath);
+	return 1;
+}
+
+static void BossAlt_RegisterClass(lua_State* L)
+{
+	luaL_Reg functions[] = {
+		{ "GetStageID", Lua_BossAlt_GetStageId },
+		{ "GetPortraitPath", Lua_BossAlt_GetPortraitPath },
+		{ NULL, NULL }
+	};
+
+	lua::RegisterNewClass(L, LuaEntityConfigBossAlt::MT, LuaEntityConfigBossAlt::MT, functions);
+}
+
+#pragma endregion
 
 LUA_FUNCTION(Lua_EntityGetEntityConfigEntity)
 {
@@ -84,6 +207,27 @@ LUA_FUNCTION(Lua_EntityConfigGetPlayer)
 LUA_FUNCTION(Lua_EntityConfigGetMaxPlayerType)
 {
 	lua_pushinteger(L, g_Manager->GetEntityConfig()->GetPlayers()->size()-1);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfig_GetBoss)
+{
+	size_t id = (size_t)luaL_checkinteger(L, 1);
+	auto& bosses = *g_Manager->GetEntityConfig()->GetBosses();
+
+	bool inRange = id < bosses.size();
+	if (!inRange)
+	{
+		luaL_argerror(L, 1, "id out of range");
+	}
+
+	LuaEntityConfigBoss::PushPtr(L, &bosses[id]);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfig_GetMaxBossId)
+{
+	lua_pushinteger(L, BossManager::GetNumBosses() - 1);
 	return 1;
 }
 
@@ -814,6 +958,8 @@ static void RegisterEntityConfig(lua_State* L) {
 	lua::TableAssoc(L, "GetMaxPlayerType", Lua_EntityConfigGetMaxPlayerType);
 	lua::TableAssoc(L, "GetBaby", Lua_EntityConfigGetBaby);
 	lua::TableAssoc(L, "GetMaxBabyID", Lua_EntityConfigGetMaxBabyID);
+	lua::TableAssoc(L, "GetBoss", Lua_EntityConfig_GetBoss);
+	lua::TableAssoc(L, "GetMaxBossID", Lua_EntityConfig_GetMaxBossId);
 	lua_setglobal(L, lua::metatables::EntityConfigMT);
 }
 
@@ -924,4 +1070,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterEntityConfigEntity(_state);
 	RegisterEntityConfigPlayer(_state);
 	RegisterEntityConfigBaby(_state);
+	Boss_RegisterClass(_state);
+	BossAlt_RegisterClass(_state);
 }

@@ -1,8 +1,17 @@
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec280a0000":
+__thiscall void BossPool::Init(uint32_t seed);
+
 "558bec83e4f083ec48a1????????8b55":
 __thiscall int BossPool::GetBossId(int leveltype, int levelvariant, RNG* rng);
 
 "558bec83ec08894d":
 __thiscall BossPool_Entry* BossPool::PickBoss(BossPool_Pool* pool);
+
+"558bec83e4f883ec0c538bd933d2":
+__thiscall void BossPool::StoreGameState(GameStateBossPool* state);
+
+"558bec83e4f883ec14f30f7e05????????8d51":
+__thiscall void BossPool::RestoreGameState(GameStateBossPool* state);
 
 struct BossPool depends (BossPool_Pool) {
 	BossPool_Pool _pool[37] : 0x0;
