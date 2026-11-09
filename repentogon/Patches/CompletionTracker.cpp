@@ -979,23 +979,19 @@ HOOK_METHOD(PauseScreen, Render, () -> void) {
 
 
 
-HOOK_METHOD(Menu_Character, Render, () -> void) {
-	super();
-	CompletionWidget* cmpl = this->GetCompletionWidget();
+HOOK_METHOD(CompletionWidget, Render, (Vector* pos, Vector* scale) -> void) {
 	const int playertype = g_MenuManager->GetMenuCharacter()->GetSelectedPlayerType();
 	if (playertype >= NUM_PLAYER_TYPES) {
-		Vector* ref = &g_MenuManager->_ViewPosition;
-//		Vector* cpos = new Vector(ref->x - 80, ref->y + 894);	//goes unused
-		ANM2* anm = cmpl->GetANM2();
+		ANM2* anm = this->GetANM2();
 
 		bool hidemarks = false;
 		array marks = GetMarksForPlayer(playertype, anm, true, &hidemarks);
-		if (!hidemarks) {
-			cmpl->CharacterId = playertype;
-			cmpl->Render(&Vector(ref->x + 80, ref->y + 860), &Vector(1, 1));
+		this->CharacterId = playertype;
+		if (hidemarks) {
+			return;
 		}
-
 	}
+	super(pos, scale);
 }
 
 
