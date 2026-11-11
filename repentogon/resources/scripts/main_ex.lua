@@ -3080,7 +3080,6 @@ end
 
 
 -- Luaside reimplementation of entity:GetData()
--- TODO: Right now, we overwrite GetData with _GetEntityData in LuaInit.cpp. When we jit Entity, remove that.
 local _EntityData = {}
 
 function _GetEntityData(entity)

@@ -187,39 +187,6 @@ void ASMPatchResetLuaEntityData(const char* def, const ASMPatch::Registers entit
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-// Temporary patches to allow lua functions to be used in vanilla metatables.
-// This is currently used to make GetData a lua function, but once we've jitted everything these patches won't be needed anymore.
-int __stdcall _AllowLuaMetatableFunctions(lua_State* L) {
-	if (lua_iscfunction(L, -1) || lua_isfunction(L, -1)) {
-		return 1;
-	}
-	return 0;
-}
-void ASMPatchAllowLuaMetatableFunctions() {
-	static const std::vector<std::string> sigs = {
-		"ff15????????8b1d????????83c42085c00f85????????8b3d",
-		"ff15????????83c42c6aff",
-		"ff15????????83c42c85c00f84????????6aff6afe56ff15????????6afe56ffd383c4145f",
-	};
-
-	for (const auto& sig : sigs) {
-		SigScan scanner(sig.c_str());
-		scanner.Scan();
-		void* addr = (char*)scanner.GetAddress();
-
-		printf("[REPENTOGON] Patching to allow lua functions in vanilla metatable index @ %p\n", addr);
-
-		ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
-		ASMPatch patch;
-		patch.PreserveRegisters(savedRegisters)
-			.Push(ASMPatch::Registers::ESI)
-			.AddInternalCall(_AllowLuaMetatableFunctions)
-			.RestoreRegisters(savedRegisters)
-			.AddRelativeJump((char*)addr + 0x6);
-		sASMPatcher.PatchAt(addr, &patch);
-	}
-}
-
 void ASMPatchShowModCompletionMarksVanillaStyle() {
 	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::PatchShowModCompletionMarksVanillaStyle);
 
@@ -241,7 +208,6 @@ void PerformASMPatches() {
 	ASMPatchResetLuaEntityData(&AsmDefinitions::GetData_Entity_Remove, ASMPatch::Registers::ESI, ASMPatch::Registers::EDI);
 	ASMPatchResetLuaEntityData(&AsmDefinitions::GetData_EntityEffect_Remove, ASMPatch::Registers::ESI, ASMPatch::Registers::EDI);
 	ASMPatchResetLuaEntityData(&AsmDefinitions::GetData_Entity_Init, ASMPatch::Registers::ESI, ASMPatch::Registers::EDI);
-	ASMPatchAllowLuaMetatableFunctions();
 
 	// Callbacks
 	CustomCallbacks::detail::ApplyPatches();
