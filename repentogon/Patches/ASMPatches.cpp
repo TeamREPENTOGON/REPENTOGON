@@ -220,6 +220,16 @@ void ASMPatchAllowLuaMetatableFunctions() {
 	}
 }
 
+void ASMPatchShowModCompletionMarksVanillaStyle() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::PatchShowModCompletionMarksVanillaStyle);
+
+	printf("[REPENTOGON] Patching Menu_Charaecter::Render to not verify the chaarcter id before calling CompletionWidget::Render\n");
+	ASMPatch patch;
+	patch.AddRelativeJump((char*)addr + 0x5);
+		
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void PerformASMPatches() {
 	SaveSyncing::ASMPatchesForSaveSyncing();
 	ASMPatchInputConfigsPaths();
@@ -261,6 +271,7 @@ void PerformASMPatches() {
 	ASMPatchMainMenuCallback();
 	ASMPatchPreModUnloadCallbackDuringShutdown();
 	ASMPatchPostRoomRenderEntitiesCallback();
+	ASMPatchPreRoomRenderEntities();
 	ASMPatchPreItemTextDisplayCallback();
 	ASMPatchHideChargeBar();
 	ASMPatchPostBackwardsRoomRestore();
@@ -383,6 +394,9 @@ void PerformASMPatches() {
 	//Mod folder redirect
 	ASMPatchModReRoute();
 	ASMPatchModDataReRoute();
+
+	//completionMarksForModded (Vanilla Style render order)
+	ASMPatchShowModCompletionMarksVanillaStyle();
 
 	// Tweaks (bug crashes)
 	if (!ASMPatches::FixGodheadEntityPartition()) {

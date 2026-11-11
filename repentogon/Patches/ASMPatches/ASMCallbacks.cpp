@@ -2022,6 +2022,35 @@ void __stdcall RunPostRoomRenderEntitiesCallback() {
 			.call(1);
 	}
 }
+
+void __stdcall RunPreRoomRenderEntitiesCallback() {
+	const int callbackid = 1496;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.call(1);		
+	}
+}
+
+void ASMPatchPreRoomRenderEntities() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_Pre_Render_Entities);
+	printf("[REPENTOGON] Patching MC_PRE_ROOM_RENDER_ENTITIES into Room::Render at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.AddInternalCall(RunPreRoomRenderEntitiesCallback)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0xc)) // Restore the bytes we overwrote
+		.AddRelativeJump((char*)addr + 0xc);
+
+	sASMPatcher.PatchAt(addr, &patch);	
+}
+
 void ASMPatchPostRoomRenderEntitiesCallback() {
 	SigScan scanner("33f68d87????????39b0????????76??8bbd????????6690");
 	scanner.Scan();

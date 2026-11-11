@@ -36,6 +36,7 @@ void ASMPatchPreItemTextDisplayCallback();
 void ASMPatchHideChargeBar();
 void ASMPatchesForCustomActiveGFX();
 void ASMPatchPostBackwardsRoomRestore();
+void ASMPatchPreRoomRenderEntities();
 
 namespace ASMCallbacks::detail
 {
