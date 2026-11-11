@@ -160,7 +160,7 @@ public:
 
 //=================================================================================================
 
-#define FUNCTIONHOOK_MAXSIZE 128
+#define FUNCTIONHOOK_MAXSIZE 512
 
 class FunctionHook_private
 {
@@ -188,14 +188,16 @@ private:
 	void SetName(const char *name, const char *type);
 
 	[[nodiscard]] static unsigned char* Push(HookSystem::GPRegisters reg, unsigned char* text);
+	[[nodiscard]] static unsigned char* Push(HookSystem::XMMRegisters reg, unsigned char* text);
 	[[nodiscard]] static unsigned char* Mov(HookSystem::GPRegisters dst, HookSystem::GPRegisters src, unsigned char* text);
 	[[nodiscard]] static unsigned char* Pop(HookSystem::GPRegisters reg, unsigned char* text);
+	[[nodiscard]] static unsigned char* Pop(HookSystem::XMMRegisters reg, unsigned char* text);
 	[[nodiscard]] static unsigned char* Ret(unsigned short n, unsigned char* text);
 	[[nodiscard]] static unsigned char* DecrESP(unsigned char size, unsigned char* text);
 	[[nodiscard]] static unsigned char* IncrESP(unsigned char size, unsigned char* text);
 
-	[[nodiscard]] unsigned char* EmitPrologue(FunctionDefinition const* def, unsigned char* text);
-	[[nodiscard]] unsigned char* EmitEpilogue(FunctionDefinition const* def, unsigned char stackPos, unsigned char* text);
+	[[nodiscard]] unsigned char* EmitPrologue(FunctionDefinition const* def, bool preserveXMM, unsigned char* text);
+	[[nodiscard]] unsigned char* EmitEpilogue(FunctionDefinition const* def, bool preserveXMM, unsigned char stackPos, unsigned char* text);
 
 protected:
 	virtual int Install();
