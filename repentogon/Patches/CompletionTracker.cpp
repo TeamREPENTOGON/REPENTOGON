@@ -1066,7 +1066,23 @@ MOD_EXPORT void L_Isaac_SetCompletionMark(int playertype, int completiontype, in
 	if (playertype > 40) {
 		if ((value == 0) || PreMarksCallbackTrigger(completiontype, playertype)) {
 			array<int, 15> marks = GetMarksForPlayer(playertype);
-			marks[completiontype] = value;
+			if (((completiontype == CompletionType::ULTRA_GREED) || completiontype == CompletionType::ULTRA_GREEDIER)) {
+				if((completiontype == CompletionType::ULTRA_GREEDIER) && (value >= 1)){
+					marks[CompletionType::ULTRA_GREED] = 2;
+					marks[CompletionType::ULTRA_GREEDIER] = 2;
+				}
+				else {
+					marks[CompletionType::ULTRA_GREED] = value;
+					marks[CompletionType::ULTRA_GREEDIER] = 0;
+					if (value > 1) {
+						marks[CompletionType::ULTRA_GREEDIER] = 2;
+					}
+				}
+			}
+			else {
+				marks[completiontype] = value;
+			}
+
 			string idx = GetMarksIdx(playertype);
 			CompletionMarks[idx] = marks;
 			SaveCompletionMarksToJson();
