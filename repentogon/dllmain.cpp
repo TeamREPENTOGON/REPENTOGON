@@ -77,23 +77,20 @@ The default priority is 0, and priority numbers can be negative
 
 ********************************************************************************/
 
-// Taken from lua.h in Lua 5.3.3
+// Taken from lua.h in LuaJIT
 struct override_lua_Debug {
 	int event;
 	const char* name;	/* (n) */
-	const char* namewhat;	/* (n) 'global', 'local', 'field', 'method' */
-	const char* what;	/* (S) 'Lua', 'C', 'main', 'tail' */
+	const char* namewhat;	/* (n) `global', `local', `field', `method' */
+	const char* what;	/* (S) `Lua', `C', `main', `tail' */
 	const char* source;	/* (S) */
 	int currentline;	/* (l) */
+	int nups;		/* (u) number of upvalues */
 	int linedefined;	/* (S) */
 	int lastlinedefined;	/* (S) */
-	unsigned char nups;	/* (u) number of upvalues */
-	unsigned char nparams;/* (u) number of parameters */
-	char isvararg;        /* (u) */
-	char istailcall;	/* (t) */
 	char short_src[LUA_IDSIZE]; /* (S) */
 	/* private part */
-	struct CallInfo* i_ci;  /* active function */
+	int i_ci;  /* active function */
 };
 
 static int __cdecl OverrideGetInfo(lua_State* L, const char* what, override_lua_Debug* ar) {
@@ -108,9 +105,6 @@ static int __cdecl OverrideGetInfo(lua_State* L, const char* what, override_lua_
 	ar->linedefined = debug.linedefined;
 	ar->lastlinedefined = debug.lastlinedefined;
 	ar->nups = debug.nups;
-	ar->nparams = debug.nparams;
-	ar->isvararg = debug.isvararg;
-	ar->istailcall = debug.istailcall;
 	memcpy(ar->short_src, debug.short_src, LUA_IDSIZE);
 	ar->i_ci = debug.i_ci;
 	return result;

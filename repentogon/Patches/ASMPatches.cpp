@@ -44,14 +44,16 @@
 #include "ASMPatches/ASMRoom.h"
 #include "ASMPatches/ASMStatusEffects.h"
 #include "ASMPatches/ASMTweaks.h"
-#include "ASMPatches/ASMTweaks.h"
 #include "ASMPatches/ASMLocalization.h"
 #include "ASMPatches/ASMFixes.h"
 #include "ASMPatches/ASMSplitTears.h"
 #include "ASMPatches/ASMCamera.h"
+#include "ASMPatches/ASMLuaJIT.h"
 
 #include "ASMPatcher.hpp"
 #include "ASMDefinition.h"
+#include "../LuaClasses.h"
+#include "../LuaInit.h"
 
 /* This patch hooks KAGE_LogMessage by hand. LibZHL can't properly hook functions with varargs, and we need varargs to properly get log messages.
 *  So, we'll just do it manually, not a big deal.
@@ -99,7 +101,6 @@ void ASMPatchConsoleRunCommand() {
 	patch.AddBytes("\xEB");
 	sASMPatcher.FlatPatch(addr, &patch);
 }
-
 
 
 void goUpTogon(char* str) {
@@ -162,6 +163,30 @@ void ASMPatchModDataReRoute() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// GetData has been reimplemented luaside.
+// These patches handle clearing the lua tables at the same times that the game would normally do so.
+void __stdcall _ResetLuaEntityData(Entity* entity) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::clearEntityData);
+	lua::LuaCaller(L).pushClassPtr<LuaEntity>(entity).call(0);
+}
+void ASMPatchResetLuaEntityData(const char* def, const ASMPatch::Registers entityRegister, const ASMPatch::Registers resultRegister) {
+	void* addr = sASMDefinitionHolder->GetDefinition(def);
+
+	printf("[REPENTOGON] Patching Entity::GetData() table reset @ %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(entityRegister)
+		.AddInternalCall(_ResetLuaEntityData)
+		.RestoreRegisters(savedRegisters)
+		.MoveImmediate(resultRegister, 0x0, true)
+		.AddRelativeJump((char*)addr + 0x6);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMPatchShowModCompletionMarksVanillaStyle() {
 	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::PatchShowModCompletionMarksVanillaStyle);
 
@@ -177,6 +202,12 @@ void PerformASMPatches() {
 	ASMPatchInputConfigsPaths();
 	ASMPatchLogMessage();
 	ASMPatchConsoleRunCommand();
+	ASMPatches::ASMPatchSkipSoundPreload();
+
+	ASMPatchResetLuaEntityData(&AsmDefinitions::GetData_Entity_Destructor, ASMPatch::Registers::EDI, ASMPatch::Registers::ESI);
+	ASMPatchResetLuaEntityData(&AsmDefinitions::GetData_Entity_Remove, ASMPatch::Registers::ESI, ASMPatch::Registers::EDI);
+	ASMPatchResetLuaEntityData(&AsmDefinitions::GetData_EntityEffect_Remove, ASMPatch::Registers::ESI, ASMPatch::Registers::EDI);
+	ASMPatchResetLuaEntityData(&AsmDefinitions::GetData_Entity_Init, ASMPatch::Registers::ESI, ASMPatch::Registers::EDI);
 
 	// Callbacks
 	CustomCallbacks::detail::ApplyPatches();
@@ -298,6 +329,10 @@ void PerformASMPatches() {
 	EntitySaveStateManagement::detail::Patches::ApplyPatches();
 	EntityManager::detail::Patches::ApplyPatches();
 
+	// Lua related
+	ASMPatchLuaGC();
+	ASMPatchLuaLoadMessage();
+
 	// External
 	ASMPatchesForFamiliarCustomTags();
 	PatchNullItemAndNullCostumeSupport();
@@ -337,6 +372,7 @@ void PerformASMPatches() {
 	if (!ASMPatches::FixTearDetonatorEntityList()) {
 		ZHL::Log("[ERROR] Unable to find signature for Tear Detonator EntityList_EL in UseActiveItem\n");
 	}
+
 
 	//patch disabled, due to bugged steam details
 	/*if (!ASMPatches::LeaderboarEntryCheckerUpdate()) {

@@ -1,20 +1,20 @@
-"558bec83e4c081ecb400000053568bf15780be????????000f84????????80be????????000f84????????80be????????00":
-__thiscall void Entity_Bomb::Render(Vector *offset);
-
-"558bec83e4f883ec6056":
-__thiscall bool Entity_Bomb::HandleCollision(Entity* collider, bool low);
-
 // "558bec83ec5ca1????????33c58945??538bd9":
 // __thiscall void Entity_Bomb::UpdateDirtColor();
 
-struct Entity_Bomb depends (ANM2) : public Entity { {{
+struct Entity_Bomb depends (ANM2, BitSet128) : public Entity { {{
     inline int* GetExplosionCountdown() { return &this->_explosionCountdown1; }
     void LIBZHL_API Entity_Bomb::UpdateDirtColor();
 }}
 
 	__vtable {
-		skip; // Free
-		skip; // Init
+		override
+		"558bec6aff68????????64a1????????5056a1????????33c5508d45??64a3????????8bf1c745??000000008d8e":
+		void Free(unsigned int flags);
+		
+		override
+		"558bec83e4f883ec6ca1????????33c4894424??5356":
+		void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
+		
 		skip; // PreUpdate
 		
 		override
@@ -22,7 +22,11 @@ struct Entity_Bomb depends (ANM2) : public Entity { {{
 		void Update();
 		
 		skip; // Interpolate
-		skip; // Render
+		
+		override
+		"558bec83e4c081ecb400000053568bf15780be????????000f84????????80be????????000f84????????80be????????00":
+		void Render(Vector* offset);
+		
 		skip; // RenderShadowLayer
 		skip; // PostRender
 		skip; // TakeDamage
@@ -40,7 +44,11 @@ struct Entity_Bomb depends (ANM2) : public Entity { {{
 		skip; // IsValidTarget
 		skip; // TryThrow
 		skip; // GetForwardVector
-		skip; // HandleCollision
+		
+		override
+		"558bec83e4f883ec6056":
+		bool HandleCollision(Entity* Collider, bool Low);
+		
 		skip; // ResetColor
 		skip; // LoadEntityConfig
 	};
@@ -49,6 +57,7 @@ struct Entity_Bomb depends (ANM2) : public Entity { {{
 	float _fallSpeed : 0x41c;  // formerly mislabeled as _height
 	float _fallAcceleration : 0x420;  // formerly mislabeled as _fallingSpeed
 	float _rocketAngle : 0x428;
+	BitSet128 _tearFlags : 0x438;
 	float _rocketSpeed : 0x42c;
 	float _scale : 0x434;
 	bool _prismTouched : 0x45c;

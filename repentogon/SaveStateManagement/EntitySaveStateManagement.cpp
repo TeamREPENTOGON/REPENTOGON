@@ -63,8 +63,8 @@
 #include "ASMDefinition.h"
 #include "Log.h"
 #include "../MiscFunctions.h"
+#include "../LuaClasses.h"
 #include "../Utils/StringUtils.h"
-#include "../LuaInterfaces/LuaEntitySaveState.h"
 #include "../LuaInterfaces/_Internals.h"
 #include "../ImGuiFeatures/CustomImGui.h"
 #include "../Patches/ExtraRenderSteps.h"
@@ -3363,7 +3363,7 @@ namespace ESSM::LuaFunctions
 
     LUA_FUNCTION(GetEntitySaveStateId)
     {
-        EntitySaveState& state = Lua_EntitySaveState::GetEntitySaveState(L, 1);
+        EntitySaveState& state = LuaEntitySaveState::Get(L, 1)->Get();
 
 		if (!EntityHijackManager::IsHijacked(state))
 		{

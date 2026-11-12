@@ -1,6 +1,8 @@
 #include "ASMPatcher.hpp"
 #include "../ASMPatches.h"
 #include "HookSystem.h"
+#include "../../LuaClasses.h"
+#include "../../Utils/GridEntity/GridEntityUtils.h"
 
 /* /////////////////////
 // Grid Collision Callbacks
@@ -9,16 +11,16 @@
 struct GridCollisionCallbackInfo {
 	int precallbackid;
 	int postcallbackid;
-	lua::Metatables metatable;
+	const lua::LuaClassInterface& classInterface;
 };
 
 const std::unordered_map<int, const GridCollisionCallbackInfo> gridCollisionCallbacks = {
-	{1, { 1171, 1172, lua::Metatables::ENTITY_PLAYER }},
-	{2, { 1173, 1174, lua::Metatables::ENTITY_TEAR }},
-	{3, { 1175, 1176, lua::Metatables::ENTITY_FAMILIAR }},
-	{4, { 1177, 1178, lua::Metatables::ENTITY_BOMB }},
-	{5, { 1179, 1180, lua::Metatables::ENTITY_PICKUP }},
-	{9, { 1181, 1182, lua::Metatables::ENTITY_PROJECTILE }},
+	{1, { 1171, 1172, LuaEntityPlayer::Interface }},
+	{2, { 1173, 1174, LuaEntityTear::Interface }},
+	{3, { 1175, 1176, LuaEntityFamiliar::Interface }},
+	{4, { 1177, 1178, LuaEntityBomb::Interface }},
+	{5, { 1179, 1180, LuaEntityPickup::Interface }},
+	{9, { 1181, 1182, LuaEntityProjectile::Interface }},
 };
 
 // An entity may check the same grid index for collision multiple times per frame.
@@ -30,8 +32,9 @@ HOOK_METHOD(Game, Update, () -> void) {
 	cachedGridCollisionResult.clear();
 }
 
-bool RunGridCollisionCallbacks(Entity* entity, const int gridIndex, const lua::Metatables metatable, const int param, const int precallbackid, const int postcallbackid) {
+bool RunGridCollisionCallbacks(Entity* entity, const int gridIndex, const lua::LuaClassInterface& classInterface, const int param, const int precallbackid, const int postcallbackid) {
 	GridEntity* gridEntity = g_Game->GetCurrentRoom()->GetGridEntity(gridIndex);
+	const lua::LuaClassInterface& gridInterface = gridEntity ? GridEntityUtils::GetLuaClassInterface(*gridEntity) : LuaGridEntity::Interface;
 
 	// MC_PRE_X_GRID_COLLISION
 	if (CallbackState.test(precallbackid - 1000)) {
@@ -41,9 +44,9 @@ bool RunGridCollisionCallbacks(Entity* entity, const int gridIndex, const lua::M
 
 		lua::LuaResults result = lua::LuaCaller(L).push(precallbackid)
 			.push(param)
-			.push(entity, metatable)
+			.pushClassPtr(classInterface, entity)
 			.push(gridIndex)
-			.push(gridEntity, lua::Metatables::GRID_ENTITY)
+			.pushClassPtr(gridInterface, gridEntity)
 			.call(1);
 
 		// why does lua_toboolean return an int wtf
@@ -60,9 +63,9 @@ bool RunGridCollisionCallbacks(Entity* entity, const int gridIndex, const lua::M
 
 		lua::LuaCaller(L).push(postcallbackid)
 			.push(param)
-			.push(entity, metatable)
+			.pushClassPtr(classInterface, entity)
 			.push(gridIndex)
-			.push(gridEntity, lua::Metatables::GRID_ENTITY)
+			.pushClassPtr(gridInterface, gridEntity)
 			.call(0);
 	}
 
@@ -80,10 +83,10 @@ bool __stdcall TriggerGridCollisionCallbacks(Entity* entity, const int gridIndex
 
 	if (gridCollisionCallbacks.count(type) != 0) {
 		const GridCollisionCallbackInfo info = gridCollisionCallbacks.at(type);
-		result = RunGridCollisionCallbacks(entity, gridIndex, info.metatable, *entity->GetVariant(), info.precallbackid, info.postcallbackid);
+		result = RunGridCollisionCallbacks(entity, gridIndex, info.classInterface, *entity->GetVariant(), info.precallbackid, info.postcallbackid);
 	}
 	else if (entity->ToNPC()) {
-		result = RunGridCollisionCallbacks(entity, gridIndex, lua::Metatables::ENTITY_NPC, type, 1183, 1184);
+		result = RunGridCollisionCallbacks(entity, gridIndex, LuaEntityNPC::Interface, type, 1183, 1184);
 	}
 
 	cachedGridCollisionResult[entity][gridIndex] = result;

@@ -33,9 +33,12 @@ __thiscall void ModManager::Reset();
 "558bec83e4f851568bf1e8????????8bcee8????????8bce":
 __thiscall void ModManager::TriggerResize();
 
-struct ModManager depends (ModEntry, RedirectedPath) {
+struct ModManager depends (ModEntry, RedirectedPath, ANM2) {
 	vector_ModEntryPointer _mods : 0x0;
 	RedirectedPath* _redirectedPathsMap[32768] : 0xc;
+	bool _updatingMods : 0x20018;
+	std_string _updateStatusText : 0x2001c;
+	ANM2 _updateSprite : 0x20034;
 	int _modBanStatus : 0x2025c;
 } : 0x20260;
 

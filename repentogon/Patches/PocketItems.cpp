@@ -8,6 +8,7 @@
 #include "XMLData.h"
 #include "LuaCore.h"
 #include "../LuaInit.h"
+#include "../LuaClasses.h"
 
 // ----------------------------------------------------------------------------------------------------
 // -- CALLBACKS
@@ -26,7 +27,7 @@ std::optional<int> RunPreAddPocketItemCallback(Entity_Player* player, const uint
 
 			lua::LuaResults results = lua::LuaCaller(L).push(precallbackid)
 				.push(id)
-				.push(player, lua::Metatables::ENTITY_PLAYER)
+				.pushClassPtr<LuaEntityPlayer>(player)
 				.push(id)
 				.push(slot)
 				.call(1);
@@ -61,7 +62,7 @@ void RunPostAddPocketItemCallback(Entity_Player* player, const uint32_t pocketIt
 
 			lua::LuaCaller(L).push(postcallbackid)
 				.push(id)
-				.push(player, lua::Metatables::ENTITY_PLAYER)
+				.pushClassPtr<LuaEntityPlayer>(player)
 				.push(id)
 				.push(slot)
 				.call(1);
@@ -82,7 +83,7 @@ void RunPostRemovePocketItemCallback(Entity_Player* player, const uint32_t pocke
 
 			lua::LuaCaller(L).push(callbackid)
 				.push(id)
-				.push(player, lua::Metatables::ENTITY_PLAYER)
+				.pushClassPtr<LuaEntityPlayer>(player)
 				.push(id)
 				.push(slot)
 				.call(1);
@@ -104,8 +105,8 @@ bool __stdcall RunPreCollectPocketItemCallback(Entity_Pickup* pickup, Entity_Pla
 
 		lua::LuaResults results = lua::LuaCaller(L).push(callbackid)
 			.push(pickup->_subtype)
-			.push(player, lua::Metatables::ENTITY_PLAYER)
-			.push(pickup, lua::Metatables::ENTITY_PICKUP)
+			.pushClassPtr<LuaEntityPlayer>(player)
+			.pushClassPtr<LuaEntityPickup>(pickup)
 			.call(1);
 
 		if (!results && lua_isboolean(L, -1) && (bool)lua_toboolean(L, -1) == false) {
@@ -135,8 +136,8 @@ void __stdcall RunPostCollectPocketItemCallback(Entity_Pickup* pickup, Entity_Pl
 
 			lua::LuaCaller(L).push(callbackid)
 				.push(pickup->_subtype)
-				.push(player, lua::Metatables::ENTITY_PLAYER)
-				.push(pickup, lua::Metatables::ENTITY_PICKUP)
+				.pushClassPtr<LuaEntityPlayer>(player)
+				.pushClassPtr<LuaEntityPickup>(pickup)
 				.call(1);
 		}
 	}
@@ -157,8 +158,8 @@ void RunPostDropPocketItemCallback(Entity_Player* player, const uint32_t pocketI
 
 				lua::LuaCaller(L).push(callbackid)
 					.push(pickup->_subtype)
-					.push(player, lua::Metatables::ENTITY_PLAYER)
-					.push(pickup, lua::Metatables::ENTITY_PICKUP)
+					.pushClassPtr<LuaEntityPlayer>(player)
+					.pushClassPtr<LuaEntityPickup>(pickup)
 					.push(slot)
 					.call(1);
 			}

@@ -11,6 +11,7 @@
 
 #include "../ImGuiFeatures/LogViewer.h"
 #include "../MiscFunctions.h"
+#include "../LuaClasses.h"
 
 class PlayerFeatureHandler {
 public:
@@ -181,7 +182,7 @@ PreAddTrinketResult RunPreAddTrinket(Entity_Player* player, int trinketID, bool 
 
 		lua::LuaResults luaResult = caller.push(callbackid)
 			.push(trinketID)
-			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.pushClassPtr<LuaEntityPlayer>(player)
 			.push(trinketID)
 			.push(firstTime)
 			.call(1);
