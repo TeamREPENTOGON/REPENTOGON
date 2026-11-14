@@ -11,6 +11,8 @@
 #include "XMLData.h"
 #include "AchievementsStuff.h"
 #include "HookSystem.h"
+#include "MinimapPatches.h"
+#include "CustomModManager.h"
 
 namespace EntityConfigEx {
 
@@ -112,6 +114,36 @@ void EntityEx::Parse(const EntityConfig_Entity& entity, const XMLAttributes& xml
 	ParseOverrideBooleanAttribute(xml, "boomerang", pickupBoomerangOverride_);
 	ParseOverrideBooleanAttribute(xml, "isactiveenemy", isActiveEnemyOverride_);
 	ParseOverrideBooleanAttribute(xml, "nosplit", noSplitOverride_);
+
+	if (xml.count("minimapiconanim") && xml.count("minimapicongroup") && xml.count("minimapiconpriority")) {
+		MinimapIcon minimapIcon;
+		minimapIcon.animation = xml.at("minimapiconanim");
+		minimapIcon.group = xml.at("minimapicongroup");
+		minimapIcon.priority = std::atoi(xml.at("minimapiconpriority").c_str());
+
+		if (xml.count("minimapiconframe")) {
+			minimapIcon.frame = std::atoi(xml.at("minimapiconframe").c_str());
+		} else {
+			minimapIcon.frame = 0;
+		}
+
+		for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
+			std::string modid = mod->GetId() ? mod->GetId() : "";
+			if (modid.empty()) {
+				modid = mod->GetDir();
+			}
+			if (modid == xml.at("sourceid")) {
+				if (ModEntryEx* ex = CustomModManager::GetInstance().GetEx(mod)) {
+					if (ex->_customMinimapANM2.GetAnimationByName(minimapIcon.animation).has_value()) {
+						minimapIcon.anm2 = &ex->_customMinimapANM2;
+					}
+				}
+				break;
+			}
+		}
+
+		AddEntityMinimapIcon(entity.id, entity.variant, entity.subtype, minimapIcon);
+	}
 }
 
 void PlayerEx::Parse(const EntityConfig_Player& player, const XMLAttributes& xml) {
