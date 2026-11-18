@@ -28,6 +28,7 @@ class EntityPlayerPlus : public EntityPlus {
 	bool camoOverride = false;
 	int previousControllerIndex = -1;
 	int restoreTwinID = -1;
+	std::unordered_map<int, int> lastActiveSlot;
 };
 
 // Attributes for EntityFamiliar.

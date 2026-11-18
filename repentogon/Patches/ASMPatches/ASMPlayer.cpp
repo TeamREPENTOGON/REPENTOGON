@@ -6,6 +6,7 @@
 #include "../EntityConfigEx.h"
 #include "../ItemConfigEx.h"
 #include "ASMDefinition.h"
+#include "../EntityPlus.h"
 
 thread_local CheckFamiliarStorage familiarsStorage;
 
@@ -258,4 +259,49 @@ void ASMPatchGetTearParamsDisableBloodyTears() {
 		.RestoreRegisters(savedRegisters)
 		.AddRelativeJump((char*)addr + 0xB);
 	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// "Held" active items (like The Candle, Bob's Rotten Head, etc) are hardcoded to discharge the primary active slot on use.
+// In vanilla this is fine, but if a mod places one of these items in the pocket slot, it discharges your primary item
+// instead, and allows you to use the pocket active infinitely.
+//
+// We track the most recent slot used for the item, and discharge it here.
+// We also verify that the slot actually contains the expected item.
+static void __stdcall DischargeCorrectHeldActiveSlot(Entity_Player* player, bool isVoid) {
+	if (isVoid) return;
+	
+	int itemState = player->_itemState;
+
+	EntityPlayerPlus* pp = GetEntityPlayerPlus(player);
+	if (pp && itemState > 0 && pp->lastActiveSlot.count(itemState)) {
+		int slot = pp->lastActiveSlot[itemState];
+
+		if (slot >= 0 && slot <= 3 && player->GetActiveItem(slot) == itemState) {
+			player->DischargeActiveItem(slot, false);
+		}
+	}
+}
+void ASMPatchFixHeldActiveDischarge() {
+	static const std::vector<char*> s_DischargeCollectiblePatches = {
+		&AsmDefinitions::DischargeActiveItem_VoidThing,
+		&AsmDefinitions::DischargeActiveItem_ShoopDaWhoop,
+		&AsmDefinitions::DischargeActiveItem_BobsCandleHole,
+		&AsmDefinitions::DischargeActiveItem_Boomerang,
+		&AsmDefinitions::DischargeActiveItem_GellosFriendCannon,
+		&AsmDefinitions::DischargeActiveItem_Eraser,
+	};
+	for (const char* def : s_DischargeCollectiblePatches) {
+		void* addr = sASMDefinitionHolder->GetDefinition(def);
+
+		ASMPatch patch;
+		ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+		patch.Pop(ASMPatch::Registers::EAX).Pop(ASMPatch::Registers::EAX)  // Pop original function inputs (always 0 and false)
+			.PreserveRegisters(savedRegisters)
+			.Push(def == &AsmDefinitions::DischargeActiveItem_VoidThing)
+			.Push(ASMPatch::Registers::ECX)  // Entity_Player*
+			.AddInternalCall(DischargeCorrectHeldActiveSlot)
+			.RestoreRegisters(savedRegisters)
+			.AddRelativeJump((char*)addr + 0x5);
+		sASMPatcher.PatchAt(addr, &patch);
+	}
 }
