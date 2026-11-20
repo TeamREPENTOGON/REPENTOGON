@@ -306,6 +306,7 @@ void PerformASMPatches() {
 	ASMPatchPlayerLostSoulSkipPeePuddle();
 	ASMPatchGetTearParamsAddBloodyTears();
 	ASMPatchGetTearParamsDisableBloodyTears();
+	ASMPatchFixHeldActiveDischarge();
 
 	// Status Effects
 	PatchInlinedGetStatusEffectTarget();

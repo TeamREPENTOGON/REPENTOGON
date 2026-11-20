@@ -2494,6 +2494,11 @@ HOOK_METHOD(Entity_Player, UseActiveItem, (short* resultFlags, int collectible, 
 
 	super(resultFlags, collectible, useFlags, activeSlot, varData);
 
+	// Slot tracking for ASMPatchFixHeldActiveDischarge in ASMPlayer.cpp
+	if (EntityPlayerPlus* pp = GetEntityPlayerPlus(this)) {
+		pp->lastActiveSlot[collectible] = activeSlot;
+	}
+
 	// MC_POST_USE_ITEM (1003)
 	const int postcallbackid = 1003;
 	if (CallbackState.test(postcallbackid - 1000)) {

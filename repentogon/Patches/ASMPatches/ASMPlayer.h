@@ -29,3 +29,4 @@ void ASMPatchPlayerDeathSoundAstralProjection();
 void ASMPatchPlayerLostSoulSkipPeePuddle();
 void ASMPatchGetTearParamsAddBloodyTears();
 void ASMPatchGetTearParamsDisableBloodyTears();
+void ASMPatchFixHeldActiveDischarge();
