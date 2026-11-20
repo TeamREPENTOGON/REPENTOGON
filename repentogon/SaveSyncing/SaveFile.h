@@ -112,7 +112,7 @@ struct SaveChunkConfig {
 static const std::unordered_map<SaveChunk, SaveChunkConfig> SAVE_CHUNK_CONFIGS = {
 	{ SAVE_CHUNK_ACHIEVEMENTS,		{ "Achievements",	SAVE_CHUNK_DATA_BOOL,		/*allowSyncing=*/true,	/*totalSizeInSaveIsWrong=*/false	} },
 	{ SAVE_CHUNK_EVENT_COUNTERS,	{ "Event Counters",	SAVE_CHUNK_DATA_INT,		/*allowSyncing=*/true,	/*totalSizeInSaveIsWrong=*/false	} },
-	{ SAVE_CHUNK_LEVEL_COUNTERS,	{ "Level Counters",	SAVE_CHUNK_DATA_INT,		/*allowSyncing=*/true,	/*totalSizeInSaveIsWrong=*/true		} },
+	{ SAVE_CHUNK_LEVEL_COUNTERS,	{ "Level Counters",	SAVE_CHUNK_DATA_INT,		/*allowSyncing=*/true,	/*totalSizeInSaveIsWrong=*/false	} },
 	{ SAVE_CHUNK_COLLECTIBLES,		{ "Collectibles",	SAVE_CHUNK_DATA_BOOL,		/*allowSyncing=*/true,	/*totalSizeInSaveIsWrong=*/true		} },
 	{ SAVE_CHUNK_MINIBOSSES,		{ "Minibosses",		SAVE_CHUNK_DATA_BOOL,		/*allowSyncing=*/true,	/*totalSizeInSaveIsWrong=*/true		} },
 	{ SAVE_CHUNK_BOSSES,			{ "Bosses",			SAVE_CHUNK_DATA_BOOL,		/*allowSyncing=*/true,	/*totalSizeInSaveIsWrong=*/true		} },
