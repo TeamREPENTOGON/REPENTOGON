@@ -1,3 +1,8 @@
+v1.1.3a -
+Fixes:
+* Update save synchronization to support changes made in the latest Repentance+ version.
+/newline/
+/versionseparator/
 v1.1.3 -
 Added:
 * ModCallbacks:
