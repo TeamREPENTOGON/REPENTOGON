@@ -33,4 +33,6 @@ namespace CustomCallbacks
     void POST_GLOWING_HOURGLASS_LOAD(size_t hourglassSlot);
 
     bool SHOULD_SAVE_ENTITY(Entity& entity, bool shouldSave, bool isRoomClear);
+
+    std::optional<int> GET_BOSS_MUSIC(int bossId, bool isClear);
 }

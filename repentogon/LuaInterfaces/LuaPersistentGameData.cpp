@@ -4,6 +4,7 @@
 #include "../Patches/XMLData.h"
 #include "../Patches/ChallengesStuff.h"
 #include "../Patches/AchievementsStuff.h"
+#include "../Bosses/BossManager.h"
 
 static const unsigned int PGD_COUNTER_MAX = 522;
 static const unsigned int COLLECTIBLE_MAX = 732;
@@ -160,11 +161,11 @@ LUA_FUNCTION(Lua_PGDAddBossKilled)
 {
 	PersistentGameData* pgd = *lua::GetRawUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	const int bossID = (int)luaL_checkinteger(L, 2);
-	if (bossID > 103 || bossID < 1)
-		luaL_error(L, "bad argument #2 to 'AddBossKilled' (expected BossType between 1 and 103 inclusive, got %d)", bossID);
+    size_t maxBossId = BossManager::GetNumBosses() - 1;
+	if (1 > bossID || bossID > maxBossId) // not in range
+		luaL_error(L, "bad argument #2 to 'AddBossKilled' (expected BossType between 1 and %d inclusive, got %d)", maxBossId, bossID);
 
-	pgd->AddBoss(bossID);
-
+    BossManager::AddBossDefeated(bossID);
 	return 0;
 }
 
@@ -172,11 +173,11 @@ LUA_FUNCTION(Lua_PGDIsBossKilled)
 {
 	PersistentGameData* pgd = *lua::GetRawUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	const int bossID = (int)luaL_checkinteger(L, 2);
-	if (bossID > 103 || bossID < 1)
-		luaL_error(L, "bad argument #2 to 'IsBossKilled' (expected BossType between 1 and 103 inclusive, got %d)", bossID);
+    size_t maxBossId = BossManager::GetNumBosses() - 1;
+	if (1 > bossID || bossID > maxBossId) // not in range
+		luaL_error(L, "bad argument #2 to 'IsBossKilled' (expected BossType between 1 and %d inclusive, got %d)", maxBossId, bossID);
 
-	lua_pushboolean(L, pgd->bosses[bossID]);
-
+	lua_pushboolean(L, BossManager::IsBossDefeated(bossID));
 	return 1;
 }
 

@@ -22,6 +22,7 @@
 #include "rapidxml_print.hpp"
 
 #include "../ImGuiFeatures/LogViewer.h"
+#include "../Bosses/BossManager.h"
 #include <lua.hpp>
 #include "LuaCore.h"
 #include <filesystem>
@@ -1263,11 +1264,20 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 	}
 	if (xmlnodeenum.find(middleman) == xmlnodeenum.end()) { return; }
 	int nodetypeid = xmlnodeenum[middleman];
+	xml_document<char>* doc = nullptr;
 	xml_node<char>* daddy;
 	xml_node<char>* babee;
 	int id = 0;
 	switch(nodetypeid){
 	case 1: //entity
+		{
+			auto* docNode = node;
+			while (docNode->parent())
+				docNode = docNode->parent();
+
+			doc = static_cast<rapidxml::xml_document<>*>(docNode);
+		}
+
 		for (xml_node<char>* auxnode = node; auxnode; auxnode = auxnode->next_sibling()) {
 			XMLAttributes entity;
 			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
@@ -1329,6 +1339,8 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					XMLStuff.BossColorData->byname[entity["name"]] = XMLStuff.BossColorData->bytypevar[clridx];
 				}
 			}
+
+			BossManager::detail::PatchEntityBossId(*doc, *auxnode, entity);
 
 			XMLStuff.EntityData->ProcessChilds(auxnode, idx);
 			XMLStuff.EntityData->nodes[idx] = entity;
@@ -1688,71 +1700,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 		}
 		break;
 	case 18://bosses
-		id = 1;
-		daddy = node;
-		babee = node->first_node();
-		{
-			xml_node<char>* auxnode = babee;
-			while (auxnode)
-			{
-				auto* next = auxnode->next_sibling();
-
-				{
-					XMLAttributes boss;
-					for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
-					{
-						boss[stringlower(attr->name())] = string(attr->value());
-					}
-	
-					bool isModded = boss.count("sourceid") > 0;
-					if (!isModded)
-					{
-						if (boss.count("id") > 0) {
-							id = stoi(boss["id"]);
-							bool inBounds = 0 <= id && id < NUM_BOSSES;
-
-							if (!inBounds)
-							{
-								id = 0;
-								boss["id"] = to_string(id);
-								// prevent the game from going out of bounds
-								if (xml_attribute<>* attr = auxnode->first_attribute("id"); attr)
-								{
-									attr->value("0");
-								}
-							}
-						}
-						else {
-							id = 0;
-							boss["id"] = to_string(id);
-						}
-					}
-					else
-					{
-						id = std::max(XMLStuff.BossPortraitData->maxid, (int)NUM_BOSSES);
-						XMLStuff.BossPortraitData->maxid = id + 1;
-						boss["id"] = to_string(id);
-					}
-	
-					if (id > XMLStuff.BossPortraitData->maxid) {
-						XMLStuff.BossPortraitData->maxid = id;
-					}
-					inheritdaddyatts(daddy, &boss);
-	
-					boss["sourcepath"] = currpath;
-					if (!isModded) { boss["sourceid"] = "BaseGame"; }
-	
-					XMLStuff.BossPortraitData->AddNode(*auxnode, std::move(boss), id);
-					XMLStuff.ModData->bossportraits[lastmodid] += 1;
-	
-					// prevent LoadBosses from parsing modded nodes
-					if (isModded) { daddy->remove_node(auxnode); }
-				}
-
-				auxnode = next;
-			}
-		}
-	break;
+	    break;
 	case 19: //costumes
 		daddy = node;
 		babee = node->first_node();
@@ -3153,63 +3101,33 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 				xml_document<char>* resourcesdoc = new xml_document<char>();
 				if (GetContent(contentsdir, resourcesdoc)) {
 					xml_node<char>* resourcescroot = resourcesdoc->first_node();
-					if (filename == "bosspools.xml") {
-						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
-							XMLAttributes node;
-							for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
-							{
-								node[stringlower(attr->name())] = string(attr->value());
-							}
-							xml_node<char>* tocopy = find_child(root, auxnode->name(), "name", node["name"]);
-							if ((tocopy == NULL) || (tocopy->first_attribute("name")->value() != node["name"])) {
-								xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
-								xml_attribute<char>* sourceid = new xml_attribute<char>();
-								sourceid->name("sourceid");
-								sourceid->value(lastmodid.c_str());
-								clonedNode->append_attribute(sourceid);
-								root->append_node(clonedNode);
-							}
-							else {
-								for (xml_node<char>* auxchild = auxnode->first_node(); auxchild; auxchild = auxchild->next_sibling()) {
-									xml_node<char>* clonedNode = xmldoc->clone_node(auxchild);
-									xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
-									tocopy->append_node(clonedNode);
+                    if (filename == "bosspools.xml") {}
+                    else if (filename == "stringtable.sta") {
+							for (xml_node<char>* auxnode = resourcescroot->first_node("category"); auxnode; auxnode = auxnode->next_sibling()) {
+								XMLAttributes node;
+								for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+								{
+									node[stringlower(attr->name())] = string(attr->value());
+								}
+								xml_node<char>* tocopy = find_child(root, auxnode->name(), "name", node["name"]);
+								if ((tocopy == NULL) || (tocopy->first_attribute("name")->value() != node["name"])) {
+									xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
+									xml_attribute<char>* sourceid = new xml_attribute<char>();
+									sourceid->name("sourceid");
+									sourceid->value(lastmodid.c_str());
+									clonedNode->append_attribute(sourceid);
+									root->append_node(clonedNode);
+								}
+								else {
+									for (xml_node<char>* auxchild = auxnode->first_node(); auxchild; auxchild = auxchild->next_sibling()) {
+										xml_node<char>* clonedNode = xmldoc->clone_node(auxchild);
+										xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
+										tocopy->append_node(clonedNode);
+									}
 								}
 							}
-						}
-					} else if (filename == "stringtable.sta") {
-						for (xml_node<char>* auxnode = resourcescroot->first_node("category"); auxnode; auxnode = auxnode->next_sibling()) {
-							XMLAttributes node;
-							for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
-							{
-								node[stringlower(attr->name())] = string(attr->value());
-							}
-							xml_node<char>* tocopy = find_child(root, auxnode->name(), "name", node["name"]);
-							if ((tocopy == NULL) || (tocopy->first_attribute("name")->value() != node["name"])) {
-								xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
-								xml_attribute<char>* sourceid = new xml_attribute<char>();
-								sourceid->name("sourceid");
-								sourceid->value(lastmodid.c_str());
-								clonedNode->append_attribute(sourceid);
-								root->append_node(clonedNode);
-							}
-							else {
-								for (xml_node<char>* auxchild = auxnode->first_node(); auxchild; auxchild = auxchild->next_sibling()) {
-									xml_node<char>* clonedNode = xmldoc->clone_node(auxchild);
-									xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
-									tocopy->append_node(clonedNode);
-								}
-							}
-						}
 					}
-					else if (filename == "bossportraits.xml") {
-						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
-							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
-							xml_attribute<char>* sourceid = new xml_attribute<char>();sourceid->name("sourceid");sourceid->value(lastmodid.c_str());clonedNode->append_attribute(sourceid);
-							inheritdaddy(auxnode, clonedNode);
-							root->append_node(clonedNode);
-						}
-					}
+                    else if (filename == "bossportraits.xml") {}
 					else if (filename == "achievements.xml") {
 						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
@@ -3648,6 +3566,20 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		}
 	}	
 	if (g_Manager->GetOptions()->ModsEnabled()) {
+        rapidxml::xml_document<char>* doc = (rapidxml::xml_document<char>*)this;
+        if (charfind(xmldata, "<bosse", 50)) {
+            try {
+                super(xmldata);
+            }
+            catch (rapidxml::parse_error err) {
+                XMLBossPortrait::BuildDefaultDoc(*doc);
+                XML::detail::print_parse_error(xmldata, err, currpath);
+            }
+
+            XMLBossPortrait::ParseXml(*(rapidxml::xml_document<char>*)this, currpath);
+            return;
+        }
+
 	try {
 		//string xml = string(xmldata);
 		//string xmlsub = xml.substr(0, 60);
@@ -3662,8 +3594,6 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 			xmlsloaded = true; //this is the last xml to load after the game fucking started! (on game::start)
 		}else if (charfind(xmldata, "<backd", 50)) {
 				xmldata = BuildModdedXML(xmldata, "backdrops.xml", false);
-		}else if (charfind(xmldata, "<bosse", 50)) {
-			xmldata = BuildModdedXML(xmldata, "bossportraits.xml", false);
 		}
 		else if (charfind(xmldata, "<bossc", 50)) {
 			xmldata = BuildModdedXML(xmldata, "bosscolors.xml", false);

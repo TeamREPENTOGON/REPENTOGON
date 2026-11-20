@@ -402,3 +402,39 @@ using LuaGridEntityPoop = LuabridgeType<GridEntity_Poop, lua::Metatables::GRID_E
 using LuaGridEntityDoor = LuabridgeType<GridEntity_Door, lua::Metatables::GRID_ENTITY_DOOR>;
 using LuaGridEntityPressurePlate = LuabridgeType<GridEntity_PressurePlate, lua::Metatables::GRID_ENTITY_PRESSURE_PLATE>;
 using LuaGridEntityDesc = LuabridgeType<GridEntityDesc, lua::Metatables::GRID_ENTITY_DESC>;
+
+// storing the configs using direct pointers should be ok, as they are all loaded before any script can access them.
+// preventing them from being moved.
+struct LuaEntityConfigBoss
+{
+    static constexpr const char* MT = "EntityConfigBoss";
+
+    static EntityConfig_Boss* Get(lua_State* L, int index)
+    {
+        return *lua::GetRawUserdata<EntityConfig_Boss**>(L, index, MT);
+    }
+
+    static void PushPtr(lua_State* L, EntityConfig_Boss* ptr)
+    {
+        EntityConfig_Boss** result = (EntityConfig_Boss**)lua_newuserdata(L, sizeof(EntityConfig_Boss*));
+        luaL_setmetatable(L, MT);
+        *result = ptr;
+    }
+};
+
+struct LuaEntityConfigBossAlt
+{
+    static constexpr const char* MT = "EntityConfigBossAlt";
+
+    static EntityConfig_Boss_Alt* Get(lua_State* L, int index)
+    {
+        return *lua::GetRawUserdata<EntityConfig_Boss_Alt**>(L, index, MT);
+    }
+
+    static void PushPtr(lua_State* L, EntityConfig_Boss_Alt* ptr)
+    {
+        EntityConfig_Boss_Alt** result = (EntityConfig_Boss_Alt**)lua_newuserdata(L, sizeof(EntityConfig_Boss*));
+        luaL_setmetatable(L, MT);
+        *result = ptr;
+    }
+};

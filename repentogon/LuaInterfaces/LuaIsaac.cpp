@@ -5,6 +5,7 @@
 #include "HookSystem.h"
 #include "../Patches/XMLData.h"
 #include "../Patches/ItemSpoofSystem.h"
+#include "../Bosses/BossManager.h"
 
 #include "Windows.h"
 #include <string>
@@ -721,6 +722,22 @@ LUA_FUNCTION(Lua_GetBackdropTypeByName) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetBossIdByName) {
+	const char* name = luaL_checkstring(L, 1);
+	std::optional<uint32_t> id = BossManager::GetBossIdByName(name);
+
+	if (id)
+	{
+		lua_pushinteger(L, id.value());
+	}
+	else
+	{
+		lua_pushnil(L);
+	}
+
+	return 1;
+}
+
 LUA_FUNCTION(Lua_GetRGON_Changelog) {
 	string text = "Changelog unavailable :(\n";
 	ostringstream outtext;
@@ -1088,6 +1105,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBossColorIdxByName", Lua_GetBossColorIdxByName);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBossColorIdByName", Lua_GetBossColorIdxByName); //alias for musclememory
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBackdropIdByName", Lua_GetBackdropTypeByName); //changed to Id to fit the rest didnt release yet so it foine
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBossIdByName", Lua_GetBossIdByName);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "StartNewGame", Lua_StartNewGame);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "RGON_GetChangelog", Lua_GetRGON_Changelog);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "FindTargetPit", Lua_FindTargetPit);
