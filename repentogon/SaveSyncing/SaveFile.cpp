@@ -538,9 +538,11 @@ bool SaveFile::SyncBestiaryData(const SaveFile& srcFile, const SaveSyncMode mode
 	}
 
 	// Shift the locations of the post-bestiary chunks.
-	for (int i = SAVE_CHUNK_BESTIARY; i <= GetNumSaveChunks(); i++) {
-		SaveChunkDesc& chunkDesc = _saveChunkDescs[(SaveChunk)i];
-		chunkDesc.dataLocation += bestiarySizeDiff;
+	if (GetNumSaveChunks() > SAVE_CHUNK_BESTIARY) {
+		for (int i = SAVE_CHUNK_STAGES_VISITED; i <= GetNumSaveChunks(); i++) {
+			SaveChunkDesc& chunkDesc = _saveChunkDescs[(SaveChunk)i];
+			chunkDesc.dataLocation += bestiarySizeDiff;
+		}
 	}
 
 	if (!AtEndOfFile()) {
