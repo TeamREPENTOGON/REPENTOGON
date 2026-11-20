@@ -14,7 +14,8 @@
 * Isaac's PersistentGameData save files have a straightforward enough format, mostly just being integers and such written directly as bytes with c file io functions.
 * 
 * The save file always begins with the 16-byte string like "ISAACNGSAVE09R  ", an identifier of the format of the save file.
-* - AB+/REP/REP+: ISAACNGSAVE09R
+* - REP+: ISAACNGSAVE10R
+* - AB+/REP/REP+(beta): ISAACNGSAVE09R
 * - AB: ISAACNGSAVE08R
 * - REBIRTH: ISAACNGSAVE06R
 * [ISAACNGSAVE09R  ]
@@ -48,10 +49,6 @@
 * [checksum]
 */
 
-// Known number of save chunks.
-// If a save file ever has more or less than this amount, do not perform synchronization, as more investigation will be necessary.
-constexpr int32_t NUM_SAVE_CHUNKS = 11;
-
 // At time of writing, attempting to write a save file bigger than this to the steam cloud seems to crash the game in vanilla (though it does actually successfully save to the cloud beforehand).
 //  - The game only allocates 0x10000 bytes when saving PersistentGameData to the steam cloud (hard coded param to SteamCloudFile::PushToSteamCloud).
 //  - SteamCloudFile::Write() has logic to resize its buffer, but it does not update SteamCloudFile._bufferSize when it does so? That might lead to the crash. ("55 8B EC 53 56 8B F1 57 8B 7D ? 0F AF 7D")
@@ -60,18 +57,26 @@ constexpr int32_t NUM_SAVE_CHUNKS = 11;
 // It may be possible to "fix" this limitation in the future, but honestly something else must have went wrong if this ever comes up.
 constexpr int32_t MAX_SAVE_FILE_SIZE = 0x10000;
 
-// PersistentGameData saves begin with this 16-character string. This identifies the format of the save file. Note that just having different achievement counts doesn't necessitate a different "format".
-//  - AB+/REP/REP+: ISAACNGSAVE09R
-//  - AB: ISAACNGSAVE08R
-//  - REBIRTH : ISAACNGSAVE06R
-constexpr char EXPECTED_SAVE_HEADER[] = "ISAACNGSAVE09R  ";
+struct SaveFormatConfig {
+	const int numSaveChunks;
+};
+static const std::unordered_map<std::string, SaveFormatConfig> SAVE_FORMAT_CONFIGS = {
+	{ "ISAACNGSAVE09R  ", { /*numSaveChunks=*/11 } },  // Rep & Rep+ Beta
+	{ "ISAACNGSAVE10R  ", { /*numSaveChunks=*/12 } },  // Rep+ Release
+};
+static bool IsSupportedSaveFormat(const std::string& header) {
+	return SAVE_FORMAT_CONFIGS.count(header) > 0;
+}
+static bool IsAbpRepOrRepPlusSave(const std::string& header) {
+	// rn these are the only ones supported
+	return IsSupportedSaveFormat(header);
+}
+static bool CanSyncSaves(const std::string& header1, const std::string& header2) {
+	return IsSupportedSaveFormat(header1) && IsSupportedSaveFormat(header2);
+}
 
 // The bestiary sections are written in this order (deaths, kills, hits, encounters).
 static const std::vector<int32_t> EXPECTED_BESTIARY_SECTION_ORDER = { 4, 2, 3, 1 };
-
-static bool IsValidSaveChunkID(const int32_t i) {
-	return i > 0 && i <= NUM_SAVE_CHUNKS;
-}
 
 enum SaveChunk {
 	SAVE_CHUNK_UNKNOWN = 0,
@@ -86,6 +91,7 @@ enum SaveChunk {
 	SAVE_CHUNK_GAME_SETTINGS = 9,
 	SAVE_CHUNK_SPECIAL_SEEDS = 10,
 	SAVE_CHUNK_BESTIARY = 11,
+	SAVE_CHUNK_STAGES_VISITED = 12,
 };
 
 enum SaveChunkDataType {
@@ -115,6 +121,7 @@ static const std::unordered_map<SaveChunk, SaveChunkConfig> SAVE_CHUNK_CONFIGS =
 	{ SAVE_CHUNK_GAME_SETTINGS,		{ "Settings",		SAVE_CHUNK_DATA_INT,		/*allowSyncing=*/false,	/*totalSizeInSaveIsWrong=*/false	} },
 	{ SAVE_CHUNK_SPECIAL_SEEDS,		{ "Special Seeds",	SAVE_CHUNK_DATA_BOOL,		/*allowSyncing=*/true,	/*totalSizeInSaveIsWrong=*/true		} },
 	{ SAVE_CHUNK_BESTIARY,			{ "Bestiary",		SAVE_CHUNK_DATA_BESTIARY,	/*allowSyncing=*/true,	/*totalSizeInSaveIsWrong=*/false	} },
+	{ SAVE_CHUNK_STAGES_VISITED,	{ "Stages Visited",	SAVE_CHUNK_DATA_BOOL,		/*allowSyncing=*/false,	/*totalSizeInSaveIsWrong=*/false	} },
 };
 
 // Information about a save chunk as it exists in an actual save file.
@@ -285,6 +292,20 @@ class SaveFile {
 	// Returns the size of the current raw save data in bytes.
 	inline uint32_t GetSize() const {
 		return _rawDataSize;
+	}
+
+	inline int GetNumSaveChunks() const {
+		if (SAVE_FORMAT_CONFIGS.count(_header)) {
+			return SAVE_FORMAT_CONFIGS.at(_header).numSaveChunks;
+		}
+		return -1;
+	}
+
+	inline bool IsValidSaveChunkID(const int32_t i) const {
+		if (SAVE_FORMAT_CONFIGS.count(_header)) {
+			return i > 0 && i <= SAVE_FORMAT_CONFIGS.at(_header).numSaveChunks;
+		}
+		return false;
 	}
 
   private:

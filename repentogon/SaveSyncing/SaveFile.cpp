@@ -227,8 +227,8 @@ bool SaveFile::ParseAndValidateData(const bool isInitialRead) {
 
 	_header = std::string(header);
 
-	if (strcmp(header, EXPECTED_SAVE_HEADER) != 0) {
-		ZHL::Log("[SaveFile] Unrecognized save file header (expected \"%s\", got \"%s\")\n", EXPECTED_SAVE_HEADER, header);
+	if (!IsSupportedSaveFormat(_header)) {
+		ZHL::Log("[SaveFile] Unsupported save file header \"%s\"\n", header);
 		return false;
 	}
 
@@ -239,7 +239,7 @@ bool SaveFile::ParseAndValidateData(const bool isInitialRead) {
 	}
 	if (isInitialRead) ZHL::Log("[SaveFile] GameState checksum: %u\n", gameStateChecksum);
 
-	for (int i = 1; i <= NUM_SAVE_CHUNKS; i++) {
+	for (int i = 1; i <= GetNumSaveChunks(); i++) {
 		int rawChunkID = 0;
 		if (!Read(&rawChunkID)) {
 			ZHL::Log("[SaveFile] Failed to read chunk ID (was expecting %d)\n", i);
@@ -476,27 +476,37 @@ bool SaveFile::SyncBestiaryData(const SaveFile& srcFile, const SaveSyncMode mode
 
 	SaveChunkDesc& bestiaryDesc = _saveChunkDescs[SAVE_CHUNK_BESTIARY];
 	const uint32_t bestiaryDataLocation = bestiaryDesc.dataLocation;
+	const uint32_t bestiaryHeaderLocation = bestiaryDataLocation - 8;
 
 	uint32_t totalBestiarySectionDataSize = 0;
 	for (const int32_t bestiarySectionID : EXPECTED_BESTIARY_SECTION_ORDER) {
 		totalBestiarySectionDataSize += _bestiarySectionDescs[bestiarySectionID].entries.size() * 8;  // Key and value ints for each monster.
 	}
 
+	int32_t oldBestiarySize = bestiaryDesc.actualSize;
+	int32_t oldBestiarySizeIncludingHeader = oldBestiarySize + 8;
+	int32_t oldBestiaryEnd = bestiaryHeaderLocation + oldBestiarySizeIncludingHeader;
+
 	// "Size" written for the bestiary chunk is half of the summed size of the section data, excluding their own IDs and sizes.
 	bestiaryDesc.sizeWritten = totalBestiarySectionDataSize / 2;
 	// Include the ID/size values for each section in the true total size of the bestiary chunk data.
 	bestiaryDesc.actualSize = totalBestiarySectionDataSize + EXPECTED_BESTIARY_SECTION_ORDER.size() * 8;
 
+	int32_t newBestiarySize = bestiaryDesc.actualSize;
+	int32_t newBestiarySizeIncludingHeader = newBestiarySize + 8;
+
 	// Snatch the old raw data buffer.
 	std::unique_ptr<char[]> oldBuffer = std::move(_rawData);
 	const uint32_t oldBufferSize = _rawDataSize;
 
-	// Initialize a new buffer with the appropriate size.
-	InitRawDataBuffer(bestiaryDataLocation + bestiaryDesc.actualSize + 8);
+	const int32_t bestiarySizeDiff = newBestiarySize - oldBestiarySize;
 
-	// Write the old buffer's contents into the new buffer, up to the bestiary data.
-	if (!Write(oldBuffer.get(), bestiaryDataLocation - 8)) {
-		ZHL::Log("[SaveFile] Bestiary sync error: Failed to write old buffer contents to new buffer.\n");
+	// Initialize a new buffer with the appropriate size.
+	InitRawDataBuffer(oldBufferSize + bestiarySizeDiff);
+
+	// Write the old buffer's pre-bestiary contents into the new buffer.
+	if (!Write(oldBuffer.get(), bestiaryHeaderLocation)) {
+		ZHL::Log("[SaveFile] Bestiary sync error: Failed to write old buffer contents to new buffer (1 of 2).\n");
 		return false;
 	}
 
@@ -521,10 +531,16 @@ bool SaveFile::SyncBestiaryData(const SaveFile& srcFile, const SaveSyncMode mode
 		}
 	}
 
-	// Write the counter/checksum from the old buffer.
-	if (!Write(oldBuffer.get() + oldBufferSize - 8, 8)) {
-		ZHL::Log("[SaveFile] Bestiary sync error: Failed to write counter/checksum from old buffer.\n");
+	// Write the remaining data from the old buffer.
+	if (!Write(oldBuffer.get() + oldBestiaryEnd, oldBufferSize - oldBestiaryEnd)) {
+		ZHL::Log("[SaveFile] Bestiary sync error: Failed to write old buffer contents to new buffer (2 of 2).\n");
 		return false;
+	}
+
+	// Shift the locations of the post-bestiary chunks.
+	for (int i = SAVE_CHUNK_BESTIARY; i <= GetNumSaveChunks(); i++) {
+		SaveChunkDesc& chunkDesc = _saveChunkDescs[(SaveChunk)i];
+		chunkDesc.dataLocation += bestiarySizeDiff;
 	}
 
 	if (!AtEndOfFile()) {
@@ -539,6 +555,10 @@ bool SaveFile::SyncChunk(const SaveFile& srcFile, const SaveChunk chunkID, const
 	if (!IsValidSaveChunkID(chunkID)) {
 		ZHL::Log("[SaveFile] Cannot sync data for unknown chunk ID: %d\n", chunkID);
 		return false;
+	}
+	if (!srcFile.IsValidSaveChunkID(chunkID)) {
+		ZHL::Log("[SaveFile] Chunk %d does not exist in source file. Skipping...\n", chunkID);
+		return true;
 	}
 
 	const SaveChunkConfig* chunkConfig = &SAVE_CHUNK_CONFIGS.at(chunkID);
@@ -655,7 +675,7 @@ bool SaveFile::Sync(const SaveFile& srcFile, const SaveSyncMode mode) {
 		return false;
 	}
 
-	if (GetHeader() != srcFile.GetHeader()) {
+	if (!CanSyncSaves(_header, srcFile.GetHeader())) {
 		ZHL::Log("[SaveFile] Cannot sync saves - header mismatch.\n");
 		return false;
 	}
@@ -666,7 +686,7 @@ bool SaveFile::Sync(const SaveFile& srcFile, const SaveSyncMode mode) {
 	_isValid = false;
 
 	// Sync the main save chunks.
-	for (int i = 1; i <= NUM_SAVE_CHUNKS; i++) {
+	for (int i = 1; i <= GetNumSaveChunks(); i++) {
 		if (!SyncChunk(srcFile, (SaveChunk)i, mode)) {
 			return false;
 		}

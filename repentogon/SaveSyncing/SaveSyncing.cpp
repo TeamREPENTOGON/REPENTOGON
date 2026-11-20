@@ -667,7 +667,7 @@ static bool BlockSaveImport(const std::string& path, const GameVersion version, 
 	const std::string importPath = GetPersistentGameDataPath(version, slot, steamCloud);
 
 	const SaveFile save(importPath.c_str(), steamCloud);
-	if ((version == AFTERBIRTH || version == REBIRTH) && save.GetHeader() == EXPECTED_SAVE_HEADER) {
+	if ((version == AFTERBIRTH || version == REBIRTH) && IsAbpRepOrRepPlusSave(save.GetHeader())) {
 		ZHL::Log("[SaveSyncing] Error: Unexpected AB+~REP+ save found @ `%s`\n", importPath.c_str());
 		return true;
 	}
