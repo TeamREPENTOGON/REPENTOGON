@@ -319,6 +319,32 @@ static void fix_mausoleum_heart_door_forced_open()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static bool __fastcall asm_evaluate_items_is_own_lil_delirium(Entity_Familiar* familiar, Entity_Player* player)
+{
+	if (!familiar->_isLilDelirium)
+	{
+		return false;
+	}
+
+	return familiar->_player == player || (familiar->_originalPlayer != nullptr && familiar->_originalPlayer == player);
+}
+
+// Fixes a vanilla bug where Lil Delirium disappears if owned by a second player.
+// Lil Delirium's EvaluateItems check doesn't actually take player owner into account,
+// so the amount of Lil Deliriums in the room is only ever equal to the amount the player with the least Lil Deliriums has.
+static void fix_evaluate_items_lil_delirium_owner()
+{
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_EvaluateItems_LilDeliriumCheck);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::EvaluateItems Lil Delirium owner check at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes("\x8B\xCE") // mov ecx,esi // familiar
+		.AddBytes("\x8B\x95\xA8\xFB\xFF\xFF") // mov edx, dword ptr [ebp - 0x458] // player
+		.AddInternalCall(asm_evaluate_items_is_own_lil_delirium)
+		.AddRelativeJump((char*)addr + 0x7); // test al, al
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -372,5 +398,6 @@ void ASMFixes()
 	fix_load_button_maps_crash();
 	fix_openal_attributes();
 	fix_mausoleum_heart_door_forced_open();
+	fix_evaluate_items_lil_delirium_owner();
     patch_in_place_room_reset();
 }

@@ -126,6 +126,7 @@ struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder, Vec
 }}
 	
 	Entity_Player* _player : 0x410;
+	Entity_Player* _originalPlayer : 0x414;
 	int _moveDelayNum: 0x5f8;
 	NPCAI_Pathfinder _pathfinder : 0x5fc;
 	Vector _orbitDistance : 0xd64;
