@@ -345,6 +345,27 @@ static void fix_evaluate_items_lil_delirium_owner()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static int __fastcall asm_bag_of_crafting_queue_item_pool(ItemConfig_Item* item)
+{
+	return g_Game->_itemPool.GetFirstItemPoolForCollectible(item->id);
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where rerolling Tainted Cain's crafted items turns them into Breakfast.
+// 1.9.7.12 passes -1 as the crafted item's pool, but 1.9.7.13 calls GetFirstItemPoolForCollectible on it instead, so D4 and friends work properly.
+static void fix_bag_of_crafting_queue_item_pool()
+{
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_ControlActiveItem_BagOfCraftingQueueItemPool);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::ControlActiveItem Bag of Crafting QueueItem pool at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes("\x8B\xCE") // mov ecx, esi
+		.AddInternalCall(asm_bag_of_crafting_queue_item_pool)
+		.Push(ASMPatch::Registers::EAX)
+        .AddBytes("\x6A").AddZeroes(1).AddBytes("\x6A").AddZeroes(1)
+		.AddRelativeJump((char*)addr + 0x6); // push dword ptr [esi + 0xc8]
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -399,5 +420,6 @@ void ASMFixes()
 	fix_openal_attributes();
 	fix_mausoleum_heart_door_forced_open();
 	fix_evaluate_items_lil_delirium_owner();
+	fix_bag_of_crafting_queue_item_pool();
     patch_in_place_room_reset();
 }
