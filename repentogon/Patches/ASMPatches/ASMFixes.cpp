@@ -472,6 +472,32 @@ static void fix_filigree_feather_key_piece_priority()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static int __fastcall asm_death_certificate_item_pool(int collectible)
+{
+	return g_Game->_itemPool.GetFirstItemPoolForCollectible(collectible);
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where using Genesis after taking an item from the Death Certificate area can crash the game.
+// The Death Certificate area's collectible spawns never set their source pool, leaving it uninitialized.
+// Best case, Genesis doesn't spawn a choice of replacement items and breaks. Worst case, the game crashes.
+static void fix_death_certificate_item_pool()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Level_InitDeathCertificateArea_CollectibleSpawn);
+	ZHL::Log("[REPENTOGON] Patching Death Certificate area collectible pool at %p\n", addr);
+
+	ASMPatch patch;
+	patch.Push(ASMPatch::Registers::ECX)
+		.Push(ASMPatch::Registers::EDX)
+		.AddBytes("\x8B\x8D\x78\xFF\xFF\xFF") // mov ecx, dword ptr [ebp - 0x88]
+		.AddInternalCall(asm_death_certificate_item_pool)
+		.AddBytes("\x89\x45\xC0") // mov dword ptr [ebp - 0x40], eax
+		.Pop(ASMPatch::Registers::EDX)
+		.Pop(ASMPatch::Registers::ECX)
+		.AddBytes(ByteBuffer().AddAny(addr, 0x7)) // mov dword ptr [ebp - 0x5c], esi; mov eax, dword ptr [edx + ecx - 0x2c]
+		.AddRelativeJump(addr + 0x7); // lea edi, [edx + ecx]
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -531,5 +557,6 @@ void ASMFixes()
 	fix_glowing_hourglass_blood_puppy();
 	fix_fissure_spawner_not_saved();
 	fix_filigree_feather_key_piece_priority();
+	fix_death_certificate_item_pool();
     patch_in_place_room_reset();
 }
