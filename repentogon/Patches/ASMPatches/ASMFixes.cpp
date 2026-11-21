@@ -366,6 +366,26 @@ static void fix_bag_of_crafting_queue_item_pool()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Rotgut never drops its thematic item (Yuck Heart).
+// The normal code doesn't work because Rotgut is a multi room boss. 1.9.7.13 instead checks for the ROTGUT_CLEARED flag.
+static void fix_rotgut_thematic_item()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_GetBossThematicItem_BossIdSwitch);
+	ZHL::Log("[REPENTOGON] Patching Room::GetBossThematicItem Rotgut thematic item at %p\n", addr);
+
+	void* defaultCase = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_GetBossThematicItem_BossIdSwitch_JumpTarget);
+
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny(addr, 0x3)) // mov eax, dword ptr [ebp - 0x30] // room
+		.AddBytes("\x8B\x50\x04") // mov edx, dword ptr [eax + 0x4] // room->_descriptor
+		.AddBytes(ByteBuffer().AddAny(addr + 0x3, 0x6)) // mov eax, dword ptr [eax + 0x1bb0] // room->_bossId
+		.AddBytes("\xF7\x42\x44").AddBytes(ByteBuffer().AddInteger<int32_t>(0x10000, false)) // test dword ptr [edx + 0x44], 0x10000 // ROTGUT_CLEARED
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, addr + 0x9) // dec eax
+		.AddBytes("\xC7\x06").AddBytes(ByteBuffer().AddInteger<int32_t>(COLLECTIBLE_YUCK_HEART, false)) // mov dword ptr [esi], COLLECTIBLE_YUCK_HEART
+		.AddRelativeJump(defaultCase);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -421,5 +441,6 @@ void ASMFixes()
 	fix_mausoleum_heart_door_forced_open();
 	fix_evaluate_items_lil_delirium_owner();
 	fix_bag_of_crafting_queue_item_pool();
+	fix_rotgut_thematic_item();
     patch_in_place_room_reset();
 }
