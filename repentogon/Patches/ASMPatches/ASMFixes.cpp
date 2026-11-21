@@ -541,6 +541,16 @@ static void fix_glowing_hourglass_detached_entity_references()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where the items Soul of Jacob and Esau grants to the spawned Esau were removed from future item pools.
+// The GetCollectible call that rolls them passed flags 6 instead of 7 (teehee), missing the "don't remove from pool" bit.
+static void fix_soul_of_jacob_esau_item_pool_decrease()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_UseCard_SoulOfJacobEsauItemFlags) + 0x2;
+	ZHL::Log("[REPENTOGON] Patching Soul of Jacob and Esau GetCollectible flags at %p\n", addr);
+
+	sASMPatcher.FlatPatch(addr, "\x07", 1); // push 6 -> push 7
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -603,5 +613,6 @@ void ASMFixes()
 	fix_death_certificate_item_pool();
 	fix_glowing_hourglass_alt_path_home();
 	fix_glowing_hourglass_detached_entity_references();
+	fix_soul_of_jacob_esau_item_pool_decrease();
     patch_in_place_room_reset();
 }
