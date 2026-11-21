@@ -934,6 +934,9 @@ __thiscall float Entity_Player::GetFireDelay();
 "558bec8b81????????85c0":
 __thiscall void Entity_Player::SetFireDelay(float delay);
 
+"558bec83e4f85153568bf18b0d????????5783b9????????027c":
+__thiscall void Entity_Player::FireWeapons(Vector* direction, bool isShooting);
+
 struct Entity_Player depends (QueueItemData, Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc, GameStatePlayer, EntityPtr, BitSet128, EntityRef) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }
@@ -961,6 +964,7 @@ struct Entity_Player depends (QueueItemData, Vector, ANM2, ColorMod, KColor, Pla
 	inline uint32_t GetDeadEyeCharge() { return this->_deadEyeCharges; }
 	inline uint32_t GetDeadEyeMisses() { return this->_deadEyeMisses; }
 	inline bool* GetCanShoot() { return &this->_canShoot; }
+	inline bool IsExtraAnimationFinished() { return !this->_extraAnimationA && !this->_extraAnimationB; }
 	inline int* GetEpiphoraCharge() { return &this->_epiphoraCharge; }
 	inline int* GetMegaBlastDuration() { return &this->_megaBlastDuration; }
 	inline int* GetPeeBurstCooldown() { return &this->_peeBurstCooldown; }
@@ -1086,6 +1090,8 @@ struct Entity_Player depends (QueueItemData, Vector, ANM2, ColorMod, KColor, Pla
 	short _bloodLustCounter : 0x137c;	//not sure whether its actually short but we are on x86 so who cares lul
 	int _metronomeCollectibleID : 0x1388;
 	int _monkeyPawCounter : 0x1394;
+	bool _extraAnimationA : 0x1398;
+	bool _extraAnimationB : 0x139a;
 	int _damageCooldown : 0x13b8;
 	int _playerType: 0x13bc;
 	Weapon* _weapon[5] : 0x13d8;

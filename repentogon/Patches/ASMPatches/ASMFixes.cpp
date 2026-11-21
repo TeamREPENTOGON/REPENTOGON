@@ -551,6 +551,53 @@ static void fix_soul_of_jacob_esau_item_pool_decrease()
 	sASMPatcher.FlatPatch(addr, "\x07", 1); // push 6 -> push 7
 }
 
+static void __stdcall asm_epiphora_reset_fire_weapons(Entity_Player* player, Vector* direction, bool isShooting, bool canFire)
+{
+	if ((player->_flags & FLAG_INTERPOLATION_UPDATE) == 0 || !canFire)
+		return;
+
+	if (!player->IsExtraAnimationFinished())
+		return;
+	if (g_Game->_stageTransition.IsActive())
+		return;
+
+	player->_flags &= ~FLAG_INTERPOLATION_UPDATE;
+	player->FireWeapons(direction, isShooting);
+	player->_flags |= FLAG_INTERPOLATION_UPDATE;
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where charged weapons could fail to fire with Epiphora.
+// Epiphora runs on every player update, but charged weapons only fire on non-interpolated updates.
+// When the fire input is released on an interpolated update, the release doesn't happen until the next real frame,
+// but Epiphora resets immediately and runs EvaluateItems. The next update then sees the higher MaxFireDelay,
+// so the charge doesn't count as full and the shot is dropped.
+// 1.9.7.13 instead fires the weapons right after the Epiphora reset.
+static void fix_epiphora_charged_weapon_release()
+{
+	char* sig = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_ControlFire_EpiphoraReset);
+	char* addr = sig + 0xF;
+	ZHL::Log("[REPENTOGON] Patching Epiphora reset charged weapon release at %p\n", addr);
+
+	ASMPatch patch;
+	patch.Push(ASMPatch::Registers::EAX)
+		.Push(ASMPatch::Registers::ECX)
+		.Push(ASMPatch::Registers::EDX)
+		.AddBytes("\x0F\xB6\x85\xBA\xFE\xFF\xFF") // movzx eax, byte ptr [ebp - 0x146] // canFire
+		.Push(ASMPatch::Registers::EAX)
+		.AddBytes("\x0F\xB6\x85\xA0\xFE\xFF\xFF") // movzx eax, byte ptr [ebp - 0x160] // isShooting
+		.Push(ASMPatch::Registers::EAX)
+		.AddBytes("\x8D\x85\xA4\xFE\xFF\xFF") // lea eax, [ebp - 0x15c] // direction
+		.Push(ASMPatch::Registers::EAX)
+		.Push(ASMPatch::Registers::EDI)
+		.AddInternalCall(asm_epiphora_reset_fire_weapons)
+		.Pop(ASMPatch::Registers::EDX)
+		.Pop(ASMPatch::Registers::ECX)
+		.Pop(ASMPatch::Registers::EAX)
+		.AddBytes(ByteBuffer().AddAny(addr, 0x10)) // movss xmm5, dword ptr [ebp - 0x158]; movss xmm6, dword ptr [ebp - 0x15c]
+		.AddRelativeJump(addr + 0x10);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -614,5 +661,6 @@ void ASMFixes()
 	fix_glowing_hourglass_alt_path_home();
 	fix_glowing_hourglass_detached_entity_references();
 	fix_soul_of_jacob_esau_item_pool_decrease();
+	fix_epiphora_charged_weapon_release();
     patch_in_place_room_reset();
 }
