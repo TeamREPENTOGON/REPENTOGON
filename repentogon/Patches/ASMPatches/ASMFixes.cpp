@@ -678,6 +678,28 @@ static void fix_black_maw_charge_right_bound()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where a ??? pill could prevent the chest from appearing after defeating Satan in Ultra Hard.
+// The ??? pill runs AddCurse which reapplies *every* curse Ultra Hard normally has, including Curse of the Labyrinth.
+// SpawnClearAward treats the boss room as one stage deeper when Curse of the Labyrinth is active (or in challenge 44),
+// so Sheol (10) took the stage 11 path. 1.9.7.13 only applies the Labyrinth bump below stage 8.
+static void fix_satan_chest_labyrinth_stage()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_SpawnClearAward_LabyrinthStageCheck);
+	char* incStage = addr + 0xD;
+	char* skip = addr + 0x11;
+	ZHL::Log("[REPENTOGON] Patching SpawnClearAward Labyrinth stage check at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny(addr + 0x4, 0x7)) // cmp dword ptr [ecx + 0x25afc], 0x2c
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, incStage)
+		.AddBytes("\xA8\x02") // test al, 2
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, skip)
+		.AddBytes("\x83\xFE\x08") // cmp esi, 8
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JL, incStage)
+		.AddRelativeJump(skip);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -746,5 +768,6 @@ void ASMFixes()
 	fix_star_of_bethlehem_off_grid_speed();
 	fix_dull_razor_damage_block();
 	fix_black_maw_charge_right_bound();
+	fix_satan_chest_labyrinth_stage();
     patch_in_place_room_reset();
 }
