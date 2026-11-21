@@ -435,6 +435,43 @@ static void fix_fissure_spawner_not_saved()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static bool __fastcall asm_filigree_feather_needs_key_piece(bool needsKeyPiece, CollectibleType otherKeyPiece)
+{
+	if (!needsKeyPiece) {
+		return false;
+	}
+
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
+	return !playerManager->AnyoneHasTrinket(TRINKET_FILIGREE_FEATHERS) || playerManager->FirstCollectibleOwner(otherKeyPiece, nullptr, true) != nullptr;
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Filigree Feather would prioritize Key Piece drops.
+// In 1.9.7.12, Uriel/Gabriel drop their missing Key Piece before checking for Filigree Feather.
+// 1.9.7.13 reverts this, going back to Repentance behavior.
+static void fix_filigree_feather_key_piece_priority()
+{
+	char* sig = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_TriggerBossDeath_AngelKeyPieceCheck);
+	char* addr = sig + 0x11;
+	ZHL::Log("[REPENTOGON] Patching Room::TriggerBossDeath Filigree Feather Key Piece check at %p\n", addr);
+
+	ASMPatch patch;
+	patch.Push(ASMPatch::Registers::EAX)
+		.AddBytes("\x0F\xB6\xCA") // movzx ecx, dl
+		.AddBytes("\xBA").AddBytes(ByteBuffer().AddInteger<int32_t>(COLLECTIBLE_KEY_PIECE_2, false)) // mov edx, COLLECTIBLE_KEY_PIECE_2
+		.AddInternalCall(asm_filigree_feather_needs_key_piece)
+		.AddBytes("\x8A\xD0") // mov dl, al
+		.AddBytes(ByteBuffer().AddAny(sig, 0x3)) // mov byte ptr [ebp - 0x1d], dl
+		.Pop(ASMPatch::Registers::ECX)
+		.Push(ASMPatch::Registers::EDX)
+		.AddBytes("\x0F\xB6\xC9") // movzx ecx, cl
+		.AddBytes("\xBA").AddBytes(ByteBuffer().AddInteger<int32_t>(COLLECTIBLE_KEY_PIECE_1, false)) // mov edx, COLLECTIBLE_KEY_PIECE_1
+		.AddInternalCall(asm_filigree_feather_needs_key_piece)
+		.Pop(ASMPatch::Registers::EDX)
+		.AddBytes(ByteBuffer().AddAny(addr, 0x6)) // mov ecx, dword ptr [esi + 0x28]; mov byte ptr [ebp - 0x1e], al
+		.AddRelativeJump(addr + 0x6); // cmp ecx, 0x10f
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -493,5 +530,6 @@ void ASMFixes()
 	fix_rotgut_thematic_item();
 	fix_glowing_hourglass_blood_puppy();
 	fix_fissure_spawner_not_saved();
+	fix_filigree_feather_key_piece_priority();
     patch_in_place_room_reset();
 }
