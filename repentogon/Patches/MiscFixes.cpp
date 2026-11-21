@@ -202,6 +202,18 @@ HOOK_METHOD(Entity_Player, HasInnateCollectible, (int collectibleType, int unuse
 	return super(collectibleType, unused);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Book of Virtues could be used while an active item was queued,
+// resulting in infinite free wisps by swapping two actives.
+HOOK_METHOD(Entity_Player, CanUseCollectible, (CollectibleType collectible, int slot) -> bool) {
+	if (collectible == COLLECTIBLE_BOOK_OF_VIRTUES) {
+		ItemConfig_Item* queued = this->_queuedItem._item;
+		if (queued && queued->type == 3) { // ITEM_ACTIVE
+			return false;
+		}
+	}
+	return super(collectible, slot);
+}
+
 // The game will attempt to update a mod's metadata.xml if it is missing a name/directory/version, or if it is missing entirely.
 // However, for workshop mods, because WriteMetadata uses the "_directory" value, which at this point in time has not been appended
 // with the workshop ID, the game will create a new folder for "modname" instead of "modname_123456" and write the metadata there,
