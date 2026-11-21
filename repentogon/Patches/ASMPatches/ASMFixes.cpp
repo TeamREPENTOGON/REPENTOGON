@@ -498,6 +498,26 @@ static void fix_death_certificate_item_pool()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where using Glowing Hourglass in the starting room of Downpour/Dross I would teleport the player to Home.
+// The Home easter egg didn't check for STAGETYPE_REPENTANCE(_B), whoops!
+static void fix_glowing_hourglass_alt_path_home()
+{
+	char* sig = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Game_StartRoomTransition_GlowingHourglassHomeCheck);
+	char* addr = sig + 0x5;
+	char* skipHome = addr + *(int8_t*)(sig + 0x4);
+	ZHL::Log("[REPENTOGON] Patching Game::StartRoomTransition Glowing Hourglass alt path check at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes("\x8B\x42\x04") // mov eax, dword ptr [edx + 0x4] // level->_stageType
+		.AddBytes("\x83\xF8\x04") // cmp eax, STAGETYPE_REPENTANCE
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, skipHome)
+		.AddBytes("\x83\xF8\x05") // cmp eax, STAGETYPE_REPENTANCE_B
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, skipHome)
+		.AddBytes(ByteBuffer().AddAny(addr, 0x6)) // mov eax, dword ptr [edx + 0x18304] // level->_roomIdx
+		.AddRelativeJump(addr + 0x6); // cmp eax, dword ptr [edx + 0x182d0] // level->_startingRoomIdx
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -558,5 +578,6 @@ void ASMFixes()
 	fix_fissure_spawner_not_saved();
 	fix_filigree_feather_key_piece_priority();
 	fix_death_certificate_item_pool();
+	fix_glowing_hourglass_alt_path_home();
     patch_in_place_room_reset();
 }
