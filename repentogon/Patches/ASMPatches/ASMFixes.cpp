@@ -636,6 +636,19 @@ static void fix_star_of_bethlehem_off_grid_speed()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Belly Jelly and Cone Head could block Dull Razor's fake damage.
+// Both blocks ignore DAMAGE_COUNTDOWN; 1.9.7.13 also ignores DAMAGE_FAKE.
+static void fix_dull_razor_damage_block()
+{
+	char* bellyJelly = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_TakeDamage_BellyJellyFlagCheck) + 0x1F;
+	char* coneHead = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_TakeDamage_ConeHeadFlagCheck) + 0x1B;
+	ZHL::Log("[REPENTOGON] Patching Belly Jelly / Cone Head fake damage checks at %p, %p\n", bellyJelly, coneHead);
+
+	// and eax, 0x2000000 -> and eax, 0x2200000 (DAMAGE_COUNTDOWN | DAMAGE_FAKE)
+	sASMPatcher.FlatPatch(bellyJelly, "\x20", 1);
+	sASMPatcher.FlatPatch(coneHead, "\x20", 1);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -702,5 +715,6 @@ void ASMFixes()
 	fix_epiphora_charged_weapon_release();
 	fix_spectral_bobs_head_wall_bounce();
 	fix_star_of_bethlehem_off_grid_speed();
+	fix_dull_razor_damage_block();
     patch_in_place_room_reset();
 }
