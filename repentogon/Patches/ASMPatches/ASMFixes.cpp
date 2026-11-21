@@ -598,6 +598,25 @@ static void fix_epiphora_charged_weapon_release()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where spectral tears made Bob's Rotten Head bounce off walls instead of bursting.
+// Tear::Update only runs its wall-hit handling (which kills the tear) when the tear isn't spectral.
+// 1.9.7.13 instead runs it for Bob's Rotten Head indiscriminately.
+static void fix_spectral_bobs_head_wall_bounce()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityTear_Update_WallHitSpectralCheck);
+	char* resume = addr + 0x8;
+	char* skipWallHit = resume + *(int32_t*)(addr + 0x4);
+	ZHL::Log("[REPENTOGON] Patching Entity_Tear::Update spectral Bob's Rotten Head wall check at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes("\x84\xC0") // test al, al // (tearFlags & TEAR_SPECTRAL) is zero
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, resume)
+		.AddBytes("\x83\x7F\x2C\x04") // cmp dword ptr [edi + 0x2c], TEAR_BOBS_HEAD
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, skipWallHit)
+		.AddRelativeJump(resume);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -662,5 +681,6 @@ void ASMFixes()
 	fix_glowing_hourglass_detached_entity_references();
 	fix_soul_of_jacob_esau_item_pool_decrease();
 	fix_epiphora_charged_weapon_release();
+	fix_spectral_bobs_head_wall_bounce();
     patch_in_place_room_reset();
 }
