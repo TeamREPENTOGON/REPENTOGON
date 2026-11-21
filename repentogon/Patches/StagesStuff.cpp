@@ -273,47 +273,22 @@ HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode)
 	}
 }
 
-LUA_FUNCTION(Lua_SetCurrentFloorMusic)
+MOD_EXPORT void L_Isaac_SetCurrentFloorMusic(int musicId)
 {
-	if (!lua_isnumber(L, 1)) { return luaL_error(L, "Expected MusicId as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
-	int etype = (int)luaL_checknumber(L, 1);
-	SetCurrentFloorMusic(etype);
-	return 0;
-
+	SetCurrentFloorMusic(musicId);
 }
 
-LUA_FUNCTION(Lua_SetCurrentFloorBackdrop)
+MOD_EXPORT void L_Isaac_SetCurrentFloorBackdrop(int backdropId)
 {
-	if (!lua_isnumber(L, 1)) { return luaL_error(L, "Expected BackdropId as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
-	int etype = (int)luaL_checknumber(L, 1);
-	SetCurrentFloorBackdrop(etype);
-	return 0;
-
+	SetCurrentFloorBackdrop(backdropId);
 }
 
-LUA_FUNCTION(Lua_SetCurrentFloorName)
+MOD_EXPORT void L_Isaac_SetCurrentFloorName(const char* floorName)
 {
-	if (!lua_isstring(L, 1)) { return luaL_error(L, "Expected floorname as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
-	string etype = luaL_checkstring(L, 1);
-	SetCurrentFloorName(etype);
-	return 0;
-
+	SetCurrentFloorName(floorName);
 }
 
-LUA_FUNCTION(Lua_GetCurrentStageConfigId)
+MOD_EXPORT int L_Isaac_GetCurrentStageConfigId()
 {
-	lua_pushinteger(L, RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1));
-	return 1;
-
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-
-	lua::LuaStackProtector protector(_state);
-
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetCurrentFloorMusic", Lua_SetCurrentFloorMusic);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetCurrentFloorBackdrop", Lua_SetCurrentFloorBackdrop);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetCurrentFloorName", Lua_SetCurrentFloorName);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCurrentStageConfigId", Lua_GetCurrentStageConfigId);
+	return RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
 }

@@ -295,6 +295,146 @@ static void fix_openal_attributes() {
 	sASMPatcher.PatchAt((void*)patchAddr, &patch);
 }
 
+static int __fastcall asm_door_update_get_secret_exit_type(GridEntity_Door* door)
+{
+	if ((int)g_Game->_currentRoomIdx == ROOM_SECRET_EXIT_IDX)
+	{
+		return 0;
+	}
+
+	return door->GetSecretExitType();
+}
+
+// Rep+ reopens the Mausoleum Mom's Heart door on every frame once it's unlocked.
+// This also applies to the other side of the door inside the Mom's Heart room, so that door never stays closed during the fight.
+// To work around this, make the check see no secret exit door while inside the secret exit room.
+static void fix_mausoleum_heart_door_forced_open()
+{
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::GridEntityDoor_Update_GetSecretExitType);
+	ZHL::Log("[REPENTOGON] Patching GridEntity_Door::Update Mausoleum Mom's Heart door bug %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddInternalCall(asm_door_update_get_secret_exit_type)
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+static bool __fastcall asm_evaluate_items_is_own_lil_delirium(Entity_Familiar* familiar, Entity_Player* player)
+{
+	if (!familiar->_isLilDelirium)
+	{
+		return false;
+	}
+
+	return familiar->_player == player || (familiar->_originalPlayer != nullptr && familiar->_originalPlayer == player);
+}
+
+// Fixes a vanilla bug where Lil Delirium disappears if owned by a second player.
+// Lil Delirium's EvaluateItems check doesn't actually take player owner into account,
+// so the amount of Lil Deliriums in the room is only ever equal to the amount the player with the least Lil Deliriums has.
+static void fix_evaluate_items_lil_delirium_owner()
+{
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_EvaluateItems_LilDeliriumCheck);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::EvaluateItems Lil Delirium owner check at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes("\x8B\xCE") // mov ecx,esi // familiar
+		.AddBytes("\x8B\x95\xA8\xFB\xFF\xFF") // mov edx, dword ptr [ebp - 0x458] // player
+		.AddInternalCall(asm_evaluate_items_is_own_lil_delirium)
+		.AddRelativeJump((char*)addr + 0x7); // test al, al
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+static int __fastcall asm_bag_of_crafting_queue_item_pool(ItemConfig_Item* item)
+{
+	return g_Game->_itemPool.GetFirstItemPoolForCollectible(item->id);
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where rerolling Tainted Cain's crafted items turns them into Breakfast.
+// 1.9.7.12 passes -1 as the crafted item's pool, but 1.9.7.13 calls GetFirstItemPoolForCollectible on it instead, so D4 and friends work properly.
+static void fix_bag_of_crafting_queue_item_pool()
+{
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_ControlActiveItem_BagOfCraftingQueueItemPool);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::ControlActiveItem Bag of Crafting QueueItem pool at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes("\x8B\xCE") // mov ecx, esi
+		.AddInternalCall(asm_bag_of_crafting_queue_item_pool)
+		.Push(ASMPatch::Registers::EAX)
+        .AddBytes("\x6A").AddZeroes(1).AddBytes("\x6A").AddZeroes(1)
+		.AddRelativeJump((char*)addr + 0x6); // push dword ptr [esi + 0xc8]
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Rotgut never drops its thematic item (Yuck Heart).
+// The normal code doesn't work because Rotgut is a multi room boss. 1.9.7.13 instead checks for the ROTGUT_CLEARED flag.
+static void fix_rotgut_thematic_item()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_GetBossThematicItem_BossIdSwitch);
+	ZHL::Log("[REPENTOGON] Patching Room::GetBossThematicItem Rotgut thematic item at %p\n", addr);
+
+	void* defaultCase = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_GetBossThematicItem_BossIdSwitch_JumpTarget);
+
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny(addr, 0x3)) // mov eax, dword ptr [ebp - 0x30] // room
+		.AddBytes("\x8B\x50\x04") // mov edx, dword ptr [eax + 0x4] // room->_descriptor
+		.AddBytes(ByteBuffer().AddAny(addr + 0x3, 0x6)) // mov eax, dword ptr [eax + 0x1bb0] // room->_bossId
+		.AddBytes("\xF7\x42\x44").AddBytes(ByteBuffer().AddInteger<int32_t>(0x10000, false)) // test dword ptr [edx + 0x44], 0x10000 // ROTGUT_CLEARED
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, addr + 0x9) // dec eax
+		.AddBytes("\xC7\x06").AddBytes(ByteBuffer().AddInteger<int32_t>(COLLECTIBLE_YUCK_HEART, false)) // mov dword ptr [esi], COLLECTIBLE_YUCK_HEART
+		.AddRelativeJump(defaultCase);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+static bool __fastcall asm_remove_hourglass_blood_puppy(Entity* entity)
+{
+	if (g_Game->_isRestoringGlowingHourglassState && entity->_type == ENTITY_BLOOD_PUPPY) {
+		entity->Remove();
+		return true;
+	}
+
+	return false;
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Glowing Hourglass could duplicate Blood Puppy.
+// A fully grown Blood Puppy is persistent, so it survives the rewind. The restored familiar then gets respawned as well.
+// 1.9.7.13 culls the persistent Blood Puppy, fixing the bug.
+static void fix_glowing_hourglass_blood_puppy()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_RepositionFriendlyNPCs_Loop);
+	ZHL::Log("[REPENTOGON] Patching Glowing Hourglass Blood Puppy removal at %p\n", addr);
+
+	void* nextEntity = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_RepositionFriendlyNPCs_Loop_NextEntity);
+
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny(addr, 0x9)) // mov eax, dword ptr [ebx + 0x124c]; mov ecx, dword ptr [eax + edi * 4] // entity
+		.Push(ASMPatch::Registers::ECX)
+		.AddInternalCall(asm_remove_hourglass_blood_puppy)
+		.Pop(ASMPatch::Registers::ECX)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, nextEntity) // inc edi
+		.AddRelativeJump(addr + 0x9); // mov eax, dword ptr [ecx + 0x168]
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Fissure spawners don't persist when leaving an uncleared room.
+// 1.9.7.13 adds 1000.192 to the effects that Room::ShouldSaveEntity always saves.
+static void fix_fissure_spawner_not_saved()
+{
+	constexpr int32_t EFFECT_FISSURE_SPAWNER = 192;
+
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_ShouldSaveEntity_EffectVariantCheck);
+	ZHL::Log("[REPENTOGON] Patching Room::ShouldSaveEntity Fissure spawner effect at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes("\x81\xFA").AddBytes(ByteBuffer().AddInteger<int32_t>(EFFECT_FISSURE_SPAWNER, false)) // cmp edx, EFFECT_FISSURE_SPAWNER
+		.AddBytes("\x75\x04") // jne +4
+		.AddBytes("\xB0\x01\x5D\xC3") // mov al, 1; pop ebp; ret
+		.AddBytes(ByteBuffer().AddAny(addr, 0x6)) // cmp edx, 0x8d
+		.AddRelativeJump(addr + 0x6); // jne
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -347,5 +487,11 @@ void ASMFixes()
 	fix_familiar_pathfinder_move_randomly_axis_aligned(&AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckB, &AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckB_JumpTarget, "\x85\xc0", 0x7);  // TEST EAX,EAX
 	fix_load_button_maps_crash();
 	fix_openal_attributes();
+	fix_mausoleum_heart_door_forced_open();
+	fix_evaluate_items_lil_delirium_owner();
+	fix_bag_of_crafting_queue_item_pool();
+	fix_rotgut_thematic_item();
+	fix_glowing_hourglass_blood_puppy();
+	fix_fissure_spawner_not_saved();
     patch_in_place_room_reset();
 }

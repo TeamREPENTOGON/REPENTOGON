@@ -1,3 +1,5 @@
+#pragma once
+
 namespace REPENTOGON {
 	template <typename T>
 	struct Ok

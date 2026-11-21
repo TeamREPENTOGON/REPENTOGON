@@ -22,7 +22,19 @@ __thiscall ColorMod* Entity_Laser::CalculateTearColor(ColorMod* buffer);
 "558bec51568bf180be????????000f85":
 __thiscall void Entity_Laser::PlayInitSound();
 
-struct Entity_Laser depends (BitSet128, HomingLaser) : public Entity { {{
+"558bec83e4f883ec408b45":
+static cleanup Vector* Entity_Laser::CalculateEndPosition(Vector* buffer, Vector* start, Vector* dir, Vector* positionOffset, Entity* parent, float margin);
+
+"558bec83e4f851535657e8":
+static cleanup Entity_Laser* Entity_Laser::ShootAngle(int Variant, Vector* SourcePos, float AngleDegrees, int Timeout, Vector* PosOffset, Entity* Source, bool Force);
+
+"558becf30f1045??8b81":
+__thiscall void Entity_Laser::SetAngle(float angle);
+
+"558bec807d??00f30f1045":
+__thiscall void Entity_Laser::SetActiveRotation(int delay, float degrees, float speed, bool setTimeout);
+
+struct Entity_Laser depends (BitSet128, HomingLaser, Vector, Entity) : public Entity { {{
 	inline uint32_t* GetHomingType() { return &this->_homingType; }
 	inline float* GetScale() { return &this->_scale; }
 	
@@ -33,6 +45,7 @@ struct Entity_Laser depends (BitSet128, HomingLaser) : public Entity { {{
 	inline std_vector_uint* GetHitList() { return &this->_hitList; }
 
 }} 
+	Vector _parentOffset : 0x410;
 	BitSet128 _tearFlags : 0x428;
 	int _timeout : 0x458;
 	bool _sampleLaser : 0x45d;
@@ -40,6 +53,7 @@ struct Entity_Laser depends (BitSet128, HomingLaser) : public Entity { {{
 	HomingLaser _homingLaser : 0x464;
 	float _maxDistance : 0x4d0;
 	uint32_t _homingType : 0x4d4;
+	Vector _endPoint : 0x4d8;
 	float _scale : 0x4e0;
 	bool _disableFollowParent : 0x4e4;
 	bool _multidimensionalTouched: 0x500;
@@ -52,7 +66,9 @@ struct Entity_Laser depends (BitSet128, HomingLaser) : public Entity { {{
 	
 
 	__vtable {
-		skip; // Free
+		override
+		"558bec568bf1e8????????f645??0174??6868050000":
+		void Free(unsigned int flags);
 		
 		override
 		"558bec83e4f851535657ff75??8bf9ff75??ff75??ff75??e8????????8b87????????85c0":
@@ -65,9 +81,19 @@ struct Entity_Laser depends (BitSet128, HomingLaser) : public Entity { {{
 		void Update();
 		
 		skip; // Interpolate
-		skip; // Render
-		skip; // RenderShadowLayer
-		skip; // PostRender
+		
+		override
+		"558bec6aff68????????64a1????????5081eca0020000":
+		void Render(Vector* offset);
+		
+		override
+		"558bec6aff68????????64a1????????5081ecb001000056":
+		bool RenderShadowLayer(Vector* offset);
+		
+		override
+		"558bec83e4f883ec705657":
+		void PostRender();
+		
 		skip; // TakeDamage
 		skip; // Kill
 		
@@ -77,11 +103,19 @@ struct Entity_Laser depends (BitSet128, HomingLaser) : public Entity { {{
 
 		skip; // TriggerGlowingHourglass
 		skip; // ???
-		skip; // GetRenderZ
+		
+		override
+		"558bec51f30f1081????????83ec08f30f5881????????f30f5905????????f30f5805????????f30f5805????????f30f1145??d945??dd1c24e8????????d95d??d945??83c408d95d??f30f1045??f30f5f05????????e8????????8be55dc3??????????????????????????????8b91":
+		int GetRenderZ();
+		
 		skip; // CanOverwrite
 		skip; // SetColor
 		skip; // SetCollisionDamage
-		skip; // ClearReferences
+		
+		override
+		"558bec515356578bf9e8????????8db7":
+		void ClearReferences();
+		
 		skip; // CanShutDoors
 		skip; // IsBoss
 		skip; // IsValidTarget

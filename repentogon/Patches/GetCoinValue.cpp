@@ -7,6 +7,7 @@
 #include "SigScan.h"
 #include "XMLData.h"
 #include "LuaCore.h"
+#include "../LuaClasses.h"
 #include "../LuaInit.h"
 #include "EntityConfigEx.h"
 
@@ -27,7 +28,7 @@ int __stdcall GetCoinValueReimplementation(Entity_Pickup* pickup, const bool run
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(subtype)
-			.push(pickup, lua::Metatables::ENTITY_PICKUP)
+			.pushClassPtr<LuaEntityPickup>(pickup)
 			.call(1);
 
 		if (!result && lua_isinteger(L, -1)) {

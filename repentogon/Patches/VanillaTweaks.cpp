@@ -124,6 +124,20 @@ HOOK_METHOD(Entity_Familiar, Init, (unsigned int type, unsigned int variant, uns
 	super(type, variant, subtype, initSeed);
 }
 
+// Fixes a bug where Trinity Shield and Spear of Destiny ghosts persist when flipping as Tainted Lazarus.
+HOOK_METHOD(Entity_Player, Update, () -> void) {
+	super();
+
+	if (!_exists) {
+		for (EntityPtr* owned : { &_spearOfDestiny, &_trinityShield }) {
+			if (Entity* effect = owned->GetReference()) {
+				effect->Remove();
+				owned->SetReference(nullptr);
+			}
+		}
+	}
+}
+
 // eco mode stuff 
 decltype(&SetProcessInformation) p_SetProcessInformation=0x0;
 void EcoMode_toggle_qos(bool eco_state) {

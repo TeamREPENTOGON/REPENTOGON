@@ -1,59 +1,59 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
-#include "LuaCore.h"
-#include "HookSystem.h"
-
-LUA_FUNCTION(Lua_InputGetDeviceNameByIdx)
-{
-	int cidx=(int)luaL_checkinteger(L, 1);
-	char* device_name=g_InputManagerBase.GetDeviceNameByIdx(cidx);
-	if (device_name){
-		lua_pushstring(L,device_name);
-		return 1;
-	}
-	lua_pushnil(L);
-	return 1;
-}
 
 extern float WINMouseWheelMove_Vert;
 extern float WINMouseWheelMove_Hori;
 
-LUA_FUNCTION(Lua_InputGetMouseWheel)
-{
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
-	Vector vec = Vector(WINMouseWheelMove_Hori, WINMouseWheelMove_Vert);
-	memcpy(toLua, &vec, sizeof(Vector));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_InputGetActionButtons) {
-	int action = (int)luaL_checkinteger(L, 1);
-	int controlleridx = (int)luaL_checkinteger(L, 2);
+MOD_EXPORT void L_Input_GetActionButtons(int action, int controlleridx, int* out, int* out2) {
 	int buttons[2]{ -1, -1 };
 	g_InputManagerBase.GetActionButtons(action, controlleridx, buttons);
-	lua_pushinteger(L, buttons[0]);
-	lua_pushinteger(L, buttons[1]);
-	return 2;
+	*out = buttons[0];
+	*out2 = buttons[1];
 }
 
-LUA_FUNCTION(Lua_InputGetButtonFrame) {
-	int button = (int)luaL_checkinteger(L, 1);
-	int controlleridx = (int)luaL_checkinteger(L, 2);
-	if (controlleridx == 0) {
-		lua_pushinteger(L, button);
+MOD_EXPORT float L_Input_GetActionValue(int action, int controllerId) {
+	return g_InputManagerBase.GetActionValue(action, controllerId, 0);
+}
+
+MOD_EXPORT float L_Input_GetButtonValue(int button, int controllerId) {
+	return LuaEngine::GetButtonValue(button, controllerId);
+}
+
+MOD_EXPORT int L_Input_GetButtonFrame(int button, int controllerId) {
+	if (controllerId == 0) {
+		return button;
 	} else {
-		lua_pushinteger(L, InputManager::GetControllerButtonFrame(button));
+		return InputManager::GetControllerButtonFrame(button);
 	}
-	return 1;
 }
 
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
+MOD_EXPORT char* L_Input_GetDeviceNameByIdx(int controllerId) {
+	return g_InputManagerBase.GetDeviceNameByIdx(controllerId);
+}
 
-	lua::LuaStackProtector protector(_state);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Input, "GetDeviceNameByIdx", Lua_InputGetDeviceNameByIdx);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Input, "GetMouseWheel", Lua_InputGetMouseWheel);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Input, "GetActionButtons", Lua_InputGetActionButtons);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Input, "GetButtonFrame", Lua_InputGetButtonFrame);
+MOD_EXPORT void L_Input_GetMousePosition(bool gameCoords, Vector* out) {
+	g_LuaEngine->GetMousePosition(out, gameCoords);
+}
+
+MOD_EXPORT void L_Input_GetMouseWheel(Vector* out) {
+	*out = Vector(WINMouseWheelMove_Hori, WINMouseWheelMove_Vert);
+}
+
+MOD_EXPORT bool L_Input_IsActionPressed(int action, int controllerId) {
+	return g_InputManagerBase.IsActionPressed(action, controllerId, 0);
+}
+
+MOD_EXPORT bool L_Input_IsActionTriggered(int action, int controllerId) {
+	return g_InputManagerBase.IsActionTriggered(action, controllerId, 0);
+}
+
+MOD_EXPORT bool L_Input_IsButtonPressed(int button, int controllerId) {
+	return g_InputManagerBase.IsButtonPressed(button, controllerId, 0);
+}
+
+MOD_EXPORT bool L_Input_IsButtonTriggered(int button, int controllerId) {
+	return g_InputManagerBase.IsButtonTriggered(button, controllerId, 0);
+}
+
+MOD_EXPORT bool L_Input_IsMouseBtnPressed(uint32_t button) {
+	return LuaEngine::IsMouseButtonPressed(button);
 }

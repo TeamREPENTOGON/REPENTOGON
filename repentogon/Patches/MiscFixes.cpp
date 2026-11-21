@@ -74,14 +74,6 @@ HOOK_METHOD(Font, Load, (char const* path, bool unusedIsLoading) -> void) {
 	super(path, unusedIsLoading);
 }
 
-
-// Fix crash if nil is passed as the string from luaside.
-HOOK_METHOD(Font, DrawString, (const char* str, Vector pos, Vector scale, KColor* color, FontSettings* settings) -> void) {
-	if (str) {
-		super(str, pos, scale, color, settings);
-	}
-}
-
 //Fix nasty behaviour when calling getgrident with a negative value
 HOOK_METHOD(Room, GetGridEntity, (unsigned int idx) -> GridEntity*) {
 	if (idx < 0) {
@@ -198,11 +190,14 @@ HOOK_METHOD(Room, SpawnGridEntityDesc, (int gridIndex, GridEntityDesc* desc) -> 
 	return super(gridIndex, desc);
 }
 
-// Fixes a bug in Rep+ v1.9.7.12 where Bethany in the Blood Mary challenge has their innate Book Of Virtues, which was unintended and fixed in a later patch.
+// Fixes a bug in Rep+ v1.9.7.12 where Bethany in the Bloody Mary and Baptism by Fire challenges has their innate Book Of Virtues.
 // I think this happened because this function was newly created in Rep+ due to some refactoring.
 HOOK_METHOD(Entity_Player, HasInnateCollectible, (int collectibleType, int unused) -> bool) {
-	if (this->GetPlayerType() == PLAYER_BETHANY && collectibleType == COLLECTIBLE_BOOK_OF_VIRTUES && g_Game->GetChallenge() == CHALLENGE_BLOODY_MARY) {
-		return false;
+	if (this->GetPlayerType() == PLAYER_BETHANY && collectibleType == COLLECTIBLE_BOOK_OF_VIRTUES) {
+		const unsigned int challenge = g_Game->GetChallenge();
+		if (challenge == CHALLENGE_BLOODY_MARY || challenge == CHALLENGE_BAPTISM_BY_FIRE) {
+			return false;
+		}
 	}
 	return super(collectibleType, unused);
 }

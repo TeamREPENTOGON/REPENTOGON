@@ -39,7 +39,7 @@ struct PerformanceWindow : ImGuiWindowObject {
 				timeframe = 1;
 			}
 
-			int curBytes = state->l_G->totalbytes + state->l_G->GCdebt;
+			int curBytes = (int)(G(state)->gc.total + G(state)->gc.debt);
 
 			float megaBytes = curBytes / 1048576.0f;
 			memUsages->push_back(megaBytes);

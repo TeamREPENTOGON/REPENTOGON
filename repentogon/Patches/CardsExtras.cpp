@@ -82,42 +82,17 @@ static inline bool is_card_available_ex(ItemConfig_Card* card)
     if (cardConfig_EX->hidden)
         return false;
 
-    if (cardConfig_EX->availabilityFuncRef != LUA_NOREF) // checking for g_LuaEngine != nullptr is unnecessary since a function can only be set after it is initialized
-    {
-        lua_State* L = g_LuaEngine->_state;
-        lua_rawgeti(L, LUA_REGISTRYINDEX, cardConfig_EX->availabilityFuncRef);
-
-        if (lua_pcall(L, 0, 1, 0) != LUA_OK)
-        {
-            std::stringstream err;
-            err << "Error whilst checking availability of card \"" << get_localized_pocket_item_name(card->name) << "\": " << lua_tostring(L, -1);
-            print_lua_error(err.str());
-            lua_pop(L, 1);
-        }
-        else
-        {
-            bool isAvailable = lua_isboolean(L, -1) && lua_toboolean(L, -1);
-            lua_pop(L, 1);
-
-            if (!isAvailable)
-                return false;
-        }
-
-    }
+    if (cardConfig_EX->availabilityCondition && !cardConfig_EX->availabilityCondition())
+        return false;
 
     return true;
 }
 
-void ItemConfig_Card_EX::ClearAvailabilityCondition(lua_State* L)
+void CardsEX::ReportAvailabilityError(ItemConfig_Card* cardConfig, const char* error)
 {
-	this->availabilityFuncRef.Free(L);
-}
-
-void ItemConfig_Card_EX::SetAvailabilityCondition(lua_State* L, int idx)
-{
-    luaL_checktype(L, idx, LUA_TFUNCTION);
-    lua_pushvalue(L, idx);
-    this->availabilityFuncRef.Set(luaL_ref(L, LUA_REGISTRYINDEX));
+    std::stringstream err;
+    err << "Error whilst checking availability of card \"" << get_localized_pocket_item_name(cardConfig->name) << "\": " << error;
+    print_lua_error(err.str());
 }
 
 void CardPool::ClearPool()

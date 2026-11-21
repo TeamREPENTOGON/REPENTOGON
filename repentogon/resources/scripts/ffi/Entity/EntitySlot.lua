@@ -1,0 +1,75 @@
+local Entity = require("ffi.Entity.Entity")
+
+ffi.cdef("struct EntitySlot { " .. Entity.Fields .. [[
+    private int State : 0x410;
+    private int PrizeType : 0x414;
+    private int16_t ShellGameAnimationIndex : 0x41a;
+    private int16_t Timeout : 0x41c;
+    private int DonationValue : 0x420;
+    private uint32_t TriggerTimerNum : 0x424;
+    private uint16_t Touch : 0x42a;
+    private int PrizeCollectible : 0x540;
+} : 0x548;
+typedef struct EntitySlot* EntitySlotPtr;
+]])
+
+ffi.cdef [[
+    void L_EntitySlot_CreateDropsFromExplosion(struct EntitySlot*);
+    void L_EntitySlot_SetPrizeCollectible(struct EntitySlot*, int);
+    struct Sprite* L_EntitySlot_GetPrizeSprite(struct EntitySlot*);
+    int L_EntitySlot_RandomCoinJamIndex();
+]]
+
+local ffi = ffi
+local repentogon = ffidll
+
+ffi.reentrant(repentogon.L_EntitySlot_CreateDropsFromExplosion)
+ffi.reentrant(repentogon.L_EntitySlot_SetPrizeCollectible)
+
+local Getter = Entity.Helpers.Getter
+
+local TYPE_SLOT = 6
+
+local COIN_JAM_ANIMS = { [0] = "CoinJam", [1] = "CoinJam2", [2] = "CoinJam3", [3] = "CoinJam4" }
+
+local function IntegerSetter(field)
+    return function(self, value)
+        value = ffichecks.checkinteger(1, value)
+        ffi.setprivate(self, field, value)
+    end
+end
+
+local methods = {
+    CreateDropsFromExplosion = function(self)
+        repentogon.L_EntitySlot_CreateDropsFromExplosion(self)
+    end,
+    GetDonationValue = Getter("DonationValue"),
+    GetPrizeCollectible = Getter("PrizeCollectible"),
+    GetPrizeSprite = function(self)
+        local result = repentogon.L_EntitySlot_GetPrizeSprite(self) return result
+    end,
+    GetPrizeType = Getter("PrizeType"),
+    GetShellGameAnimationIndex = Getter("ShellGameAnimationIndex"),
+    GetState = Getter("State"),
+    GetTimeout = Getter("Timeout"),
+    GetTouch = Getter("Touch"),
+    GetTriggerTimerNum = Getter("TriggerTimerNum"),
+    RandomCoinJamAnim = function(self)
+        return COIN_JAM_ANIMS[repentogon.L_EntitySlot_RandomCoinJamIndex()]
+    end,
+    SetDonationValue = IntegerSetter("DonationValue"),
+    SetPrizeCollectible = function(self, collectible)
+        collectible = ffichecks.checkinteger(1, collectible)
+        repentogon.L_EntitySlot_SetPrizeCollectible(self, collectible)
+    end,
+    SetPrizeType = IntegerSetter("PrizeType"),
+    SetShellGameAnimationIndex = IntegerSetter("ShellGameAnimationIndex"),
+    SetState = IntegerSetter("State"),
+    SetTimeout = IntegerSetter("Timeout"),
+    SetTouch = IntegerSetter("Touch"),
+    SetTriggerTimerNum = IntegerSetter("TriggerTimerNum"),
+}
+
+local SlotMT = Entity.Inherit("EntitySlot", methods)
+ffi.metatype("struct EntitySlot", SlotMT)
+Entity.SetClassType(TYPE_SLOT, ffi.typeof("struct EntitySlot*"))

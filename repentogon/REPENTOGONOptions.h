@@ -58,6 +58,7 @@ struct REPENTOGONOptions {
 			ini["VanillaTweaks"]["EcoMode"] = "0";
 			ini["VanillaTweaks"]["DisableExitPrompt"] = "0";
 			ini["VanillaTweaks"]["BlockUnknownDevices"] = "0";
+			ini["VanillaTweaks"]["SFXPreloadSkip"] = "0";
 			ini["internal"]["DidModReset"] = "0";
 			ini["internal"]["EnableUnifont"] = "1";
 			ini["internal"]["UnifontRenderMode"] = "0";
@@ -116,6 +117,7 @@ struct REPENTOGONOptions {
 		consoleKeyVK = defstoi(ini["VanillaTweaks"]["ConsoleKeyVK"], 192);
 		consoleKeyScancode = defstoi(ini["VanillaTweaks"]["ConsoleKeyScancode"], 41);
 		blockUnknownDevices = defstoi(ini["VanillaTweaks"]["BlockUnknownDevices"], 0);
+		sfxPreloadSkip = defstoi(ini["VanillaTweaks"]["SFXPreloadSkip"], 0);
 
 		ZHL::Log("Loaded REPENTOGON INI\n");
 	}
@@ -164,6 +166,7 @@ struct REPENTOGONOptions {
 		Write("VanillaTweaks", "EcoMode", ecoMode);
 		Write("VanillaTweaks", "DisableExitPrompt", disableExitPrompt);
 		Write("VanillaTweaks", "BlockUnknownDevices", blockUnknownDevices);
+		Write("VanillaTweaks", "SFXPreloadSkip", sfxPreloadSkip);
 //		Write("internal",	   "EnableUnifont",		   enableUnifont);
 //		Write("internal",	   "UnifontRenderMode",	   unifontRenderMode);
 		Write("internal", "LastSaveFile", lastSaveFile);
@@ -186,6 +189,7 @@ struct REPENTOGONOptions {
 	bool hushLaserSpeedFix;
 	bool quickRoomClear;
 	bool preventModUpdates;
+	int sfxPreloadSkip;
 	//bool enableUnifont;
 	int fontSize;
 	int fontSelectedPredefined;

@@ -1,0 +1,25 @@
+#include "IsaacRepentance.h"
+#include "../Patches/Anm2Extras.h"
+
+extern "C" {
+
+	__declspec(dllexport) void L_LayerState_ClearCustomShader(LayerState* layer, bool champion) {
+		ClearCustomShader(layer, champion);
+	}
+	
+	__declspec(dllexport) bool L_LayerState_HasCustomShader(LayerState* layer, bool champion) {
+		return HasCustomShader(layer, champion);
+	}
+
+	__declspec(dllexport) bool L_LayerState_HasCustomShaderWithPath(LayerState* layer, const char* path, bool champion) {
+		return HasCustomShader(layer, path, champion);
+	}
+
+	__declspec(dllexport) bool L_LayerState_SetCustomShader(LayerState* layer, const char* path, bool champion) {
+		return SetCustomShader(layer, path, champion);
+	}
+
+	__declspec(dllexport) void L_LayerState_SetSpritesheet(LayerState* layer, KAGE_SmartPointer_ImageBase* image) {
+		layer->SetSpriteSheet(*image);
+	}
+}

@@ -3,6 +3,7 @@ struct GridEntity_Lock : public GridEntity {
 		skip; // Free
 		skip; // PostInit
 		
+		override
 		"558bec83e4f8518bd153":
         void Update();
 		
