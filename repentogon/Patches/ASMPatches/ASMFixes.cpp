@@ -518,6 +518,29 @@ static void fix_glowing_hourglass_alt_path_home()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where using Glowing Hourglass while Tainted Lilith's Gello was out left her unable to shoot.
+// Glowing Hourglass removes familiars from their entity list without clearing their references, leaving the whip pointed at a detached Gello.
+// 1.9.7.13 instead calls ClearReferences() on each entity before detaching it.
+static void fix_glowing_hourglass_detached_entity_references()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Game_RestoreGlowingHourglassState_DetachPersistentEntity);
+	ZHL::Log("[REPENTOGON] Patching Glowing Hourglass restore entity ClearReferences at %p\n", addr);
+
+	ASMPatch patch;
+	patch.Push(ASMPatch::Registers::EAX)
+        .Push(ASMPatch::Registers::ECX)
+		.Push(ASMPatch::Registers::EDX)
+		.AddBytes("\x8B\x03") // mov eax, dword ptr [ebx] // entity->vtable
+		.AddBytes("\x8B\xCB") // mov ecx, ebx
+		.AddBytes("\xFF\x50\x44") // call dword ptr [eax + 0x44] // entity->ClearReferences()
+        .Pop(ASMPatch::Registers::EDX)
+        .Pop(ASMPatch::Registers::ECX)
+        .Pop(ASMPatch::Registers::EAX)
+		.AddBytes(ByteBuffer().AddAny(addr, 0xC)) // mov esi, dword ptr [edx + 0x18300]; add esi, 0x1218
+		.AddRelativeJump(addr + 0xC);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -579,5 +602,6 @@ void ASMFixes()
 	fix_filigree_feather_key_piece_priority();
 	fix_death_certificate_item_pool();
 	fix_glowing_hourglass_alt_path_home();
+	fix_glowing_hourglass_detached_entity_references();
     patch_in_place_room_reset();
 }
