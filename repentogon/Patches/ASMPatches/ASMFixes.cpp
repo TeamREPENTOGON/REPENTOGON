@@ -417,6 +417,24 @@ static void fix_glowing_hourglass_blood_puppy()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Fissure spawners don't persist when leaving an uncleared room.
+// 1.9.7.13 adds 1000.192 to the effects that Room::ShouldSaveEntity always saves.
+static void fix_fissure_spawner_not_saved()
+{
+	constexpr int32_t EFFECT_FISSURE_SPAWNER = 192;
+
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_ShouldSaveEntity_EffectVariantCheck);
+	ZHL::Log("[REPENTOGON] Patching Room::ShouldSaveEntity Fissure spawner effect at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes("\x81\xFA").AddBytes(ByteBuffer().AddInteger<int32_t>(EFFECT_FISSURE_SPAWNER, false)) // cmp edx, EFFECT_FISSURE_SPAWNER
+		.AddBytes("\x75\x04") // jne +4
+		.AddBytes("\xB0\x01\x5D\xC3") // mov al, 1; pop ebp; ret
+		.AddBytes(ByteBuffer().AddAny(addr, 0x6)) // cmp edx, 0x8d
+		.AddRelativeJump(addr + 0x6); // jne
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -474,5 +492,6 @@ void ASMFixes()
 	fix_bag_of_crafting_queue_item_pool();
 	fix_rotgut_thematic_item();
 	fix_glowing_hourglass_blood_puppy();
+	fix_fissure_spawner_not_saved();
     patch_in_place_room_reset();
 }
