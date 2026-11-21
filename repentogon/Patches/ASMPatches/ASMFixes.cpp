@@ -386,6 +386,37 @@ static void fix_rotgut_thematic_item()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static bool __fastcall asm_remove_hourglass_blood_puppy(Entity* entity)
+{
+	if (g_Game->_isRestoringGlowingHourglassState && entity->_type == ENTITY_BLOOD_PUPPY) {
+		entity->Remove();
+		return true;
+	}
+
+	return false;
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Glowing Hourglass could duplicate Blood Puppy.
+// A fully grown Blood Puppy is persistent, so it survives the rewind. The restored familiar then gets respawned as well.
+// 1.9.7.13 culls the persistent Blood Puppy, fixing the bug.
+static void fix_glowing_hourglass_blood_puppy()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_RepositionFriendlyNPCs_Loop);
+	ZHL::Log("[REPENTOGON] Patching Glowing Hourglass Blood Puppy removal at %p\n", addr);
+
+	void* nextEntity = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_RepositionFriendlyNPCs_Loop_NextEntity);
+
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny(addr, 0x9)) // mov eax, dword ptr [ebx + 0x124c]; mov ecx, dword ptr [eax + edi * 4] // entity
+		.Push(ASMPatch::Registers::ECX)
+		.AddInternalCall(asm_remove_hourglass_blood_puppy)
+		.Pop(ASMPatch::Registers::ECX)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, nextEntity) // inc edi
+		.AddRelativeJump(addr + 0x9); // mov eax, dword ptr [ecx + 0x168]
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -442,5 +473,6 @@ void ASMFixes()
 	fix_evaluate_items_lil_delirium_owner();
 	fix_bag_of_crafting_queue_item_pool();
 	fix_rotgut_thematic_item();
+	fix_glowing_hourglass_blood_puppy();
     patch_in_place_room_reset();
 }
