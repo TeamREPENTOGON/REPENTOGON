@@ -617,6 +617,25 @@ static void fix_spectral_bobs_head_wall_bounce()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Star of Bethlehem would move much faster while the player was in an off-grid room.
+// The speed algorithm fails with a negative room index, so it falls through to 8.0.
+// 1.9.7.13 instead uses the normal speed when the current room index is negative.
+static void fix_star_of_bethlehem_off_grid_speed()
+{
+	char* sig = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityFamiliar_StarOfBethlehemUpdateSpeed_RoomIdx);
+	char* addr = sig + 0x21;
+	char* normalSpeed = sig + 0x6 + *(int32_t*)(sig + 0x2);
+	ZHL::Log("[REPENTOGON] Patching Star of Bethlehem off-grid room speed at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny(addr, 0x6)) // mov edi, dword ptr [edi + 0x18304] // level->_roomIdx
+		.AddBytes("\x85\xFF") // test edi, edi
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JS, normalSpeed)
+		.AddBytes(ByteBuffer().AddAny(addr + 0x6, 0x8)) // movss dword ptr [ebp - 0x190], xmm0
+		.AddRelativeJump(addr + 0xE);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -682,5 +701,6 @@ void ASMFixes()
 	fix_soul_of_jacob_esau_item_pool_decrease();
 	fix_epiphora_charged_weapon_release();
 	fix_spectral_bobs_head_wall_bounce();
+	fix_star_of_bethlehem_off_grid_speed();
     patch_in_place_room_reset();
 }
