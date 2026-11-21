@@ -649,6 +649,35 @@ static void fix_dull_razor_damage_block()
 	sASMPatcher.FlatPatch(coneHead, "\x20", 1);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Black Maw was not charging to the right correctly in large rooms.
+// 1.9.7.12 hardcoded a turnaround at x = 800, which only matches in a 1-wide room.
+// 1.9.7.13 instead uses the room's bottom right x + 200.
+static const float s_blackMawChargeRightMargin = 200.0f;
+
+static void fix_black_maw_charge_right_bound()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_AiBlackMaw_ChargeRightBound);
+	char* resume = addr + 0x9;
+	char* turnAround = resume + *(int8_t*)(addr + 0x8);
+	ZHL::Log("[REPENTOGON] Patching Black Maw charge right bound at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes("\x83\xEC\x04") // sub esp, 4
+		.AddBytes("\xF3\x0F\x11\x1C\x24") // movss dword ptr [esp], xmm3
+		.Push(ASMPatch::Registers::EAX)
+		.AddBytes("\xA1").AddBytes(ByteBuffer().AddPointer(&g_Game)) // mov eax, dword ptr [g_Game]
+		.AddBytes("\x8B\x80").AddZeroes(1).AddBytes("\x83\x01\x00").AddZeroes(1) // mov eax, dword ptr [eax + 0x18300] // game->_room
+		.AddBytes("\xF3\x0F\x10\x58\x1C") // movss xmm3, dword ptr [eax + 0x1c] // room->_bottomRightPos.x
+		.AddBytes("\xF3\x0F\x58\x1D").AddBytes(ByteBuffer().AddPointer((void*)&s_blackMawChargeRightMargin)) // addss xmm3, dword ptr [s_blackMawChargeRightMargin]
+		.AddBytes("\x0F\x2F\xC3") // comiss xmm0, xmm3 // npc->_pos.x
+		.Pop(ASMPatch::Registers::EAX)
+		.AddBytes("\xF3\x0F\x10\x1C\x24") // movss xmm3, dword ptr [esp]
+		.AddBytes("\x8D\x64\x24\x04") // lea esp, [esp + 4]
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JA, turnAround)
+		.AddRelativeJump(resume);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -716,5 +745,6 @@ void ASMFixes()
 	fix_spectral_bobs_head_wall_bounce();
 	fix_star_of_bethlehem_off_grid_speed();
 	fix_dull_razor_damage_block();
+	fix_black_maw_charge_right_bound();
     patch_in_place_room_reset();
 }
