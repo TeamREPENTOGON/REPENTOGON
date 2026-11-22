@@ -1,10 +1,19 @@
 #pragma once
+
 #include "IsaacRepentance.h"
+#include "XMLData.h"
 
 class ModEntryEx {
 public:
-	ANM2 _customMinimapANM2;
+	ANM2 _customMapItemIcons;
+	ANM2 _customMinimapIcons;
 	ANM2 _customStageIcons;
+};
+
+struct CurseSpriteData {
+	ModEntryEx* modEx;
+	ANM2* customANM2;
+	uint32_t frameNum;
 };
 
 class CustomModManager
@@ -20,9 +29,18 @@ public:
         return (it != modExtensions.end()) ? &it->second : nullptr;
     }
 
+	ModEntryEx* GetEx(const std::string& xmlmodid) {
+		if (ModEntry* mod = GetModByXMLDataID(xmlmodid)) {
+			return GetEx(mod);
+		}
+		return nullptr;
+	}
+
     void AddEx(ModEntry* mod) {
         modExtensions[mod];
     }
+
+	static const std::map<uint32_t, CurseSpriteData>& GetCurseSpriteMap();
 
 private:
     std::unordered_map<ModEntry*, ModEntryEx> modExtensions;

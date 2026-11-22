@@ -134,8 +134,8 @@ void EntityEx::Parse(const EntityConfig_Entity& entity, const XMLAttributes& xml
 			}
 			if (modid == xml.at("sourceid")) {
 				if (ModEntryEx* ex = CustomModManager::GetInstance().GetEx(mod)) {
-					if (ex->_customMinimapANM2.GetAnimationByName(minimapIcon.animation).has_value()) {
-						minimapIcon.anm2 = &ex->_customMinimapANM2;
+					if (ex->_customMinimapIcons.GetAnimationByName(minimapIcon.animation).has_value()) {
+						minimapIcon.anm2 = &ex->_customMinimapIcons;
 					}
 				}
 				break;

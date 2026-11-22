@@ -7,8 +7,10 @@
 #include "IsaacRepentance.h"
 #include "ASMDefinition.h"
 #include "ASMPatcher.hpp"
+#include "HookSystem.h"
 #include "Log.h"
 #include "../MiscFunctions.h"
+#include "CustomModManager.h"
 
 static const MinimapIcon NULL_MINIMAP_ICON;
 static MinimapIcon RUNE_MINIMAP_ICON{"runes", "IconRune", 0, 11000};
@@ -198,7 +200,7 @@ void AddEntityMinimapIcon(int id, int variant, int subtype, const std::string& g
 
 static void RenderMinimapIcon(ANM2* anm2, std::string anim, int frame, Vector pos, Vector offset) {
 	if (anm2 == nullptr) {
-		anm2 = &g_Game->_minimap._iconsSprite;;
+		anm2 = &g_Game->_minimap._iconsSprite;
 	}
 	Vector iconPos = pos + offset - Vector(6, 6);
 	iconPos.x = std::floor(iconPos.x);
@@ -217,7 +219,6 @@ static void __stdcall RenderMinimapIcons(MinimapConfig* map, RoomDescriptor* roo
 		std::unordered_map<std::string, MinimapIcon*> groupIcons;
 		for (const EntitySaveState& entity : room->SavedEntities) {
 			if (MinimapIcon* icon = GetEntityMinimapIcon(entity)) {
-				g_Game->GetConsole()->Print(std::to_string(entity.type) + "." + std::to_string(entity.variant) + "." + std::to_string(entity.subtype) + "\n", 0xFFFFFFFF, 60);
 				if (groupIcons[icon->group] == nullptr || groupIcons[icon->group]->priority < icon->priority) {
 					groupIcons[icon->group] = icon;
 				}
@@ -322,8 +323,124 @@ static void patch_set_shader_pre_render_image()
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-void MinimapPatches::ApplyPatches()
-{
+void MinimapPatches::ApplyPatches() {
 	patch_minimap_config_render_pre_render_icons();
-    patch_set_shader_pre_render_image();
+	patch_set_shader_pre_render_image();
+}
+
+struct BelowMapIcon {
+	ANM2* anm2;
+	std::string anim;
+	int frame;
+	bool isCurse;
+	bool isVanilla;
+	int priority;
+
+	int GetSortingBucket() const {
+		if (priority < 0 && !isCurse) {
+			// After curse icons
+			return 2;
+		} else if (isCurse) {
+			// Curse icons
+			return 1;
+		}
+		// Before curse icons (map icons)
+		return 0;
+	}
+
+	bool operator<(const BelowMapIcon& other) const {
+		int bucket = this->GetSortingBucket();
+		int bucket_other = other.GetSortingBucket();
+		// Bucket (Ascending), Priority (Descending), Modded before Vanilla, Filename+Animation (Ascending), Frame (Ascending)
+		// Reminder that icons render from right to left, so the "first" / "highest priority" icon is the rightmost one visually.
+		return std::tie(bucket, other.priority, this->isVanilla, this->anm2->_filename, this->anim, this->frame)
+			< std::tie(bucket_other, this->priority, other.isVanilla, other.anm2->_filename, other.anim, other.frame);
+	}
+};
+
+static void AddBelowMapIcon(std::vector<BelowMapIcon>& icons, ANM2* anm2, const std::string& anim, const int frame, const bool isCurse, const bool isVanilla, const int priority) {
+	if (!anm2) return;
+	icons.push_back({ anm2, anim, frame, isCurse, isVanilla, priority });
+}
+
+constexpr uint32_t MAX_MINIMAP_ICONS = 7;
+constexpr float BASE_ICON_X_OFFSET = -16;
+constexpr char VANILLA_ICONS_ANIM[] = "icons";
+constexpr char CURSES_ANIM[] = "curses";
+constexpr uint32_t NUM_VANILLA_CURSES = 8;
+
+HOOK_METHOD(Minimap, RenderIcons, (Vector* position, float alpha) -> void) {
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
+	RNG* rng = &playerManager->_rng;
+
+	std::vector<BelowMapIcon> icons;
+
+	// Vanilla icons
+	if (playerManager->FirstCollectibleOwner(COLLECTIBLE_MIND, &rng, true)) {
+		AddBelowMapIcon(icons, &this->_itemIconsSprite, VANILLA_ICONS_ANIM, 5, /*isCurse=*/false, /*isVanilla=*/true, 500);
+	} else {
+		if (playerManager->FirstCollectibleOwner(COLLECTIBLE_COMPASS, &rng, true)) {
+			AddBelowMapIcon(icons, &this->_itemIconsSprite, VANILLA_ICONS_ANIM, 0, /*isCurse=*/false, /*isVanilla=*/true, 400);
+		}
+
+		if (playerManager->FirstCollectibleOwner(COLLECTIBLE_BLUE_MAP, &rng, true)) {
+			AddBelowMapIcon(icons, &this->_itemIconsSprite, VANILLA_ICONS_ANIM, 1, /*isCurse=*/false, /*isVanilla=*/true, 300);
+		}
+
+		if (playerManager->FirstCollectibleOwner(COLLECTIBLE_TREASURE_MAP, &rng, true)) {
+			AddBelowMapIcon(icons, &this->_itemIconsSprite, VANILLA_ICONS_ANIM, 2, /*isCurse=*/false, /*isVanilla=*/true, 200);
+		}
+	}
+	if (playerManager->FirstCollectibleOwner(COLLECTIBLE_RESTOCK, &rng, true)) {
+		AddBelowMapIcon(icons, &this->_itemIconsSprite, VANILLA_ICONS_ANIM, 4, /*isCurse=*/false, /*isVanilla=*/true, 100);
+	}
+
+	// Curses
+	for (const RoomConfig_Curse& curse : g_Game->GetRoomConfig()->_curses) {
+		uint32_t curseID = curse._idMaybe;
+		if (curseID == 0) continue;
+		uint32_t curseFlag = 1 << (curseID - 1);
+		bool isVanilla = curseID <= NUM_VANILLA_CURSES;
+		if (g_Game->GetLevel()->GetCurses() & curseFlag) {
+			if (curseID <= NUM_VANILLA_CURSES) {
+				// Vanilla curse
+				AddBelowMapIcon(icons, &this->_itemIconsSprite, CURSES_ANIM, curseID - 1, /*isCurse=*/true, /*isVanilla=*/true, -curseID);
+			} else if (auto it = CustomModManager::GetCurseSpriteMap().find(curseID); it != CustomModManager::GetCurseSpriteMap().end()) {
+				// Modded curse
+				const CurseSpriteData& curseIcon = it->second;
+				AddBelowMapIcon(icons, curseIcon.customANM2, CURSES_ANIM, curseIcon.frameNum, /*isCurse=*/true, /*isVanilla=*/false, -curseID);
+			}
+		}
+	}
+
+	// Test
+	// AddBelowMapIcon(icons, &g_Game->_minimap._iconsSprite, "IconAngelRoom", 0, false, false, -1);
+
+	// Sort the icons by priority, etc
+	std::sort(icons.begin(), icons.end());
+
+	// Rendering
+	int numRendered = 0;
+	Vector renderPos(position->x, position->y);
+	Vector zerovec(0, 0);
+
+	Vector offset(BASE_ICON_X_OFFSET, 0);
+	if (icons.size() >= 4) {
+		offset.x += std::min(icons.size(), MAX_MINIMAP_ICONS) - 3.0f;
+	}
+
+	for (BelowMapIcon& icon : icons) {
+		if (numRendered >= MAX_MINIMAP_ICONS) {
+			break;
+		}
+
+		icon.anm2->Play(icon.anim.c_str(), true);
+		icon.anm2->SetFrame(&icon.anim, icon.frame);
+
+		icon.anm2->_color._tint[3] = alpha;
+		icon.anm2->Render(&renderPos, &zerovec, &zerovec);
+
+		renderPos += offset;
+		numRendered++;
+	}
 }

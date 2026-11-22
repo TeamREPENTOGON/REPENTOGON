@@ -85,6 +85,23 @@ inline std::string stringlower(std::string_view str)
 // Only relevant at times where XMLs are actually being loaded by the game.
 std::string GetXMLDataLastModId();
 
+inline ModEntry* GetModByXMLDataID(const std::string& targetmodid) {
+	for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
+		std::string modid = mod->GetId() ? mod->GetId() : "";
+		if (modid.empty()) {
+			modid = mod->GetDir();
+		}
+		if (modid == targetmodid) {
+			return mod;
+		}
+	}
+	return nullptr;
+}
+
+inline ModEntry* GetXMLDataCurrentMod() {
+	return GetModByXMLDataID(GetXMLDataLastModId());
+}
+
 class XMLNodeTable {
 public:
 	XMLNodeIdxLookupMultiple tab;
