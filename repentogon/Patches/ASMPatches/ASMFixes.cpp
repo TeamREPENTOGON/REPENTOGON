@@ -798,6 +798,66 @@ static void fix_found_soul_item_text_popup()
 	patch_item_text_coop_player_count(showItemTextCustom);
 }
 
+static bool __fastcall asm_suplex_has_mega_mush(Entity_Player* player)
+{
+	return player->_temporaryeffects.HasCollectibleEffect(COLLECTIBLE_MEGA_MUSH);
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Suplex! could be used during Mega Mush.
+// 1.9.7.13 adds a Mega Mush check to the Suplex! use case, failing the same way as when the player is standing still.
+static void fix_suplex_mega_mush()
+{
+	char* sig = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_UseActiveItem_SuplexCanUse);
+	char* addr = sig + 0x33;
+	char* fail = addr + *(int32_t*)(sig + 0x2F);
+	ZHL::Log("[REPENTOGON] Patching Suplex! Mega Mush check at %p\n", addr);
+
+	ASMPatch patch;
+	patch.Push(ASMPatch::Registers::ECX)
+		.Push(ASMPatch::Registers::EDX)
+		.AddBytes("\x8B\xCE") // mov ecx, esi // player
+		.AddInternalCall(asm_suplex_has_mega_mush)
+		.Pop(ASMPatch::Registers::EDX)
+		.Pop(ASMPatch::Registers::ECX)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, fail)
+		.AddBytes(ByteBuffer().AddAny(addr, 0x6)) // lea eax, [ebp - 0x934]
+		.AddRelativeJump(addr + 0x6);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+static bool __fastcall asm_suplex_damage_fireplace(Entity_Player* player, Entity* collider)
+{
+	if (*collider->GetType() != ENTITY_FIREPLACE)
+		return false;
+
+	EntityRef source(player);
+	collider->TakeDamage(1000.0f, 0, &source, 30);
+	return true;
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Suplex! could grab fireplaces.
+// 1.9.7.13 instead deals 1000 damage to a fireplace the dash runs into and carries on as if nothing was grabbed.
+static void fix_suplex_fireplace_grab()
+{
+	char* sig = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_HandleCollision_SuplexGrab);
+	char* addr = sig + 0xB;
+	char* noGrab = addr + *(int32_t*)(sig + 0x7);
+	char* tryHoldEntity = addr + 0x8 + *(int32_t*)(addr + 0x4);
+	ZHL::Log("[REPENTOGON] Patching Suplex! fireplace grab at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes("\x8B\xCE") // mov ecx, esi // player
+		.AddBytes("\x8B\xD7") // mov edx, edi // collider
+		.AddInternalCall(asm_suplex_damage_fireplace)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, noGrab)
+		.AddBytes(ByteBuffer().AddAny(addr, 0x3)) // push edi; mov ecx, esi
+		.AddInternalCall(tryHoldEntity) // player->TryHoldEntity(collider)
+		.AddRelativeJump(addr + 0x8);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -871,5 +931,7 @@ void ASMFixes()
 	fix_dogma_room_bombs();
 	fix_familiar_sound_delays();
 	fix_found_soul_item_text_popup();
+	fix_suplex_mega_mush();
+	fix_suplex_fireplace_grab();
     patch_in_place_room_reset();
 }
