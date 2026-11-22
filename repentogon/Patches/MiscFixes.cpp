@@ -240,6 +240,15 @@ HOOK_METHOD(Entity_Player, RemoveCurseMistEffect, () -> void) {
 	}
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where exiting and continuing a run kept Wavy Cap's tears up but dropped its distortion.
+// The game wasn't actually recomputing the dizziness on a run restart.
+HOOK_METHOD(Game, RestoreState, (GameState* state, bool startGame) -> void) {
+	super(state, startGame);
+	for (Entity_Player* player : this->_playerManager._playerList) {
+		player->UpdateWavyCapDizziness();
+	}
+}
+
 // The game will attempt to update a mod's metadata.xml if it is missing a name/directory/version, or if it is missing entirely.
 // However, for workshop mods, because WriteMetadata uses the "_directory" value, which at this point in time has not been appended
 // with the workshop ID, the game will create a new folder for "modname" instead of "modname_123456" and write the metadata there,
