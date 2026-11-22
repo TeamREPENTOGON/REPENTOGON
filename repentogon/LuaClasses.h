@@ -4,6 +4,7 @@
 #include "LuaCore.h"
 #include "MiscFunctions.h"
 #include "Utils/Result.h"
+#include "LuaInterfaces/LuaDungeonGenerator.h"
 
 template<typename T>
 struct LuaArrayProxy
@@ -701,6 +702,20 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::LEVEL_GENERATOR_ENTRY_PTR;
     };
 
+	struct LuaDungeonGenerator {
+		static constexpr const char* Name = "DungeonGenerator";
+		using Type = DungeonGenerator;
+		static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::DUNGEON_GENERATOR;
+		static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::DUNGEON_GENERATOR_PTR;
+	};
+
+	struct LuaDungeonGeneratorRoom {
+		static constexpr const char* Name = "DungeonGeneratorRoom";
+		using Type = DungeonGeneratorRoom;
+		static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::DUNGEON_GENERATOR_ROOM;
+		static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::DUNGEON_GENERATOR_ROOM_PTR;
+	};
+
     struct LuaBossPool
     {
         static constexpr const char* Name = "BossPool";
@@ -931,6 +946,8 @@ using LuaPocketItem = CDataType<LuaTraits::LuaPocketItem>;
 using LuaLevelGenerator = CDataType<LuaTraits::LuaLevelGenerator>;
 using LuaLevelGeneratorRoom = CDataType<LuaTraits::LuaLevelGeneratorRoom>;
 using LuaLevelGeneratorEntry = CDataType<LuaTraits::LuaLevelGeneratorEntry>;
+using LuaDungeonGenerator = CDataType<LuaTraits::LuaDungeonGenerator>;
+using LuaDungeonGeneratorRoom = CDataType<LuaTraits::LuaDungeonGeneratorRoom>;
 using LuaCostumeSpriteDesc = CDataType<LuaTraits::LuaCostumeSpriteDesc>;
 using LuaGenericPrompt = CDataType<LuaTraits::LuaGenericPrompt>;
 using LuaEntitySaveState = CDataType<LuaTraits::LuaEntitySaveState>;

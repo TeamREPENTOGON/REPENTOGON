@@ -198,7 +198,7 @@ DungeonGeneratorRoom* DungeonGenerator::PlaceRoom(XY& base_coords, int doors, in
     safe_room._linkLineIdx = -1;
     safe_room._originNeighborConnectDir = -1;
     safe_room._originNeighborConnectDirAdjust = -1;
-    safe_room._distanceFromStart = 0; 
+    safe_room._distanceFromStart = 0;
 
 	// LevelGenerator::place_room (0x009b0330) returns LevelGenerator_Room*, not bool
 	// ZHL bool truncation causes low byte 0x00 to register as false (roughly 5% false failures)
@@ -846,64 +846,21 @@ bool DungeonGenerator::Generate() {
 
 #pragma endregion
 
-LUALIB_API DungeonGenerator* GetDungeonGenerator(lua_State* L) {
-	return *lua::GetRawUserdata<DungeonGenerator**>(L, 1, lua::metatables::DungeonGeneratorMT);
-}
+MOD_EXPORT DungeonGeneratorRoom* L_DungeonGenerator_PlaceRoom(DungeonGenerator* generator, RoomConfig_Room* room, int column, int row, int allowed_doors) {
+	XY coords(column, row);
 
-LUA_FUNCTION(Lua_PlaceRoom) {
-	DungeonGenerator* generator = GetDungeonGenerator(L);
-	RoomConfig_Room* config = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
-	
-	uint32_t col = 0;
-	uint32_t row = 0;
-	int allowed_doors = -1;
 	bool explicit_doors = false;
 
-	int arg_count = lua_gettop(L);
-	if (arg_count == 3) {
-		uint32_t grid_index = (uint32_t)luaL_checkinteger(L, 3);
-		col = grid_index % 13;
-		row = grid_index / 13;
-	} else if (arg_count == 4) {
-		int arg3 = (int)luaL_checkinteger(L, 3);
-		int arg4 = (int)luaL_checkinteger(L, 4);
-		if (arg3 > 12 || arg4 < 0) {
-			col = arg3 % 13;
-			row = arg3 / 13;
-			allowed_doors = arg4;
-			explicit_doors = true;
-		} else {
-			col = arg3;
-			row = arg4;
-		}
-	} else if (arg_count >= 5) {
-		col = (uint32_t)luaL_checkinteger(L, 3);
-		row = (uint32_t)luaL_checkinteger(L, 4);
-		allowed_doors = (int)luaL_optinteger(L, 5, -1);
-		if (allowed_doors != -1) {
-			explicit_doors = true;
-		}
-	}
-
-	XY coords(col, row);
-
-	if (allowed_doors == -1) {
-		allowed_doors = CalculateAutoDoors(generator->level_generator._roomMap, coords, config->Shape);
-	}
-
-	DungeonGeneratorRoom* generator_room = generator->TryPlaceRoom(coords, allowed_doors, config, explicit_doors);
-
-	if (generator_room != nullptr) {
-		DungeonGeneratorRoom** ud = (DungeonGeneratorRoom**)lua_newuserdata(L, sizeof(DungeonGeneratorRoom*));
-		*ud = generator_room;
-		luaL_setmetatable(L, lua::metatables::DungeonGeneratorRoomMT);
+	if (allowed_doors < 0) {
+		allowed_doors = CalculateAutoDoors(generator->level_generator._roomMap, coords, room->Shape);
 	} else {
-		lua_pushnil(L);
+		explicit_doors = true;
 	}
 
-	return 1;
+	return generator->TryPlaceRoom(coords, allowed_doors, room, explicit_doors);
 }
 
+/*
 LUA_FUNCTION(Lua_PlaceRandomRoom) {
     
     DungeonGenerator* generator = GetDungeonGenerator(L);
@@ -1146,114 +1103,39 @@ LUA_FUNCTION(Lua_PlaceRandomOffGridRoom) {
 
 	return 1;
 }
+*/
 
-LUA_FUNCTION(Lua_TryPlaceDefaultStartingRoom) {
-	DungeonGenerator* generator = GetDungeonGenerator(L);
+MOD_EXPORT DungeonGeneratorRoom* L_DungeonGenerator_TryPlaceDefaultStartingRoom(DungeonGenerator* generator, int doors) {
+	bool explicit_doors = true;
 
-	bool has_doors = (lua_gettop(L) >= 2 && !lua_isnil(L, 2));
-	int doors = has_doors ? (int)luaL_checkinteger(L, 2) : 15;
-	bool explicit_doors = has_doors;
-
-	DungeonGeneratorRoom* generator_room = generator->TryPlaceDefaultStartingRoom(doors, explicit_doors);
-
-	if (generator_room != nullptr) {
-		DungeonGeneratorRoom** ud = (DungeonGeneratorRoom**)lua_newuserdata(L, sizeof(DungeonGeneratorRoom*));
-		*ud = generator_room;
-		luaL_setmetatable(L, lua::metatables::DungeonGeneratorRoomMT);
-	}
-	else {
-		lua_pushnil(L);
+	if (doors < 0) {
+		doors = 15;
+		explicit_doors = false;
 	}
 
-	return 1;
+	return generator->TryPlaceDefaultStartingRoom(doors, explicit_doors);
 }
 
-LUA_FUNCTION(Lua_SetFinalBossRoom) {
-	DungeonGenerator* generator = GetDungeonGenerator(L);
-	DungeonGeneratorRoom* generator_room = *lua::GetRawUserdata<DungeonGeneratorRoom**>(L, 2, lua::metatables::DungeonGeneratorRoomMT);
-
+MOD_EXPORT void L_DungeonGenerator_SetFinalBossRoom(DungeonGenerator* generator, DungeonGeneratorRoom* generator_room) {
 	generator->SetFinalBossRoom(generator_room);
-
-	return 0;
 }
 
-LUA_FUNCTION(Lua_SetGreedGoldRoom) {
-	DungeonGenerator* generator = GetDungeonGenerator(L);
-	if (lua_isnumber(L, 2)) {
-		int grid_index = (int)lua_tointeger(L, 2);
-		generator->SetGreedGoldRoom(grid_index);
-	}
-	else if (lua_isuserdata(L, 2)) {
-		DungeonGeneratorRoom* generator_room = *lua::GetRawUserdata<DungeonGeneratorRoom**>(L, 2, lua::metatables::DungeonGeneratorRoomMT);
-		generator->SetGreedGoldRoom(generator_room);
-	}
-
-	return 0;
+MOD_EXPORT void L_DungeonGenerator_SetGreedGoldRoom(DungeonGenerator* generator, DungeonGeneratorRoom* generator_room) {
+	generator->SetGreedGoldRoom(generator_room);
 }
 
-LUA_FUNCTION(Lua_BlockIndex) {
-	DungeonGenerator* generator = GetDungeonGenerator(L);
-	int grid_index = (int)luaL_checkinteger(L, 2);
-
+MOD_EXPORT void L_DungeonGenerator_BlockIndex(DungeonGenerator* generator, int grid_index) {
 	generator->level_generator.BlockPosition(grid_index);
-
-	return 0;
 }
 
-LUA_FUNCTION(Lua_Validate) {
-	DungeonGenerator* generator = GetDungeonGenerator(L);
-
-	bool result = generator->ValidateFloor();
-
-	lua_pushboolean(L, result);
-
-	return 1;
+MOD_EXPORT bool L_DungeonGenerator_Validate(DungeonGenerator* generator) {
+	return generator->ValidateFloor();
 }
 
-LUA_FUNCTION(Lua_Reset) {
-	DungeonGenerator* generator = GetDungeonGenerator(L);
+MOD_EXPORT void L_DungeonGenerator_Reset(DungeonGenerator* generator) {
 	generator->Reset();
-
-	return 0;
 }
 
-LUA_FUNCTION(Lua_InitializeDefaultOffGridRooms) {
-	DungeonGenerator* generator = GetDungeonGenerator(L);
+MOD_EXPORT void L_DungeonGenerator_InitializeDefaultOffGridRooms(DungeonGenerator* generator) {
 	generator->InitializeDefaultOffGridRooms();
-	
-	return 0;
-}
-
-static void RegisterDungeonGenerator(lua_State* L) {
-	luaL_Reg functions[] = {
-		{"PlaceRoom", Lua_PlaceRoom},
-		{"PlaceRandomRoom", Lua_PlaceRandomRoom},
-		{"PlaceOffGridRoom", Lua_PlaceOffGridRoom},
-		{"PlaceRandomOffGridRoom", Lua_PlaceRandomOffGridRoom},
-		{"TryPlaceDefaultStartingRoom", Lua_TryPlaceDefaultStartingRoom},
-		{"InitializeDefaultOffGridRooms", Lua_InitializeDefaultOffGridRooms},
-		{"SetFinalBossRoom", Lua_SetFinalBossRoom},
-		{"SetGreedGoldRoom", Lua_SetGreedGoldRoom},
-		{"BlockIndex", Lua_BlockIndex},
-		{"Validate", Lua_Validate},
-		{"Reset", Lua_Reset},
-		{NULL, NULL}
-	};
-
-	lua::RegisterNewClass(L, lua::metatables::DungeonGeneratorMT, lua::metatables::DungeonGeneratorMT, functions);
-}
-
-static void RegisterDungeonGeneratorRoom(lua_State* L) {
-	luaL_Reg functions[] = {
-		{ NULL, NULL }
-	};
-
-	lua::RegisterNewClass(L, lua::metatables::DungeonGeneratorRoomMT, lua::metatables::DungeonGeneratorRoomMT, functions);
-}
-
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-	RegisterDungeonGenerator(_state);
-	RegisterDungeonGeneratorRoom(_state);
 }

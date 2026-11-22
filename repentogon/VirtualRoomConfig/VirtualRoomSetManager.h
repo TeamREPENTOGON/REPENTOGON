@@ -72,8 +72,6 @@ public:
     static RoomConfig_Room* VirtualRoomSetManager::GetRoomByStageTypeAndVariant_IgnoreStageOverride(uint32_t stage, uint32_t type, uint32_t variant, int mode);
     /// @brief Wrapper for RoomConfig::GetRandomRoom that ignores the current custom stage override.
     static RoomConfig_Room* VirtualRoomSetManager::GetRandomRoom_IgnoreStageOverride(uint32_t seed, bool reduceWeight, int stage, int roomType, int roomShape, uint32_t minVariant, int maxVariant, int minDifficulty, int maxDifficulty, uint32_t* requiredDoors, uint32_t roomSubtype, int mode);
-	/// @brief Assigns the next unused stage id, initializes the virtual roomset for it, and returns that id.
-	static uint32_t AddSet();
 };
 
 class VirtualRoomSet

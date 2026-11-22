@@ -486,15 +486,6 @@ static void try_init_vanilla_room_set(uint32_t stageId, int mode)
 	}
 }
 
-static RoomConfig_VariantSet* get_variant_set(uint32_t stageId, int mode, int roomType)
-{
-	if (stageId < NUM_STB)
-	{
-		return g_Game->GetRoomConfig()->_stages[stageId]._rooms[mode].GetVariantSet(roomType);
-	}
-	return &GetData().customVariantSets[{stageId, mode, roomType}];
-}
-
 static void commit_room_set_insertion(_VirtualRoomSet& virtualSet, size_t begin, size_t end, uint32_t stageId, int mode)
 {
 	for (size_t i = begin; i < end; i++)
@@ -861,7 +852,7 @@ static bool WriteDB(const std::string& filePath, uint32_t gameChecksum, RestoreR
 
 	save.AddMember("Version", DB_VERSION, allocator);
 	save.AddMember("Checksum", gameChecksum, allocator);
-	if (auto& stageOverride = StageManager::GetOverride(slot); stageOverride.HasOverride())
+	if (auto& stageOverride = StageManager::GetOverride(slotId); stageOverride.HasOverride())
 	{
 		if (auto* customStage = StageManager::GetStage(stageOverride.GetCustomStageID()); customStage && customStage->IsCustom())
 		{
@@ -1013,13 +1004,6 @@ void VirtualRoomSetManager::TryInitializeSet(uint32_t stageId)
 	{
 		GetData().roomSets.resize(greedid + 1);
 	}
-}
-
-uint32_t VirtualRoomSetManager::AddSet()
-{
-	uint32_t stageId = s_NumStbTypes++;
-	TryInitializeSet(stageId);
-	return stageId;
 }
 
 RoomConfig_Room* VirtualRoomSetManager::GetRoomByStageTypeAndVariant_IgnoreStageOverride(uint32_t stage, uint32_t type, uint32_t variant, int mode)

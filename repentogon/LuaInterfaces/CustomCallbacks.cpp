@@ -7556,8 +7556,8 @@ bool ProcessGenerateDungeonCallback(Level* level, RNG& rng, DungeonGenerationTyp
 	lua::LuaResults results = lua::LuaCaller(L)
 		.push(callbackId)
 		.push((int)dungeonType)
-		.push(&generator, lua::metatables::DungeonGeneratorMT)
-		.push(&rng, lua::Metatables::RNG)
+		.pushClassPtr<LuaDungeonGenerator>(&generator)
+		.pushClassPtr<LuaRNG>(&rng)
 		.push((int)dungeonType)
 		.call(1);
 
