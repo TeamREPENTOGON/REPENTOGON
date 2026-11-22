@@ -716,6 +716,37 @@ static void fix_greed_keeper_item_pool_removal()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static void __stdcall asm_dogma_kill_room_bombs()
+{
+	EntityList_EL* list = g_Game->GetCurrentRoom()->GetEntityList()->GetUpdateEL();
+	for (unsigned int i = 0; i < list->_size; i++)
+	{
+		Entity* entity = list->_data[i];
+		if (*entity->GetType() == ENTITY_BOMB)
+		{
+			EntityRef source;
+			entity->Kill(&source);
+		}
+	}
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where bombs could be used to skip the first phase of Dogma.
+// Bombs placed before the living room TV spawns Dogma were still around when the fight started.
+// 1.9.7.13 kills every bomb in the room right after the TV spawns Dogma.
+// TBH this one seems more theoretical than anything to me, it's a fix, it's documented, it's going in.
+static void fix_dogma_room_bombs()
+{
+	char* sig = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_AiGenericProp_DogmaSpawn);
+	char* addr = sig + 0xD;
+	ZHL::Log("[REPENTOGON] Patching generic prop Dogma spawn bomb removal at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddInternalCall(asm_dogma_kill_room_bombs)
+		.AddBytes(ByteBuffer().AddAny(addr, 0x5)) // mov ecx, 0x724
+		.AddRelativeJump(addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -786,5 +817,6 @@ void ASMFixes()
 	fix_black_maw_charge_right_bound();
 	fix_satan_chest_labyrinth_stage();
 	fix_greed_keeper_item_pool_removal();
+	fix_dogma_room_bombs();
     patch_in_place_room_reset();
 }
