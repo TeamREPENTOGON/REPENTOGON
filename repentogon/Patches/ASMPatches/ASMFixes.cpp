@@ -979,6 +979,30 @@ static void fix_dark_esau_birthright_damage()
 	sASMPatcher.PatchAt(takeDamageAddr, &takeDamagePatch);
 }
 
+static bool __fastcall asm_camillo_jr_can_fire(Entity_NPC* npc)
+{
+	return g_Game->GetCurrentRoom()->GetCamera()->IsPosVisible(npc->GetPosition());
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Camillo Jr. could fire from offscreen.
+// The patch notes say "Greed Mode" but it actually applies in every mode.
+static void fix_camillo_jr_offscreen_fire()
+{
+	char* sig = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_AiTumor_CamilloJrShootEvent);
+	char* addr = sig + 0x1A;
+	char* skipShoot = addr + 0x6 + *(int32_t*)(addr + 0x2);
+	ZHL::Log("[REPENTOGON] Patching Camillo Jr. offscreen shoot check at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, skipShoot)
+		.AddBytes("\x8B\xCF") // mov ecx, edi // npc
+		.AddInternalCall(asm_camillo_jr_can_fire)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, skipShoot)
+		.AddRelativeJump(addr + 0x6);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1057,5 +1081,6 @@ void ASMFixes()
 	fix_camo_undies_mouse_shooting();
 	fix_eye_of_the_occult_mouse_direction();
 	fix_dark_esau_birthright_damage();
+	fix_camillo_jr_offscreen_fire();
     patch_in_place_room_reset();
 }
