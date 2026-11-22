@@ -267,6 +267,10 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::LEVEL_GENERATOR_ROOM_PTR] = lua_ctypeid(L, "LevelGeneratorRoomPtr");
 	lua::ffi::CData[lua::ffi::CDataID::LEVEL_GENERATOR_ENTRY] = lua_ctypeid(L, "LevelGeneratorEntry");
 	lua::ffi::CData[lua::ffi::CDataID::LEVEL_GENERATOR_ENTRY_PTR] = lua_ctypeid(L, "LevelGeneratorEntryPtr");
+	lua::ffi::CData[lua::ffi::CDataID::DUNGEON_GENERATOR] = lua_ctypeid(L, "DungeonGenerator");
+	lua::ffi::CData[lua::ffi::CDataID::DUNGEON_GENERATOR_PTR] = lua_ctypeid(L, "DungeonGeneratorPtr");
+	lua::ffi::CData[lua::ffi::CDataID::DUNGEON_GENERATOR_ROOM] = lua_ctypeid(L, "DungeonGeneratorRoom");
+	lua::ffi::CData[lua::ffi::CDataID::DUNGEON_GENERATOR_ROOM_PTR] = lua_ctypeid(L, "DungeonGeneratorRoomPtr");
 	lua::ffi::CData[lua::ffi::CDataID::BOSS_POOL] = lua_ctypeid(L, "BossPool");
 	lua::ffi::CData[lua::ffi::CDataID::BOSS_POOL_PTR] = lua_ctypeid(L, "BossPoolPtr");
 	lua::ffi::CData[lua::ffi::CDataID::COSTUME_SPRITE_DESC] = lua_ctypeid(L, "CostumeSpriteDesc");
