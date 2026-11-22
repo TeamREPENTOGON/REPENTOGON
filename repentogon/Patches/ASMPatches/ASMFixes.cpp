@@ -598,6 +598,179 @@ static void fix_epiphora_charged_weapon_release()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where spectral tears made Bob's Rotten Head bounce off walls instead of bursting.
+// Tear::Update only runs its wall-hit handling (which kills the tear) when the tear isn't spectral.
+// 1.9.7.13 instead runs it for Bob's Rotten Head indiscriminately.
+static void fix_spectral_bobs_head_wall_bounce()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityTear_Update_WallHitSpectralCheck);
+	char* resume = addr + 0x8;
+	char* skipWallHit = resume + *(int32_t*)(addr + 0x4);
+	ZHL::Log("[REPENTOGON] Patching Entity_Tear::Update spectral Bob's Rotten Head wall check at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes("\x84\xC0") // test al, al // (tearFlags & TEAR_SPECTRAL) is zero
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, resume)
+		.AddBytes("\x83\x7F\x2C\x04") // cmp dword ptr [edi + 0x2c], TEAR_BOBS_HEAD
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, skipWallHit)
+		.AddRelativeJump(resume);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Star of Bethlehem would move much faster while the player was in an off-grid room.
+// The speed algorithm fails with a negative room index, so it falls through to 8.0.
+// 1.9.7.13 instead uses the normal speed when the current room index is negative.
+static void fix_star_of_bethlehem_off_grid_speed()
+{
+	char* sig = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityFamiliar_StarOfBethlehemUpdateSpeed_RoomIdx);
+	char* addr = sig + 0x21;
+	char* normalSpeed = sig + 0x6 + *(int32_t*)(sig + 0x2);
+	ZHL::Log("[REPENTOGON] Patching Star of Bethlehem off-grid room speed at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny(addr, 0x6)) // mov edi, dword ptr [edi + 0x18304] // level->_roomIdx
+		.AddBytes("\x85\xFF") // test edi, edi
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JS, normalSpeed)
+		.AddBytes(ByteBuffer().AddAny(addr + 0x6, 0x8)) // movss dword ptr [ebp - 0x190], xmm0
+		.AddRelativeJump(addr + 0xE);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Belly Jelly and Cone Head could block Dull Razor's fake damage.
+// Both blocks ignore DAMAGE_COUNTDOWN; 1.9.7.13 also ignores DAMAGE_FAKE.
+static void fix_dull_razor_damage_block()
+{
+	char* bellyJelly = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_TakeDamage_BellyJellyFlagCheck) + 0x1F;
+	char* coneHead = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_TakeDamage_ConeHeadFlagCheck) + 0x1B;
+	ZHL::Log("[REPENTOGON] Patching Belly Jelly / Cone Head fake damage checks at %p, %p\n", bellyJelly, coneHead);
+
+	// and eax, 0x2000000 -> and eax, 0x2200000 (DAMAGE_COUNTDOWN | DAMAGE_FAKE)
+	sASMPatcher.FlatPatch(bellyJelly, "\x20", 1);
+	sASMPatcher.FlatPatch(coneHead, "\x20", 1);
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Black Maw was not charging to the right correctly in large rooms.
+// 1.9.7.12 hardcoded a turnaround at x = 800, which only matches in a 1-wide room.
+// 1.9.7.13 instead uses the room's bottom right x + 200.
+static const float s_blackMawChargeRightMargin = 200.0f;
+
+static void fix_black_maw_charge_right_bound()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_AiBlackMaw_ChargeRightBound);
+	char* resume = addr + 0x9;
+	char* turnAround = resume + *(int8_t*)(addr + 0x8);
+	ZHL::Log("[REPENTOGON] Patching Black Maw charge right bound at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes("\x83\xEC\x04") // sub esp, 4
+		.AddBytes("\xF3\x0F\x11\x1C\x24") // movss dword ptr [esp], xmm3
+		.Push(ASMPatch::Registers::EAX)
+		.AddBytes("\xA1").AddBytes(ByteBuffer().AddPointer(&g_Game)) // mov eax, dword ptr [g_Game]
+		.AddBytes("\x8B\x80").AddZeroes(1).AddBytes("\x83\x01\x00").AddZeroes(1) // mov eax, dword ptr [eax + 0x18300] // game->_room
+		.AddBytes("\xF3\x0F\x10\x58\x1C") // movss xmm3, dword ptr [eax + 0x1c] // room->_bottomRightPos.x
+		.AddBytes("\xF3\x0F\x58\x1D").AddBytes(ByteBuffer().AddPointer((void*)&s_blackMawChargeRightMargin)) // addss xmm3, dword ptr [s_blackMawChargeRightMargin]
+		.AddBytes("\x0F\x2F\xC3") // comiss xmm0, xmm3 // npc->_pos.x
+		.Pop(ASMPatch::Registers::EAX)
+		.AddBytes("\xF3\x0F\x10\x1C\x24") // movss xmm3, dword ptr [esp]
+		.AddBytes("\x8D\x64\x24\x04") // lea esp, [esp + 4]
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JA, turnAround)
+		.AddRelativeJump(resume);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where a ??? pill could prevent the chest from appearing after defeating Satan in Ultra Hard.
+// The ??? pill runs AddCurse which reapplies *every* curse Ultra Hard normally has, including Curse of the Labyrinth.
+// SpawnClearAward treats the boss room as one stage deeper when Curse of the Labyrinth is active (or in challenge 44),
+// so Sheol (10) took the stage 11 path. 1.9.7.13 only applies the Labyrinth bump below stage 8.
+static void fix_satan_chest_labyrinth_stage()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_SpawnClearAward_LabyrinthStageCheck);
+	char* incStage = addr + 0xD;
+	char* skip = addr + 0x11;
+	ZHL::Log("[REPENTOGON] Patching SpawnClearAward Labyrinth stage check at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny(addr + 0x4, 0x7)) // cmp dword ptr [ecx + 0x25afc], 0x2c
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, incStage)
+		.AddBytes("\xA8\x02") // test al, 2
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, skip)
+		.AddBytes("\x83\xFE\x08") // cmp esi, 8
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JL, incStage)
+		.AddRelativeJump(skip);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where killing Greed could remove Coupon and Head of the Keeper from future item pools.
+// When killing Greed or Super Greed, there was supposed to be a 1/100 or 1/50 (respectively) chance of dropping Coupon or Head of the Keeper.
+// But first, when the roll succeeds, ItemPool::RemoveCollectible is called on the item, 
+// then CanSpawnCollectible fails because the item isn't in a pool anymore. So it never worked and just removed the items from the pools.
+// Nicalis opted to just kill the roll altogether in 1.9.7.13, so we're doing that too.
+static void fix_greed_keeper_item_pool_removal()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_TriggerBossDeath_GreedKeeperItemRoll);
+	char* spawnCheck = addr + 0x59 + *(int32_t*)(addr + 0x55);
+	ZHL::Log("[REPENTOGON] Patching TriggerBossDeath Greed Head of the Keeper / Coupon roll at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddRelativeJump(spawnCheck);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+static void __stdcall asm_dogma_kill_room_bombs()
+{
+	EntityList_EL* list = g_Game->GetCurrentRoom()->GetEntityList()->GetUpdateEL();
+	for (unsigned int i = 0; i < list->_size; i++)
+	{
+		Entity* entity = list->_data[i];
+		if (*entity->GetType() == ENTITY_BOMB)
+		{
+			EntityRef source;
+			entity->Kill(&source);
+		}
+	}
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where bombs could be used to skip the first phase of Dogma.
+// Bombs placed before the living room TV spawns Dogma were still around when the fight started.
+// 1.9.7.13 kills every bomb in the room right after the TV spawns Dogma.
+// TBH this one seems more theoretical than anything to me, it's a fix, it's documented, it's going in.
+static void fix_dogma_room_bombs()
+{
+	char* sig = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_AiGenericProp_DogmaSpawn);
+	char* addr = sig + 0xD;
+	ZHL::Log("[REPENTOGON] Patching generic prop Dogma spawn bomb removal at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddInternalCall(asm_dogma_kill_room_bombs)
+		.AddBytes(ByteBuffer().AddAny(addr, 0x5)) // mov ecx, 0x724
+		.AddRelativeJump(addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where the Little Chubby, Big Chubby and Lil Haunt sound effects could spam.
+// Nicalis came to their senses and realized the sounds suck, so they have a 15 second delay now!
+static void patch_familiar_sound_delay(char* addr)
+{
+	ASMPatch patch;
+	patch.AddBytes("\x6A").AddZeroes(1) // push 0 // loop
+		.AddBytes("\x68\xC2\x01").AddZeroes(2) // push 450 // frameDelay
+        .Push(ASMPatch::Registers::ECX) // volume
+		.AddRelativeJump(addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+static void fix_familiar_sound_delays()
+{
+	char* lilHaunt = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityFamiliar_LilHaunt_SoundPlay) + 0x29;
+	char* bigChubby = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityFamiliar_BigChubby_SoundPlay) + 0x27;
+	char* littleChubby = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityFamiliar_LittleChubby_SoundPlay) + 0x27;
+	ZHL::Log("[REPENTOGON] Patching Lil Haunt / Big Chubby / Little Chubby sound delays at %p, %p, %p\n", lilHaunt, bigChubby, littleChubby);
+
+	patch_familiar_sound_delay(lilHaunt);
+	patch_familiar_sound_delay(bigChubby);
+	patch_familiar_sound_delay(littleChubby);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -662,5 +835,13 @@ void ASMFixes()
 	fix_glowing_hourglass_detached_entity_references();
 	fix_soul_of_jacob_esau_item_pool_decrease();
 	fix_epiphora_charged_weapon_release();
+	fix_spectral_bobs_head_wall_bounce();
+	fix_star_of_bethlehem_off_grid_speed();
+	fix_dull_razor_damage_block();
+	fix_black_maw_charge_right_bound();
+	fix_satan_chest_labyrinth_stage();
+	fix_greed_keeper_item_pool_removal();
+	fix_dogma_room_bombs();
+	fix_familiar_sound_delays();
     patch_in_place_room_reset();
 }
