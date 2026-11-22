@@ -500,17 +500,16 @@ static void commit_room_set_insertion(_VirtualRoomSet& virtualSet, size_t begin,
 
 size_t VirtualRoomSetManager::detail::AddStbRooms(VirtualRoomSet& virtualSet, const std::string& fileName)
 {
-    std::string fullFileName = "rooms/" + fileName;
     VirtualRoomSet::_VirtualRoomSet& data = virtualSet.get_data();
     size_t first = data.size();
 
     auto loader = virtualSet.LoadRooms();
     auto [stageId, mode] = id_to_stage_mode(virtualSet.m_id);
 
-    ZHL::Log(LOG_INFO_HEADER "Adding Rooms from `/content/%s`\n", fullFileName.c_str());
+    ZHL::Log(LOG_INFO_HEADER "Adding Rooms from `/content/%s`\n", fileName.c_str());
 
     // Find the full expanded filepaths for matching files from ALL enabled mods.
-    auto modfilepaths = REPENTOGON::GetAllModContentPaths(fullFileName);
+    auto modfilepaths = REPENTOGON::GetAllModContentPaths(fileName);
     std::vector<RoomConfigUtility::StbRoomSet> buffer;
     buffer.reserve(modfilepaths.size());
 

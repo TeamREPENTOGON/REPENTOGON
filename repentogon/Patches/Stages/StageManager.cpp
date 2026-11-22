@@ -101,8 +101,6 @@ void StageConfig::PostLoadStages() {
 				stage->_mode = 1;
 			}
 		}
-
-		// ZHL::Log("%s -> %d\n", stage->GetEnglishName().c_str(), stage->_mode);
 	}
 }
 

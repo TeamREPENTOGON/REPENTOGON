@@ -117,5 +117,5 @@ MOD_EXPORT void L_RoomConfigSet_EndAddRooms(unsigned int id, unsigned int begin)
 
 MOD_EXPORT unsigned int L_RoomConfigSet_AddStbRooms(unsigned int id, const char* fileName) {
 	VirtualRoomSet virtualSet = VirtualRoomSetManager::GetSetById(id);
-	return VirtualRoomSetManager::detail::AddStbRooms(virtualSet, fileName);
+	return VirtualRoomSetManager::detail::AddStbRooms(virtualSet, std::string("rooms/") + fileName);
 }
