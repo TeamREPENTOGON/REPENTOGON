@@ -886,6 +886,29 @@ static void fix_camo_undies_mouse_shooting()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static void __fastcall asm_eye_of_the_occult_mouse_direction(Entity_Player* player, Vector* direction)
+{
+	player->GetMouseShootingDirection(direction, false);
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Eye of the Occult not working with mouse controls.
+static void fix_eye_of_the_occult_mouse_direction()
+{
+	char* sig = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityTear_Update_EyeOfTheOccultAimDirection);
+	char* addr = sig + 0x13;
+	char* vectorAssign = sig + 0x18 + *(int32_t*)(sig + 0x14);
+	ZHL::Log("[REPENTOGON] Patching Eye of the Occult mouse direction at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddInternalCall(vectorAssign) // direction = player->GetShootingInput()
+		.AddBytes(ByteBuffer().AddAny(sig + 0xD, 0x6)) // lea ecx, [ebp - direction]
+		.AddBytes("\x8B\xD1") // mov edx, ecx
+		.AddBytes(ByteBuffer().AddAny(sig + 0x18, 0x6)) // mov ecx, [ebp - player]
+		.AddInternalCall(asm_eye_of_the_occult_mouse_direction)
+		.AddRelativeJump(sig + 0x18);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -962,5 +985,6 @@ void ASMFixes()
 	fix_suplex_mega_mush();
 	fix_suplex_fireplace_grab();
 	fix_camo_undies_mouse_shooting();
+	fix_eye_of_the_occult_mouse_direction();
     patch_in_place_room_reset();
 }
