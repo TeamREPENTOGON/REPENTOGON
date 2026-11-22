@@ -858,6 +858,34 @@ static void fix_suplex_fireplace_grab()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static bool __fastcall asm_camo_undies_is_mouse_shooting(Entity_Player* player)
+{
+	if (!g_Manager->GetOptions()->_enableMouseControl)
+		return false;
+
+	Vector direction(0.0f, 0.0f);
+	return player->GetMouseShootingDirection(&direction, false);
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Camo Undies would not uncloak when shooting with the mouse.
+static void fix_camo_undies_mouse_shooting()
+{
+	char* sig = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_Update_CamoUndiesShootCheck);
+	char* addr = sig + 0x9;
+	char* removeEffect = sig + 0xF;
+	char* keepEffect = removeEffect + *(int32_t*)(sig + 0xB);
+	ZHL::Log("[REPENTOGON] Patching Camo Undies mouse shooting check at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, removeEffect)
+		.AddBytes("\x8B\xCF") // mov ecx, edi // player
+		.AddInternalCall(asm_camo_undies_is_mouse_shooting)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, removeEffect)
+		.AddRelativeJump(keepEffect);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -933,5 +961,6 @@ void ASMFixes()
 	fix_found_soul_item_text_popup();
 	fix_suplex_mega_mush();
 	fix_suplex_fireplace_grab();
+	fix_camo_undies_mouse_shooting();
     patch_in_place_room_reset();
 }

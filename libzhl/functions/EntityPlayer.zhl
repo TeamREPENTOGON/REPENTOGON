@@ -937,6 +937,9 @@ __thiscall void Entity_Player::SetFireDelay(float delay);
 "558bec83e4f85153568bf18b0d????????5783b9????????027c":
 __thiscall void Entity_Player::FireWeapons(Vector* direction, bool isShooting);
 
+"558bec83e4c083ec34538bd9":
+__thiscall bool Entity_Player::GetMouseShootingDirection(Vector* direction, bool unk);
+
 struct Entity_Player depends (QueueItemData, Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc, GameStatePlayer, EntityPtr, BitSet128, EntityRef) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }
