@@ -700,6 +700,22 @@ static void fix_satan_chest_labyrinth_stage()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where killing Greed could remove Coupon and Head of the Keeper from future item pools.
+// When killing Greed or Super Greed, there was supposed to be a 1/100 or 1/50 (respectively) chance of dropping Coupon or Head of the Keeper.
+// But first, when the roll succeeds, ItemPool::RemoveCollectible is called on the item, 
+// then CanSpawnCollectible fails because the item isn't in a pool anymore. So it never worked and just removed the items from the pools.
+// Nicalis opted to just kill the roll altogether in 1.9.7.13, so we're doing that too.
+static void fix_greed_keeper_item_pool_removal()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_TriggerBossDeath_GreedKeeperItemRoll);
+	char* spawnCheck = addr + 0x59 + *(int32_t*)(addr + 0x55);
+	ZHL::Log("[REPENTOGON] Patching TriggerBossDeath Greed Head of the Keeper / Coupon roll at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddRelativeJump(spawnCheck);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -769,5 +785,6 @@ void ASMFixes()
 	fix_dull_razor_damage_block();
 	fix_black_maw_charge_right_bound();
 	fix_satan_chest_labyrinth_stage();
+	fix_greed_keeper_item_pool_removal();
     patch_in_place_room_reset();
 }
