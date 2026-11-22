@@ -747,6 +747,30 @@ static void fix_dogma_room_bombs()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where the Little Chubby, Big Chubby and Lil Haunt sound effects could spam.
+// Nicalis came to their senses and realized the sounds suck, so they have a 15 second delay now!
+static void patch_familiar_sound_delay(char* addr)
+{
+	ASMPatch patch;
+	patch.AddBytes("\x6A").AddZeroes(1) // push 0 // loop
+		.AddBytes("\x68\xC2\x01").AddZeroes(2) // push 450 // frameDelay
+        .Push(ASMPatch::Registers::ECX) // volume
+		.AddRelativeJump(addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+static void fix_familiar_sound_delays()
+{
+	char* lilHaunt = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityFamiliar_LilHaunt_SoundPlay) + 0x29;
+	char* bigChubby = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityFamiliar_BigChubby_SoundPlay) + 0x27;
+	char* littleChubby = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityFamiliar_LittleChubby_SoundPlay) + 0x27;
+	ZHL::Log("[REPENTOGON] Patching Lil Haunt / Big Chubby / Little Chubby sound delays at %p, %p, %p\n", lilHaunt, bigChubby, littleChubby);
+
+	patch_familiar_sound_delay(lilHaunt);
+	patch_familiar_sound_delay(bigChubby);
+	patch_familiar_sound_delay(littleChubby);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -818,5 +842,6 @@ void ASMFixes()
 	fix_satan_chest_labyrinth_stage();
 	fix_greed_keeper_item_pool_removal();
 	fix_dogma_room_bombs();
+	fix_familiar_sound_delays();
     patch_in_place_room_reset();
 }
