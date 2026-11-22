@@ -909,6 +909,76 @@ static void fix_eye_of_the_occult_mouse_direction()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static bool __fastcall asm_dark_esau_collision_can_damage_player(Entity_Player* player, Entity* darkEsau)
+{
+	Entity* playerDarkEsau = player->_darkEsau.GetReference();
+	return !playerDarkEsau || playerDarkEsau == darkEsau || playerDarkEsau == darkEsau->GetParent()
+		|| playerDarkEsau == darkEsau->GetChild() || darkEsau->GetSpawnerEntity() == player;
+}
+
+static bool __fastcall asm_dark_esau_source_can_damage_player(Entity_Player* player, Entity* source)
+{
+	if (!source || *source->GetType() != ENTITY_DARK_ESAU)
+		return true;
+
+	Entity* playerDarkEsau = player->_darkEsau.GetReference();
+	if (source == playerDarkEsau)
+		return true;
+	if (playerDarkEsau && (source->GetParent() == playerDarkEsau || source->GetChild() == playerDarkEsau))
+		return true;
+
+	Entity* spawner = source->GetSpawnerEntity();
+	return spawner == player || spawner == playerDarkEsau;
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Tainted Jacob could not be damaged by the extra Dark Esau from Birthright.
+// Dark Esau's contact damage only applied if it was exactly the player's own Dark Esau, which the birthright Dark Esau doesn't count as.
+// 1.9.7.13 replaces that with two checks, and contact damage must pass both:
+// * Collision: a Dark Esau can hurt the player if: 
+//   - the player has no Dark Esau
+//   - it is the player's own Dark Esau or that Dark Esau's parent/child
+//   - the player spawned it
+// * TakeDamage: damage sourced from a Dark Esau is rejected unless:
+//   - it is the player's own Dark Esau or that Dark Esau's parent/child
+//   - it was spawned by the player or by the player's own Dark Esau
+static void fix_dark_esau_birthright_damage()
+{
+	char* collisionSig = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_HandleCollision_DarkEsauPlayerCheck);
+	char* collisionAddr = collisionSig + 0x23;
+	char* noCollisionDamage = collisionAddr + 0x12 + *(int32_t*)(collisionAddr + 0xE);
+	ZHL::Log("[REPENTOGON] Patching Dark Esau player collision check at %p\n", collisionAddr);
+
+	ASMPatch collisionPatch;
+	collisionPatch.AddBytes(ByteBuffer().AddAny(collisionAddr, 0x6)) // mov eax, [ebp - player]
+		.Push(ASMPatch::Registers::ECX)
+		.Push(ASMPatch::Registers::EDX)
+		.AddBytes("\x8B\xC8") // mov ecx, eax // player
+		.AddBytes("\x8B\xD7") // mov edx, edi // dark esau
+		.AddInternalCall(asm_dark_esau_collision_can_damage_player)
+		.Pop(ASMPatch::Registers::EDX)
+		.Pop(ASMPatch::Registers::ECX)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, noCollisionDamage)
+		.AddRelativeJump(collisionAddr + 0x12);
+	sASMPatcher.PatchAt(collisionAddr, &collisionPatch);
+
+	char* takeDamageSig = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_TakeDamage_DarkEsauSourceCheck);
+	char* takeDamageAddr = takeDamageSig + 0x10;
+	char* noDamage = takeDamageAddr + 0xD + *(int32_t*)(takeDamageAddr + 0x9);
+	ZHL::Log("[REPENTOGON] Patching Dark Esau damage source check at %p\n", takeDamageAddr);
+
+	ASMPatch takeDamagePatch;
+	takeDamagePatch.AddBytes("\x8B\xCF") // mov ecx, edi // player
+		.AddBytes("\x8B\x56\x24") // mov edx, [esi + 0x24] // source->_entity
+		.AddInternalCall(asm_dark_esau_source_can_damage_player)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, noDamage)
+		.AddBytes(ByteBuffer().AddAny(takeDamageAddr, 0x7)) // cmp byte ptr [edi + 0x173], 0
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, noDamage)
+		.AddRelativeJump(takeDamageAddr + 0xD);
+	sASMPatcher.PatchAt(takeDamageAddr, &takeDamagePatch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -986,5 +1056,6 @@ void ASMFixes()
 	fix_suplex_fireplace_grab();
 	fix_camo_undies_mouse_shooting();
 	fix_eye_of_the_occult_mouse_direction();
+	fix_dark_esau_birthright_damage();
     patch_in_place_room_reset();
 }

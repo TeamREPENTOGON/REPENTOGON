@@ -1218,6 +1218,7 @@ struct Entity_Player depends (QueueItemData, Vector, ANM2, ColorMod, KColor, Pla
 	std_map_int_int _itemWispsList : 0x1f5c;
 	int _modelingClayEffect : 0x1f94;
 	int _keepersSackBonus : 0x1f98;
+	EntityPtr _darkEsau : 0x1f9c;
 	bool _hasCurseMistEffect : 0x2010;
 	ConsumableData _consumablesBackup : 0x2014;
 	uint8_t _wildCardItemType : 0x2064;
