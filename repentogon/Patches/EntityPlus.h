@@ -29,6 +29,7 @@ class EntityPlayerPlus : public EntityPlus {
 	int previousControllerIndex = -1;
 	int restoreTwinID = -1;
 	std::unordered_map<int, int> lastActiveSlot;
+	std::optional<int> curseMistSavedRedHearts = std::nullopt;
 };
 
 // Attributes for EntityFamiliar.

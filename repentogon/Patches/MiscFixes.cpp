@@ -3,6 +3,7 @@
 #include "LuaCore.h"
 #include "Log.h"
 #include "../REPENTOGONOptions.h"
+#include "EntityPlus.h"
 #include <filesystem>
 #include <algorithm>
 
@@ -212,6 +213,31 @@ HOOK_METHOD(Entity_Player, CanUseCollectible, (CollectibleType collectible, int 
 		}
 	}
 	return super(collectible, slot);
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Keeper lost his Birthright effect after the Mom chase.
+HOOK_METHOD(Entity_Player, AddCurseMistEffect, () -> void) {
+	const bool wasActive = this->_hasCurseMistEffect;
+	const int redHearts = this->_redHearts;
+	super();
+	if (!wasActive && this->_hasCurseMistEffect && this->GetPlayerType() == PLAYER_KEEPER) {
+		if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this)) {
+			playerPlus->curseMistSavedRedHearts = redHearts;
+		}
+		this->AddMaxHearts(0, false);
+	}
+}
+HOOK_METHOD(Entity_Player, RemoveCurseMistEffect, () -> void) {
+	const bool wasActive = this->_hasCurseMistEffect;
+	super();
+	if (wasActive && !this->_hasCurseMistEffect && this->GetPlayerType() == PLAYER_KEEPER) {
+		this->AddMaxHearts(this->GetHealthLimit(false) - this->_maxHearts, false);
+		EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this);
+		if (playerPlus && playerPlus->curseMistSavedRedHearts) {
+			this->_redHearts = *playerPlus->curseMistSavedRedHearts;
+			playerPlus->curseMistSavedRedHearts = std::nullopt;
+		}
+	}
 }
 
 // The game will attempt to update a mod's metadata.xml if it is missing a name/directory/version, or if it is missing entirely.
