@@ -771,6 +771,33 @@ static void fix_familiar_sound_delays()
 	patch_familiar_sound_delay(littleChubby);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where consumable popups were miniaturized while holding Found Soul.
+// The HUD picked the small per-player co-op pop-up whenever more than one human player existed, and Found Soul counts as one.
+// 1.9.7.13 instead changes this so only online play triggers the mini popups.
+static unsigned int __stdcall asm_item_text_coop_player_count()
+{
+	void** peers = (void**)g_Manager->GetNetplayManager();
+	return peers[0] != peers[1] ? 2 : 0;
+}
+
+static void patch_item_text_coop_player_count(char* addr)
+{
+	ASMPatch patch;
+	patch.AddInternalCall(asm_item_text_coop_player_count)
+		.AddRelativeJump(addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+static void fix_found_soul_item_text_popup()
+{
+	char* showItemText = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::HUD_ShowItemText_CoopPlayerCount);
+	char* showItemTextCustom = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::HUD_ShowItemTextCustomUTF8_CoopPlayerCount);
+	ZHL::Log("[REPENTOGON] Patching HUD item text co-op popup checks at %p, %p\n", showItemText, showItemTextCustom);
+
+	patch_item_text_coop_player_count(showItemText);
+	patch_item_text_coop_player_count(showItemTextCustom);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -843,5 +870,6 @@ void ASMFixes()
 	fix_greed_keeper_item_pool_removal();
 	fix_dogma_room_bombs();
 	fix_familiar_sound_delays();
+	fix_found_soul_item_text_popup();
     patch_in_place_room_reset();
 }
