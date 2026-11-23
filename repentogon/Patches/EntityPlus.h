@@ -40,6 +40,12 @@ class EntityPlayerPlus : public EntityPlus {
 		RNG dropRNG;
 	};
 	std::vector<BumboProgress> curseMistSavedBumbos;
+	struct LocustProgress {
+		unsigned int subtype;
+		int configIndex;
+		uint8_t hunger;
+	};
+	std::vector<LocustProgress> curseMistSavedLocusts;
 };
 
 // Attributes for EntityFamiliar.

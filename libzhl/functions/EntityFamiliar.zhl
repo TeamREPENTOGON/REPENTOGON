@@ -118,6 +118,12 @@ __thiscall void Entity_Familiar::RemoveFromDelayed();
 "568bf18b86????????85c078??6a0050e8????????c786????????ffffffff":
 __thiscall void Entity_Familiar::RemoveFromOrbit();
 
+"558bec83e4f8568b75??578bf98b47":
+__thiscall void Entity_Familiar::SetLocustConfigIndex(int index);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec60a1????????33c58945??5657508d45??64a3????????8bf9817f??e7000000":
+__thiscall void Entity_Familiar::UpdateLocustAppearance();
+
 struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder, Vector, Entity_Player) : public Entity {
 {{
 	inline Entity_Player* GetPlayer() { return this->_player; }
@@ -139,6 +145,7 @@ struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder, Vec
 	int _roomClearCount : 0xd8c;
 	Weapon* _weapon : 0xdb0;
 	bool _isLilDelirium : 0xdb4;
+	void* _extraData : 0xecc;
 	ItemConfig_Item* _item : 0xed4;
 	ColorMod _dirtColor : 0xedc;
 	int _wispCollectibleType : 0xf0c;

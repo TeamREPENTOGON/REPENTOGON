@@ -215,22 +215,26 @@ HOOK_METHOD(Entity_Player, CanUseCollectible, (CollectibleType collectible, int 
 	return super(collectible, slot);
 }
 
-// Fixes a vanilla bug (fixed in 1.9.7.13) where Bumbo's evolution was reset after the Mom chase.
-// 1.9.7.12 wasn't saving Bumbo's state at all!
-static std::vector<Entity_Familiar*> FindOwnedBumbos(Entity_Player* player) {
-	std::vector<Entity_Familiar*> bumbos;
+static std::vector<Entity_Familiar*> FindOwnedFamiliars(Entity_Player* player, unsigned int variant) {
+	std::vector<Entity_Familiar*> familiars;
 	EntityList_EL* updateEL = g_Game->GetCurrentRoom()->GetEntityList()->GetUpdateEL();
 	for (unsigned int i = 0; i < updateEL->_size; ++i) {
 		Entity* entity = updateEL->_data[i];
-		if (entity->_type != ENTITY_FAMILIAR || entity->_variant != 88 || (entity->_flags & FLAG_NO_QUERY)) {
+		if (entity->_type != ENTITY_FAMILIAR || entity->_variant != variant || (entity->_flags & FLAG_NO_QUERY)) {
 			continue;
 		}
 		Entity_Familiar* familiar = entity->ToFamiliar();
 		if (familiar && familiar->_player == player) {
-			bumbos.push_back(familiar);
+			familiars.push_back(familiar);
 		}
 	}
-	return bumbos;
+	return familiars;
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Bumbo's evolution was reset after the Mom chase.
+// 1.9.7.12 wasn't saving Bumbo's state at all!
+static std::vector<Entity_Familiar*> FindOwnedBumbos(Entity_Player* player) {
+	return FindOwnedFamiliars(player, 88);
 }
 
 static void SaveBumboProgress(Entity_Player* player, EntityPlayerPlus* playerPlus) {
@@ -269,6 +273,35 @@ static void RestoreBumboProgress(Entity_Player* player, EntityPlayerPlus* player
 	playerPlus->curseMistSavedBumbos.clear();
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Abyss locusts weren't removed during the Mom chase, causing potential softlocks.
+static void StashAbyssLocusts(Entity_Player* player, EntityPlayerPlus* playerPlus) {
+	playerPlus->curseMistSavedLocusts.clear();
+	for (Entity_Familiar* locust : FindOwnedFamiliars(player, 231)) {
+		EntityPlayerPlus::LocustProgress progress;
+		progress.subtype = locust->_subtype;
+		progress.configIndex = locust->_coins;
+		progress.hunger = static_cast<AbyssLocustData*>(locust->_extraData)->_hunger;
+		playerPlus->curseMistSavedLocusts.push_back(progress);
+		locust->Remove();
+	}
+}
+
+static void RespawnAbyssLocusts(Entity_Player* player, EntityPlayerPlus* playerPlus) {
+	for (const EntityPlayerPlus::LocustProgress& progress : playerPlus->curseMistSavedLocusts) {
+		Entity* entity = g_Game->Spawn(ENTITY_FAMILIAR, 231, *player->GetPosition(), Vector(0, 0), player, progress.subtype, Isaac::genrand_int32(), 0);
+		Entity_Familiar* locust = entity ? entity->ToFamiliar() : nullptr;
+		if (!locust) {
+			continue;
+		}
+		locust->_item = g_Manager->GetItemConfig()->GetCollectible(progress.subtype);
+		locust->SetLocustConfigIndex(progress.configIndex);
+		static_cast<AbyssLocustData*>(locust->_extraData)->_hunger = progress.hunger;
+		locust->UpdateLocustAppearance();
+		locust->_flags |= FLAG_APPEAR;
+	}
+	playerPlus->curseMistSavedLocusts.clear();
+}
+
 // Fixes a vanilla bug (fixed in 1.9.7.13) where Keeper lost his Birthright effect after the Mom chase.
 HOOK_METHOD(Entity_Player, AddCurseMistEffect, () -> void) {
 	const bool wasActive = this->_hasCurseMistEffect;
@@ -276,6 +309,7 @@ HOOK_METHOD(Entity_Player, AddCurseMistEffect, () -> void) {
 	if (!wasActive && this->_valid) {
 		if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this)) {
 			SaveBumboProgress(this, playerPlus);
+			StashAbyssLocusts(this, playerPlus);
 		}
 	}
 	super();
@@ -292,6 +326,7 @@ HOOK_METHOD(Entity_Player, RemoveCurseMistEffect, () -> void) {
 	if (wasActive && !this->_hasCurseMistEffect) {
 		if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this)) {
 			RestoreBumboProgress(this, playerPlus);
+			RespawnAbyssLocusts(this, playerPlus);
 		}
 	}
 	if (wasActive && !this->_hasCurseMistEffect && this->GetPlayerType() == PLAYER_KEEPER) {
