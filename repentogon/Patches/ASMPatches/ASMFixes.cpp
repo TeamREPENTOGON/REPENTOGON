@@ -1117,6 +1117,25 @@ static void fix_tainted_bethany_coop_starting_blood_charge()
 	sASMPatcher.PatchAt(addr + 0x5, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Keeper and Tainted Keeper could gain infinite health with Mother's Kiss.
+// Each Mother's Kiss raises Keeper's health limit with no upper bound.
+// 1.9.7.13 instead properly caps Keeper at 12 containers. Birthright and Greed's Gullet can still go past that, though.
+static void fix_keeper_mothers_kiss_health_limit()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_GetHealthLimit_KeeperMothersKissLimit);
+	ZHL::Log("[REPENTOGON] Patching Keeper Mother's Kiss health limit at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes("\x8D\x0C\x4D\x04").AddZeroes(3) // lea ecx, [ecx*2 + 4]
+		.AddBytes("\x8D\x1C\x41") // lea ebx, [ecx + eax*2]
+		.AddBytes("\xB8\x18").AddZeroes(3) // mov eax, 24
+		.AddBytes("\x3B\xD8") // cmp ebx, eax
+		.AddBytes("\x0F\x4F\xD8") // cmovg ebx, eax
+		.AddBytes(ByteBuffer().AddAny(addr, 0x7)) // cmp dword ptr [edi + _playerType], PLAYER_KEEPER
+		.AddRelativeJump(addr + 0x11); // jne
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1201,5 +1220,6 @@ void ASMFixes()
 	fix_consolation_prize_tainted_blue_baby();
 	fix_dream_catcher_alt_path_treasure_room();
 	fix_tainted_bethany_coop_starting_blood_charge();
+	fix_keeper_mothers_kiss_health_limit();
     patch_in_place_room_reset();
 }
