@@ -348,6 +348,21 @@ HOOK_METHOD(Game, RestoreState, (GameState* state, bool startGame) -> void) {
 	}
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where exiting and continuing a run removed the I'm Excited effect.
+// It isn't saved in 1.9.7.12, but there's some unused memory we can squeeze it in.
+HOOK_METHOD(Entity_Player, StoreGameState, (GameStatePlayer* saveState, bool saveTemporaryFamiliars) -> void) {
+	super(saveState, saveTemporaryFamiliars);
+	saveState->_imExcitedSpeedupCountdown = this->_imExcitedSpeedupCountdown;
+}
+
+HOOK_METHOD(Entity_Player, RestoreGameState, (GameStatePlayer* saveState) -> void) {
+	const bool restores = this->_replacedPlayer == nullptr;
+	super(saveState);
+	if (restores) {
+		this->_imExcitedSpeedupCountdown = (uint32_t)std::max(saveState->_imExcitedSpeedupCountdown, 0);
+	}
+}
+
 // The game will attempt to update a mod's metadata.xml if it is missing a name/directory/version, or if it is missing entirely.
 // However, for workshop mods, because WriteMetadata uses the "_directory" value, which at this point in time has not been appended
 // with the workshop ID, the game will create a new folder for "modname" instead of "modname_123456" and write the metadata there,
