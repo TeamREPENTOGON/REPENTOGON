@@ -260,6 +260,7 @@ RngMT.__index = RngMT
 
 local RngT = ffi.metatype("struct RNG", RngMT)
 RNG = setmetatable({}, {
+    __class = RngMT,
     __index = RngMT,
     __call = function(_, seed, shiftIdx)
         if seed == nil then
