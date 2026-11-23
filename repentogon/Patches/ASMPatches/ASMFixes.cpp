@@ -1117,6 +1117,34 @@ static void fix_tainted_bethany_coop_starting_blood_charge()
 	sASMPatcher.PatchAt(addr + 0x5, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Bethany's starting Book of Virtues did not count towards the Bookworm transformation.
+// The innate Book of Virtues doesn't count; 1.9.7.13 instead counts it during PostLevelInitStats.
+static void __stdcall asm_bethany_starting_book_of_virtues_bookworm(Entity_Player* player, int playerType)
+{
+	if (playerType == PLAYER_BETHANY && player->HasCollectible(COLLECTIBLE_BOOK_OF_VIRTUES, false))
+		player->IncrementPlayerFormCounter(10, 1);
+}
+
+static void fix_bethany_starting_book_of_virtues_bookworm()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_InitPreLevelInitStats_TaintedBethanyBloodCharge);
+	ZHL::Log("[REPENTOGON] Patching Bethany starting Book of Virtues Bookworm counter at %p\n", addr);
+
+	char* notTaintedBethany = addr + 0x5 + *(int8_t*)(addr + 0x4);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX) // playerType
+		.Push(ASMPatch::Registers::EDI) // player
+		.AddInternalCall(asm_bethany_starting_book_of_virtues_bookworm)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes("\x83\xF8\x24") // cmp eax, PLAYER_BETHANY_B
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, notTaintedBethany)
+		.AddRelativeJump(addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 // Fixes a vanilla bug (fixed in 1.9.7.13) where Keeper and Tainted Keeper could gain infinite health with Mother's Kiss.
 // Each Mother's Kiss raises Keeper's health limit with no upper bound.
 // 1.9.7.13 instead properly caps Keeper at 12 containers. Birthright and Greed's Gullet can still go past that, though.
@@ -1237,6 +1265,7 @@ void ASMFixes()
 	fix_consolation_prize_tainted_blue_baby();
 	fix_dream_catcher_alt_path_treasure_room();
 	fix_tainted_bethany_coop_starting_blood_charge();
+	fix_bethany_starting_book_of_virtues_bookworm();
 	fix_keeper_mothers_kiss_health_limit();
 	fix_soul_of_cain_mirror_door();
     patch_in_place_room_reset();
