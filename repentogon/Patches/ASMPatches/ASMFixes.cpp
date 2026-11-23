@@ -1271,6 +1271,86 @@ static void fix_glowing_hourglass_pocket_item_refund()
 	}
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Tainted Lazarus could lose story items if respawning as another player
+// and they were held by the other Lazarus half.
+// Reviving as ??? (Ankh) or Black Judas (Judas' Shadow) left the other half stranded, so its items were lost.
+// 1.9.7.13 instead calls MergeTwins when changing away from Tainted Lazarus, which falls back to the stored
+// other half (_backupPlayer) when there's no twin, merging its items and then destroying it.
+static void __stdcall asm_tainted_lazarus_merge_other_half(Entity_Player* player, int oldPlayerType)
+{
+	if (oldPlayerType == PLAYER_LAZARUS_B || oldPlayerType == PLAYER_LAZARUS2_B)
+		player->MergeTwins();
+}
+
+static void fix_tainted_lazarus_type_change_merge()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_TriggerPlayerTypeChanged_MergeTwinsCheck);
+	ZHL::Log("[REPENTOGON] Patching Tainted Lazarus type change merge at %p\n", addr);
+
+	void* notTaintedJacob = addr + 0x9 + *(int32_t*)(addr + 0x5);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI) // old player type
+		.Push(ASMPatch::Registers::EBX) // player
+		.AddInternalCall(asm_tainted_lazarus_merge_other_half)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes("\x8B\x8B").AddBytes(ByteBuffer().AddInteger<int32_t>(offsetof(Entity_Player, _playerType), false)) // mov ecx, dword ptr [ebx + _playerType]
+		.AddBytes(ByteBuffer().AddAny(addr, 0x3)) // cmp ecx, PLAYER_JACOB_B
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, notTaintedJacob)
+		.AddRelativeJump(addr + 0x9);
+	sASMPatcher.PatchAt(addr, &patch);
+
+	char* getTwin = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_MergeTwins_GetTwin) + 0xA;
+	ZHL::Log("[REPENTOGON] Patching MergeTwins backup player fallback at %p\n", getTwin);
+
+	ASMPatch getTwinPatch;
+	getTwinPatch.AddBytes("\xC6\x45\xF4").AddZeroes(1) // mov byte ptr [ebp - 0xC], 0
+		.AddBytes(ByteBuffer().AddAny(getTwin, 0x6)) // mov ebx, dword ptr [esi + _twinPlayer]
+		.AddBytes("\x85\xDB") // test ebx, ebx
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, getTwin + 0x6)
+		.AddBytes("\xC6\x45\xF4\x01") // mov byte ptr [ebp - 0xC], 1
+		.AddBytes("\x8B\x9E").AddBytes(ByteBuffer().AddInteger<int32_t>(offsetof(Entity_Player, _backupPlayer), false)) // mov ebx, dword ptr [esi + _backupPlayer]
+		.AddBytes("\x85\xDB") // test ebx, ebx
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, getTwin + 0x6)
+        .Pop(ASMPatch::Registers::ESI)
+        .Pop(ASMPatch::Registers::EBX)
+		.AddBytes("\x8B\xE5") // mov esp, ebp
+        .Pop(ASMPatch::Registers::EBP)
+        .AddBytes("\xC3"); // ret
+	sASMPatcher.PatchAt(getTwin, &getTwinPatch);
+
+	char* removeTwin = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_MergeTwins_RemoveTwin) + 0xA;
+	ZHL::Log("[REPENTOGON] Patching MergeTwins backup player removal at %p\n", removeTwin);
+
+	void* removeCoPlayer = removeTwin + 0x6 + *(int8_t*)(removeTwin + 0x5);
+	ByteBuffer backupPlayerOffset = ByteBuffer().AddInteger<int32_t>(offsetof(Entity_Player, _backupPlayer), false);
+
+	ASMPatch removeTwinPatch;
+	removeTwinPatch.AddBytes(ByteBuffer().AddAny(removeTwin, 0x4)) // mov ecx, dword ptr [edi]; test ecx, ecx // edi = &_twinPlayer
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, removeTwin + 0x6)
+		.AddBytes("\x80\x7D\xF4").AddZeroes(1) // cmp byte ptr [ebp - 0xC], 0
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, removeCoPlayer)
+		.AddBytes("\x8B\x8E").AddBytes(backupPlayerOffset) // mov ecx, dword ptr [esi + _backupPlayer]
+		.AddBytes("\x8B\x01") // mov eax, dword ptr [ecx]
+		.AddBytes("\xFF\x50\x44") // call dword ptr [eax + 0x44]
+		.AddBytes("\x8B\x8E").AddBytes(backupPlayerOffset) // mov ecx, dword ptr [esi + _backupPlayer]
+		.AddBytes("\x85\xC9") // test ecx, ecx
+		.AddBytes("\x74\x10") // je epilogue
+		.AddBytes("\x8B\x01") // mov eax, dword ptr [ecx]
+		.AddBytes("\x6A\x01") // push 1
+		.AddBytes("\xFF\x10") // call dword ptr [eax]
+		.AddBytes("\xC7\x86").AddBytes(backupPlayerOffset).AddZeroes(4) // mov dword ptr [esi + _backupPlayer], 0
+        .Pop(ASMPatch::Registers::EDI)
+        .Pop(ASMPatch::Registers::ESI)
+        .Pop(ASMPatch::Registers::EBX)
+		.AddBytes("\x8B\xE5") // mov esp, ebp
+        .Pop(ASMPatch::Registers::EBP)
+        .AddBytes("\xC3"); // ret
+	sASMPatcher.PatchAt(removeTwin, &removeTwinPatch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1360,5 +1440,6 @@ void ASMFixes()
 	fix_soul_of_cain_mirror_door();
 	fix_crawl_space_rock_type();
 	fix_glowing_hourglass_pocket_item_refund();
+	fix_tainted_lazarus_type_change_merge();
     patch_in_place_room_reset();
 }

@@ -943,6 +943,9 @@ __thiscall bool Entity_Player::GetMouseShootingDirection(Vector* direction, bool
 "558bec83e4f883ec0c538bd95657895c24??80bb????????00":
 __thiscall void Entity_Player::UpdateWavyCapDizziness();
 
+"558bec83ec0c53568bf18b9e":
+__thiscall void Entity_Player::MergeTwins();
+
 struct Entity_Player depends (QueueItemData, Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc, GameStatePlayer, EntityPtr, BitSet128, EntityRef) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }
