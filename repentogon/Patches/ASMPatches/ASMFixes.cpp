@@ -1136,6 +1136,23 @@ static void fix_keeper_mothers_kiss_health_limit()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where using Soul of Cain in the mirror room would break the mirror.
+static void fix_soul_of_cain_mirror_door()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_UseCard_SoulOfCainDoorUnlock);
+	ZHL::Log("[REPENTOGON] Patching Soul of Cain mirror door at %p\n", addr);
+
+	void* skipDoor = addr + 0xA + *(int8_t*)(addr + 0x9);
+
+	ASMPatch patch;
+	patch.AddBytes("\xF7\x80").AddBytes(ByteBuffer().AddInteger<int32_t>(offsetof(GridEntity_Door, _doorFlags), false)) // test dword ptr [eax + _doorFlags], 0x10 // eax = door
+		.AddBytes(ByteBuffer().AddInteger<int32_t>(0x10, false))
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, skipDoor)
+		.AddBytes(ByteBuffer().AddAny(addr + 0xA, 0x5)) // push 1; push edi; mov ecx, eax
+		.AddRelativeJump(addr + 0xF); // call GridEntity_Door::TryUnlock
+	sASMPatcher.PatchAt(addr + 0xA, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1221,5 +1238,6 @@ void ASMFixes()
 	fix_dream_catcher_alt_path_treasure_room();
 	fix_tainted_bethany_coop_starting_blood_charge();
 	fix_keeper_mothers_kiss_health_limit();
+	fix_soul_of_cain_mirror_door();
     patch_in_place_room_reset();
 }

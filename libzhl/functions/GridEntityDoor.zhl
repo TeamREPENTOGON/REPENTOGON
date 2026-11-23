@@ -42,6 +42,7 @@ struct GridEntity_Door depends (ANM2, Entity, Entity_Player) : public GridEntity
 	int _targetRoomIdx : 0x280;
 	uint32_t _previousState : 0x284;
 	uint32_t _previousVariant: 0x288;
+	uint32_t _doorFlags : 0x28c;
     std_string _openAnimation : 0x290;
     std_string _closeAnimation : 0x2a8;
     std_string _lockedAnimation : 0x2c0;
