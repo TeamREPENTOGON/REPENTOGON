@@ -1033,6 +1033,24 @@ static void fix_red_poop_hurt_radius()
 	sASMPatcher.FlatPatch(addr + 0xE, (const char*)&radius, sizeof(radius)); // movss xmm1, [22.0f] -> [22.5f]
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Consolation Prize always dropped mana for Tainted ???.
+// Consolation Prize doesn't account for Tainted ???'s mana, instead only accounting for his 0 bombs.
+static void fix_consolation_prize_tainted_blue_baby()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_AddCollectible_ConsolationPrizeBombCount);
+	ZHL::Log("[REPENTOGON] Patching Consolation Prize bomb count at %p\n", addr);
+
+	ASMPatch patch;
+	patch.Push(ASMPatch::Registers::ECX)
+		.AddBytes("\x8B\x8E").AddBytes(ByteBuffer().AddInteger<int32_t>(offsetof(Entity_Player, _numBombs), false)) // mov ecx, [esi + _numBombs]
+		.AddBytes("\x83\xF8").AddBytes(ByteBuffer().AddByte(PLAYER_BLUEBABY_B)) // cmp eax, PLAYER_BLUEBABY_B // eax = player->_playerType
+		.AddBytes("\x0F\x44\x8E").AddBytes(ByteBuffer().AddInteger<int32_t>(offsetof(Entity_Player, _poopMana), false)) // cmove ecx, [esi + _poopMana]
+		.AddBytes("\x66\x0F\x6E\xC1") // movd xmm0, ecx
+		.Pop(ASMPatch::Registers::ECX)
+		.AddRelativeJump(addr + 0x8);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1114,5 +1132,6 @@ void ASMFixes()
 	fix_camillo_jr_offscreen_fire();
 	fix_frozen_enemy_ice_shard_spawner_type();
 	fix_red_poop_hurt_radius();
+	fix_consolation_prize_tainted_blue_baby();
     patch_in_place_room_reset();
 }
