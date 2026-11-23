@@ -1051,6 +1051,52 @@ static void fix_consolation_prize_tainted_blue_baby()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Dream Catcher showed the wrong Treasure Room items on the Alt Path with More Options.
+// The Dream Catcher's preview would show the treasure room's layout for More Options, 
+// but always picked it from the Special Rooms set, not the Alt Path's.
+// 1.9.7.13 instead picks it from the current Alt Path stage's room set.
+// (Note that as Dream Catcher only supports two items, one is still missing.)
+static int __stdcall asm_dream_catcher_treasure_room_stage()
+{
+	const int stageType = g_Game->_stageType;
+	if (stageType != STAGETYPE_REPENTANCE && stageType != STAGETYPE_REPENTANCE_B)
+		return STB_SPECIAL_ROOMS;
+
+	const int offset = stageType == STAGETYPE_REPENTANCE ? 0 : 1;
+	switch (g_Game->_stage)
+	{
+	case 1:
+	case 2:
+		return STB_DOWNPOUR + offset;
+	case 3:
+	case 4:
+		return STB_MINES + offset;
+	case 5:
+	case 6:
+		return STB_MAUSOLEUM + offset;
+	default:
+		return STB_SPECIAL_ROOMS;
+	}
+}
+
+static void fix_dream_catcher_alt_path_treasure_room()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::NightmareScene_Show_MoreOptionsTreasureRoomStage);
+	ZHL::Log("[REPENTOGON] Patching NightmareScene::Show More Options treasure room stage at %p\n", addr);
+
+	ASMPatch patch;
+	patch.Push(ASMPatch::Registers::EAX) // push eax // shape
+		.AddBytes("\x6A\x04") // push ROOM_TREASURE
+		.Push(ASMPatch::Registers::ECX)
+		.Push(ASMPatch::Registers::EDX)
+		.AddInternalCall(asm_dream_catcher_treasure_room_stage)
+		.Pop(ASMPatch::Registers::EDX)
+		.Pop(ASMPatch::Registers::ECX)
+		.Push(ASMPatch::Registers::EAX) // push stage (was STB_SPECIAL_ROOMS)
+		.AddRelativeJump(addr + 0x5); // push 0 // reduceWeight
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1133,5 +1179,6 @@ void ASMFixes()
 	fix_frozen_enemy_ice_shard_spawner_type();
 	fix_red_poop_hurt_radius();
 	fix_consolation_prize_tainted_blue_baby();
+	fix_dream_catcher_alt_path_treasure_room();
     patch_in_place_room_reset();
 }
