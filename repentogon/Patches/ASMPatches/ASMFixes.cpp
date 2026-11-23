@@ -1181,6 +1181,31 @@ static void fix_soul_of_cain_mirror_door()
 	sASMPatcher.PatchAt(addr + 0xA, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where a crawl space would not spawn if placed under certain rocks.
+// Room::Init picks the rock hiding the crawl space and only rejected walls, so it could pick a rock that can't be broken normally.
+// 1.9.7.13 also rejects blocks, bomb rocks and super secret rocks.
+static void fix_crawl_space_rock_type()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_Init_CrawlSpaceRockTypeCheck);
+	ZHL::Log("[REPENTOGON] Patching crawl space rock type check at %p\n", addr);
+
+	void* rejectRock = addr + 0x6;
+	void* acceptRock = addr + 0x6 + *(int8_t*)(addr + 0x5);
+
+	ASMPatch patch;
+	patch.AddBytes("\x8B\x40").AddBytes(ByteBuffer().AddAny(addr + 0x2, 0x1)) // mov eax, dword ptr [eax + _type] // eax = grid entity
+		.AddBytes("\x83\xF8").AddBytes(ByteBuffer().AddByte(GRID_WALL)) // cmp eax, GRID_WALL
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, rejectRock)
+		.AddBytes("\x83\xF8").AddBytes(ByteBuffer().AddByte(GRID_ROCKB)) // cmp eax, GRID_ROCKB
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, rejectRock)
+		.AddBytes("\x83\xF8").AddBytes(ByteBuffer().AddByte(GRID_ROCK_SS)) // cmp eax, GRID_ROCK_SS
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, rejectRock)
+		.AddBytes("\x83\xF8").AddBytes(ByteBuffer().AddByte(GRID_ROCK_BOMB)) // cmp eax, GRID_ROCK_BOMB
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, acceptRock)
+		.AddRelativeJump(rejectRock); // mov dword ptr [edi + 0x768], -1 // crawl space rock index
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1268,5 +1293,6 @@ void ASMFixes()
 	fix_bethany_starting_book_of_virtues_bookworm();
 	fix_keeper_mothers_kiss_health_limit();
 	fix_soul_of_cain_mirror_door();
+	fix_crawl_space_rock_type();
     patch_in_place_room_reset();
 }
