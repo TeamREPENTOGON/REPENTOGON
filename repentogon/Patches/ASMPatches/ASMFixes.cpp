@@ -1362,6 +1362,16 @@ static void fix_alabaster_box_negative_soul_hearts()
 	sASMPatcher.FlatPatch(addr, "\x8E", 1); // je -> jle
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Bloaty's creep attack could hurt flying characters.
+// 1.9.7.13 removes the creep attack's splash damage.
+static void fix_bloaty_creep_splash_damage()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_AiBloaty_CreepSplashDamage);
+	ZHL::Log("[REPENTOGON] Patching Bloaty creep splash damage at %p\n", addr);
+
+	sASMPatcher.FlatPatch(addr, "\xEB\x3B", 2);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1453,5 +1463,6 @@ void ASMFixes()
 	fix_glowing_hourglass_pocket_item_refund();
 	fix_tainted_lazarus_type_change_merge();
 	fix_alabaster_box_negative_soul_hearts();
+	fix_bloaty_creep_splash_damage();
     patch_in_place_room_reset();
 }
