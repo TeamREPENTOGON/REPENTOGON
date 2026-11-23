@@ -1017,6 +1017,22 @@ static void fix_frozen_enemy_ice_shard_spawner_type()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Red Poops had a deadzone in the center where they would not damage the player.
+// 1.9.7.13 raises the hurt radii from 18/22 to 18.5/22.5.
+static const float s_redPoopPlayerHurtRadius = 18.5f;
+static const float s_redPoopHurtRadius = 22.5f;
+
+static void fix_red_poop_hurt_radius()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::GridEntityPoop_Update_RedPoopHurtRadius);
+	ZHL::Log("[REPENTOGON] Patching red poop hurt radius at %p\n", addr);
+
+	const float* playerRadius = &s_redPoopPlayerHurtRadius;
+	const float* radius = &s_redPoopHurtRadius;
+	sASMPatcher.FlatPatch(addr + 0x4, (const char*)&playerRadius, sizeof(playerRadius)); // movss xmm2, [18.0f] -> [18.5f]
+	sASMPatcher.FlatPatch(addr + 0xE, (const char*)&radius, sizeof(radius)); // movss xmm1, [22.0f] -> [22.5f]
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1097,5 +1113,6 @@ void ASMFixes()
 	fix_dark_esau_birthright_damage();
 	fix_camillo_jr_offscreen_fire();
 	fix_frozen_enemy_ice_shard_spawner_type();
+	fix_red_poop_hurt_radius();
     patch_in_place_room_reset();
 }
