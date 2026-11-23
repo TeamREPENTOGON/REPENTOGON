@@ -1097,6 +1097,26 @@ static void fix_dream_catcher_alt_path_treasure_room()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Tainted Bethany would not start with the correct number of stored red hearts in co-op if she was not player one.
+// Her starting red hearts were overwritten by the co-op consumable sync.
+// 1.9.7.13 instead uses AddBloodCharge.
+static void __stdcall asm_tainted_bethany_starting_blood_charge(Entity_Player* player)
+{
+	player->AddBloodCharge(*player->GetRedHearts());
+}
+
+static void fix_tainted_bethany_coop_starting_blood_charge()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_InitPreLevelInitStats_TaintedBethanyBloodCharge);
+	ZHL::Log("[REPENTOGON] Patching Tainted Bethany starting blood charge at %p\n", addr);
+
+	ASMPatch patch;
+	patch.Push(ASMPatch::Registers::EDI) // player
+		.AddInternalCall(asm_tainted_bethany_starting_blood_charge)
+		.AddRelativeJump(addr + 0x11); // mov dword ptr [edi + _maxHearts], 0
+	sASMPatcher.PatchAt(addr + 0x5, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1180,5 +1200,6 @@ void ASMFixes()
 	fix_red_poop_hurt_radius();
 	fix_consolation_prize_tainted_blue_baby();
 	fix_dream_catcher_alt_path_treasure_room();
+	fix_tainted_bethany_coop_starting_blood_charge();
     patch_in_place_room_reset();
 }
