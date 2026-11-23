@@ -30,6 +30,16 @@ class EntityPlayerPlus : public EntityPlus {
 	int restoreTwinID = -1;
 	std::unordered_map<int, int> lastActiveSlot;
 	std::optional<int> curseMistSavedRedHearts = std::nullopt;
+	struct BumboProgress {
+		int coins;
+		int hearts;
+		int keys;
+		int state;
+		int roomClearCount;
+		float health;
+		RNG dropRNG;
+	};
+	std::vector<BumboProgress> curseMistSavedBumbos;
 };
 
 // Attributes for EntityFamiliar.

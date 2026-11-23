@@ -215,10 +215,69 @@ HOOK_METHOD(Entity_Player, CanUseCollectible, (CollectibleType collectible, int 
 	return super(collectible, slot);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Bumbo's evolution was reset after the Mom chase.
+// 1.9.7.12 wasn't saving Bumbo's state at all!
+static std::vector<Entity_Familiar*> FindOwnedBumbos(Entity_Player* player) {
+	std::vector<Entity_Familiar*> bumbos;
+	EntityList_EL* updateEL = g_Game->GetCurrentRoom()->GetEntityList()->GetUpdateEL();
+	for (unsigned int i = 0; i < updateEL->_size; ++i) {
+		Entity* entity = updateEL->_data[i];
+		if (entity->_type != ENTITY_FAMILIAR || entity->_variant != 88 || (entity->_flags & FLAG_NO_QUERY)) {
+			continue;
+		}
+		Entity_Familiar* familiar = entity->ToFamiliar();
+		if (familiar && familiar->_player == player) {
+			bumbos.push_back(familiar);
+		}
+	}
+	return bumbos;
+}
+
+static void SaveBumboProgress(Entity_Player* player, EntityPlayerPlus* playerPlus) {
+	playerPlus->curseMistSavedBumbos.clear();
+	for (Entity_Familiar* bumbo : FindOwnedBumbos(player)) {
+		EntityPlayerPlus::BumboProgress progress;
+		progress.coins = bumbo->_coins;
+		progress.hearts = bumbo->_hearts;
+		progress.keys = bumbo->_keys;
+		progress.state = bumbo->_state;
+		progress.roomClearCount = bumbo->_roomClearCount;
+		progress.health = bumbo->_health;
+		progress.dropRNG = bumbo->_dropRNG;
+		playerPlus->curseMistSavedBumbos.push_back(progress);
+	}
+}
+
+static void RestoreBumboProgress(Entity_Player* player, EntityPlayerPlus* playerPlus) {
+	if (playerPlus->curseMistSavedBumbos.empty()) {
+		return;
+	}
+	const std::vector<Entity_Familiar*> bumbos = FindOwnedBumbos(player);
+	const size_t count = std::min(bumbos.size(), playerPlus->curseMistSavedBumbos.size());
+	for (size_t i = 0; i < count; ++i) {
+		const EntityPlayerPlus::BumboProgress& progress = playerPlus->curseMistSavedBumbos[i];
+		Entity_Familiar* bumbo = bumbos[i];
+		bumbo->_coins = progress.coins;
+		bumbo->_hearts = progress.hearts;
+		bumbo->_keys = progress.keys;
+		bumbo->_state = progress.state;
+		bumbo->_roomClearCount = progress.roomClearCount;
+		bumbo->_health = progress.health;
+		bumbo->_dropRNG = progress.dropRNG;
+		bumbo->_flags |= FLAG_APPEAR;
+	}
+	playerPlus->curseMistSavedBumbos.clear();
+}
+
 // Fixes a vanilla bug (fixed in 1.9.7.13) where Keeper lost his Birthright effect after the Mom chase.
 HOOK_METHOD(Entity_Player, AddCurseMistEffect, () -> void) {
 	const bool wasActive = this->_hasCurseMistEffect;
 	const int redHearts = this->_redHearts;
+	if (!wasActive && this->_valid) {
+		if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this)) {
+			SaveBumboProgress(this, playerPlus);
+		}
+	}
 	super();
 	if (!wasActive && this->_hasCurseMistEffect && this->GetPlayerType() == PLAYER_KEEPER) {
 		if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this)) {
@@ -230,6 +289,11 @@ HOOK_METHOD(Entity_Player, AddCurseMistEffect, () -> void) {
 HOOK_METHOD(Entity_Player, RemoveCurseMistEffect, () -> void) {
 	const bool wasActive = this->_hasCurseMistEffect;
 	super();
+	if (wasActive && !this->_hasCurseMistEffect) {
+		if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this)) {
+			RestoreBumboProgress(this, playerPlus);
+		}
+	}
 	if (wasActive && !this->_hasCurseMistEffect && this->GetPlayerType() == PLAYER_KEEPER) {
 		this->AddMaxHearts(this->GetHealthLimit(false) - this->_maxHearts, false);
 		EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this);
