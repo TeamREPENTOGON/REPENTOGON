@@ -1003,6 +1003,20 @@ static void fix_camillo_jr_offscreen_fire()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where ice shards from frozen enemies could freeze and damage friendly monsters.
+// The shards are tears spawned with no spawner. 1.9.7.13 instead sets each shard's spawner type to ENTITY_PLAYER.
+static void fix_frozen_enemy_ice_shard_spawner_type()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_UpdateFrozenEnemy_IceShardSpawn);
+	ZHL::Log("[REPENTOGON] Patching frozen enemy ice shard spawner type at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny(addr, 0xA)) // mov dword ptr [esi + 0x418], 0.2f
+		.AddBytes("\xC7\x46\x34").AddBytes(ByteBuffer().AddInteger<int32_t>(ENTITY_PLAYER, false)) // mov dword ptr [esi + 0x34], ENTITY_PLAYER // tear->_spawnerType
+		.AddRelativeJump(addr + 0xA);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1082,5 +1096,6 @@ void ASMFixes()
 	fix_eye_of_the_occult_mouse_direction();
 	fix_dark_esau_birthright_damage();
 	fix_camillo_jr_offscreen_fire();
+	fix_frozen_enemy_ice_shard_spawner_type();
     patch_in_place_room_reset();
 }
