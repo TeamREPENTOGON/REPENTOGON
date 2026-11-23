@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "ASMDefinition.h"
 #include "ASMPatcher.hpp"
+#include "HookSystem.h"
 #include "../ASMPatches.h"
 #include "rapidxml.hpp"
 
@@ -1206,6 +1207,70 @@ static void fix_crawl_space_rock_type()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Glowing Hourglass would not refund a teleport card if used to undo that teleport.
+// In 1.9.7.13, GHG additionally stores right before a pocket item is used, then skips further stores until the player leaves the room.
+// The 1.9.7.13 fix has an additional booboo in which alternating between a teleport card and GHG never actually consumes its charge,
+// so I fixed that, too.
+static bool s_glowingHourglassStoredForPocketItem = false;
+
+HOOK_STATIC(Game, StoreGlowingHourglassState, (int doorSlot) -> void, __stdcall) {
+	if (s_glowingHourglassStoredForPocketItem)
+		return;
+
+	super(doorSlot);
+}
+
+HOOK_METHOD(Game, ResetState, () -> void) {
+	s_glowingHourglassStoredForPocketItem = false;
+	super();
+}
+
+HOOK_STATIC(Game, RestoreGlowingHourglassState, (Entity_Player* player) -> void, __stdcall) {
+	s_glowingHourglassStoredForPocketItem = false;
+	super(player);
+}
+
+static void __stdcall asm_store_glowing_hourglass_state_for_pocket_item()
+{
+	Game::StoreGlowingHourglassState(-1);
+	s_glowingHourglassStoredForPocketItem = true;
+}
+
+static void __stdcall asm_clear_glowing_hourglass_pocket_item_store()
+{
+	s_glowingHourglassStoredForPocketItem = false;
+}
+
+static void fix_glowing_hourglass_pocket_item_refund()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_ControlPocketItem_UsePocketItem);
+	ZHL::Log("[REPENTOGON] Patching Glowing Hourglass pocket item store at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.AddInternalCall(asm_store_glowing_hourglass_state_for_pocket_item)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes(ByteBuffer().AddAny(addr, 0x7)) // push "Action_PillCard_Triggered"; push 0
+		.AddRelativeJump(addr + 0x7); // call
+	sASMPatcher.PatchAt(addr, &patch);
+
+	char* doorSig = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_CheckPlayerExits_DoorRoomTransition);
+	char* doorJumps[] = { doorSig + 0x19, doorSig + 0x27 };
+	char* startRoomTransitionCall = doorJumps[0] + 0x5 + *(int32_t*)(doorJumps[0] + 0x1);
+	void* startRoomTransition = startRoomTransitionCall + 0x5 + *(int32_t*)(startRoomTransitionCall + 0x1);
+	ZHL::Log("[REPENTOGON] Patching Glowing Hourglass pocket item store door reset at %p\n", doorSig);
+
+	for (char* jump : doorJumps)
+	{
+		ASMPatch doorPatch;
+		doorPatch.AddInternalCall(startRoomTransition) // call Game::StartRoomTransition
+			.AddInternalCall(asm_clear_glowing_hourglass_pocket_item_store)
+			.AddRelativeJump(startRoomTransitionCall + 0x5);
+		sASMPatcher.PatchAt(jump, &doorPatch);
+	}
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1294,5 +1359,6 @@ void ASMFixes()
 	fix_keeper_mothers_kiss_health_limit();
 	fix_soul_of_cain_mirror_door();
 	fix_crawl_space_rock_type();
+	fix_glowing_hourglass_pocket_item_refund();
     patch_in_place_room_reset();
 }
