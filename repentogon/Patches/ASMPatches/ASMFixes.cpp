@@ -1351,6 +1351,17 @@ static void fix_tainted_lazarus_type_change_merge()
 	sASMPatcher.PatchAt(removeTwin, &removeTwinPatch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where collecting a Bone Heart could remove charges from Alabaster Box.
+// When at the HP limit, AddBoneHearts calls AddSoulHearts with a negative amount to make room.
+// AddSoulHearts only skipped Alabaster Box adjustment for a value of 0, not negatives, so a negative amount was "added" to the box.
+static void fix_alabaster_box_negative_soul_hearts()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_AddSoulHearts_AlabasterBoxChargeCheck) + 0x3;
+	ZHL::Log("[REPENTOGON] Patching AddSoulHearts Alabaster Box charge check at %p\n", addr);
+
+	sASMPatcher.FlatPatch(addr, "\x8E", 1); // je -> jle
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1441,5 +1452,6 @@ void ASMFixes()
 	fix_crawl_space_rock_type();
 	fix_glowing_hourglass_pocket_item_refund();
 	fix_tainted_lazarus_type_change_merge();
+	fix_alabaster_box_negative_soul_hearts();
     patch_in_place_room_reset();
 }
