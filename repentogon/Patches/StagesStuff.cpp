@@ -24,6 +24,7 @@
 #include "LuaCore.h"
 #include <filesystem>
 #include <regex>
+#include "Stages/StageManager.h"
 //Stages XML Hijack
 
 int bckmstage = -1;
@@ -290,5 +291,9 @@ MOD_EXPORT void L_Isaac_SetCurrentFloorName(const char* floorName)
 
 MOD_EXPORT int L_Isaac_GetCurrentStageConfigId()
 {
-	return RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
+	int vanillaStageID = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
+	if (StageManager::GetCurrentOverride().IsOverridden(vanillaStageID)) {
+		return StageManager::GetCurrentOverride().GetCustomStageID();
+	}
+	return vanillaStageID;
 }
