@@ -1570,6 +1570,17 @@ static void fix_greedier_wave_champion()
 	sASMPatcher.PatchAt(indicatorAddr, &indicatorPatch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.19) where dealing exactly 600 damage to Satan skipped the stomp phase.
+// Satan's AI only enters the stomp phase when (health - pending damage) < 0, so damage that left exactly 0 HP killed him outright.
+// This fix differs from 1.9.7.19's implementation, but that one is more of a refactor and this one still works.
+static void fix_satan_stomp_phase_exact_damage()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_AiSatan_StompPhaseHealthCheck) + 0x11;
+	ZHL::Log("[REPENTOGON] Patching Satan stomp phase health check at %p\n", addr);
+
+	sASMPatcher.FlatPatch(addr, "\x82", 1); // jbe -> jb
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1666,5 +1677,6 @@ void ASMFixes()
 	fix_glowing_hourglass_dads_note_softlock();
 	fix_mr_me_dead_pickup_grab();
 	fix_greedier_wave_champion();
+	fix_satan_stomp_phase_exact_damage();
     patch_in_place_room_reset();
 }
