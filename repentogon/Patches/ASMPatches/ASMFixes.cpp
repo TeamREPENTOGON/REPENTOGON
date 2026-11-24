@@ -1633,6 +1633,48 @@ static void fix_curse_of_the_maze_ultra_secret_room()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static void __stdcall asm_rebuild_tainted_isaac_inventory(Entity_Player* player)
+{
+	if (player->_playerType != PLAYER_ISAAC_B) {
+		return;
+	}
+
+	std::fill(std::begin(player->_inventoryHistoryIdx), std::end(player->_inventoryHistoryIdx), -1);
+
+	const int maxSize = player->GetMaxInventorySize();
+	auto& historyItems = player->GetHistory()->_historyItems;
+	int count = 0;
+	for (int i = 0; i < (int)historyItems.size() && count < maxSize; ++i) {
+		const History_HistoryItem& item = historyItems[i];
+		if (!item._isTrinket && player->CanAddCollectibleToInventory(item._itemID)) {
+			player->_inventoryHistoryIdx[count++] = i;
+		}
+	}
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.19) where Esau Jr. could allow Tainted Isaac to collect more than 8 items.
+// Due to Esau Jr. shifting quest items between itself and the main player upon activation,
+// but not shifting its location in Tainted Isaac's inventory, the index becomes off by one.
+// This means with two quest items, Tainted Isaac can gain an additional item with each Esau Jr. invocation.
+// 1.9.7.19 rebuilds the player's inventory from its history every invocation.
+static void fix_esau_jr_tainted_isaac_inventory()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_DischargeActiveItem_EsauJrSwapQuestItems) + 0x10;
+	ZHL::Log("[REPENTOGON] Patching Esau Jr. Tainted Isaac inventory rebuild at %p\n", addr);
+
+	void* callTarget = addr + 0x5 + *(int32_t*)(addr + 0x1);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI)
+		.AddInternalCall(asm_rebuild_tainted_isaac_inventory)
+		.RestoreRegisters(savedRegisters)
+		.AddInternalCall(callTarget)
+		.AddRelativeJump(addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1732,5 +1774,6 @@ void ASMFixes()
 	fix_satan_stomp_phase_exact_damage();
 	fix_deskulled_host_no_target();
 	fix_curse_of_the_maze_ultra_secret_room();
+	fix_esau_jr_tainted_isaac_inventory();
     patch_in_place_room_reset();
 }
