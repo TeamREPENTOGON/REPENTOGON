@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "Log.h"
 #include "../../VirtualRoomConfig/VirtualRoomSetManager.h"
+#include "../../Patches/Stages/StageManager.h"
 
 MOD_EXPORT RoomConfig_Room* L_RoomConfig_GetRoomByStageTypeAndVariant(uint32_t stage, uint32_t type, uint32_t variant, int mode) {
 	return g_Game->GetRoomConfig()->GetRoomByStageTypeAndVariant(stage, type, variant, mode);
@@ -8,6 +9,10 @@ MOD_EXPORT RoomConfig_Room* L_RoomConfig_GetRoomByStageTypeAndVariant(uint32_t s
 
 MOD_EXPORT RoomConfig_Room* L_RoomConfig_GetRandomRoom(unsigned int seed, bool reduceWeight, int stage, int type, int shape, unsigned int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, unsigned int doors, int subtype, int mode) {
 	return g_Game->GetRoomConfig()->GetRandomRoom(seed, reduceWeight, stage, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, &doors, subtype, mode);
+}
+
+MOD_EXPORT int L_RoomConfig_GetNumStages() {
+	return StageManager::GetNumStages();
 }
 
 MOD_EXPORT RoomConfig_Stage* L_RoomConfig_GetStage(int stage) {

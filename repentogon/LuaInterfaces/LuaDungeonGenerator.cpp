@@ -8,6 +8,7 @@
 #include <unordered_set>
 #include "../Utils/LevelGenUtils.h"
 #include "Room/RoomPlacement.h"
+#include "../Patches/Stages/StageManager.h"
 static void PrintGeneratorError(const std::string& message) {
     g_Game->GetConsole()->PrintError(message);
     KAGE::LogMessage(3, message.c_str());
@@ -846,11 +847,10 @@ bool DungeonGenerator::Generate() {
 
 #pragma endregion
 
-MOD_EXPORT DungeonGeneratorRoom* L_DungeonGenerator_PlaceRoom(DungeonGenerator* generator, RoomConfig_Room* room, int column, int row, int allowed_doors) {
-	XY coords(column, row);
-
+MOD_EXPORT DungeonGeneratorRoom* L_DungeonGenerator_PlaceRoom(DungeonGenerator* generator, int idx, RoomConfig_Room* room, int allowed_doors) {
 	bool explicit_doors = false;
 
+	XY coords = RoomIndexToCoords(idx);
 	if (allowed_doors < 0) {
 		allowed_doors = CalculateAutoDoors(generator->level_generator._roomMap, coords, room->Shape);
 	} else {
@@ -860,250 +860,37 @@ MOD_EXPORT DungeonGeneratorRoom* L_DungeonGenerator_PlaceRoom(DungeonGenerator* 
 	return generator->TryPlaceRoom(coords, allowed_doors, room, explicit_doors);
 }
 
-/*
-LUA_FUNCTION(Lua_PlaceRandomRoom) {
-    
-    DungeonGenerator* generator = GetDungeonGenerator(L);
+MOD_EXPORT DungeonGeneratorRoom* L_DungeonGenerator_PlaceRandomRoom(DungeonGenerator* generator, int idx, int stage, int roomType, int roomShape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int allowed_doors, int subtype, int mode) {
+	if (stage == -1) {
+		stage = RoomConfig::GetStageID(generator->level->_stage, generator->level->_stageType, -1);
+		if (StageManager::GetCurrentOverride().IsOverridden(stage)) {
+			stage = StageManager::GetCurrentOverride().GetCustomStageID();
+		}
+	}
 
-    if (generator == nullptr) {
-        lua_pushnil(L);
-        return 1;
-    }
+	bool explicit_doors = false;
 
-    if (generator->level == nullptr) {
-        lua_pushnil(L);
-        return 1;
-    }
+	XY coords = RoomIndexToCoords(idx);
+	if (allowed_doors < 0) {
+		allowed_doors = CalculateAutoDoors(generator->level_generator._roomMap, coords, roomShape);
+	} else {
+		explicit_doors = true;
+	}
 
-    int arg_count = lua_gettop(L);
-
-    uint32_t col = 0;
-    uint32_t row = 0;
-    
-    int stage = RoomConfig::GetStageID(generator->level->_stage, generator->level->_stageType, -1);
-
-    int type = ROOM_DEFAULT;
-    int shape = ROOMSHAPE_1x1;
-    int minVariant = 0;
-    int maxVariant = -1;
-    int minDifficulty = 0;
-    int maxDifficulty = 10;
-    int subtype = -1;
-    int mode = -1;
-    int allowed_doors = -1;
-    bool explicit_doors = false;
-
-    bool has_grid_index = false;
-    int table_idx = 0;
-
-    if (arg_count >= 3 && lua_istable(L, 3)) {
-        has_grid_index = true;
-        table_idx = 3;
-    } else if (arg_count >= 4 && lua_istable(L, 4)) {
-        table_idx = 4;
-    } else if (arg_count == 2) {
-        has_grid_index = true;
-    } else if (arg_count == 3 && !lua_istable(L, 3)) {
-        has_grid_index = true;
-    }
-
-    if (has_grid_index) {
-        uint32_t grid_index = (uint32_t)luaL_checkinteger(L, 2);
-        col = grid_index % 13;
-        row = grid_index / 13;
-    } else {
-        col = (uint32_t)luaL_checkinteger(L, 2);
-        row = (uint32_t)luaL_checkinteger(L, 3);
-    }
-
-    if (table_idx > 0) {
-        lua_getfield(L, table_idx, "Stage");
-        if (!lua_isnil(L, -1)) stage = (int)lua_tointeger(L, -1);
-        lua_pop(L, 1);
-
-        lua_getfield(L, table_idx, "Type");
-        if (!lua_isnil(L, -1)) type = (int)lua_tointeger(L, -1);
-        lua_pop(L, 1);
-
-        lua_getfield(L, table_idx, "Shape");
-        if (!lua_isnil(L, -1)) shape = (int)lua_tointeger(L, -1);
-        lua_pop(L, 1);
-
-        lua_getfield(L, table_idx, "MinVariant");
-        if (!lua_isnil(L, -1)) minVariant = (int)lua_tointeger(L, -1);
-        lua_pop(L, 1);
-
-        lua_getfield(L, table_idx, "MaxVariant");
-        if (!lua_isnil(L, -1)) maxVariant = (int)lua_tointeger(L, -1);
-        lua_pop(L, 1);
-
-        lua_getfield(L, table_idx, "MinDifficulty");
-        if (!lua_isnil(L, -1)) minDifficulty = (int)lua_tointeger(L, -1);
-        lua_pop(L, 1);
-
-        lua_getfield(L, table_idx, "MaxDifficulty");
-        if (!lua_isnil(L, -1)) maxDifficulty = (int)lua_tointeger(L, -1);
-        lua_pop(L, 1);
-
-        lua_getfield(L, table_idx, "Subtype");
-        if (!lua_isnil(L, -1)) subtype = (int)lua_tointeger(L, -1);
-        lua_pop(L, 1);
-
-        lua_getfield(L, table_idx, "Mode");
-        if (!lua_isnil(L, -1)) mode = (int)lua_tointeger(L, -1);
-        lua_pop(L, 1);
-
-        lua_getfield(L, table_idx, "Doors");
-        if (!lua_isnil(L, -1)) {
-            allowed_doors = (int)lua_tointeger(L, -1);
-            explicit_doors = true;
-        }
-        lua_pop(L, 1);
-    } else {
-        if (!has_grid_index) {
-            if (arg_count >= 4) stage = (int)luaL_checkinteger(L, 4);
-            if (arg_count >= 5) type = (int)luaL_checkinteger(L, 5);
-            if (arg_count >= 6) shape = (int)luaL_optinteger(L, 6, 1);
-            if (arg_count >= 7) minVariant = (int)luaL_optinteger(L, 7, 0);
-            if (arg_count >= 8) maxVariant = (int)luaL_optinteger(L, 8, -1);
-            if (arg_count >= 9) minDifficulty = (int)luaL_optinteger(L, 9, 0);
-            if (arg_count >= 10) maxDifficulty = (int)luaL_optinteger(L, 10, 10);
-            if (arg_count >= 11) subtype = (int)luaL_optinteger(L, 11, -1);
-            if (arg_count >= 12) mode = (int)luaL_optinteger(L, 12, -1);
-            if (arg_count >= 13) {
-                allowed_doors = (int)luaL_optinteger(L, 13, -1);
-                if (allowed_doors != -1) {
-                    explicit_doors = true;
-                }
-            }
-        }
-    }
-
-    XY coords(col, row);
-    if (allowed_doors == -1) {
-        allowed_doors = CalculateAutoDoors(generator->level_generator._roomMap, coords, shape);
-    }
-
-    DungeonGeneratorRoom* generator_room = generator->TryPlaceRoom(
-        coords, allowed_doors, stage, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, subtype, mode, explicit_doors);
-
-
-    if (generator_room != nullptr) {
-        DungeonGeneratorRoom** ud = (DungeonGeneratorRoom**)lua_newuserdata(L, sizeof(DungeonGeneratorRoom*));
-        *ud = generator_room;
-        luaL_setmetatable(L, lua::metatables::DungeonGeneratorRoomMT);
-    }
-    else {
-        lua_pushnil(L);
-    }
-
-    return 1;
+	return generator->TryPlaceRoom(coords, allowed_doors, stage, roomType, roomShape, minVariant, maxVariant, minDifficulty, maxDifficulty, subtype, mode, explicit_doors);
 }
 
-LUA_FUNCTION(Lua_PlaceOffGridRoom) {
-	DungeonGenerator* generator = GetDungeonGenerator(L);
-
-	int off_grid_index = (int)luaL_checkinteger(L, 2);
-	if (off_grid_index < -20 || off_grid_index > -1) {
-		return luaL_error(L, "Invalid grid index %d\n", off_grid_index);
-	}
-
-	RoomConfig_Room* config = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, 3, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
-
-	DungeonGeneratorRoom* generator_room = generator->PlaceOffGridRoom(off_grid_index, config);
-
-	if (generator_room != nullptr) {
-		DungeonGeneratorRoom** ud = (DungeonGeneratorRoom**)lua_newuserdata(L, sizeof(DungeonGeneratorRoom*));
-		*ud = generator_room;
-		luaL_setmetatable(L, lua::metatables::DungeonGeneratorRoomMT);
-	}
-	else {
-		lua_pushnil(L);
-	}
-
-	return 1;
+MOD_EXPORT DungeonGeneratorRoom* L_DungeonGenerator_PlaceOffGridRoom(DungeonGenerator* generator, int idx, RoomConfig_Room* room) {
+	return generator->PlaceOffGridRoom(idx, room);
 }
 
-LUA_FUNCTION(Lua_PlaceRandomOffGridRoom) {
-	DungeonGenerator* generator = GetDungeonGenerator(L);
-
-	int off_grid_index = (int)luaL_checkinteger(L, 2);
-	if (off_grid_index < -20 || off_grid_index > -1) {
-		return luaL_error(L, "Invalid grid index %d\n", off_grid_index);
-	}
-
-	int stage = (int)luaL_checkinteger(L, 3);
-	if (stage < 0 || (stage >= STB_UNUSED1 && stage <= STB_ULTRA_GREED) || stage == STB_THE_VOID || stage >= NUM_STB) {
-		return luaL_error(L, "Invalid stage %d\n", stage);
-	}
-
-	int type = (int)luaL_checkinteger(L, 4);
-	if (type < ROOM_DEFAULT || type >= NUM_ROOMTYPES) {
-		return luaL_error(L, "Invalid type %d\n", type);
-	}
-
-	int shape = (int)luaL_optinteger(L, 5, NUM_ROOMSHAPES);
-	if (shape < ROOMSHAPE_1x1 || shape > NUM_ROOMSHAPES) {
-		return luaL_error(L, "Invalid shape %d\n", shape);
-	}
-
-	int minVariant = (int)luaL_optinteger(L, 6, 0);
-	if (minVariant < 0) {
-		minVariant = 0;
-	}
-
-	int maxVariant = (int)luaL_optinteger(L, 7, -1);
-	if (maxVariant < minVariant && maxVariant >= 0) {
-		return luaL_error(L, "maxVariant is lower than minVariant (min = %d, max = %d)\n", minVariant, maxVariant);
-	}
-	else if (maxVariant < 0) {
-		maxVariant = -1;
-	}
-
-	int minDifficulty = (int)luaL_optinteger(L, 8, 0);
-	if (minDifficulty < 0) {
-		minDifficulty = 0;
-	}
-
-	int maxDifficulty = (int)luaL_optinteger(L, 9, 10);
-	if (maxDifficulty < minDifficulty) {
-		return luaL_error(L, "maxDifficulty is lower than minDifficulty (min = %d, max = %d)\n", minDifficulty, maxDifficulty);
-	}
-
-	int subtype = (int)luaL_optinteger(L, 10, -1);
-	if (subtype < -1) {
-		return luaL_error(L, "Invalid subtype %d\n", subtype);
-	}
-	int mode = (int)luaL_optinteger(L, 11, -1);
-	if (mode < -1 || mode > 1) {
-		return luaL_error(L, "Invalid mode %d\n", mode);
-	}
-
-	DungeonGeneratorRoom* generator_room = generator->PlaceOffGridRoom(
-		off_grid_index,
-		stage,
-		type,
-		shape,
-		minVariant,
-		maxVariant,
-		minDifficulty,
-		maxDifficulty,
-		subtype,
-		mode
-	);
-
-	if (generator_room != nullptr) {
-		DungeonGeneratorRoom** ud = (DungeonGeneratorRoom**)lua_newuserdata(L, sizeof(DungeonGeneratorRoom*));
-		*ud = generator_room;
-		luaL_setmetatable(L, lua::metatables::DungeonGeneratorRoomMT);
-	}
-	else {
-		lua_pushnil(L);
-	}
-
-	return 1;
+MOD_EXPORT DungeonGeneratorRoom* L_DungeonGenerator_PlaceRandomOffGridRoom(DungeonGenerator* generator, int idx, int stage, int roomType, int roomShape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subType, int mode) {
+	return generator->PlaceOffGridRoom(idx, stage, roomType, roomShape, minVariant, maxVariant, minDifficulty, maxDifficulty, subType, mode);
 }
-*/
+
+MOD_EXPORT RNG* L_DungeonGenerator_GetRNG(DungeonGenerator* generator) {
+	return generator->rng;
+}
 
 MOD_EXPORT DungeonGeneratorRoom* L_DungeonGenerator_TryPlaceDefaultStartingRoom(DungeonGenerator* generator, int doors) {
 	bool explicit_doors = true;

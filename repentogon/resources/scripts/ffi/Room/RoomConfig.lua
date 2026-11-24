@@ -2,6 +2,7 @@ ffi.cdef [[
     struct RoomConfigRoom* L_RoomConfig_GetRoomByStageTypeAndVariant(uint32_t, uint32_t, uint32_t, int);
     struct RoomConfigRoom* L_RoomConfig_GetRandomRoom(unsigned int, bool, int, int, int, unsigned int, int, int, int, unsigned int, int, int);
     struct RoomConfigStage* L_RoomConfig_GetStage(int);
+    int L_RoomConfig_GetNumStages();
 ]]
 
 local repentogon = ffidll
@@ -9,7 +10,6 @@ local ffi = ffi
 
 local RoomConfigSetT = ffi.typeof("struct RoomConfigSet")
 
-local NUM_STB = 37
 local STB_UNUSED1 = 18
 local STB_ULTRA_GREED = 25
 local STB_THE_VOID = 26
@@ -17,7 +17,7 @@ local STB_THE_VOID = 26
 local function CheckStageAndMode(stage, mode)
     stage = ffichecks.checkinteger(1, stage, 3)
     mode = ffichecks.checkinteger(2, mode, 3)
-    if stage < 0 or stage >= NUM_STB then
+    if stage < 0 or stage >= RoomConfig.GetNumStages() then
         ffichecks.argerror(1, string.format("invalid stage %d", stage), 3)
     end
     if mode < -1 or mode > 1 then
@@ -36,7 +36,7 @@ RoomConfig = {
         seed = ffichecks.checkinteger(1, seed)
         reduceWeight = ffichecks.checkboolean(2, reduceWeight)
         stage = ffichecks.checkinteger(3, stage)
-        if stage < 0 or (stage >= STB_UNUSED1 and stage <= STB_ULTRA_GREED) or stage == STB_THE_VOID or stage >= NUM_STB then
+        if stage < 0 or (stage >= STB_UNUSED1 and stage <= STB_ULTRA_GREED) or stage == STB_THE_VOID or stage >= RoomConfig.GetNumStages() then
             ffichecks.argerror(3, string.format("invalid stage %d", stage))
         end
         roomType = ffichecks.checkinteger(4, roomType)
@@ -80,8 +80,9 @@ RoomConfig = {
         end
         local stage, roomType, variant, mode = ...
         stage = ffichecks.checkinteger(1, stage)
-        if stage < 0 or stage >= NUM_STB then
-            ffichecks.argerror(1, string.format("StageID must be between 0 and 36 (both inclusive), got %d", stage))
+        local numStages = RoomConfig.GetNumStages()
+        if stage < 0 or stage >= numStages then
+            ffichecks.argerror(1, string.format("StageID must be between 0 and %d (both inclusive), got %d", numStages-1, stage))
         end
         roomType = ffichecks.checkinteger(2, roomType)
         if roomType < 1 or roomType > 29 then
@@ -94,10 +95,14 @@ RoomConfig = {
         end
         local result = repentogon.L_RoomConfig_GetRoomByStageTypeAndVariant(stage, roomType, variant, mode) return result
     end,
+    GetNumStages = function()
+        return repentogon.L_RoomConfig_GetNumStages()
+    end,
     GetStage = function(stage)
         stage = ffichecks.checkinteger(1, stage)
-        if stage < 0 or stage > 36 then
-            ffichecks.argerror(1, string.format("StageID must be between 0 and 36 (both inclusive), got %d", stage))
+        local numStages = RoomConfig.GetNumStages()
+        if stage < 0 or stage > numStages then
+            ffichecks.argerror(1, string.format("StageID must be between 0 and %d (both inclusive), got %d", numStages-1, stage))
         end
         local result = repentogon.L_RoomConfig_GetStage(stage) return result
     end,
