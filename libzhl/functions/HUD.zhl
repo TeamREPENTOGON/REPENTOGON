@@ -38,6 +38,9 @@ __thiscall void HUD::ShowFortuneText(int * * param_1);
 "558bec8b55??85d274??33c0":
 __thiscall void HUD::InvalidateCraftingItem(Entity_Player * player);
 
+"558bec51833900":
+__thiscall void HUD::InvalidateItemHistory(bool immediate, bool reset);
+
 "558bec8b55??33c0391174??4081c1e006000083f80872??5dc208008b55??85d2":
 __thiscall void HUD::FlashChargeBar(Entity_Player* player, int activeSlot);
 

@@ -363,6 +363,22 @@ HOOK_METHOD(Entity_Player, RestoreGameState, (GameStatePlayer* saveState) -> voi
 	}
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.19) where Tainted Isaac could not cycle items after Void/Abyss use until another passive was collected.
+// With a full inventory, picking up an item drops slot 0 and leaves -1 there for the queued item to fill. Void/Abyss destroy the queued item
+// instead, so the -1 stays at the front and the cycle (which counts slots up to the first -1) sees an empty inventory.
+// 1.9.7.19 instead moves the empty slot to the end when the queued item is destroyed.
+HOOK_METHOD(Entity_Player, DestroyQueueItem, () -> void) {
+	super();
+	if (this->_playerType != PLAYER_ISAAC_B || this->_inventoryHistoryIdx[0] >= 0) {
+		return;
+	}
+	const int size = this->GetMaxInventorySize();
+	for (int i = 0; i < size - 1; ++i) {
+		std::swap(this->_inventoryHistoryIdx[i], this->_inventoryHistoryIdx[i + 1]);
+	}
+	g_Game->GetHUD()->InvalidateItemHistory(false, false);
+}
+
 // The game will attempt to update a mod's metadata.xml if it is missing a name/directory/version, or if it is missing entirely.
 // However, for workshop mods, because WriteMetadata uses the "_directory" value, which at this point in time has not been appended
 // with the workshop ID, the game will create a new folder for "modname" instead of "modname_123456" and write the metadata there,

@@ -766,6 +766,9 @@ __thiscall int Entity_Player::GetPill(int slot);
 "558bec83ec2453568bf157":
 __thiscall bool Entity_Player::FlushQueueItem();
 
+"568bf1e8????????84c074??8d8e":
+__thiscall void Entity_Player::DestroyQueueItem();
+
 "566a00688b000000":
 __thiscall int Entity_Player::GetMaxTrinkets();
 
