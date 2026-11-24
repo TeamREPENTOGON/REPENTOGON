@@ -1425,6 +1425,30 @@ static void fix_glowing_hourglass_dads_note_softlock()
 	sASMPatcher.PatchAt(stageStore, &stagePatch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.19) where cards could become uncollectible if Mr. ME! grabbed them at the wrong moment.
+// Mr. ME! saves the pickup's collision class and restores it when it drops the pickup,
+// so grabbing a pickup that hadn't finished its Appear animation dropped it back with no collision.
+static void fix_mr_me_dead_pickup_grab()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityEffect_AiMrMe_GrabPickupStateCheck);
+	ZHL::Log("[REPENTOGON] Patching Mr. ME! dead pickup grab at %p\n", addr);
+
+	void* skipGrab = addr + 0xD + *(int32_t*)(addr + 0x9);
+
+	ASMPatch patch;
+	patch.AddBytes("\x80\xBE").AddBytes(ByteBuffer().AddInteger<int32_t>(offsetof(Entity, _dead), false)).AddZeroes(1) // cmp byte ptr [esi + _dead], 0 // esi = pickup
+		.AddBytes("\x75\x09") // jne giveUp
+		.AddBytes("\x83\xBE").AddBytes(ByteBuffer().AddInteger<int32_t>(offsetof(Entity, _entityCollisionClass), false)).AddZeroes(1) // cmp dword ptr [esi + _entityCollisionClass], ENTCOLL_NONE
+		.AddBytes("\x75\x0A") // jne stateCheck
+		// giveUp:
+		.AddBytes("\xC7\x87").AddBytes(ByteBuffer().AddInteger<int32_t>(offsetof(Entity_Effect, _state), false)).AddBytes(ByteBuffer().AddInteger<int32_t>(3, false)) // mov dword ptr [edi + _state], 3 // edi = Mr. ME!
+		// stateCheck:
+		.AddBytes(ByteBuffer().AddAny(addr, 0x7)) // cmp dword ptr [edi + _state], 3
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, skipGrab)
+		.AddRelativeJump(addr + 0xD); // mov eax, dword ptr [esi + _variant]
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1519,5 +1543,6 @@ void ASMFixes()
 	fix_bloaty_creep_splash_damage();
 	fix_blood_donation_machine_swallowed_m80();
 	fix_glowing_hourglass_dads_note_softlock();
+	fix_mr_me_dead_pickup_grab();
     patch_in_place_room_reset();
 }
