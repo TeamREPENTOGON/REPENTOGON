@@ -1372,6 +1372,23 @@ static void fix_bloaty_creep_splash_damage()
 	sASMPatcher.FlatPatch(addr, "\xEB\x3B", 2);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where a Blood Donation Machine would not be destroyed when Swallowed M80 made Isaac explode.
+static void fix_blood_donation_machine_swallowed_m80()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntitySlot_HandleCollision_BloodDonationTakeDamage);
+	ZHL::Log("[REPENTOGON] Patching Blood Donation Machine Swallowed M80 explosion at %p\n", addr);
+
+	void* payout = addr + 0x1A + *(int8_t*)(addr + 0x19);
+	void* skipPayout = addr + 0x27 + *(int32_t*)(addr + 0x23);
+
+	ASMPatch patch;
+	patch.AddBytes("\xFF\x50\x20") // call dword ptr [eax + 0x20]
+		.AddBytes("\x83\xBF").AddBytes(ByteBuffer().AddInteger<int32_t>(offsetof(Entity_Slot, _state), false)).AddBytes("\x01") // cmp dword ptr [edi + _state], 1 // edi = slot
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, skipPayout)
+		.AddRelativeJump(payout);
+	sASMPatcher.PatchAt(addr + 0x15, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1464,5 +1481,6 @@ void ASMFixes()
 	fix_tainted_lazarus_type_change_merge();
 	fix_alabaster_box_negative_soul_hearts();
 	fix_bloaty_creep_splash_damage();
+	fix_blood_donation_machine_swallowed_m80();
     patch_in_place_room_reset();
 }
