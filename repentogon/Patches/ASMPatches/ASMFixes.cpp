@@ -1614,6 +1614,25 @@ static void fix_deskulled_host_no_target()
 	sASMPatcher.PatchAt(braceletAddr, &braceletPatch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.19) where Curse of the Maze could trap players in the Ultra Secret Room.
+// On a room change, Curse of the Maze can redirect the player to a random nearby room. The candidate filter skipped
+// secret, super secret and curse rooms, but not the Ultra Secret Room, which is only reachable through red rooms.
+static void fix_curse_of_the_maze_ultra_secret_room()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Level_ChangeRoom_CurseOfTheMazeRoomTypeCheck) + 0x12;
+	ZHL::Log("[REPENTOGON] Patching Curse of the Maze room type check at %p\n", addr);
+
+	void* skipRoom = addr + 0x9 + *(int32_t*)(addr + 0x5);
+
+	ASMPatch patch;
+	patch.AddBytes("\x83\xF9").AddBytes(ByteBuffer().AddByte(ROOM_CURSE)) // cmp ecx, ROOM_CURSE // ecx = room type
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, skipRoom)
+		.AddBytes("\x83\xF9").AddBytes(ByteBuffer().AddByte(ROOM_ULTRASECRET)) // cmp ecx, ROOM_ULTRASECRET
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, skipRoom)
+		.AddRelativeJump(addr + 0x9); // cmp dword ptr [eax], 0
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1712,5 +1731,6 @@ void ASMFixes()
 	fix_greedier_wave_champion();
 	fix_satan_stomp_phase_exact_damage();
 	fix_deskulled_host_no_target();
+	fix_curse_of_the_maze_ultra_secret_room();
     patch_in_place_room_reset();
 }
