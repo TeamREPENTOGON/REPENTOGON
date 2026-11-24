@@ -1389,6 +1389,42 @@ static void fix_blood_donation_machine_swallowed_m80()
 	sASMPatcher.PatchAt(addr + 0x15, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where using Glowing Hourglass immediately after taking Dad's Note resulted in a softlock.
+static void __stdcall asm_store_glowing_hourglass_state_for_dads_note(int collectible)
+{
+	if (collectible == COLLECTIBLE_DADS_NOTE)
+		Game::StoreGlowingHourglassState(-1);
+}
+
+static void fix_glowing_hourglass_dads_note_softlock()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPickup_HandleCollision_CollectibleRemoveFromPools);
+	ZHL::Log("[REPENTOGON] Patching Glowing Hourglass Dad's Note store at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.AddBytes(ByteBuffer().AddAny(addr + 0x4, 0x6)) // push dword ptr [ebp - 0xAC]
+		.AddInternalCall(asm_store_glowing_hourglass_state_for_dads_note)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes(ByteBuffer().AddAny(addr, 0xA)) // push 0; push 0; push dword ptr [ebp - 0xAC]
+		.AddRelativeJump(addr + 0xA); // lea ecx, [eax + _itemPool]
+	sASMPatcher.PatchAt(addr, &patch);
+
+	char* stageStore = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Game_StartStageTransition_StoreGlowingHourglassState) + 0x9;
+	ZHL::Log("[REPENTOGON] Patching StartStageTransition Glowing Hourglass store at %p\n", stageStore);
+
+	void* storeGlowingHourglassState = stageStore + 0x7 + *(int32_t*)(stageStore + 0x3);
+
+	ASMPatch stagePatch;
+	stagePatch.AddBytes("\x83\xFE\x05") // cmp esi, 5
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, stageStore + 0x7)
+		.AddBytes("\x6A\xFF") // push -1
+		.AddInternalCall(storeGlowingHourglassState)
+		.AddRelativeJump(stageStore + 0x7);
+	sASMPatcher.PatchAt(stageStore, &stagePatch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1482,5 +1518,6 @@ void ASMFixes()
 	fix_alabaster_box_negative_soul_hearts();
 	fix_bloaty_creep_splash_damage();
 	fix_blood_donation_machine_swallowed_m80();
+	fix_glowing_hourglass_dads_note_softlock();
     patch_in_place_room_reset();
 }
