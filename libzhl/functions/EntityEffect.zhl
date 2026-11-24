@@ -72,8 +72,11 @@ struct Entity_Effect depends (BitSet128, Vector) : public Entity {
 	int _timeout : 0x45c;
 	int _lifespan : 0x460;
 	Vector _parentOffset : 0x468;
+	unsigned int _indicatorSpawnType : 0x47c;
+	unsigned int _indicatorSpawnVariant : 0x480;
+	unsigned int _indicatorSpawnSubtype : 0x498;
 
-} : 0x490;
+} : 0x4c0;
 
 "6a0068(????????)f30f584308":
 reference void* EntityEffectRTTI;

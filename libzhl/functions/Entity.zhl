@@ -264,6 +264,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr, ColorMod) {
     int _brimstoneMarkCountdown : 0x304;
     Vector _knockbackDirection : 0x308;
 	int _pauseTimer : 0x31c;
+	int _spawnFrame : 0x328;
 	Vector _targetPos : 0x334;
     Vector _pos : 0x33c;
 	Vector _posOffset : 0x34c;

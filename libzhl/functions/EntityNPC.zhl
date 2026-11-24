@@ -183,6 +183,7 @@ struct Entity_NPC depends (Vector, NPCAI_Pathfinder, ColorMod, Entity_Projectile
 	uint32_t _deliriumCycleID : 0xbe0;
 	bool _isBoss : 0xc3d;
 	float _shieldStrength : 0xc40;
+	bool _isChampion : 0xc63;
 	int _championColorIdx : 0xc64;
 	uint16_t _championRegenTimer : 0xc74;
 	int _bosscoloridx : 0xc78;

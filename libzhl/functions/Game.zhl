@@ -289,6 +289,8 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	inline int GetTreasureRoomsVisited() { return this->_treasureRoomsVisited; }
 	
 	inline int GetPlanetariumsVisited() { return this->_planetariumsVisited; }
+
+	inline bool IsDeathmatchActive() { return this->_deathmatchState > 1; }
 	
 	inline bool IsPauseMenuOpen() { return this->_pauseScreen.state > 0; }
 	
@@ -390,6 +392,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	bool _isRerun : 0x25b00;
 	bool _isDebug : 0x25b01;
 	Ambush _ambush : 0x25b40;
+	int _deathmatchState : 0x25b8c;
 	DailyChallenge _dailyChallenge: 0x25ba8;
 	ScoreSheet _scoreSheet : 0x25c5c; 
 	GenericPrompt _genericPrompt : 0x25cf0;

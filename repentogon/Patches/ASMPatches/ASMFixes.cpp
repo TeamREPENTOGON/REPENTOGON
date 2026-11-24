@@ -3,10 +3,12 @@
 #include "ASMPatcher.hpp"
 #include "HookSystem.h"
 #include "../ASMPatches.h"
+#include "../EntityPlus.h"
 #include "rapidxml.hpp"
 
 #include <cstddef>
 #include <algorithm>
+#include <vector>
 
 static inline void* get_sig_address(const char* signature, const char* location)
 {
@@ -1449,6 +1451,125 @@ static void fix_mr_me_dead_pickup_grab()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.19's hotfix) where Greedier waves never spawned a champion.
+// Spawn indicators are what spawn enemies, not the greed mode wave, so the wave's champion roll doesn't work.
+// 1.9.7.19 instead lets the champion roll pick an indicator; the indicator then makes the NPC it spawns a champion.
+static uint32_t greed_wave_next_seed(uint32_t seed)
+{
+	const uint32_t* shifts = ((const uint32_t(*)[3])&s_Shifts)[8];
+	seed ^= seed >> shifts[0];
+	seed ^= seed << shifts[1];
+	seed ^= seed >> shifts[2];
+	return seed;
+}
+
+static bool greed_wave_can_be_champion(unsigned int type, unsigned int variant, unsigned int subtype)
+{
+	EntityConfig_Entity* config = g_Manager->GetEntityConfig()->GetEntity(type, variant, subtype);
+	return config && config->canBeChampion;
+}
+
+static void __stdcall asm_greedier_wave_champion(Room* room, uint32_t seed)
+{
+	if (seed == 0)
+		return;
+
+	EntityList_EL* updateEL = room->GetEntityList()->GetUpdateEL();
+	const bool isDeathmatchActive = g_Game->IsDeathmatchActive();
+	std::vector<Entity*> candidates;
+	bool hasChampion = false;
+
+	for (unsigned int i = 0; i < updateEL->_size; ++i)
+	{
+		Entity* entity = updateEL->_data[i];
+		const unsigned int type = entity->_type;
+		const unsigned int variant = entity->_variant;
+
+		if (type == ENTITY_EFFECT && variant == 203)
+		{
+			Entity_Effect* indicator = (Entity_Effect*)entity;
+			if (greed_wave_can_be_champion(indicator->_indicatorSpawnType, indicator->_indicatorSpawnVariant, indicator->_indicatorSpawnSubtype))
+				candidates.push_back(entity);
+			continue;
+		}
+
+		if (!isDeathmatchActive || type != ENTITY_PLAYER)
+		{
+			if (type - 10 > 0x3dd || type == 0x21 || type == 0x11 || type == 0x124 || type == 0x3c0 || type == 0x3c5 || type == 0xf5)
+				continue;
+			if (type == 0x375 && variant == 10)
+				continue;
+		}
+
+		if (entity->_dead || entity->IsBoss() || entity->_spawnFrame != g_Game->_frameCount)
+			continue;
+
+		Entity_NPC* npc = entity->ToNPC();
+		if (!npc || !greed_wave_can_be_champion(npc->_type, npc->_variant, npc->_subtype))
+			continue;
+
+		candidates.push_back(entity);
+		if (npc->_isChampion)
+			hasChampion = true;
+	}
+
+	if (hasChampion || candidates.empty())
+		return;
+
+	seed = greed_wave_next_seed(seed);
+	Entity* chosen = candidates[seed % candidates.size()];
+	seed = greed_wave_next_seed(seed);
+
+	if (Entity_NPC* npc = chosen->ToNPC())
+	{
+		npc->MakeChampion(seed, -1, false);
+	}
+	else if (Entity_Effect* effect = chosen->ToEffect())
+	{
+		if (EntityEffectPlus* effectPlus = GetEntityEffectPlus(effect))
+			effectPlus->greedChampionSeed = seed;
+	}
+}
+
+static void __stdcall asm_greed_spawn_indicator_champion(Entity_Effect* indicator, Entity* spawned)
+{
+	EntityEffectPlus* indicatorPlus = GetEntityEffectPlus(indicator);
+	if (!indicatorPlus || indicatorPlus->greedChampionSeed == 0)
+		return;
+
+	if (Entity_NPC* npc = spawned->ToNPC())
+		npc->MakeChampion(indicatorPlus->greedChampionSeed, -1, false);
+}
+
+static void fix_greedier_wave_champion()
+{
+	char* waveAddr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_SpawnGreedModeWave_GreedierChampion);
+	ZHL::Log("[REPENTOGON] Patching Greedier wave champion roll at %p\n", waveAddr);
+
+	void* waveEnd = waveAddr + 0xD + *(int32_t*)(waveAddr + 0x9);
+
+	ASMPatch wavePatch;
+	wavePatch.Push(ASMPatch::Registers::EDI) // seed
+		.Push(ASMPatch::Registers::ESI) // room
+		.AddInternalCall(asm_greedier_wave_champion)
+		.AddRelativeJump(waveEnd); // mov byte ptr [esi], 1
+	sASMPatcher.PatchAt(waveAddr + 0xD, &wavePatch);
+
+	char* indicatorAddr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityEffect_GreedSpawnIndicator_SpawnNPC);
+	ZHL::Log("[REPENTOGON] Patching Greed spawn indicator champion at %p\n", indicatorAddr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch indicatorPatch;
+	indicatorPatch.AddBytes(ByteBuffer().AddAny(indicatorAddr, 0x7)) // mov byte ptr [edx + 0xf5c], 1
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EDX) // spawned NPC
+		.Push(ASMPatch::Registers::ESI) // indicator
+		.AddInternalCall(asm_greed_spawn_indicator_champion)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump(indicatorAddr + 0x7);
+	sASMPatcher.PatchAt(indicatorAddr, &indicatorPatch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1544,5 +1665,6 @@ void ASMFixes()
 	fix_blood_donation_machine_swallowed_m80();
 	fix_glowing_hourglass_dads_note_softlock();
 	fix_mr_me_dead_pickup_grab();
+	fix_greedier_wave_champion();
     patch_in_place_room_reset();
 }
