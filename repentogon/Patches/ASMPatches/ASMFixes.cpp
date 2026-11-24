@@ -1581,6 +1581,39 @@ static void fix_satan_stomp_phase_exact_damage()
 	sASMPatcher.FlatPatch(addr, "\x82", 1); // jbe -> jb
 }
 
+// Fixes a vanilla bug (partially fixed in 1.9.7.19) where de-skulled Hosts couldn't be damaged by some sources, like Mom's Knife.
+// Armored Hosts set FLAG_NO_TARGET while closed and only clear it while armored, so a Host that loses its skull keeps it forever.
+// 1.9.7.19's fix is partial. It clears it in Morph but doesn't account for Mom's Bracelet. We clear it there, too.
+static void fix_deskulled_host_no_target()
+{
+	char* morphAddr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_Morph_SetTypeVariant);
+	ZHL::Log("[REPENTOGON] Patching Entity_NPC::Morph host NO_TARGET clear at %p\n", morphAddr);
+
+	const int32_t flagsOffset = offsetof(Entity, _flags);
+	const int32_t typeOffset = offsetof(Entity, _type);
+
+	ASMPatch morphPatch;
+	morphPatch.AddBytes("\x83\xBE").AddBytes(ByteBuffer().AddInteger<int32_t>(typeOffset, false)).AddBytes("\x1B") // cmp dword ptr [esi + _type], ENTITY_HOST
+		.AddBytes("\x74\x0C") // je clearFlag
+		.AddBytes("\x81\xBE").AddBytes(ByteBuffer().AddInteger<int32_t>(typeOffset, false)).AddBytes(ByteBuffer().AddInteger<int32_t>(ENTITY_FLOATING_HOST, false)) // cmp dword ptr [esi + _type], ENTITY_FLOATING_HOST
+		.AddBytes("\x75\x07") // jne restore
+		// clearFlag:
+		.AddBytes("\x83\xA6").AddBytes(ByteBuffer().AddInteger<int32_t>(flagsOffset, false)).AddBytes("\xEF") // and dword ptr [esi + _flags], ~FLAG_NO_TARGET
+		// restore:
+		.AddBytes(ByteBuffer().AddAny(morphAddr, 0x6)) // mov dword ptr [esi + _type], edi; mov dword ptr [esi + _variant], edx
+		.AddRelativeJump(morphAddr + 0x6);
+	sASMPatcher.PatchAt(morphAddr, &morphPatch);
+
+	char* braceletAddr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_UseMomsBracelet_DeskullHost) + 0x2;
+	ZHL::Log("[REPENTOGON] Patching Mom's Bracelet host de-skull NO_TARGET clear at %p\n", braceletAddr);
+
+	ASMPatch braceletPatch;
+	braceletPatch.AddBytes("\x83\xA6").AddBytes(ByteBuffer().AddInteger<int32_t>(flagsOffset, false)).AddBytes("\xEF") // and dword ptr [esi + _flags], ~FLAG_NO_TARGET
+		.AddBytes(ByteBuffer().AddAny(braceletAddr, 0x7)) // mov dword ptr [esi + _subtype], 99
+		.AddRelativeJump(braceletAddr + 0x7);
+	sASMPatcher.PatchAt(braceletAddr, &braceletPatch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1678,5 +1711,6 @@ void ASMFixes()
 	fix_mr_me_dead_pickup_grab();
 	fix_greedier_wave_champion();
 	fix_satan_stomp_phase_exact_damage();
+	fix_deskulled_host_no_target();
     patch_in_place_room_reset();
 }
