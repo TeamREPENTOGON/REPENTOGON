@@ -37,7 +37,7 @@ ffi.cdef [[
         struct RoomConfigLuaSpawnDesc* Spawns;
     };
 
-    unsigned int L_RoomConfig_GetVanillaSetID(uint32_t, int);
+    unsigned int L_RoomConfig_GetRoomSetID(uint32_t, int);
     bool L_RoomConfig_HasShapeSlot(int, unsigned int);
     int L_RoomConfig_GetDoorFromPosition(int16_t, int16_t, int);
     void L_RoomConfig_Log(const char*);

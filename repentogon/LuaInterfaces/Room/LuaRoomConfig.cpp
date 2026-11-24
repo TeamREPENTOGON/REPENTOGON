@@ -4,22 +4,29 @@
 #include "../../Patches/Stages/StageManager.h"
 
 MOD_EXPORT RoomConfig_Room* L_RoomConfig_GetRoomByStageTypeAndVariant(uint32_t stage, uint32_t type, uint32_t variant, int mode) {
-	return g_Game->GetRoomConfig()->GetRoomByStageTypeAndVariant(stage, type, variant, mode);
+	return VirtualRoomSetManager::GetRoomByStageTypeAndVariant_IgnoreStageOverride(stage, type, variant, mode);
 }
 
 MOD_EXPORT RoomConfig_Room* L_RoomConfig_GetRandomRoom(unsigned int seed, bool reduceWeight, int stage, int type, int shape, unsigned int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, unsigned int doors, int subtype, int mode) {
-	return g_Game->GetRoomConfig()->GetRandomRoom(seed, reduceWeight, stage, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, &doors, subtype, mode);
+	return VirtualRoomSetManager::GetRandomRoom_IgnoreStageOverride(seed, reduceWeight, stage, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, &doors, subtype, mode);
 }
 
 MOD_EXPORT int L_RoomConfig_GetNumStages() {
 	return StageManager::GetNumStages();
 }
 
-MOD_EXPORT RoomConfig_Stage* L_RoomConfig_GetStage(int stage) {
-	return &g_Game->GetRoomConfig()->_stages[stage];
+MOD_EXPORT RoomConfig_Stage* L_RoomConfig_GetStage(int stageid) {
+	auto* stage = StageManager::GetStage(stageid);
+	if (!stage) {
+		if (stageid >= 0 && stageid < NUM_STB) {
+			return &g_Game->GetRoomConfig()->_stages[stageid];
+		}
+		return nullptr;
+	}
+	return &stage->GetConfigStage();
 }
 
-MOD_EXPORT unsigned int L_RoomConfig_GetVanillaSetID(uint32_t stage, int mode) {
+MOD_EXPORT unsigned int L_RoomConfig_GetRoomSetID(uint32_t stage, int mode) {
 	if (mode == -1) {
 		mode = g_Game->IsGreedMode() ? 1 : 0;
 	}

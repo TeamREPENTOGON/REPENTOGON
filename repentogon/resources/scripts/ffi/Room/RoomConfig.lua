@@ -30,7 +30,7 @@ RoomConfig = {
     AddRooms = function(stage, mode, rooms)
         stage, mode = CheckStageAndMode(stage, mode)
         ffichecks.checktable(3, rooms)
-        return RoomConfigSetT(nil, repentogon.L_RoomConfig_GetVanillaSetID(stage, mode)):AddRooms(rooms)
+        return RoomConfigSetT(nil, repentogon.L_RoomConfig_GetRoomSetID(stage, mode)):AddRooms(rooms)
     end,
     GetRandomRoom = function(seed, reduceWeight, stage, roomType, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode)
         seed = ffichecks.checkinteger(1, seed)
@@ -109,6 +109,6 @@ RoomConfig = {
     LoadStb = function(stage, mode, filename)
         stage, mode = CheckStageAndMode(stage, mode)
         filename = ffichecks.checkstring(3, filename)
-        return RoomConfigSetT(nil, repentogon.L_RoomConfig_GetVanillaSetID(stage, mode)):LoadStb(filename)
+        return RoomConfigSetT(nil, repentogon.L_RoomConfig_GetRoomSetID(stage, mode)):LoadStb(filename)
     end,
 }

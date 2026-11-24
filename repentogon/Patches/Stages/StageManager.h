@@ -32,6 +32,7 @@ public:
 	// These are computed in PostLoadStages.
 	StageConfig(uint32_t stageId) {
 		_stageId = stageId;
+		_configStage._id = stageId;
 		XMLAttributes xmlData = XMLStuff.StageData->GetNodeById(stageId);
 		XMLAttributes baseXmlData = xmlData;
 
@@ -126,26 +127,26 @@ public:
 		if (playerSpot.empty()) {
 			playerSpot = baseXmlData["playerspot"];
 		}
-		_playerSpot = bossGfxRoot + playerSpot;
+		_configStage._playerSpot = bossGfxRoot + playerSpot;
 
 		std::string bossSpot = xmlData["bossspot"];
 		if (bossSpot.empty()) {
 			bossSpot = baseXmlData["bossspot"];
 		}
-		_bossSpot = bossGfxRoot + bossSpot;
+		_configStage._bossSpot = bossGfxRoot + bossSpot;
 		
 		_englishName = xmlData["name"];
-		_name = xmlData["untranslatedname"];
-		if (_name.empty()) {
-			_name = _englishName;
+		_configStage._displayName = xmlData["untranslatedname"];
+		if (_configStage._displayName.empty()) {
+			_configStage._displayName = _englishName;
 		}
 
-		_suffix = xmlData["suffix"];
-		if (!_suffix.empty() && _suffix.front() != '_') {
-			_suffix = '_' + _suffix;
+		_configStage._suffix = xmlData["suffix"];
+		if (!_configStage._suffix.empty() && _configStage._suffix.front() != '_') {
+			_configStage._suffix = '_' + _configStage._suffix;
 		}
-		_musicId = std::atoi(xmlData["music"].c_str());
-		_backdrop = std::atoi(xmlData["backdrop"].c_str());
+		_configStage._musicId = std::atoi(xmlData["music"].c_str());
+		_configStage._backdrop = std::atoi(xmlData["backdrop"].c_str());
 
 		if (stageId >= NUM_STB) {
 			VirtualRoomSetManager::TryInitializeSet(stageId);
@@ -162,12 +163,12 @@ public:
 
 	inline void Load() const {
 		RoomConfig_Stage& stage = g_Game->GetRoomConfig()->_stages[_baseStageId];
-		stage._displayName = _name;
-		stage._playerSpot = _playerSpot;
-		stage._bossSpot = _bossSpot;
-		stage._suffix = _suffix;
-		stage._musicId = _musicId;
-		stage._backdrop = _backdrop;
+		stage._displayName = _configStage._displayName;
+		stage._playerSpot = _configStage._playerSpot;
+		stage._bossSpot = _configStage._bossSpot;
+		stage._suffix = _configStage._suffix;
+		stage._musicId = _configStage._musicId;
+		stage._backdrop = _configStage._backdrop;
 	}
 
 	inline int GetStageId() const {
@@ -178,8 +179,12 @@ public:
 		return _baseStageId;
 	}
 
+	inline RoomConfig_Stage& GetConfigStage() {
+		return _configStage;
+	}
+
 	inline const std::string& GetName() const {
-		return _name;
+		return _configStage._displayName;
 	}
 
 	inline const std::string& GetEnglishName() const {
@@ -187,7 +192,7 @@ public:
 	}
 
 	inline int GetBackdropType() const {
-		return _backdrop;
+		return _configStage._backdrop;
 	}
 
 	inline bool IsVanilla() const {
@@ -323,13 +328,10 @@ private:
 
 	std::string _englishName;
 	
-	// RoomConfig_Stage attributes
-	std::string _name;
-	std::string _playerSpot;
-	std::string _bossSpot;
-	std::string _suffix;
-	int _musicId;
-	int _backdrop;
+	// Holds core vanilla attributes for a stage.
+	// Note: the RoomSets here are always unpopulated, even for vanilla stages.
+	// Vanilla RoomSets are not moved from the vanilla array.
+	RoomConfig_Stage _configStage{};
 
 	// Custom stage attributes
 	bool _hidden;
