@@ -1675,6 +1675,35 @@ static void fix_esau_jr_tainted_isaac_inventory()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static bool __stdcall asm_remote_detonator_can_detonate_bomb(Entity_Bomb* bomb)
+{
+	return g_Game->_frameCount - bomb->_spawnFrame > 1;
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.19) where Remote Detonator + Expansion Pack could make Mr. Boom instantly explode and hurt the player.
+// If Expansion Pack uses Mr. Boom, it is then immediately blown up by Remote Detonator.
+// 1.9.7.19 instead only lets Remote Detonator detonate bombs that are more than a frame old.
+static void fix_remote_detonator_new_bomb_detonation()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityBomb_Update_RemoteDetonatorEffectCheck) + 0xF;
+	ZHL::Log("[REPENTOGON] Patching Remote Detonator new bomb detonation at %p\n", addr);
+
+	void* detonate = addr + 0x8 + *(int32_t*)(addr + 0x4);
+
+	ASMPatch::SavedRegisters savedRegisters((ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS | ASMPatch::SavedRegisters::Registers::XMM_REGISTERS) & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch patch;
+	patch.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, addr + 0x8)
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EDI) // bomb
+		.AddInternalCall(asm_remote_detonator_can_detonate_bomb)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, detonate)
+		.AddRelativeJump(addr + 0x8); // mov eax, dword ptr [edi + _type]
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1775,5 +1804,6 @@ void ASMFixes()
 	fix_deskulled_host_no_target();
 	fix_curse_of_the_maze_ultra_secret_room();
 	fix_esau_jr_tainted_isaac_inventory();
+	fix_remote_detonator_new_bomb_detonation();
     patch_in_place_room_reset();
 }
