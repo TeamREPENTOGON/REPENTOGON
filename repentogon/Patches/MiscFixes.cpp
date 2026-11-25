@@ -379,6 +379,15 @@ HOOK_METHOD(Entity_Player, DestroyQueueItem, () -> void) {
 	g_Game->GetHUD()->InvalidateItemHistory(false, false);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.13) where cycling items (Tainted Isaac etc) didn't have a pickup buffer when spawned.
+// This results in a potentially undesired item being picked up immediately due to the lack of a buffer, like normal items have.
+// Normally this is set to 20 frames, but an item cycle resets that (hence the bug), so we'll just restore that ourselves.
+HOOK_METHOD(Entity_Pickup, UpdateCollectibleCycle, () -> void) {
+	const int wait = this->_wait;
+	super();
+	this->_wait = wait;
+}
+
 // The game will attempt to update a mod's metadata.xml if it is missing a name/directory/version, or if it is missing entirely.
 // However, for workshop mods, because WriteMetadata uses the "_directory" value, which at this point in time has not been appended
 // with the workshop ID, the game will create a new folder for "modname" instead of "modname_123456" and write the metadata there,
