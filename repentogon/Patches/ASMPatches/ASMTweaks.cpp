@@ -424,7 +424,7 @@ namespace ASMPatches {
 		 SigScan scanner("e8????????ff46??c645??09");
 		 scanner.Scan();
 		 int preloadSkipMode = repentogonOptions.sfxPreloadSkip;
-		 if (preloadSkipMode == 0) preloadSkipMode = 1;		//0 is auto/default, for now gets enabled, can be flipped to 2 or something to disable
+		 if (preloadSkipMode == 0) preloadSkipMode = 2;		//0 is auto/default, defaults to "off"
 		 if (preloadSkipMode != 1) return;
 		 void* addr = scanner.GetAddress();
 		 ASMPatch patch;
