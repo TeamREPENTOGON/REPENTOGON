@@ -1704,6 +1704,47 @@ static void fix_remote_detonator_new_bomb_detonation()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Fixes a vanilla bug (fixed in 1.9.7.19) where D12 wisp tears could reroll destroyed grids.
+// The wisps were only checking if the rock is breakable, not if it's destroyed.
+// 1.9.7.19 fixes that, and also requires the grid entity to have solid collision.
+static void fix_d12_wisp_reroll_destroyed_grid()
+{
+	char* sig = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityTear_Update_RerollRockWispBreakableCheck);
+	char* addr = sig + 0x7;
+	ZHL::Log("[REPENTOGON] Patching D12 wisp destroyed grid reroll at %p\n", addr);
+
+	void* skipReroll = addr + 0x8 + *(int32_t*)(addr + 0x4);
+	int32_t gridEntityStackOffset = *(int32_t*)(sig + 0x2E); // mov ecx, dword ptr [ebp - 0x8a4] // gridEntity
+
+	ASMPatch patch;
+	patch.AddBytes("\x84\xC0") // test al, al // IsBreakableRock
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, skipReroll)
+		.AddBytes("\x8B\x85").AddBytes(ByteBuffer().AddInteger<int32_t>(gridEntityStackOffset, false)) // mov eax, dword ptr [ebp + gridEntityStackOffset]
+		.AddBytes("\x83\xB8").AddBytes(ByteBuffer().AddInteger<int32_t>(offsetof(GridEntity, _collisionClass), false)).AddBytes(ByteBuffer().AddByte(GridCollisionClass::COLLISION_SOLID)) // cmp dword ptr [eax + _collisionClass], COLLISION_SOLID
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, skipReroll)
+		.AddRelativeJump(addr + 0x8); // lea eax, [ebp - 0x1fb0]
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// Related, but not in patch notes: D12 wisps can no longer reroll grids into metal blocks.
+static void fix_d12_wisp_reroll_metal_block()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityTear_Update_RerollRockWispTypeSwitch) + 0xA;
+	ZHL::Log("[REPENTOGON] Patching D12 wisp metal block reroll at %p\n", addr);
+
+	void* keepDefault = addr + 0x9 + *(int32_t*)(addr + 0x5);
+	void** jumpTable = *(void***)(addr + 0xC);
+	void* spikedRock = jumpTable[4];
+
+	ASMPatch patch;
+	patch.AddBytes("\x83\xF8\x03") // cmp eax, 3
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JA, keepDefault)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, spikedRock)
+		.AddBytes(ByteBuffer().AddAny(addr + 0x9, 0x7)) // jmp dword ptr [eax * 4 + jumpTable]
+		.AddRelativeJump(addr + 0x10); // unreachable
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 static Room* __fastcall asm_room_reset(Room* room)
 {
     if (room == nullptr)
@@ -1805,5 +1846,7 @@ void ASMFixes()
 	fix_curse_of_the_maze_ultra_secret_room();
 	fix_esau_jr_tainted_isaac_inventory();
 	fix_remote_detonator_new_bomb_detonation();
+	fix_d12_wisp_reroll_destroyed_grid();
+	fix_d12_wisp_reroll_metal_block();
     patch_in_place_room_reset();
 }
