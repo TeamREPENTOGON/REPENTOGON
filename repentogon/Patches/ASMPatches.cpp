@@ -46,6 +46,7 @@
 #include "ASMPatches/ASMTweaks.h"
 #include "ASMPatches/ASMLocalization.h"
 #include "ASMPatches/ASMFixes.h"
+#include "ASMPatches/ASMVanillaFeatures.h"
 #include "ASMPatches/ASMSplitTears.h"
 #include "ASMPatches/ASMCamera.h"
 #include "ASMPatches/ASMLuaJIT.h"
@@ -356,6 +357,7 @@ void PerformASMPatches() {
 
 	ASMPatchLoadArchiveFile();
 	ASMFixes();
+	ASMVanillaFeatures();
 	HookImGui();
 
 	//Mod folder redirect

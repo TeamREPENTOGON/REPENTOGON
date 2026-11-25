@@ -59,6 +59,11 @@ struct REPENTOGONOptions {
 			ini["VanillaTweaks"]["DisableExitPrompt"] = "0";
 			ini["VanillaTweaks"]["BlockUnknownDevices"] = "0";
 			ini["VanillaTweaks"]["SFXPreloadSkip"] = "0";
+#define VF(NAME, VERSION, TRANSLATE, MARK) ini["VanillaFeatures"][#NAME] = "1";
+#include "ImGuiFeatures/Localization/en_us.inl"
+#undef VF
+#undef I
+#undef V
 			ini["internal"]["DidModReset"] = "0";
 			ini["internal"]["EnableUnifont"] = "1";
 			ini["internal"]["UnifontRenderMode"] = "0";
@@ -118,6 +123,12 @@ struct REPENTOGONOptions {
 		consoleKeyScancode = defstoi(ini["VanillaTweaks"]["ConsoleKeyScancode"], 41);
 		blockUnknownDevices = defstoi(ini["VanillaTweaks"]["BlockUnknownDevices"], 0);
 		sfxPreloadSkip = defstoi(ini["VanillaTweaks"]["SFXPreloadSkip"], 0);
+
+#define VF(NAME, VERSION, TRANSLATE, MARK) vf##NAME = defstoi(ini["VanillaFeatures"][#NAME], 1);
+#include "ImGuiFeatures/Localization/en_us.inl"
+#undef VF
+#undef I
+#undef V
 
 		ZHL::Log("Loaded REPENTOGON INI\n");
 	}
@@ -180,6 +191,12 @@ struct REPENTOGONOptions {
 		Write("internal", "FontRenderStyle", fontRenderStyle);
 		Write("internal", "EnableImGuiMultiView", enableImGuiMultiView);
 		Write("internal", "EnableDocking", enableDocking);
+
+#define VF(NAME, VERSION, TRANSLATE, MARK) Write("VanillaFeatures", #NAME, vf##NAME);
+#include "ImGuiFeatures/Localization/en_us.inl"
+#undef VF
+#undef I
+#undef V
 	}
 
 	mINI::INIStructure ini;
@@ -218,6 +235,12 @@ struct REPENTOGONOptions {
 	int consoleKeyVK;
 	int consoleKeyScancode;
 	bool blockUnknownDevices;
+
+#define VF(NAME, VERSION, TRANSLATE, MARK) bool vf##NAME = true;
+#include "ImGuiFeatures/Localization/en_us.inl"
+#undef VF
+#undef I
+#undef V
 };
 
 extern REPENTOGONOptions repentogonOptions;

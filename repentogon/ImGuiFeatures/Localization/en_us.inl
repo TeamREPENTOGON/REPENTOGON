@@ -473,6 +473,22 @@ I(OPT_REPENTOGON_DISABLE_EXIT_PROMPT_MARK, u8"Disables the exit prompt when you 
 I(OPT_REPENTOGON_BLOCK_UNKNOWN_DEVICES, u8"Block \"Unknown Device\" Controllers (Requires Reconnect/Restart)")
 I(OPT_REPENTOGON_BLOCK_UNKNOWN_DEVICES_MARK, u8"Prevents controllers from being used by the game if they cannot be properly identified. Can help prevent issues where a controller or other device creates one or more ghost \"Unknown Devices\" that cause controls to get messed up.")
 
+I(OPT_VANILLA_FEATURES, u8"Vanilla Features")
+I(OPT_VANILLA_FEATURES_INFO, u8"Gameplay changes made in Repentance+. Untick a change to restore its Repentance behavior.")
+I(OPT_VANILLA_FEATURES_VERSION, u8"Added in v%s")
+
+#ifndef VF
+#define VF(NAME, VERSION, TRANSLATE, MARK) I(VF_##NAME, TRANSLATE) I(VF_##NAME##_MARK, MARK)
+#define VF_DEFAULT_DEFINED
+#endif
+
+VF(CodWormHiding, "1.9.7.11", u8"Cod Worms don't stay hidden for long periods", u8"Cod Worms surface as soon as their hide timer ends. In Repentance, they had a 1 in 20 chance every frame to surface after the timer ended.")
+
+#ifdef VF_DEFAULT_DEFINED
+#undef VF
+#undef VF_DEFAULT_DEFINED
+#endif
+
 I(OPT_SAVE_MANAGEMENT, u8"Save Management")
 I(OPT_SAVE_MANAGEMENT_DISABLED_REASON, u8"Some options/utilities are disabled since a save file is currently opened.")
 I(OPT_SAVE_MANAGEMENT_ENABLE_SAVE_SYNCING, u8"Automatically sync progress between vanilla and REPENTOGON")

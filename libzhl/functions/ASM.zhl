@@ -393,6 +393,9 @@ asm EntityPickup_InitFlipState_PostSaveStateConstructor "8db7????????508bcee8???
 asm EntityPickup_TryFlip_PostRestoreFlipState "837d??0075??33c0";
 asm EntityNPC_ai_mothers_shadow_ChangeMineshaftRoom "8b41??6aff";
 
+// Vanilla Features (revert Rep+ changes to 1.7.9b)
+asm EntityNPC_ai_cod_worm_IdleDigOutCheck "83bf????????007e??8b87????????2500020000";
+
 // EntityManager
 asm EntityList_destructor_RemoveEntityMainEL "8b0c??8b01ff50??463b77??72??33f6";
 asm EntityList_destructor_RemoveEntityPersistentEL "8b0c??8b01ff50??463b77??72??8d9f";

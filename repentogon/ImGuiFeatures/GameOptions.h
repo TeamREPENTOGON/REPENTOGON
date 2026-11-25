@@ -102,6 +102,17 @@ struct GameOptionsWindow : ImGuiWindowObject {
         ImGui::TableSetColumnIndex(0);
     }
 
+    void AddVanillaFeatureRow(int id, const char* label, const char* mark, const char* version, bool& enabled)
+    {
+        AddNewTableRow();
+        ImGui::Checkbox(label, &enabled);
+        ImGui::SameLine();
+        HelpMarker(mark);
+        ImGui::SameLine();
+        ImGui::TextDisabled(LANG.OPT_VANILLA_FEATURES_VERSION, version);
+        AddResetButton(id, enabled, true);
+    }
+
     void AddSaveManagementButton(const char* label, const char* mark, const char* prompt, const int slot, std::optional<SaveSyncing::ImportExportResult>& result, std::function<SaveSyncing::ImportExportResult()> buttonClickedFunc) {
         ImGui::BeginDisabled(result.has_value());
         AddNewTableRow();
@@ -478,6 +489,19 @@ struct GameOptionsWindow : ImGuiWindowObject {
 						HelpMarker(LANG.OPT_REPENTOGON_BLOCK_UNKNOWN_DEVICES_MARK);
 						AddResetButton(++resetCounter, repentogonOptions.blockUnknownDevices, false);
 
+                        ImGui::EndTable();
+                    }
+                    ImGui::EndTabItem();
+                }
+
+                if (ImGui::BeginTabItem(LANG.OPT_VANILLA_FEATURES)) {
+                    ImGui::TextWrapped("%s", LANG.OPT_VANILLA_FEATURES_INFO);
+                    if (ImGui::BeginTable("VanillaFeatures_Table", 2, ImGuiTableFlags_SizingStretchProp)) {
+#define VF(NAME, VERSION, TRANSLATE, MARK) AddVanillaFeatureRow(++resetCounter, LANG.VF_##NAME, LANG.VF_##NAME##_MARK, VERSION, repentogonOptions.vf##NAME);
+#include "Localization/en_us.inl"
+#undef VF
+#undef I
+#undef V
                         ImGui::EndTable();
                     }
                     ImGui::EndTabItem();
