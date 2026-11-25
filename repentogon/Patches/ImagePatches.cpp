@@ -3,6 +3,7 @@
 #include "IsaacRepentance.h"
 #include "ASMDefinition.h"
 #include "ASMPatcher.hpp"
+#include "HookSystem.h"
 #include "Log.h"
 
 #pragma region Fix incorrect last transparent batch invalidation
@@ -112,6 +113,113 @@ static void patch_try_find_reusable_transparent_batch()
         .AddRelativeJump((void*)jmpSuccessTarget);
     
     sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
+#pragma endregion
+
+#pragma region LuaJIT 0xc0000409 workaround
+
+/** Now that we're on LuaJIT we are much closer to the game's actual memory. This Causes Problems.
+ *  At shutdown, when the game tries to call DecrementReference() on a ReferenceCount that LuaJIT 
+ *  has already freed during its shutdown process, the game crashes with an 0xc0000409 error. 
+ *  By draining the image cache ourselves, before the game does, we work around the crash.
+ */
+HOOK_METHOD(KAGE_Graphics_ImageManager, ReleaseImageCache, () -> void) {
+    if (this->_imageCache) {
+        uint32_t released = 0;
+
+        for (uint32_t bucket = 0; bucket < KAGE_Graphics_ImageManager::IMAGE_CACHE_BUCKETS; ++bucket) {
+            ImageCacheBucket& entries = this->_imageCache[bucket];
+
+            while (entries._last != entries._first) {
+                KAGE_SmartPointer_ImageBase* entry = entries._last - 1;
+                entries._last = entry;
+
+                if (entry->counter) {
+                    entry->DecrRef();
+                    ++released;
+                }
+
+                entry->image = nullptr;
+                entry->counter = nullptr;
+            }
+        }
+
+        if (released > 0) {
+            ZHL::Log("[REPENTOGON] Released %u image(s) still in the image cache at shutdown\n", released);
+        }
+    }
+
+    super();
+}
+
+#pragma endregion
+
+#pragma region Image reference count overflow
+
+/** The strong refcount for Images is only 16 bits; it will overflow if a mod has >65,535 references to one spritesheet
+ *  which can happen if GC hasn't collected old ones yet. This never happed in vanilla because of its
+ *  silly forced GC stepping that it did. MSVC very mercifully left us three padding bytes after a bool, though :)
+ *  Extend the refcount to 24 bits. This gives us 16,777,215 references to burn- plenty.
+ */
+namespace {
+	constexpr size_t STRONG_EX_OFFSET = offsetof(KAGE_ReferenceCountBase, mutex) + offsetof(KAGE_System_Mutex, initialized) + 1;
+
+	uint32_t GetStrongEx(const KAGE_ReferenceCountBase* counter) {
+		const uint8_t* bytes = (const uint8_t*)counter + STRONG_EX_OFFSET;
+		return bytes[0] | (bytes[1] << 8) | (bytes[2] << 16);
+	}
+
+	void SetStrongEx(KAGE_ReferenceCountBase* counter, uint32_t count) {
+		uint8_t* bytes = (uint8_t*)counter + STRONG_EX_OFFSET;
+		bytes[0] = (uint8_t)count;
+		bytes[1] = (uint8_t)(count >> 8);
+		bytes[2] = (uint8_t)(count >> 16);
+	}
+
+	uint32_t GetStrong(const KAGE_ReferenceCountBase* counter) {
+		return counter->strong == 0xFFFF ? GetStrongEx(counter) : counter->strong;
+	}
+
+	void SetStrong(KAGE_ReferenceCountBase* counter, uint32_t count) {
+		if (count >= 0xFFFF) {
+			counter->strong = 0xFFFF;
+			SetStrongEx(counter, count);
+		}
+		else {
+			counter->strong = (uint16_t)count;
+		}
+	}
+}
+
+HOOK_METHOD(KAGE_ReferenceCount_ImageBase, IncrementReference, () -> void) {
+	this->mutex.Lock(-1);
+	const uint32_t count = GetStrong(this);
+	if (count < 0xFFFFFF) {
+		SetStrong(this, count + 1);
+	}
+	this->mutex.Unlock();
+}
+
+HOOK_METHOD(KAGE_ReferenceCount_ImageBase, DecrementReference, () -> bool) {
+	this->mutex.Lock(-1);
+	uint32_t count = GetStrong(this);
+	if (count == 0) {
+		this->mutex.Unlock();
+		return true;
+	}
+
+	SetStrong(this, --count);
+	this->mutex.Unlock();
+	if (count != 0) {
+		return true;
+	}
+
+	if (KAGE_Graphics_ImageBase* image = this->image) {
+		image->Free(1);
+		this->image = nullptr;
+	}
+	return this->DecrementWeakReference();
 }
 
 #pragma endregion

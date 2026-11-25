@@ -1,0 +1,71 @@
+ffi.cdef [[
+    // We don't directly expose this to the API so I'm not bothering with privates here
+    struct AnimationState {
+        struct Sprite* Animation;
+        struct AnimationData* AnimData;
+        int* LayerFrames;
+        struct NullFrame* NullLayerFrames;
+        float AnimFrame;
+        bool IsPlaying;
+        padding char[0x3];
+        unsigned int CurrentlyTriggeredEvents;
+        unsigned int PreviouslyTriggeredEvents;
+    };
+
+    void L_AnimationState_AdvancePosition(struct AnimationState*, int);
+    struct NullFrame* L_AnimationState_GetNullFrame(struct AnimationState*, const char*);
+    bool L_AnimationState_IsEventTriggered(struct AnimationState*, const char*);
+    void L_AnimationState_Reset(struct AnimationState*);
+    void L_AnimationState_Rewind(struct AnimationState*);
+    void L_AnimationState_SetLayerFrame(struct AnimationState*, int, int);
+    void L_AnimationState_SetPosition(struct AnimationState*, float);
+    bool L_AnimationState_WasEventTriggered(struct AnimationState*, const char*);
+]]
+local ffi = ffi
+local repentogon = ffidll
+
+-- For the same reason we're not doing typechecking (by the time they get here, they're already checked)
+local AnimationStateMT
+AnimationStateMT = {
+    __type = "AnimationState",
+    AdvancePosition = function(self, frame)
+        repentogon.L_AnimationState_AdvancePosition(self, frame)
+    end,
+    GetNullFrame = function(self, name)
+        local frame = repentogon.L_AnimationState_GetNullFrame(self, name)
+        if frame == nil then return nil end
+        return frame
+    end,
+    IsEventTriggered = function(self, name)
+        local result = repentogon.L_AnimationState_IsEventTriggered(self, name) return result
+    end,
+    Play = function(self) 
+        if not ffichecks.isnullptr(self.AnimData) then
+            if self.AnimFrame < 0 then
+                repentogon.L_AnimationState_Rewind(self)
+            end
+            self.IsPlaying = true
+        end
+    end,
+    Reset = function(self)
+        repentogon.L_AnimationState_Reset(self)
+    end,
+    SetLayerFrame = function(self, layerId, frameNum)
+        repentogon.L_AnimationState_SetLayerFrame(self, layerId, frameNum)
+    end,
+    SetPosition = function(self, pos)
+        repentogon.L_AnimationState_SetPosition(self, pos)
+    end,
+    WasEventTriggered = function(self, name)
+        local result = repentogon.L_AnimationState_WasEventTriggered(self, name) return result
+    end,
+}
+
+setmetatable(AnimationStateMT, { __index = function() end })
+AnimationStateMT.__index = AnimationStateMT
+
+local AnimationStateT = ffi.metatype("struct AnimationState", AnimationStateMT)
+
+AnimationState = setmetatable({}, {
+    __class = AnimationStateMT
+})

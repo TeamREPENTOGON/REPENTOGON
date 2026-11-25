@@ -2,6 +2,7 @@
 #include "XMLData.h"
 #include "LuaCore.h"
 #include "../LuaInit.h"
+#include "../LuaClasses.h"
 #include "HookSystem.h"
 #include "ASMPatches.h"
 #include "EntityPlus.h"
@@ -171,9 +172,9 @@ float RunEvaluateFamiliarMultiplierCallback(Entity_Familiar* familiar, const flo
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(familiar->_variant)
-			.push(familiar, lua::Metatables::ENTITY_FAMILIAR)
+			.pushClassPtr<LuaEntityFamiliar>(familiar)
 			.push(baseMult)
-			.push(familiar->_player, lua::Metatables::ENTITY_PLAYER)
+			.pushClassPtr<LuaEntityPlayer>(familiar->_player)
 			.call(1);
 
 		if (!result && lua_isnumber(L, -1)) {
@@ -238,7 +239,7 @@ void RunEvaluateCustomCacheCallback(Entity_Player* player, const std::string cus
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(customcache.c_str())
-			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.pushClassPtr<LuaEntityPlayer>(player)
 			.push(customcache.c_str())
 			.push(initialValue)
 			.call(1);

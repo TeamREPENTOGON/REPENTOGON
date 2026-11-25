@@ -6,6 +6,7 @@ struct GameStatePlayer depends (History, BagOfCraftingOutput) {
     vector_EntitySaveState _movingBoxContents : 0x1d4;
     int _immaculateConceptionState : 0x340; // Hijacked by ESSM
     int _cambionConceptionState : 0x344; // Hijacked by ESSM
+    int _imExcitedSpeedupCountdown : 0x360; // Vanilla doesn't use this, we're just using the storage
     vector_FamiliarData _familiarData : 0x374;
     History _history : 0x3b0;
     BagOfCraftingOutput _bagOfCraftingOutput : 0x4c4;

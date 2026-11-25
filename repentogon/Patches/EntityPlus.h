@@ -29,6 +29,23 @@ class EntityPlayerPlus : public EntityPlus {
 	int previousControllerIndex = -1;
 	int restoreTwinID = -1;
 	std::unordered_map<int, int> lastActiveSlot;
+	std::optional<int> curseMistSavedRedHearts = std::nullopt;
+	struct BumboProgress {
+		int coins;
+		int hearts;
+		int keys;
+		int state;
+		int roomClearCount;
+		float health;
+		RNG dropRNG;
+	};
+	std::vector<BumboProgress> curseMistSavedBumbos;
+	struct LocustProgress {
+		unsigned int subtype;
+		int configIndex;
+		uint8_t hunger;
+	};
+	std::vector<LocustProgress> curseMistSavedLocusts;
 };
 
 // Attributes for EntityFamiliar.
@@ -63,6 +80,12 @@ class EntityKnifePlus : public EntityPlus {
 	EntityPtr hitboxSource;
 };
 
+// Attributes for EntityEffect.
+class EntityEffectPlus : public EntityPlus {
+  public:
+	uint32_t greedChampionSeed = 0;
+};
+
 // Returns a ptr to the base EntityPlus class held by the entity.
 // In theory should typically not be nullptr as it, or a child class, is initialized on entity Init.
 EntityPlus* GetEntityPlus(Entity* entity);
@@ -75,5 +98,6 @@ EntityTearPlus* GetEntityTearPlus(Entity_Tear* tear);
 EntityPickupPlus* GetEntityPickupPlus(Entity_Pickup* pickup);
 EntityLaserPlus* GetEntityLaserPlus(Entity_Laser* laser);
 EntityKnifePlus* GetEntityKnifePlus(Entity_Knife* knife);
+EntityEffectPlus* GetEntityEffectPlus(Entity_Effect* effect);
 
 void ASMPatchesForEntityPlus();

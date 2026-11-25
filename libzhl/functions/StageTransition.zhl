@@ -1,3 +1,6 @@
-struct StageTransition {
+struct StageTransition { {{
+	inline bool IsActive() { return this->_state != 0; }
+}}
+    int _state : 0x0;
     bool _sameStage : 0x10;
 } : 0x20;

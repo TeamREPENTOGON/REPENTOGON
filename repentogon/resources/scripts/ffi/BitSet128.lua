@@ -1,0 +1,120 @@
+ffi.cdef[[
+struct BitSet128 { uint64_t L; uint64_t H; };
+typedef struct BitSet128* BitSet128Ptr;
+]]
+local repentogon = ffidll
+local ffi = ffi
+
+local U64_ONE = ffi.new("uint64_t", 1)
+
+local function bsNorm(op, idx)
+	if type(op) == "number" then
+		return ffi.new("uint64_t", op), ffi.new("uint64_t", 0)
+	end
+	ffichecks.checkcdata(idx, op, "BitSet128")
+	return op.L, op.H
+end
+
+local BitSet128MT
+BitSet128MT = {
+    __type = "BitSet128",
+
+    __tostring = function(self) 
+        local result = string.format("BitSet128: %016x%016x", tonumber(self.H), tonumber(self.L)) return result
+    end,
+    __bnot = function(self)
+        local a = ~self.L
+        local b = ~self.H
+        return BitSet128(a, b)
+    end,
+	__bor = function(self, second)
+        local sl, sh = bsNorm(self, 1)
+        local ol, oh = bsNorm(second, 2)
+        return BitSet128(sl | ol, sh | oh)
+    end,
+	__band = function(self, second)
+        local sl, sh = bsNorm(self, 1)
+        local ol, oh = bsNorm(second, 2)
+        return BitSet128(sl & ol, sh & oh)
+    end,
+    __bxor = function(self, second)
+        local sl, sh = bsNorm(self, 1)
+        local ol, oh = bsNorm(second, 2)
+        return BitSet128(sl ~ ol, sh ~ oh)
+    end,
+    __shl = function(self, shift)
+        shift = ffichecks.checknumber(2, shift)
+        local a = self.L << shift
+        local b = self.H << shift
+        return BitSet128(a, b)
+    end,
+    __shr = function(self, shift)
+        shift = ffichecks.checknumber(2, shift)
+        local a = self.L >> shift
+        local b = self.H >> shift
+        return BitSet128(a, b)
+    end,
+    __eq = function(self, second)
+        if not (ffi.istype("struct BitSet128", self) and ffi.istype("struct BitSet128", second)) then
+            return false
+        end
+        local sl, sh = bsNorm(self, 1)
+        local ol, oh = bsNorm(second, 2)
+        return (sl == ol and sh == oh)
+    end,
+    __lt = function(self, second)
+        local sl, sh = bsNorm(self, 1)
+        local ol, oh = bsNorm(second, 2)
+        if (sh ~= oh) then
+            return (sh < oh)
+        else
+            return (sl < ol)
+        end
+    end,
+    __le = function(self, second)
+        local sl, sh = bsNorm(self, 1)
+        local ol, oh = bsNorm(second, 2)
+        if (sh ~= oh) then
+            return (sh <= oh)
+        else
+            return (sl <= ol)
+        end
+    end,
+    Get = function(self, pos)
+        pos = ffichecks.checknumber(2, pos)
+        local p = pos < 64 and self.L or self.H
+        local bit_pos = pos % 64
+        return ((p >> bit_pos) & 1) ~= 0
+    end,
+    Set = function(self, pos, state)
+        pos = ffichecks.checknumber(2, pos)
+        state = ffichecks.checkboolean(3, state)
+        local bit = U64_ONE << (pos % 64)
+        if pos < 64 then
+            self.L = state and (self.L | bit) or (self.L & ~bit)
+        else
+            self.H = state and (self.H | bit) or (self.H & ~bit)
+        end
+    end
+}
+
+setmetatable(BitSet128MT, { __index = function() end })
+BitSet128MT.__index = function(self, key)
+    if key == "l" then return self.L end
+    if key == "h" then return self.H end
+    return BitSet128MT[key]
+end
+BitSet128MT.__newindex = function(self, key, value)
+    if key == "l" then self.L = value
+    elseif key == "h" then self.H = value
+    else error(string.format("cannot set field '%s' of BitSet128", tostring(key)), 2) end
+end
+
+local BitSet128T = ffi.metatype("struct BitSet128", BitSet128MT)
+
+BitSet128 = setmetatable({}, {
+    __call = function(_, L, H)
+        local result = BitSet128T(L or 0, H or 0) return result
+    end,
+    __class = BitSet128MT,
+})

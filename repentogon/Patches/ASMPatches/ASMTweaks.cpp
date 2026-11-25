@@ -420,6 +420,19 @@ namespace ASMPatches {
 		 sASMPatcher.FlatPatch((char*)addr + 0x4, &patch);
 	 }
 
+	 void ASMPatchSkipSoundPreload() {
+		 SigScan scanner("e8????????ff46??c645??09");
+		 scanner.Scan();
+		 int preloadSkipMode = repentogonOptions.sfxPreloadSkip;
+		 if (preloadSkipMode == 0) preloadSkipMode = 1;		//0 is auto/default, for now gets enabled, can be flipped to 2 or something to disable
+		 if (preloadSkipMode != 1) return;
+		 void* addr = scanner.GetAddress();
+		 ASMPatch patch;
+		 patch.AddBytes("\x90\x90\x90\x90\x90");
+		 ZHL::Log("[REPENTOGON] Patching out SFX preload at %p\n", addr);
+		 sASMPatcher.FlatPatch(addr, &patch);
+	 };
+
 	 void ReEnableGameLanguageSettings() {
 		 printf("[REPENTOGON] Apply patch to re-enable game language.\n");
 		 std::string vanilla_option(GetUserPath() + "/Documents/My Games/Binding of Isaac Repentance+/options.ini");

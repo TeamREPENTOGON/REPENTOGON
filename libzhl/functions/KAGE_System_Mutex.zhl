@@ -4,7 +4,14 @@ struct KAGE_System_CriticalSection {
 } : 0x1C;
 
 struct KAGE_System_Mutex {
-    void* vtable : 0x0;
+    __vtable {
+        pure void Free(unsigned int flags);
+        pure bool Init();
+        pure void Destroy();
+        pure bool Lock(int timeout);
+        pure void Unlock();
+    };
+
     bool initialized : 0x4;
     KAGE_System_CriticalSection* cs : 0x8;
 } : 0xC;

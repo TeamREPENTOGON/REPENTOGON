@@ -499,7 +499,37 @@ unsigned char* FunctionHook_private::DecrESP(unsigned char size, unsigned char* 
 	return text;
 }
 
-unsigned char* FunctionHook_private::EmitPrologue(FunctionDefinition const* def, unsigned char* ptr) {
+unsigned char* FunctionHook_private::Push(HookSystem::XMMRegisters reg, unsigned char* text) {
+	text = DecrESP(16, text);
+
+	// movups [esp], reg
+	*text = 0x0F;
+	++text;
+	*text = 0x11;
+	++text;
+	*text = 0x04 | reg << 3;
+	++text;
+	*text = 0x24;
+	++text;
+
+	return text;
+}
+
+unsigned char* FunctionHook_private::Pop(HookSystem::XMMRegisters reg, unsigned char* text) {
+	// movups reg, [esp]
+	*text = 0x0F;
+	++text;
+	*text = 0x10;
+	++text;
+	*text = 0x04 | reg << 3;
+	++text;
+	*text = 0x24;
+	++text;
+
+	return IncrESP(16, text);
+}
+
+unsigned char* FunctionHook_private::EmitPrologue(FunctionDefinition const* def, bool preserveXMM, unsigned char* ptr) {
 	using namespace HookSystem;
 	ptr = Push(EBP, ptr);
 	ptr = Mov(EBP, ESP, ptr);
@@ -522,11 +552,34 @@ unsigned char* FunctionHook_private::EmitPrologue(FunctionDefinition const* def,
 	ptr = Push(EDI, ptr);
 	ptr = Push(ESI, ptr);
 
+	// Preserve xmm0-xmm7 around the hook
+	if (preserveXMM) {
+		ptr = Push(XMM0, ptr);
+		ptr = Push(XMM1, ptr);
+		ptr = Push(XMM2, ptr);
+		ptr = Push(XMM3, ptr);
+		ptr = Push(XMM4, ptr);
+		ptr = Push(XMM5, ptr);
+		ptr = Push(XMM6, ptr);
+		ptr = Push(XMM7, ptr);
+	}
+
 	return ptr;
 }
 
-unsigned char* FunctionHook_private::EmitEpilogue(FunctionDefinition const* def, unsigned char stackPos, unsigned char* ptr) {
+unsigned char* FunctionHook_private::EmitEpilogue(FunctionDefinition const* def, bool preserveXMM, unsigned char stackPos, unsigned char* ptr) {
 	using namespace HookSystem;
+
+	if (preserveXMM) {
+		ptr = Pop(XMM7, ptr);
+		ptr = Pop(XMM6, ptr);
+		ptr = Pop(XMM5, ptr);
+		ptr = Pop(XMM4, ptr);
+		ptr = Pop(XMM3, ptr);
+		ptr = Pop(XMM2, ptr);
+		ptr = Pop(XMM1, ptr);
+		ptr = Pop(XMM0, ptr);
+	}
 
 	ptr = Pop(ESI, ptr);
 	ptr = Pop(EDI, ptr);
@@ -579,7 +632,7 @@ int FunctionHook_private::Install()
 	/// Detours will be used to redirect the original function to the hook caller.
 
 	unsigned char* ptr = _internalHook;
-	ptr = EmitPrologue(def, ptr);
+	ptr = EmitPrologue(def, true, ptr);
 
 	/// Call the hook
 
@@ -663,7 +716,7 @@ int FunctionHook_private::Install()
 
 	/// Clean after the hook has been called
 	// Use stackPos - 8 because the calling convention may not have passed all arguments on the stack
-	ptr = EmitEpilogue(def, stackPos - 8, ptr);
+	ptr = EmitEpilogue(def, true, stackPos - 8, ptr);
 
 	DWORD oldProtect = 0;
 	_hSize = ptr - _internalHook;
@@ -685,7 +738,7 @@ int FunctionHook_private::Install()
 
 	ptr = _internalSuper;
 
-	ptr = EmitPrologue(def, ptr);
+	ptr = EmitPrologue(def, false, ptr);
 
 	// Start at 8 to ignore the prologue and return address
 	stackPos = 8;
@@ -753,7 +806,7 @@ int FunctionHook_private::Install()
 	}
 
 	// Use stackPos - 8 because the trampoline takes everything on the stack
-	ptr = EmitEpilogue(def, stackPos - 8, ptr);
+	ptr = EmitEpilogue(def, false, stackPos - 8, ptr);
 
 	_sSize = ptr - _internalSuper;
 	VirtualProtect(_internalSuper, _sSize, PAGE_EXECUTE_READWRITE, &oldProtect);

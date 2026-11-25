@@ -1,0 +1,3 @@
+struct AbyssLocustData {
+	uint8_t _hunger : 0x50;
+} : 0x58;

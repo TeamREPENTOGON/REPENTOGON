@@ -33,10 +33,7 @@ struct ItemConfig_Card_EX
     bool invalidateVanillaMethod = false;
     float initialWeight = 1.0f;
     float weight = 1.0f;
-	SmartLuaRef availabilityFuncRef;
-
-    void ClearAvailabilityCondition(lua_State* L);
-    void SetAvailabilityCondition(lua_State* L, int idx);
+	bool (__cdecl* availabilityCondition)() = nullptr;
 };
 
 struct PoolCard
@@ -68,6 +65,8 @@ namespace CardsEX
 {
     extern std::vector<ItemConfig_Card_EX> g_CardConfigsEX;
     extern CardPool g_CardPools[NUM_CARDPOOLS];
+
+    void ReportAvailabilityError(ItemConfig_Card* cardConfig, const char* error);
 
     inline ItemConfig_Card_EX* GetCardConfigEX(ItemConfig_Card* cardConfig)
     {

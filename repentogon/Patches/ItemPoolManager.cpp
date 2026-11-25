@@ -2384,16 +2384,7 @@ void ASMPatches::__ItemPoolManagerExtra()
 
 #pragma endregion
 
-LUA_FUNCTION(Lua_CustomItemPoolGetPoolIdByName)
+MOD_EXPORT int L_Isaac_GetPoolIdByName(const char* poolName)
 {
-	std::string poolName = luaL_checkstring(L, 1);
-	lua_pushinteger(L, ItemPoolManager::GetPoolIdByName(poolName));
-	return 1;
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-
-	lua::LuaStackProtector protector(_state);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetPoolIdByName", Lua_CustomItemPoolGetPoolIdByName);
+	return ItemPoolManager::GetPoolIdByName(poolName);
 }

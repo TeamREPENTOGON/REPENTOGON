@@ -3,6 +3,7 @@
 #include "LuaCore.h"
 #include "Log.h"
 #include "../REPENTOGONOptions.h"
+#include "EntityPlus.h"
 #include <filesystem>
 #include <algorithm>
 
@@ -72,14 +73,6 @@ HOOK_METHOD(Font, Load, (char const* path, bool unusedIsLoading) -> void) {
 		return super(newPath.c_str(), unusedIsLoading);
 	}
 	super(path, unusedIsLoading);
-}
-
-
-// Fix crash if nil is passed as the string from luaside.
-HOOK_METHOD(Font, DrawString, (const char* str, Vector pos, Vector scale, KColor* color, FontSettings* settings) -> void) {
-	if (str) {
-		super(str, pos, scale, color, settings);
-	}
 }
 
 //Fix nasty behaviour when calling getgrident with a negative value
@@ -198,13 +191,201 @@ HOOK_METHOD(Room, SpawnGridEntityDesc, (int gridIndex, GridEntityDesc* desc) -> 
 	return super(gridIndex, desc);
 }
 
-// Fixes a bug in Rep+ v1.9.7.12 where Bethany in the Blood Mary challenge has their innate Book Of Virtues, which was unintended and fixed in a later patch.
+// Fixes a bug in Rep+ v1.9.7.12 where Bethany in the Bloody Mary and Baptism by Fire challenges has their innate Book Of Virtues.
 // I think this happened because this function was newly created in Rep+ due to some refactoring.
 HOOK_METHOD(Entity_Player, HasInnateCollectible, (int collectibleType, int unused) -> bool) {
-	if (this->GetPlayerType() == PLAYER_BETHANY && collectibleType == COLLECTIBLE_BOOK_OF_VIRTUES && g_Game->GetChallenge() == CHALLENGE_BLOODY_MARY) {
-		return false;
+	if (this->GetPlayerType() == PLAYER_BETHANY && collectibleType == COLLECTIBLE_BOOK_OF_VIRTUES) {
+		const unsigned int challenge = g_Game->GetChallenge();
+		if (challenge == CHALLENGE_BLOODY_MARY || challenge == CHALLENGE_BAPTISM_BY_FIRE) {
+			return false;
+		}
 	}
 	return super(collectibleType, unused);
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Book of Virtues could be used while an active item was queued,
+// resulting in infinite free wisps by swapping two actives.
+HOOK_METHOD(Entity_Player, CanUseCollectible, (CollectibleType collectible, int slot) -> bool) {
+	if (collectible == COLLECTIBLE_BOOK_OF_VIRTUES) {
+		ItemConfig_Item* queued = this->_queuedItem._item;
+		if (queued && queued->type == 3) { // ITEM_ACTIVE
+			return false;
+		}
+	}
+	return super(collectible, slot);
+}
+
+static std::vector<Entity_Familiar*> FindOwnedFamiliars(Entity_Player* player, unsigned int variant) {
+	std::vector<Entity_Familiar*> familiars;
+	EntityList_EL* updateEL = g_Game->GetCurrentRoom()->GetEntityList()->GetUpdateEL();
+	for (unsigned int i = 0; i < updateEL->_size; ++i) {
+		Entity* entity = updateEL->_data[i];
+		if (entity->_type != ENTITY_FAMILIAR || entity->_variant != variant || (entity->_flags & FLAG_NO_QUERY)) {
+			continue;
+		}
+		Entity_Familiar* familiar = entity->ToFamiliar();
+		if (familiar && familiar->_player == player) {
+			familiars.push_back(familiar);
+		}
+	}
+	return familiars;
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Bumbo's evolution was reset after the Mom chase.
+// 1.9.7.12 wasn't saving Bumbo's state at all!
+static std::vector<Entity_Familiar*> FindOwnedBumbos(Entity_Player* player) {
+	return FindOwnedFamiliars(player, 88);
+}
+
+static void SaveBumboProgress(Entity_Player* player, EntityPlayerPlus* playerPlus) {
+	playerPlus->curseMistSavedBumbos.clear();
+	for (Entity_Familiar* bumbo : FindOwnedBumbos(player)) {
+		EntityPlayerPlus::BumboProgress progress;
+		progress.coins = bumbo->_coins;
+		progress.hearts = bumbo->_hearts;
+		progress.keys = bumbo->_keys;
+		progress.state = bumbo->_state;
+		progress.roomClearCount = bumbo->_roomClearCount;
+		progress.health = bumbo->_health;
+		progress.dropRNG = bumbo->_dropRNG;
+		playerPlus->curseMistSavedBumbos.push_back(progress);
+	}
+}
+
+static void RestoreBumboProgress(Entity_Player* player, EntityPlayerPlus* playerPlus) {
+	if (playerPlus->curseMistSavedBumbos.empty()) {
+		return;
+	}
+	const std::vector<Entity_Familiar*> bumbos = FindOwnedBumbos(player);
+	const size_t count = std::min(bumbos.size(), playerPlus->curseMistSavedBumbos.size());
+	for (size_t i = 0; i < count; ++i) {
+		const EntityPlayerPlus::BumboProgress& progress = playerPlus->curseMistSavedBumbos[i];
+		Entity_Familiar* bumbo = bumbos[i];
+		bumbo->_coins = progress.coins;
+		bumbo->_hearts = progress.hearts;
+		bumbo->_keys = progress.keys;
+		bumbo->_state = progress.state;
+		bumbo->_roomClearCount = progress.roomClearCount;
+		bumbo->_health = progress.health;
+		bumbo->_dropRNG = progress.dropRNG;
+		bumbo->_flags |= FLAG_APPEAR;
+	}
+	playerPlus->curseMistSavedBumbos.clear();
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Abyss locusts weren't removed during the Mom chase, causing potential softlocks.
+static void StashAbyssLocusts(Entity_Player* player, EntityPlayerPlus* playerPlus) {
+	playerPlus->curseMistSavedLocusts.clear();
+	for (Entity_Familiar* locust : FindOwnedFamiliars(player, 231)) {
+		EntityPlayerPlus::LocustProgress progress;
+		progress.subtype = locust->_subtype;
+		progress.configIndex = locust->_coins;
+		progress.hunger = static_cast<AbyssLocustData*>(locust->_extraData)->_hunger;
+		playerPlus->curseMistSavedLocusts.push_back(progress);
+		locust->Remove();
+	}
+}
+
+static void RespawnAbyssLocusts(Entity_Player* player, EntityPlayerPlus* playerPlus) {
+	for (const EntityPlayerPlus::LocustProgress& progress : playerPlus->curseMistSavedLocusts) {
+		Entity* entity = g_Game->Spawn(ENTITY_FAMILIAR, 231, *player->GetPosition(), Vector(0, 0), player, progress.subtype, Isaac::genrand_int32(), 0);
+		Entity_Familiar* locust = entity ? entity->ToFamiliar() : nullptr;
+		if (!locust) {
+			continue;
+		}
+		locust->_item = g_Manager->GetItemConfig()->GetCollectible(progress.subtype);
+		locust->SetLocustConfigIndex(progress.configIndex);
+		static_cast<AbyssLocustData*>(locust->_extraData)->_hunger = progress.hunger;
+		locust->UpdateLocustAppearance();
+		locust->_flags |= FLAG_APPEAR;
+	}
+	playerPlus->curseMistSavedLocusts.clear();
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where Keeper lost his Birthright effect after the Mom chase.
+HOOK_METHOD(Entity_Player, AddCurseMistEffect, () -> void) {
+	const bool wasActive = this->_hasCurseMistEffect;
+	const int redHearts = this->_redHearts;
+	if (!wasActive && this->_valid) {
+		if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this)) {
+			SaveBumboProgress(this, playerPlus);
+			StashAbyssLocusts(this, playerPlus);
+		}
+	}
+	super();
+	if (!wasActive && this->_hasCurseMistEffect && this->GetPlayerType() == PLAYER_KEEPER) {
+		if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this)) {
+			playerPlus->curseMistSavedRedHearts = redHearts;
+		}
+		this->AddMaxHearts(0, false);
+	}
+}
+HOOK_METHOD(Entity_Player, RemoveCurseMistEffect, () -> void) {
+	const bool wasActive = this->_hasCurseMistEffect;
+	super();
+	if (wasActive && !this->_hasCurseMistEffect) {
+		if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this)) {
+			RestoreBumboProgress(this, playerPlus);
+			RespawnAbyssLocusts(this, playerPlus);
+		}
+	}
+	if (wasActive && !this->_hasCurseMistEffect && this->GetPlayerType() == PLAYER_KEEPER) {
+		this->AddMaxHearts(this->GetHealthLimit(false) - this->_maxHearts, false);
+		EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this);
+		if (playerPlus && playerPlus->curseMistSavedRedHearts) {
+			this->_redHearts = *playerPlus->curseMistSavedRedHearts;
+			playerPlus->curseMistSavedRedHearts = std::nullopt;
+		}
+	}
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where exiting and continuing a run kept Wavy Cap's tears up but dropped its distortion.
+// The game wasn't actually recomputing the dizziness on a run restart.
+HOOK_METHOD(Game, RestoreState, (GameState* state, bool startGame) -> void) {
+	super(state, startGame);
+	for (Entity_Player* player : this->_playerManager._playerList) {
+		player->UpdateWavyCapDizziness();
+	}
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where exiting and continuing a run removed the I'm Excited effect.
+// It isn't saved in 1.9.7.12, but there's some unused memory we can squeeze it in.
+HOOK_METHOD(Entity_Player, StoreGameState, (GameStatePlayer* saveState, bool saveTemporaryFamiliars) -> void) {
+	super(saveState, saveTemporaryFamiliars);
+	saveState->_imExcitedSpeedupCountdown = this->_imExcitedSpeedupCountdown;
+}
+
+HOOK_METHOD(Entity_Player, RestoreGameState, (GameStatePlayer* saveState) -> void) {
+	const bool restores = this->_replacedPlayer == nullptr;
+	super(saveState);
+	if (restores) {
+		this->_imExcitedSpeedupCountdown = (uint32_t)std::max(saveState->_imExcitedSpeedupCountdown, 0);
+	}
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.19) where Tainted Isaac could not cycle items after Void/Abyss use until another passive was collected.
+// With a full inventory, picking up an item drops slot 0 and leaves -1 there for the queued item to fill. Void/Abyss destroy the queued item
+// instead, so the -1 stays at the front and the cycle (which counts slots up to the first -1) sees an empty inventory.
+// 1.9.7.19 instead moves the empty slot to the end when the queued item is destroyed.
+HOOK_METHOD(Entity_Player, DestroyQueueItem, () -> void) {
+	super();
+	if (this->_playerType != PLAYER_ISAAC_B || this->_inventoryHistoryIdx[0] >= 0) {
+		return;
+	}
+	const int size = this->GetMaxInventorySize();
+	for (int i = 0; i < size - 1; ++i) {
+		std::swap(this->_inventoryHistoryIdx[i], this->_inventoryHistoryIdx[i + 1]);
+	}
+	g_Game->GetHUD()->InvalidateItemHistory(false, false);
+}
+
+// Fixes a vanilla bug (fixed in 1.9.7.13) where cycling items (Tainted Isaac etc) didn't have a pickup buffer when spawned.
+// This results in a potentially undesired item being picked up immediately due to the lack of a buffer, like normal items have.
+// Normally this is set to 20 frames, but an item cycle resets that (hence the bug), so we'll just restore that ourselves.
+HOOK_METHOD(Entity_Pickup, UpdateCollectibleCycle, () -> void) {
+	const int wait = this->_wait;
+	super();
+	this->_wait = wait;
 }
 
 // The game will attempt to update a mod's metadata.xml if it is missing a name/directory/version, or if it is missing entirely.
