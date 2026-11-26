@@ -373,6 +373,135 @@ static void vf_delirious_boss_rework()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static bool __stdcall asm_mars_dash_rework()
+{
+	return repentogonOptions.vfMarsDashRework;
+}
+
+// Reimplementation of the 1.7.9b Mars.
+static bool __stdcall asm_mars_dash_start(Entity_Player* player)
+{
+	if (repentogonOptions.vfMarsDashRework) {
+		return false;
+	}
+
+	static const Vector directions[] = { Vector(-1.0f, 0.0f), Vector(1.0f, 0.0f), Vector(0.0f, -1.0f), Vector(0.0f, 1.0f) };
+	Vector direction = directions[player->_marsMoveDirection];
+	if (Room::IsMirrorWorld()) {
+		direction.x = -direction.x;
+	}
+
+	player->_temporaryeffects.AddCollectibleEffect(COLLECTIBLE_MARS, false, 1);
+	player->_marsCooldown = 90;
+	player->_velocity.x += direction.x * 4.0f * player->_speedMultiplier;
+	player->_velocity.y += direction.y * 4.0f * player->_speedMultiplier;
+	player->_hitList.clear();
+	Manager::PlaySound(119, 1.0f, 2, false, 1.0f);
+	player->RemoveCostume(g_Manager->GetItemConfig()->GetNullItem(58));
+
+	return true;
+}
+
+// 1.9.7.11 reworked Mars. It no longer passes through enemies, and every impact spawns a ring of fire.
+// It also grants 30 i-frames.
+static void vf_mars_dash_rework()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_control_movement_MarsDashStart);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::control_movement Mars dash start at %p\n", addr);
+
+	char* noDash = addr + *(int8_t*)(addr - 0x1);
+
+	ASMPatch startPatch;
+	startPatch.AddBytes("\x57") // push edi // player
+		.AddInternalCall(asm_mars_dash_start)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, noDash)
+		.AddBytes(ByteBuffer().AddAny(addr, 0x9)) // push 1 ; push 0 ; push COLLECTIBLE_MARS
+		.AddRelativeJump(addr + 0x9); // lea ecx, [edi + 0x1500]
+	sASMPatcher.PatchAt(addr, &startPatch);
+
+	addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_update_effects_MarsDeferredDashStart);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::update_effects Mars deferred dash start at %p\n", addr);
+
+	char* dashFrame = addr + 0x12 + *(int32_t*)(addr + 0xE);
+
+	ASMPatch deferredPatch;
+	deferredPatch.AddInternalCall(asm_mars_dash_rework)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, dashFrame)
+		.AddBytes(ByteBuffer().AddAny(addr, 0xC)) // mov eax, [edi + 0x1e74] ; cmp eax, [edi + 0x1e70]
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, dashFrame)
+		.AddRelativeJump(addr + 0x12); // mov eax, [edi + 0x1e78]
+	sASMPatcher.PatchAt(addr, &deferredPatch);
+
+	addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_update_effects_MarsDashEnd);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::update_effects Mars dash end at %p\n", addr);
+
+	char* clearDirection = addr + 0x8 + *(int8_t*)(addr + 0x7);
+	char* cooldownTick = clearDirection + 0xA; // after mov dword ptr [edi + 0x1e78], -1
+
+	ASMPatch endPatch;
+	endPatch.AddInternalCall(asm_mars_dash_rework)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, cooldownTick)
+		.AddBytes("\x80\xBF").AddBytes(ByteBuffer().AddAny(addr + 0x2, 0x4)).AddZeroes(1) // cmp byte ptr [edi + 0x1e7c], 0
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, clearDirection)
+		.AddRelativeJump(addr + 0x8); // push 0x10
+	sASMPatcher.PatchAt(addr, &endPatch);
+
+	addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_update_effects_MarsWallImpact);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::update_effects Mars wall impact at %p\n", addr);
+
+	ASMPatch wallPatch;
+	wallPatch.AddInternalCall(asm_mars_dash_rework)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, addr + 0x11) // push -1 ; push COLLECTIBLE_PONY
+		.AddBytes(ByteBuffer().AddAny(addr, 0xC)) // mov ecx, edi ; mov dword ptr [edi + 0x1e78], -1
+		.AddRelativeJump(addr + 0xC); // call MarsImpact
+	sASMPatcher.PatchAt(addr, &wallPatch);
+
+	addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_update_effects_MarsDashBlink);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::update_effects Mars dash blink at %p\n", addr);
+
+	char* addBlink = addr + 0x8 + *(int8_t*)(addr + 0x7);
+
+	ASMPatch blinkPatch;
+	blinkPatch.AddInternalCall(asm_mars_dash_rework)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, addBlink)
+		.AddBytes(ByteBuffer().AddAny(addr, 0x6)) // cmp esi, COLLECTIBLE_MARS
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, addBlink)
+		.AddRelativeJump(addr + 0x8); // cmp byte ptr [edi + 0x1e7c], 0
+	sASMPatcher.PatchAt(addr, &blinkPatch);
+
+	addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_handle_collision_MarsEnemyImpact);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::handle_collision Mars enemy impact at %p\n", addr);
+
+	char* noEnemyImpact = addr + 0x18 + *(int32_t*)(addr + 0x14);
+
+	ASMPatch enemyPatch;
+	enemyPatch.AddInternalCall(asm_mars_dash_rework)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, noEnemyImpact)
+		.AddBytes(ByteBuffer().AddAny(addr, 0xB)) // push COLLECTIBLE_MARS ; lea ecx, [esi + 0x1500]
+		.AddRelativeJump(addr + 0xB); // call HasCollectibleEffect
+	sASMPatcher.PatchAt(addr, &enemyPatch);
+
+	addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_Update_MarsMegaSatanImpact);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::Update Mars Mega Satan barrier impact at %p\n", addr);
+
+	char* noBarrierImpact = addr + 0x18 + *(int8_t*)(addr + 0x17);
+
+	ASMPatch barrierPatch;
+	barrierPatch.AddBytes(ByteBuffer().AddAny(addr + 0x7, 0xA)) // mov dword ptr [edi + 0x340], 320.0
+		.AddInternalCall(asm_mars_dash_rework)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, noBarrierImpact)
+		.AddBytes(ByteBuffer().AddAny(addr, 0x7)) // push COLLECTIBLE_MARS ; mov ecx, esi
+		.AddRelativeJump(addr + 0x11); // call HasCollectibleEffect
+	sASMPatcher.PatchAt(addr, &barrierPatch);
+}
+
 void ASMVanillaFeatures()
 {
 	// 1.9.7.11
@@ -386,4 +515,5 @@ void ASMVanillaFeatures()
 	vf_punching_bag_block_shots();
 	vf_meat_cleaver_angel_key_piece();
 	vf_delirious_boss_rework();
+	vf_mars_dash_rework();
 }
