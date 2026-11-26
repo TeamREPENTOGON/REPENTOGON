@@ -1145,6 +1145,7 @@ struct Entity_Player depends (QueueItemData, Vector, ANM2, ColorMod, KColor, Pla
 	int _playerIndex : 0x1610;
 	int _moveDirection : 0x1618;
 	int _headDirection: 0x161c;
+	int _fireDirection : 0x1620;
 	Vector _aimDirection : 0x1624;
 	Vector _lastDirection : 0x1630;
 	Vector _movementInput : 0x1638;

@@ -5,6 +5,7 @@
 #include "../../REPENTOGONOptions.h"
 
 #include "ASMVanillaFeatures.h"
+#include "../VanillaFeatures.h"
 
 // These ASM patches allow for reverting Repentance+ changes to 1.7.9b behavior.
 static bool __fastcall asm_cod_worm_should_dig_out(Entity_NPC* npc)
@@ -591,6 +592,181 @@ static void vf_glitched_crown_pause_cycle()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static bool __stdcall asm_abyss_rework()
+{
+	return VanillaAbyssRework();
+}
+
+static bool __stdcall asm_abyss_locust_hit(Entity_Familiar* familiar, Entity* collider)
+{
+	return VanillaAbyssLocustHit(familiar, collider);
+}
+
+static bool __stdcall asm_abyss_use(Entity_Player* player)
+{
+	return VanillaAbyssUse(player);
+}
+
+// 1.9.7.4 reworked Abyss. Many more items have unique locusts, and they're sized by quality.
+static void vf_abyss_rework()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityFamiliar_HandleCollision_AbyssLocustHit);
+	ZHL::Log("[REPENTOGON] Patching Entity_Familiar::HandleCollision Abyss locust hit at %p\n", addr);
+
+	// cmp dword ptr [edi + 0x2c], 0xe7 ; jnz notLocust
+	char* notLocust = addr + 0xD + *(int32_t*)(addr + 0x9);
+
+	ASMPatch hitPatch;
+	hitPatch.AddBytes(ByteBuffer().AddAny(addr, 0x7)) // cmp dword ptr [edi + 0x2c], FAMILIAR_ABYSS_LOCUST
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, notLocust)
+		.Push(ASMPatch::Registers::ESI) // collider
+		.Push(ASMPatch::Registers::EDI) // familiar
+		.AddInternalCall(asm_abyss_locust_hit)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, notLocust)
+		.AddRelativeJump(addr + 0xD); // cmp dword ptr [edi + 0xd88], -1
+	sASMPatcher.PatchAt(addr, &hitPatch);
+
+	addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityFamiliar_HandleCollision_AbyssLocustSkatole);
+	ZHL::Log("[REPENTOGON] Patching Entity_Familiar::HandleCollision Abyss locust Skatole check at %p\n", addr);
+
+	// cmp eax, 0xe7 ; jz noCollision
+	char* noCollision = addr + 0xB + *(int32_t*)(addr + 0x7);
+
+	ASMPatch skatolePatch;
+	skatolePatch.AddBytes(ByteBuffer().AddAny(addr, 0x5)) // cmp eax, FAMILIAR_ABYSS_LOCUST
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, addr + 0xB)
+		.Push(ASMPatch::Registers::ECX)
+		.Push(ASMPatch::Registers::EDX)
+		.AddInternalCall(asm_abyss_rework)
+		.Pop(ASMPatch::Registers::EDX)
+		.Pop(ASMPatch::Registers::ECX)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, noCollision)
+		.AddRelativeJump(addr + 0xB); // mov eax, [ebp - 0xb4]
+	sASMPatcher.PatchAt(addr, &skatolePatch);
+
+	addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityFamiliar_HandleCollision_AbyssLocustProjectile);
+	ZHL::Log("[REPENTOGON] Patching Entity_Familiar::HandleCollision Abyss locust projectile block at %p\n", addr);
+
+	// cmp dword ptr [edi + 0x2c], 0xe7 ; jnz killProjectile
+	char* killProjectile = addr + 0xD + *(int32_t*)(addr + 0x9);
+
+	ASMPatch projectilePatch;
+	projectilePatch.AddBytes(ByteBuffer().AddAny(addr, 0x7)) // cmp dword ptr [edi + 0x2c], FAMILIAR_ABYSS_LOCUST
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, killProjectile)
+		.Push(ASMPatch::Registers::ECX)
+		.Push(ASMPatch::Registers::EDX)
+		.AddInternalCall(asm_abyss_rework)
+		.Pop(ASMPatch::Registers::EDX)
+		.Pop(ASMPatch::Registers::ECX)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, killProjectile)
+		.AddRelativeJump(addr + 0xD); // push TEAR_SHIELDED
+	sASMPatcher.PatchAt(addr, &projectilePatch);
+
+	addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityFamiliar_Init_AbyssLocustHungry);
+	ZHL::Log("[REPENTOGON] Patching Entity_Familiar::Init Abyss locust hungry sheet at %p\n", addr);
+
+	char* notHungry = addr + 0xD + *(int32_t*)(addr + 0x9);
+
+	ASMPatch hungryPatch;
+	hungryPatch.Push(ASMPatch::Registers::ECX)
+		.Push(ASMPatch::Registers::EDX)
+		.Push(ASMPatch::Registers::EAX) // locust config
+		.AddInternalCall(asm_abyss_rework)
+		.AddBytes("\x84\xC0") // test al, al
+		.Pop(ASMPatch::Registers::EAX)
+		.Pop(ASMPatch::Registers::EDX)
+		.Pop(ASMPatch::Registers::ECX)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, notHungry)
+		.AddBytes(ByteBuffer().AddAny(addr, 0x7)) // test dword ptr [eax + 0x18], 0x40000
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, notHungry)
+		.AddRelativeJump(addr + 0xD); // mov eax, [g_Manager]
+	sASMPatcher.PatchAt(addr, &hungryPatch);
+
+	addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityFamiliar_Update_AbyssLocustQualityScale);
+	ZHL::Log("[REPENTOGON] Patching Entity_Familiar::Update Abyss locust quality scale at %p\n", addr);
+
+	// cmp eax, 0xe7 ; jnz setScale // xmm1 = xmm2 = 1.0 here
+	char* setScale = addr + 0x7 + *(int8_t*)(addr + 0x6);
+
+	ASMPatch scalePatch;
+	scalePatch.AddBytes(ByteBuffer().AddAny(addr, 0x5)) // cmp eax, FAMILIAR_ABYSS_LOCUST
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, setScale)
+		.AddBytes("\x83\xEC\x08") // sub esp, 8
+		.AddBytes("\xF3\x0F\x11\x0C\x24") // movss [esp], xmm1
+		.AddBytes("\xF3\x0F\x11\x54\x24\x04") // movss [esp + 4], xmm2
+		.AddInternalCall(asm_abyss_rework)
+		.AddBytes("\xF3\x0F\x10\x0C\x24") // movss xmm1, [esp]
+		.AddBytes("\xF3\x0F\x10\x54\x24\x04") // movss xmm2, [esp + 4]
+		.AddBytes("\x8D\x64\x24\x08") // lea esp, [esp + 8]
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, setScale)
+		.AddRelativeJump(addr + 0x7); // push 0
+	sASMPatcher.PatchAt(addr, &scalePatch);
+
+	addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPickup_HandleCollision_AbyssLocustHunger);
+	ZHL::Log("[REPENTOGON] Patching Entity_Pickup::HandleCollision Abyss locust hunger at %p\n", addr);
+
+	// cmp dword ptr [ecx + 0x2c], 0xe7 ; jnz noFamiliarPickup
+	char* noFamiliarPickup = addr + 0xD + *(int32_t*)(addr + 0x9);
+
+	ASMPatch hungerPatch;
+	hungerPatch.AddBytes(ByteBuffer().AddAny(addr, 0x7)) // cmp dword ptr [ecx + 0x2c], FAMILIAR_ABYSS_LOCUST
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, noFamiliarPickup)
+		.Push(ASMPatch::Registers::ECX)
+		.Push(ASMPatch::Registers::EDX)
+		.AddInternalCall(asm_abyss_rework)
+		.Pop(ASMPatch::Registers::EDX)
+		.Pop(ASMPatch::Registers::ECX)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, noFamiliarPickup)
+		.AddRelativeJump(addr + 0xD); // call
+	sASMPatcher.PatchAt(addr, &hungerPatch);
+
+	addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityFamiliar_GetMultiplier_AbyssLocustHiveMind);
+	ZHL::Log("[REPENTOGON] Patching Entity_Familiar::GetMultiplier Abyss locust Hive Mind at %p\n", addr);
+
+	// cmp edi, 0xe7 ; jz boosted
+	char* boosted = addr + 0x8 + *(int8_t*)(addr + 0x7);
+
+	ASMPatch hiveMindPatch;
+	hiveMindPatch.AddBytes(ByteBuffer().AddAny(addr, 0x6)) // cmp edi, FAMILIAR_ABYSS_LOCUST
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, addr + 0x8)
+		.Push(ASMPatch::Registers::ECX)
+		.Push(ASMPatch::Registers::EDX)
+		.AddInternalCall(asm_abyss_rework)
+		.Pop(ASMPatch::Registers::EDX)
+		.Pop(ASMPatch::Registers::ECX)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, boosted)
+		.AddRelativeJump(addr + 0x8); // movss xmm0, 1.0
+	sASMPatcher.PatchAt(addr, &hiveMindPatch);
+
+	addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_UseActiveItem_AbyssUse);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::UseActiveItem Abyss use at %p\n", addr);
+
+	// mov edi, [ebp - 0x5c4] ; cmp dword ptr [edi + 0x2c], 0 ; jnz notMainPlayer
+	char* notMainPlayer = addr + 0x10 + *(int32_t*)(addr + 0xC);
+	char* caseEnd = notMainPlayer - 0x6; // mov esi, [ebp - 0x5d8]
+	if (*(uint16_t*)caseEnd != 0xB58B) {
+		ZHL::Log("[REPENTOGON] Unexpected Abyss case end at %p, skipping the Abyss use patch\n", caseEnd);
+		return;
+	}
+
+	ASMPatch usePatch;
+	usePatch.AddBytes(ByteBuffer().AddAny(addr, 0x6)) // mov edi, [ebp - 0x5c4] // player
+		.Push(ASMPatch::Registers::EDI) // player
+		.AddInternalCall(asm_abyss_use)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, caseEnd)
+		.AddBytes(ByteBuffer().AddAny(addr + 0x6, 0x4)) // cmp dword ptr [edi + 0x2c], 0
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, notMainPlayer)
+		.AddRelativeJump(addr + 0x10); // mov ecx, [edi + 0x17b4]
+	sASMPatcher.PatchAt(addr, &usePatch);
+}
+
 void ASMVanillaFeatures()
 {
 	// 1.9.7.11
@@ -607,4 +783,5 @@ void ASMVanillaFeatures()
 	vf_mars_dash_rework();
 	vf_jar_of_wisps_rework();
 	vf_glitched_crown_pause_cycle();
+	vf_abyss_rework();
 }

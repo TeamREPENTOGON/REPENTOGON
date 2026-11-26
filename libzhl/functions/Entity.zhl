@@ -138,6 +138,9 @@ __thiscall bool Entity::IsEnemy();
 "558bec83e4f851a1????????53565783b8????????028bf18b7d":
 __thiscall bool Entity::IsVulnerableEnemy(Entity* source);
 
+"558bec83e4f851f30f100d":
+__thiscall void Entity::GetCollisionMass(Entity* other);
+
 "558bec83e4f8518b81":
 __thiscall bool Entity::IsFrame(int frame, int offset);
 
@@ -150,7 +153,7 @@ __thiscall void Entity::BloodExplode();
 "558bec83e4f883ec0c568bf16aff":
 __thiscall void Entity::RemoveStatusEffects();
 
-struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr, ColorMod) {
+struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr, ColorMod, EntityConfig_Entity) {
 {{
 	inline int GetIndex() { return this->_index; }
 	inline unsigned int* GetType() { return &this->_type; }
@@ -234,6 +237,8 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr, ColorMod) {
     unsigned short _entityExtraDataPtrUpperBytes : 0x18e;
     bool _collidesWithGrid : 0x190;
     unsigned short _entityExtraDataPtrLowerBytes : 0x192;
+    Vector _velocityOnCollidingWithWall : 0x194;
+    Vector _directionOfWallCollide : 0x19c;
     vector_ColorParams _colorParams : 0x1ac;
     ColorMod _color : 0x1b8;
     ColorMod _splatColor : 0x1e4;
@@ -252,7 +257,6 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr, ColorMod) {
     float _poisonDamage : 0x278;
     float _burnDamage : 0x27c;
     float _depthOffset : 0x2b0;
-    float _mass : 0x2d4;
     int _poisonDamageTimer : 0x2e0;
     int _burnDamageTimer : 0x2e4;
     int _bleedingCountdown : 0x2e8;
@@ -265,12 +269,15 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr, ColorMod) {
     Vector _knockbackDirection : 0x308;
 	int _pauseTimer : 0x31c;
 	int _spawnFrame : 0x328;
+	EntityConfig_Entity* _entityConfig : 0x330;
 	Vector _targetPos : 0x334;
     Vector _pos : 0x33c;
 	Vector _posOffset : 0x34c;
     Vector _velocity : 0x360;
+    float _friction : 0x36c;
     float _size : 0x370;
 	Vector _sizeMulti : 0x374;
+    float _mass : 0x37c;
 	float _health : 0x380;
     float _collisionDamage : 0x388;
     float _speedMultiplier : 0x39c;

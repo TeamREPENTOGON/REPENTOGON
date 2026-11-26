@@ -1,0 +1,10 @@
+"558bec568bf18b4d??e8????????50":
+__thiscall void HitList::AddEntityToHitList(Entity* entity);
+
+"558bec53568bf18b4d??57e8":
+__thiscall bool HitList::IsEntityInHitList(Entity* entity);
+
+// Sorted list of Entity::GetHitListIndex() values.
+struct HitList depends (Entity) {
+	std_vector_uint _list : 0x0;
+} : 0xc;

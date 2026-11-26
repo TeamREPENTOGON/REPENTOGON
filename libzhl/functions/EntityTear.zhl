@@ -28,6 +28,9 @@ __thiscall void Entity_Tear::SetDeadEyeIntensity(float intensity);
 "558bec6aff68????????64a1????????5081ec94010000":
 static cleanup void Entity_Tear::ApplyTearFlagEffects(Entity* entity<ecx>, Vector* position<edx>, BitSet128 flags, Entity* source, float damage);
 
+"558bec83e4f851538b5d??568bf2":
+static cleanup void Entity_Tear::ApplyTearFlagModifiers(int unused<ecx>, unsigned long long* damageFlags<edx>, int unused2, BitSet128 flags, float unused3, Entity* source);
+
 struct Entity_Tear depends (ANM2, BitSet128, Vector) : public Entity {
 	__vtable {
 		override

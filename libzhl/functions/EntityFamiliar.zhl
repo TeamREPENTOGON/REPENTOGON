@@ -124,7 +124,13 @@ __thiscall void Entity_Familiar::SetLocustConfigIndex(int index);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec60a1????????33c58945??5657508d45??64a3????????8bf9817f??e7000000":
 __thiscall void Entity_Familiar::UpdateLocustAppearance();
 
-struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder, Vector, Entity_Player) : public Entity {
+"558bec6aff68????????64a1????????5081eca4000000535657a1????????33c5508d45??64a3????????8bf9897d":
+__thiscall void Entity_Familiar::ai_abyss_locust();
+
+"83b9????????008b81????????56":
+__thiscall int Entity_Familiar::GetCollisionInterval();
+
+struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder, Vector, Entity_Player, HitList) : public Entity {
 {{
 	inline Entity_Player* GetPlayer() { return this->_player; }
 	inline NPCAI_Pathfinder* GetPathFinder() { return &this->_pathfinder; }
@@ -138,11 +144,13 @@ struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder, Vec
 	Vector _orbitDistance : 0xd64;
 	bool _isFollower : 0xd74;
 	bool _isDelayed : 0xd75;
+	int _fireCooldown : 0xd4c;
 	int _coins : 0xd7c;
 	int _hearts : 0xd80;
 	int _keys : 0xd84;
 	int _state : 0xd88;
 	int _roomClearCount : 0xd8c;
+	HitList _hitList : 0xd9c;
 	Weapon* _weapon : 0xdb0;
 	bool _isLilDelirium : 0xdb4;
 	void* _extraData : 0xecc;
