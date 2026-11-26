@@ -502,6 +502,70 @@ static void vf_mars_dash_rework()
 	sASMPatcher.PatchAt(addr, &barrierPatch);
 }
 
+static void __stdcall asm_jar_of_wisps_initial_var_data(int* varData)
+{
+	const int minimum = repentogonOptions.vfJarOfWispsRework ? 2 : 1;
+	if (*varData < minimum) {
+		*varData = minimum;
+	}
+}
+
+static ItemConfig_Item* __stdcall asm_jar_of_wisps_wisp_item(Entity_Player* player)
+{
+	if (repentogonOptions.vfJarOfWispsRework) {
+		return nullptr;
+	}
+
+	ItemConfig* config = g_Manager->GetItemConfig();
+	RNG* rng = player->GetCollectibleRNG(COLLECTIBLE_JAR_OF_WISPS);
+	const int id = rng->RandomInt(config->GetCollectibles()->size() - 1) + 1;
+
+	ItemConfig_Item* item = config->GetCollectible(id);
+	if (!item || !ItemConfig::IsValidCollectible(id) || item->type != 3) { // ITEM_ACTIVE
+		item = config->GetCollectible(COLLECTIBLE_BOOK_OF_VIRTUES);
+	}
+
+	return item;
+}
+
+// 1.9.7.11 makes the first Jar of Wisps use grant two wisps,
+// and rolls a special wisp 67% of the time.
+static void vf_jar_of_wisps_rework()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_AddCollectible_JarOfWispsInitialVarData);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::AddCollectible Jar of Wisps initial varData at %p\n", addr);
+
+	char* caseEnd = addr + 0xE + *(int32_t*)(addr + 0xA);
+
+	ASMPatch varDataPatch;
+	varDataPatch.Push(ASMPatch::Registers::EAX)
+		.Push(ASMPatch::Registers::ECX)
+		.Push(ASMPatch::Registers::EDX)
+		.AddBytes("\x8D\x8C\x30").AddBytes(ByteBuffer().AddAny(addr + 0x3, 0x4)) // lea ecx, [eax + esi + 0x1590] // varData
+		.Push(ASMPatch::Registers::ECX) // varData
+		.AddInternalCall(asm_jar_of_wisps_initial_var_data)
+		.Pop(ASMPatch::Registers::EDX)
+		.Pop(ASMPatch::Registers::ECX)
+		.Pop(ASMPatch::Registers::EAX)
+		.AddRelativeJump(caseEnd);
+	sASMPatcher.PatchAt(addr, &varDataPatch);
+
+	addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_UseActiveItem_JarOfWispsWispItem);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::UseActiveItem Jar of Wisps wisp item at %p\n", addr);
+
+	ASMPatch wispPatch;
+	wispPatch.Push(ASMPatch::Registers::EAX) // player + 0x1760
+		.Push(ASMPatch::Registers::ESI) // player
+		.AddInternalCall(asm_jar_of_wisps_wisp_item)
+		.AddBytes("\x85\xC0") // test eax, eax
+		.Pop(ASMPatch::Registers::ECX) // player + 0x1760
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, addr + 0xAA)
+		.AddBytes("\x8B\xC1") // mov eax, ecx
+		.AddBytes(ByteBuffer().AddAny(addr, 0x7)) // push COLLECTIBLE_JAR_OF_WISPS ; mov ecx, eax
+		.AddRelativeJump(addr + 0x7); // call GetCollectibleRNG
+	sASMPatcher.PatchAt(addr, &wispPatch);
+}
+
 void ASMVanillaFeatures()
 {
 	// 1.9.7.11
@@ -516,4 +580,5 @@ void ASMVanillaFeatures()
 	vf_meat_cleaver_angel_key_piece();
 	vf_delirious_boss_rework();
 	vf_mars_dash_rework();
+	vf_jar_of_wisps_rework();
 }
