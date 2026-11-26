@@ -57,8 +57,30 @@ static void vf_kineti_on_screen()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static bool __stdcall asm_blood_cultist_can_attack(bool onScreen)
+{
+	return onScreen || !repentogonOptions.vfBloodCultistOnScreen;
+}
+
+// 1.9.7.11 makes it so Blood Cultists can only use their blood attack if they are on screen.
+static void vf_blood_cultist_on_screen()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_ai_cultist_BloodCultistOnScreenCheck);
+	ZHL::Log("[REPENTOGON] Patching Entity_NPC::ai_cultist Blood Cultist on-screen check at %p\n", addr);
+
+	// test al, al ; mov eax, dword ptr [ebp - 0xec] ; jz skipAttack
+	ASMPatch patch;
+	patch.AddBytes("\x50") // push eax // IsPosVisible result
+		.AddInternalCall(asm_blood_cultist_can_attack)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddBytes(ByteBuffer().AddAny(addr + 0x2, 0x6)) // mov eax, dword ptr [ebp - 0xec] // player target
+		.AddRelativeJump(addr + 0x8); // jz skipAttack
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMVanillaFeatures()
 {
 	vf_cod_worm_hiding();
 	vf_kineti_on_screen();
+	vf_blood_cultist_on_screen();
 }
