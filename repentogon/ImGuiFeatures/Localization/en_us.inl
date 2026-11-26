@@ -489,6 +489,7 @@ VF(MegaFattyRedPukeHeight, "1.9.7.11", u8"Red champion Mega Fatty's puke attack 
 VF(SirenCharmHeartIncubus, "1.9.7.11", u8"The Siren can't charm Isaac's Heart or Lilith's Incubus", u8"The Siren no longer charms Isaac's Heart, or Incubus while it belongs to Lilith. In Repentance, she could charm both.")
 VF(AmnesiaHorsePillUnidentify, "1.9.7.11", u8"Amnesia horse pill unidentifies pills", u8"The Amnesia horse pill also unidentifies all previously identified pills. In Repentance, it only applied Curse of the Lost.")
 VF(SharpPlugBleedingHearts, "1.9.7.11", u8"Sharp Plug gives half charge for Tainted Magdalene's bleeding hearts", u8"When Tainted Magdalene uses Sharp Plug, soul hearts and bleeding red hearts only give half the charge of a regular heart container. In Repentance, they gave full charge.")
+VF(WheelOfFortuneCraneGame, "1.9.7.11", u8"Wheel of Fortune can spawn a Crane Game", u8"Wheel of Fortune has a 1% chance to spawn a Crane Game (once unlocked), and a slightly lower chance to spawn a Fortune Telling Machine. In Repentance, it spawned a Fortune Telling Machine 1/3 of the time and a Slot Machine otherwise.")
 
 #ifdef VF_DEFAULT_DEFINED
 #undef VF

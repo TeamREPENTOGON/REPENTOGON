@@ -156,6 +156,35 @@ static void vf_sharp_plug_bleeding_hearts()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static int __stdcall asm_wheel_of_fortune_machine(RNG* rng)
+{
+	if (repentogonOptions.vfWheelOfFortuneCraneGame) {
+		return 0;
+	}
+
+	return rng->RandomInt(3) == 0 ? 3 : 1; // fortune telling machine : slot machine
+}
+
+// 1.9.7.11 changes the Wheel of Fortune machine roll from 1/3 fortune telling machine to 1% crane game (if unlocked), 25% fortune telling machine.
+static void vf_wheel_of_fortune_crane_game()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_UseCard_WheelOfFortuneMachineRoll);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::UseCard Wheel of Fortune machine roll at %p\n", addr);
+
+	// mov edx, 100 ; mov dword ptr [ebp - 0x2bc], 1 ; xor ecx, ecx ; call RandomInt ; ... cmp eax, 0x19 ; jg spawn
+	char* spawn = addr + 0x46 + *(int8_t*)(addr + 0x45);
+
+	ASMPatch patch;
+	patch.AddBytes("\x56") // push esi // rng
+		.AddInternalCall(asm_wheel_of_fortune_machine)
+		.AddBytes("\x85\xC0") // test eax, eax
+		.AddBytes(ByteBuffer().AddAny(addr, 0xF)) // mov edx, 100 ; mov dword ptr [ebp - 0x2bc], 1
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, addr + 0xF) // xor ecx, ecx ; call RandomInt
+		.AddBytes("\x89\x85").AddBytes(ByteBuffer().AddAny(addr + 0x7, 0x4)) // mov dword ptr [ebp - 0x2bc], eax // variant
+		.AddRelativeJump(spawn); // mov ecx, esi ; call RNG::Next
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMVanillaFeatures()
 {
 	// 1.9.7.11
@@ -165,4 +194,5 @@ void ASMVanillaFeatures()
 	vf_mega_fatty_red_puke_height();
 	vf_amnesia_horse_pill_unidentify();
 	vf_sharp_plug_bleeding_hearts();
+	vf_wheel_of_fortune_crane_game();
 }
