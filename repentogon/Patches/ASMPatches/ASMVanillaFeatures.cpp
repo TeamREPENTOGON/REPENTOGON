@@ -185,6 +185,26 @@ static void vf_wheel_of_fortune_crane_game()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static int __stdcall asm_punching_bag_collision_class()
+{
+	return repentogonOptions.vfPunchingBagBlockShots ? 4 : 3; // ENTCOLL_ALL : ENTCOLL_ENEMIES
+}
+
+// 1.9.7.11 undoes a Repentance change that prevented Punching Bag from blocking enemy shots.
+static void vf_punching_bag_block_shots()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityFamiliar_ai_punchingbag_EntityCollisionClass);
+	ZHL::Log("[REPENTOGON] Patching Entity_Familiar::ai_punchingbag entity collision class at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny(addr + 0xA, 0x8)) // movss dword ptr [edi + 0x36c], xmm0
+		.AddInternalCall(asm_punching_bag_collision_class)
+		.AddBytes("\x89\x87").AddBytes(ByteBuffer().AddAny(addr + 0x2, 0x4)) // mov dword ptr [edi + 0x188], eax
+		.AddBytes("\x80\x7D\xB8").AddZeroes(1) // cmp byte ptr [ebp - 0x48], 0
+		.AddRelativeJump(addr + 0x12); // jnz skipFree
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMVanillaFeatures()
 {
 	// 1.9.7.11
@@ -195,4 +215,5 @@ void ASMVanillaFeatures()
 	vf_amnesia_horse_pill_unidentify();
 	vf_sharp_plug_bleeding_hearts();
 	vf_wheel_of_fortune_crane_game();
+	vf_punching_bag_block_shots();
 }

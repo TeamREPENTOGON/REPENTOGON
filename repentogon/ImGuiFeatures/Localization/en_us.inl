@@ -490,6 +490,7 @@ VF(SirenCharmHeartIncubus, "1.9.7.11", u8"The Siren can't charm Isaac's Heart or
 VF(AmnesiaHorsePillUnidentify, "1.9.7.11", u8"Amnesia horse pill unidentifies pills", u8"The Amnesia horse pill also unidentifies all previously identified pills. In Repentance, it only applied Curse of the Lost.")
 VF(SharpPlugBleedingHearts, "1.9.7.11", u8"Sharp Plug gives half charge for Tainted Magdalene's bleeding hearts", u8"When Tainted Magdalene uses Sharp Plug, soul hearts and bleeding red hearts only give half the charge of a regular heart container. In Repentance, they gave full charge.")
 VF(WheelOfFortuneCraneGame, "1.9.7.11", u8"Wheel of Fortune can spawn a Crane Game", u8"Wheel of Fortune has a 1% chance to spawn a Crane Game (once unlocked), and a slightly lower chance to spawn a Fortune Telling Machine. In Repentance, it spawned a Fortune Telling Machine 1/3 of the time and a Slot Machine otherwise.")
+VF(PunchingBagBlockShots, "1.9.7.11", u8"Punching Bag blocks shots", u8"Punching Bag blocks enemy shots. In Repentance, shots passed through it.")
 
 #ifdef VF_DEFAULT_DEFINED
 #undef VF
