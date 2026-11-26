@@ -78,9 +78,41 @@ static void vf_blood_cultist_on_screen()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static void __stdcall asm_mega_fatty_red_puke(Entity_NPC* npc, Vector* pos, ProjectileParams* params)
+{
+	pos->x = npc->_pos.x;
+	pos->y = npc->_pos.y;
+
+	if (repentogonOptions.vfMegaFattyRedPukeHeight) {
+		pos->y -= 8.0f;
+		return;
+	}
+
+	params->HeightModifier = -50.0f;
+	params->FallingSpeedModifier = -2.0f;
+}
+
+// 1.9.7.11 lowers red champion Mega Fatty's puke (height -50 -> -40, falling speed -2 -> 1.5, fired from 8 units higher up).
+static void vf_mega_fatty_red_puke_height()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_ai_mega_fatty_RedChampionPukePosition);
+	ZHL::Log("[REPENTOGON] Patching Entity_NPC::ai_mega_fatty red champion puke at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddBytes("\xFF\x74\x24\x0C") // push dword ptr [esp + 0xc] // params
+		.AddBytes("\x50") // push eax // pos
+		.AddBytes("\x57") // push edi // npc
+		.AddInternalCall(asm_mega_fatty_red_puke)
+		.AddBytes("\x8B\xCF") // mov ecx, edi
+		.AddRelativeJump(addr + 0x30); // call Entity_NPC::FireProjectiles
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMVanillaFeatures()
 {
+	// 1.9.7.11
 	vf_cod_worm_hiding();
 	vf_kineti_on_screen();
 	vf_blood_cultist_on_screen();
+	vf_mega_fatty_red_puke_height();
 }
