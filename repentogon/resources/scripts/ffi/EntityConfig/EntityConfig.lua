@@ -4,9 +4,12 @@ ffi.cdef [[
     int L_EntityConfig_GetPlayerCount();
     struct EntityConfigBaby* L_EntityConfig_GetBaby(int);
     int L_EntityConfig_GetBabyCount();
+    int L_EntityConfig_GetEdenHairCount();
+    const char* L_EntityConfig_GetEdenHair(int);
 ]]
 
 local repentogon = ffidll
+local ffi = ffi
 
 EntityConfig = {
     GetBaby = function(id)
@@ -26,5 +29,17 @@ EntityConfig = {
     GetPlayer = function(playerType)
         playerType = ffichecks.checkinteger(1, playerType)
         local result = repentogon.L_EntityConfig_GetPlayer(playerType) return result
+    end,
+    GetNumEdenHair = function()
+        return repentogon.L_EntityConfig_GetEdenHairCount()
+    end,
+    GetEdenHair = function(id)
+        id = ffichecks.checkinteger(1, id)
+        local hair = repentogon.L_EntityConfig_GetEdenHair(id)
+        if hair == nil then
+            return nil
+        end
+        local result = ffi.string(hair)
+        return result
     end,
 }

@@ -23,6 +23,17 @@ MOD_EXPORT int L_EntityConfig_GetBabyCount() {
 	return (int)g_Manager->GetEntityConfig()->GetBabies()->size();
 }
 
+MOD_EXPORT const char* L_EntityConfig_GetEdenHair(int id) {
+	if (id < 0 || (size_t)id >= g_Manager->GetEntityConfig()->_edenHair.size()) {
+		return nullptr;
+	}
+	return g_Manager->GetEntityConfig()->_edenHair[id].c_str();
+}
+
+MOD_EXPORT int L_EntityConfig_GetEdenHairCount() {
+	return (int)g_Manager->GetEntityConfig()->_edenHair.size();
+}
+
 /*
 * EntityConfigEntity Functions
 */
