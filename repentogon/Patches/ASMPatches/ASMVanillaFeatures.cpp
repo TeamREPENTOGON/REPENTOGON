@@ -108,6 +108,30 @@ static void vf_mega_fatty_red_puke_height()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static bool __stdcall asm_amnesia_horse_pill_unidentifies()
+{
+	return repentogonOptions.vfAmnesiaHorsePillUnidentify;
+}
+
+// 1.9.7.11 makes the Amnesia horse pill unidentify every pill (unless the player has PHD, False PHD, Virgo or Lucky Foot).
+static void vf_amnesia_horse_pill_unidentify()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_UsePill_AmnesiaHorsePillCheck);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::UsePill Amnesia horse pill check at %p\n", addr);
+
+	// cmp byte ptr [ebp - 0x144], 0 ; jz skipUnidentify
+	char* skip = addr + 0xD + *(int32_t*)(addr + 0x9);
+
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny(addr, 0x7)) // cmp byte ptr [ebp - 0x144], 0
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, skip)
+		.AddInternalCall(asm_amnesia_horse_pill_unidentifies)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, skip)
+		.AddRelativeJump(addr + 0xD); // push 0 ; push COLLECTIBLE_FALSE_PHD
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMVanillaFeatures()
 {
 	// 1.9.7.11
@@ -115,4 +139,5 @@ void ASMVanillaFeatures()
 	vf_kineti_on_screen();
 	vf_blood_cultist_on_screen();
 	vf_mega_fatty_red_puke_height();
+	vf_amnesia_horse_pill_unidentify();
 }

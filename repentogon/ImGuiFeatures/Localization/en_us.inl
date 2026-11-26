@@ -487,6 +487,7 @@ VF(KinetiOnScreen, "1.9.7.11", u8"Kineti only grab rocks while on screen", u8"Ki
 VF(BloodCultistOnScreen, "1.9.7.11", u8"Blood Cultists only fire their blood attack while on screen", u8"Blood Cultists only use their blood attack while they are on screen. In Repentance, they could fire it from off screen.")
 VF(MegaFattyRedPukeHeight, "1.9.7.11", u8"Red champion Mega Fatty's puke attack flies lower", u8"Red champion Mega Fatty's puke shots are fired lower so they don't always fly over Isaac's head. In Repentance, they were fired higher and arced upwards.")
 VF(SirenCharmHeartIncubus, "1.9.7.11", u8"The Siren can't charm Isaac's Heart or Lilith's Incubus", u8"The Siren no longer charms Isaac's Heart, or Incubus while it belongs to Lilith. In Repentance, she could charm both.")
+VF(AmnesiaHorsePillUnidentify, "1.9.7.11", u8"Amnesia horse pill unidentifies pills", u8"The Amnesia horse pill also unidentifies all previously identified pills. In Repentance, it only applied Curse of the Lost.")
 
 #ifdef VF_DEFAULT_DEFINED
 #undef VF
