@@ -498,6 +498,7 @@ VF(DeliriousBossRework, "1.9.7.11", u8"Delirious bosses have fixed health and wi
 VF(MarsDashRework, "1.9.7.11", u8"Mars' dash ends in a ring of fire", u8"Mars' dash stops when it hits an enemy, a wall or Mega Satan's barrier. The impact creates a ring of fire that burns enemies, pushes nearby enemies away, reflects shots, and every dash ends with a second of invincibility. In Repentance, the dash passed through enemies, only bounced off walls, and gave no invincibility once it ended.")
 VF(JarOfWispsRework, "1.9.7.11", u8"Jar of Wisps gives two wisps on its first use and mostly special wisps", u8"Jar of Wisps' first use grants two wisps, and each wisp has a 67% chance to be a special wisp. In Repentance, the first use granted one wisp, and a special wisp was much more rare.")
 VF(GlitchedCrownPauseCycle, "1.9.7.11", u8"Pausing doesn't stop Glitched Crown's item cycle", u8"While the game is paused, Glitched Crown items keep cycling, faster than normal. In Repentance, pausing froze the cycle.")
+VF(StarOfBethlehemHallowedGroundBoost, "1.9.7.11", u8"Star of Bethlehem nerf", u8"Star of Bethlehem's aura gives the same boost as Hallowed Ground's aura. In Repentance, it also multiplied damage by 1.5.")
 
 #ifdef VF_DEFAULT_DEFINED
 #undef VF

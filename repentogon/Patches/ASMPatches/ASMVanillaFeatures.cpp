@@ -767,6 +767,29 @@ static void vf_abyss_rework()
 	sASMPatcher.PatchAt(addr, &usePatch);
 }
 
+static void __stdcall asm_star_of_bethlehem_player_in_aura(Entity_Player* player)
+{
+	if (!repentogonOptions.vfStarOfBethlehemHallowedGroundBoost) {
+		++player->_starOfBethlehemAuraCount;
+	}
+}
+
+// 1.9.7.11 makes Star of Bethlehem's aura only give the Hallowed Ground boost (Repentance also granted a 1.5x damage multiplier).
+static void vf_star_of_bethlehem_hallowed_ground_boost()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityFamiliar_ai_star_of_bethlehem_PlayerInAura);
+	ZHL::Log("[REPENTOGON] Patching Entity_Familiar::ai_star_of_bethlehem player aura at %p\n", addr);
+
+	ASMPatch patch;
+	patch.Push(ASMPatch::Registers::ECX) // player
+		.Push(ASMPatch::Registers::ECX)
+		.AddInternalCall(asm_star_of_bethlehem_player_in_aura)
+		.Pop(ASMPatch::Registers::ECX)
+		.AddBytes(ByteBuffer().AddAny(addr, 0xb)) // mov esi, dword ptr [ecx + 0x1d7c] ; mov edx, 4
+		.AddRelativeJump(addr + 0xb); // lea eax, [esi + 2]
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMVanillaFeatures()
 {
 	// 1.9.7.11
@@ -784,4 +807,5 @@ void ASMVanillaFeatures()
 	vf_jar_of_wisps_rework();
 	vf_glitched_crown_pause_cycle();
 	vf_abyss_rework();
+	vf_star_of_bethlehem_hallowed_ground_boost();
 }
