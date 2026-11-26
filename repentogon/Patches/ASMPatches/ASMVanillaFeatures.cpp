@@ -566,6 +566,31 @@ static void vf_jar_of_wisps_rework()
 	sASMPatcher.PatchAt(addr, &wispPatch);
 }
 
+static bool __stdcall asm_glitched_crown_pause_cycle()
+{
+	return repentogonOptions.vfGlitchedCrownPauseCycle;
+}
+
+// 1.9.7.11 keeps Glitched Crown items cycling while the game is paused.
+static void vf_glitched_crown_pause_cycle()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::PauseScreen_Update_GlitchedCrownCycle);
+	ZHL::Log("[REPENTOGON] Patching PauseScreen::Update Glitched Crown cycle at %p\n", addr);
+
+	// push 1 ; lea ecx, [edx + 0x1baa8] ; push ecx ; push COLLECTIBLE_GLITCHED_CROWN ; call FirstCollectibleOwner ; test eax, eax ; jz skip
+	char* skip = addr + 0x17 + *(int8_t*)(addr + 0x16);
+
+	ASMPatch patch;
+	patch.Push(ASMPatch::Registers::EDX) // game
+		.AddInternalCall(asm_glitched_crown_pause_cycle)
+		.Pop(ASMPatch::Registers::EDX)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, skip)
+		.AddBytes(ByteBuffer().AddAny(addr, 0x8)) // push 1 ; lea ecx, [edx + 0x1baa8] // player manager
+		.AddRelativeJump(addr + 0x8); // push ecx
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMVanillaFeatures()
 {
 	// 1.9.7.11
@@ -581,4 +606,5 @@ void ASMVanillaFeatures()
 	vf_delirious_boss_rework();
 	vf_mars_dash_rework();
 	vf_jar_of_wisps_rework();
+	vf_glitched_crown_pause_cycle();
 }

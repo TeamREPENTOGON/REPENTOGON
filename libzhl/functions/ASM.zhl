@@ -414,6 +414,7 @@ asm EntityPlayer_handle_collision_MarsEnemyImpact "68510200008d8e????????e8?????
 asm EntityPlayer_Update_MarsMegaSatanImpact "68510200008bcec787????????0000a043";
 asm EntityPlayer_AddCollectible_JarOfWispsInitialVarData "83bc??????????020f8d";
 asm EntityPlayer_UseActiveItem_JarOfWispsWispItem "68ad0200008bc8";
+asm PauseScreen_Update_GlitchedCrownCycle "6a018d8a????????5168b1020000";
 
 // EntityManager
 asm EntityList_destructor_RemoveEntityMainEL "8b0c??8b01ff50??463b77??72??33f6";
