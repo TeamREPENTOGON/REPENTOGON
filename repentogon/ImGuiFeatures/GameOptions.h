@@ -1,5 +1,6 @@
 #pragma once
 #include "../REPENTOGONOptions.h"
+#include "../Patches/VanillaFeatures.h"
 #include "../SaveSyncing/SaveSyncing.h"
 #include "IconsFontAwesome6.h"
 #include "ImGuiEx.h"
@@ -104,6 +105,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
 
     void AddVanillaFeatureRow(int id, const char* label, const char* mark, const char* version, bool& enabled)
     {
+        const bool wasEnabled = enabled;
         AddNewTableRow();
         ImGui::Checkbox(label, &enabled);
         ImGui::SameLine();
@@ -111,6 +113,9 @@ struct GameOptionsWindow : ImGuiWindowObject {
         ImGui::SameLine();
         ImGui::TextDisabled(LANG.OPT_VANILLA_FEATURES_VERSION, version);
         AddResetButton(id, enabled, true);
+        if (enabled != wasEnabled) {
+            ApplyVanillaItemMetadata();
+        }
     }
 
     void AddSaveManagementButton(const char* label, const char* mark, const char* prompt, const int slot, std::optional<SaveSyncing::ImportExportResult>& result, std::function<SaveSyncing::ImportExportResult()> buttonClickedFunc) {
