@@ -205,6 +205,64 @@ static void vf_punching_bag_block_shots()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+enum AngelKeyPieceCheck : int {
+	ANGEL_KEY_PIECE_REPPLUS_CHECK = 0,
+	ANGEL_KEY_PIECE_AWARD = 1,
+	ANGEL_KEY_PIECE_NO_AWARD = 2,
+};
+
+static int __stdcall asm_angel_key_piece_check(Entity* boss)
+{
+	if (repentogonOptions.vfMeatCleaverAngelKeyPiece) {
+		return ANGEL_KEY_PIECE_REPPLUS_CHECK;
+	}
+
+	return boss->GetSpawnerEntity() ? ANGEL_KEY_PIECE_NO_AWARD : ANGEL_KEY_PIECE_AWARD;
+}
+
+static bool __stdcall asm_angel_key_piece_scan_floor()
+{
+	return repentogonOptions.vfMeatCleaverAngelKeyPiece;
+}
+
+// 1.9.7.11 makes it so using Meat Cleaver on an Angel will now award only one Key Piece.
+static void vf_meat_cleaver_angel_key_piece()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_TriggerBossDeath_AngelKeyPieceSameTypeCheck);
+	ZHL::Log("[REPENTOGON] Patching Room::TriggerBossDeath angel key piece check at %p\n", addr);
+
+	char* award = addr + 0xE + *(int8_t*)(addr + 0xD);
+	char* noAward = addr + 0x27 + *(int32_t*)(addr + 0x23);
+
+	ASMPatch patch;
+	patch.AddBytes("\x52") // push edx // room
+		.AddBytes("\x56") // push esi // boss
+		.AddInternalCall(asm_angel_key_piece_check)
+		.AddBytes("\x5A") // pop edx
+		.AddBytes("\x83\xF8\x01") // cmp eax, ANGEL_KEY_PIECE_AWARD
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, award)
+		.AddBytes("\x83\xF8\x02") // cmp eax, ANGEL_KEY_PIECE_NO_AWARD
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, noAward)
+		.AddBytes(ByteBuffer().AddAny(addr, 0x8)) // mov ecx, dword ptr [edx + 0x7300] ; xor edi, edi
+		.AddRelativeJump(addr + 0x8); // mov eax, dword ptr [ecx]
+	sASMPatcher.PatchAt(addr, &patch);
+
+	addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_TriggerBossDeath_AngelKeyPieceFloorScan);
+	ZHL::Log("[REPENTOGON] Patching Room::TriggerBossDeath angel key piece floor scan at %p\n", addr);
+
+	char* noPickups = addr + 0xA + *(int8_t*)(addr + 0x9);
+
+	ASMPatch floorPatch;
+	floorPatch.AddBytes("\x50\x51\x52") // push eax ; push ecx ; push edx
+		.AddInternalCall(asm_angel_key_piece_scan_floor)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddBytes("\x5A\x59\x58") // pop edx ; pop ecx ; pop eax
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, noPickups)
+		.AddBytes(ByteBuffer().AddAny(addr, 0x6)) // mov edi, dword ptr [eax + 0x1264]
+		.AddRelativeJump(addr + 0x6); // test edi, edi
+	sASMPatcher.PatchAt(addr, &floorPatch);
+}
+
 void ASMVanillaFeatures()
 {
 	// 1.9.7.11
@@ -216,4 +274,5 @@ void ASMVanillaFeatures()
 	vf_sharp_plug_bleeding_hearts();
 	vf_wheel_of_fortune_crane_game();
 	vf_punching_bag_block_shots();
+	vf_meat_cleaver_angel_key_piece();
 }

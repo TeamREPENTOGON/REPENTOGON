@@ -492,6 +492,7 @@ VF(SharpPlugBleedingHearts, "1.9.7.11", u8"Sharp Plug gives half charge for Tain
 VF(WheelOfFortuneCraneGame, "1.9.7.11", u8"Wheel of Fortune can spawn a Crane Game", u8"Wheel of Fortune has a 1% chance to spawn a Crane Game (once unlocked), and a slightly lower chance to spawn a Fortune Telling Machine. In Repentance, it spawned a Fortune Telling Machine 1/3 of the time and a Slot Machine otherwise.")
 VF(PunchingBagBlockShots, "1.9.7.11", u8"Punching Bag blocks shots", u8"Punching Bag blocks enemy shots. In Repentance, shots passed through it.")
 VF(TaintedLostPoolNoHourglassShadows, "1.9.7.11", u8"Glowing Hourglass and Book of Shadows are removed from Tainted Lost's pool", u8"Tainted Lost can't find Glowing Hourglass or Book of Shadows. In Repentance, both could appear for Tainted Lost.")
+VF(MeatCleaverAngelKeyPiece, "1.9.7.11", u8"Meat Cleaver on an Angel awards only one Key Piece", u8"Splitting Uriel or Gabriel with Meat Cleaver only awards a Key Piece once, and angels don't award a Key Piece that is already lying in the room. In Repentance, each half dropped its own Key Piece.")
 
 #ifdef VF_DEFAULT_DEFINED
 #undef VF
