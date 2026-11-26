@@ -790,6 +790,34 @@ static void vf_star_of_bethlehem_hallowed_ground_boost()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static bool __stdcall asm_wisp_is_temporary(int subtype)
+{
+	if (subtype == COLLECTIBLE_BEAN || subtype == COLLECTIBLE_KIDNEY_BEAN) {
+		return repentogonOptions.vfBeanWispsExpire;
+	}
+
+	return true;
+}
+
+// 1.9.7.11 makes wisps from The Bean and Kidney Bean temporary, so they are removed when leaving the room.
+static void vf_bean_wisps_expire()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityFamiliar_wisp_init_SetTemporary);
+	ZHL::Log("[REPENTOGON] Patching Entity_Familiar::wisp_init temporary wisp flag at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI) // subtype
+		.AddInternalCall(asm_wisp_is_temporary)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, addr + 0x7) // cmp esi, 0x2c8
+		.AddBytes(ByteBuffer().AddAny(addr, 0x7)) // mov byte ptr [edi + 0xd76], 1
+		.AddRelativeJump(addr + 0x7);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMVanillaFeatures()
 {
 	// 1.9.7.11
@@ -808,4 +836,5 @@ void ASMVanillaFeatures()
 	vf_glitched_crown_pause_cycle();
 	vf_abyss_rework();
 	vf_star_of_bethlehem_hallowed_ground_boost();
+	vf_bean_wisps_expire();
 }

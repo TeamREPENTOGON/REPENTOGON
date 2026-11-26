@@ -424,6 +424,7 @@ asm EntityPickup_HandleCollision_AbyssLocustHunger "8179??e70000000f85";
 asm EntityFamiliar_GetMultiplier_AbyssLocustHiveMind "81ffe7000000";
 asm EntityPlayer_UseActiveItem_AbyssUse "8bbd????????837f??000f85????????8b8f";
 asm EntityFamiliar_ai_star_of_bethlehem_PlayerInAura "8bb1????????ba04000000";
+asm EntityFamiliar_wisp_init_SetTemporary "c687????????0181fec8020000";
 
 // EntityManager
 asm EntityList_destructor_RemoveEntityMainEL "8b0c??8b01ff50??463b77??72??33f6";

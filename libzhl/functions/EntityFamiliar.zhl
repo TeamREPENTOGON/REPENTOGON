@@ -144,6 +144,7 @@ struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder, Vec
 	Vector _orbitDistance : 0xd64;
 	bool _isFollower : 0xd74;
 	bool _isDelayed : 0xd75;
+	bool _isTemporary : 0xd76;
 	int _fireCooldown : 0xd4c;
 	int _coins : 0xd7c;
 	int _hearts : 0xd80;

@@ -499,6 +499,7 @@ VF(MarsDashRework, "1.9.7.11", u8"Mars' dash ends in a ring of fire", u8"Mars' d
 VF(JarOfWispsRework, "1.9.7.11", u8"Jar of Wisps gives two wisps on its first use and mostly special wisps", u8"Jar of Wisps' first use grants two wisps, and each wisp has a 67% chance to be a special wisp. In Repentance, the first use granted one wisp, and a special wisp was much more rare.")
 VF(GlitchedCrownPauseCycle, "1.9.7.11", u8"Pausing doesn't stop Glitched Crown's item cycle", u8"While the game is paused, Glitched Crown items keep cycling, faster than normal. In Repentance, pausing froze the cycle.")
 VF(StarOfBethlehemHallowedGroundBoost, "1.9.7.11", u8"Star of Bethlehem nerf", u8"Star of Bethlehem's aura gives the same boost as Hallowed Ground's aura. In Repentance, it also multiplied damage by 1.5.")
+VF(BeanWispsExpire, "1.9.7.11", u8"The Bean and Kidney Bean wisps expire when changing rooms", u8"Wisps spawned by The Bean and Kidney Bean disappear when you leave the room. In Repentance, they stayed until destroyed.")
 
 #ifdef VF_DEFAULT_DEFINED
 #undef VF
