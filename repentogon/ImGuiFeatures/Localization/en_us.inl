@@ -483,6 +483,7 @@ I(OPT_VANILLA_FEATURES_VERSION, u8"Added in v%s")
 #endif
 
 VF(CodWormHiding, "1.9.7.11", u8"Cod Worms don't stay hidden for long periods", u8"Cod Worms surface as soon as their hide timer ends. In Repentance, they had a 1 in 20 chance every frame to surface after the timer ended.")
+VF(KinetiOnScreen, "1.9.7.11", u8"Kineti only grab rocks while on screen", u8"Kineti only use their rock-grabbing attack while they are on screen. In Repentance, they could grab and throw rocks from off screen.")
 
 #ifdef VF_DEFAULT_DEFINED
 #undef VF

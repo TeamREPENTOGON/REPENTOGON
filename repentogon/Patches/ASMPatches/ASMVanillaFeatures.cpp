@@ -34,7 +34,31 @@ static void vf_cod_worm_hiding()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static bool __stdcall asm_kineti_can_grab(bool onScreen)
+{
+	return onScreen || !repentogonOptions.vfKinetiOnScreen;
+}
+
+// 1.9.7.11 makes it so Kinetis can only grab rocks if they are on screen.
+static void vf_kineti_on_screen()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_ai_polty_KinetiOnScreenCheck);
+	ZHL::Log("[REPENTOGON] Patching Entity_NPC::ai_polty Kineti on-screen check at %p\n", addr);
+
+	// test al, al ; jz skip
+	char* skip = addr + 0x8 + *(int32_t*)(addr + 0x4);
+
+	ASMPatch patch;
+	patch.AddBytes("\x50") // push eax // IsPosVisible result
+		.AddInternalCall(asm_kineti_can_grab)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, skip)
+		.AddRelativeJump(addr + 0x8); // push 0 ; push "TeleStart"
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMVanillaFeatures()
 {
 	vf_cod_worm_hiding();
+	vf_kineti_on_screen();
 }
