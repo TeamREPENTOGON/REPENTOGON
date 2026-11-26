@@ -132,6 +132,30 @@ static void vf_amnesia_horse_pill_unidentify()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static bool __stdcall asm_sharp_plug_bleeding_hearts_half_charge()
+{
+	return repentogonOptions.vfSharpPlugBleedingHearts;
+}
+
+// 1.9.7.11 makes Sharp Plug only give a charge for every other soul heart / bleeding red heart Tainted Magdalene loses.
+static void vf_sharp_plug_bleeding_hearts()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_control_active_item_SharpPlugTaintedMagdaleneCheck);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::control_active_item Sharp Plug Tainted Magdalene check at %p\n", addr);
+
+	// cmp dword ptr [edi + 0x13bc], PLAYER_MAGDALENE_B ; jnz addCharge
+	char* addCharge = addr + 0x9 + *(int8_t*)(addr + 0x8);
+
+	ASMPatch patch;
+	patch.AddInternalCall(asm_sharp_plug_bleeding_hearts_half_charge)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, addCharge)
+		.AddBytes(ByteBuffer().AddAny(addr, 0x7)) // cmp dword ptr [edi + 0x13bc], PLAYER_MAGDALENE_B
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, addCharge)
+		.AddRelativeJump(addr + 0x9); // mov eax, dword ptr [ebp - 0x80]
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMVanillaFeatures()
 {
 	// 1.9.7.11
@@ -140,4 +164,5 @@ void ASMVanillaFeatures()
 	vf_blood_cultist_on_screen();
 	vf_mega_fatty_red_puke_height();
 	vf_amnesia_horse_pill_unidentify();
+	vf_sharp_plug_bleeding_hearts();
 }
