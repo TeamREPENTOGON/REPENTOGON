@@ -263,6 +263,116 @@ static void vf_meat_cleaver_angel_key_piece()
 	sASMPatcher.PatchAt(addr, &floorPatch);
 }
 
+struct DeliriousBoss {
+	unsigned int type;
+	unsigned int variant;
+	unsigned int count;
+};
+
+// 1.7.9b Delirious boss pool
+static const DeliriousBoss deliriousBosses[] = {
+	{ 20, 0, 1 }, { 19, 0, 3 }, { 28, 0, 3 }, { 36, 0, 1 }, { 43, 0, 1 }, { 62, 1, 1 }, { 63, 0, 1 }, { 64, 0, 1 },
+	{ 65, 0, 1 }, { 66, 0, 1 }, { 67, 0, 1 }, { 68, 0, 1 }, { 69, 0, 1 }, { 74, 0, 1 }, { 79, 0, 1 }, { 71, 0, 1 },
+	{ 43, 1, 1 }, { 79, 1, 1 }, { 28, 1, 3 }, { 82, 0, 1 }, { 81, 0, 1 }, { 19, 1, 3 }, { 28, 2, 3 }, { 99, 0, 1 },
+	{ 67, 1, 1 }, { 68, 1, 1 }, { 69, 1, 1 }, { 79, 2, 1 }, { 71, 1, 1 }, { 100, 0, 1 }, { 97, 0, 1 }, { 100, 1, 1 },
+	{ 62, 0, 1 }, { 65, 1, 1 }, { 101, 0, 1 }, { 101, 1, 1 }, { 260, 0, 1 }, { 261, 0, 1 }, { 262, 0, 1 }, { 263, 0, 1 },
+	{ 264, 0, 1 }, { 265, 0, 1 }, { 266, 0, 1 }, { 267, 0, 1 }, { 268, 0, 1 }, { 269, 0, 1 }, { 270, 0, 1 }, { 274, 0, 1 },
+	{ 237, 1, 1 }, { 401, 0, 1 }, { 402, 0, 1 }, { 403, 0, 1 }, { 404, 0, 1 }, { 405, 0, 1 }, { 407, 0, 1 }, { 261, 1, 1 },
+	{ 237, 2, 1 }, { 62, 2, 1 }, { 409, 0, 1 }, { 410, 0, 1 }, { 411, 0, 1 },
+};
+
+static const int deliriousWisps[] = { 0x1000e, 0x1000f, 0x10010, 0x10011 };
+
+static void ReplaceDeliriumGraphics(Entity* entity)
+{
+	Entity_NPC::DeliriumReplaceGraphics(&entity->_sprite, entity->_type, entity->_variant, true);
+}
+
+static Entity_NPC* ToNPC(Entity* entity)
+{
+	return entity ? entity->ToNPC() : nullptr;
+}
+
+// Reimplementation of Delirious 1.7.9b. Boss health doesn't decay and they aren't persistent
+static bool __stdcall asm_delirious_use(Entity_Player* player, bool addWisp)
+{
+	if (repentogonOptions.vfDeliriousBossRework) {
+		return false;
+	}
+
+	RNG* rng = player->GetCollectibleRNG(COLLECTIBLE_DELIRIOUS);
+	const DeliriousBoss& boss = deliriousBosses[rng->RandomInt(sizeof(deliriousBosses) / sizeof(deliriousBosses[0]))];
+
+	std::vector<Entity*> spawned;
+	for (unsigned int i = 0; i < boss.count; ++i) {
+		const unsigned int seed = rng->Next();
+		Vector buffer;
+		Vector* position = g_Game->_room->FindFreePickupSpawnPosition(&buffer, player->GetPosition(), 40.0f, false, false, false);
+		Entity* entity = g_Game->Spawn(boss.type, boss.variant, *position, Vector(0.0f, 0.0f), player, 0, seed, 0);
+
+		EntityRef ref(player);
+		entity->AddCharmed(ref, -1, false, false);
+		((Entity_NPC*)entity)->SetCanShutDoors(false);
+		Entity_NPC::DeliriumReplaceGraphics(&entity->_sprite, boss.type, boss.variant, true);
+		spawned.push_back(entity);
+	}
+
+	for (Entity* entity : spawned) {
+		entity->Update();
+		entity->AddEntityFlags((unsigned int)FLAG_DONT_COUNT_BOSS_HP, 0);
+
+		Entity* first = entity;
+		while (first->GetParent()) {
+			first = first->GetParent();
+		}
+
+		Entity_NPC* segment = ToNPC(first);
+		Entity_NPC* previous = nullptr;
+		while (segment) {
+			if ((Entity*)segment == entity) {
+				segment = ToNPC(segment->GetChild());
+				if (segment == previous) {
+					break;
+				}
+				continue;
+			}
+
+			ReplaceDeliriumGraphics(segment);
+			previous = segment;
+			segment = ToNPC(segment->GetChild());
+		}
+	}
+
+	if (g_Game->_hallucinationTimer <= 0) {
+		g_Game->ShowHallucination(25, 63);
+	}
+
+	if (player->HasCollectible(COLLECTIBLE_BOOK_OF_VIRTUES, false) && addWisp) {
+		player->AddWisp((CollectibleType)deliriousWisps[rng->RandomInt(4)], player->GetPosition(), false, false);
+	}
+
+	return true;
+}
+
+// 1.9.7.11 gives Delirious bosses fixed health, a 1 damage per hit cap and health decay (1.7.9.4 also made them persistent, replaced on reuse, with a new pool).
+static void vf_delirious_boss_rework()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_UseActiveItem_DeliriousUse);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::UseActiveItem Delirious at %p\n", addr);
+
+	char* caseEnd = addr + 0x34 + *(int32_t*)(addr + 0x30);
+
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny(addr + 0x19, 0x6)) // push dword ptr [ebp - 0x5f4] // Book of Virtues wisp flag
+		.AddBytes("\x56") // push esi // player
+		.AddInternalCall(asm_delirious_use)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, caseEnd)
+		.AddBytes(ByteBuffer().AddAny(addr, 0xB)) // push 0x1fe ; lea ecx, [esi + 0x1760]
+		.AddRelativeJump(addr + 0xB); // call GetCollectibleRNG
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMVanillaFeatures()
 {
 	// 1.9.7.11
@@ -275,4 +385,5 @@ void ASMVanillaFeatures()
 	vf_wheel_of_fortune_crane_game();
 	vf_punching_bag_block_shots();
 	vf_meat_cleaver_angel_key_piece();
+	vf_delirious_boss_rework();
 }

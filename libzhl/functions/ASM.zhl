@@ -404,6 +404,7 @@ asm EntityPlayer_UseCard_WheelOfFortuneMachineRoll "ba64000000c785????????010000
 asm EntityFamiliar_ai_punchingbag_EntityCollisionClass "c787????????04000000f30f1187????????75";
 asm Room_TriggerBossDeath_AngelKeyPieceSameTypeCheck "8b8a????????33ff8b01";
 asm Room_TriggerBossDeath_AngelKeyPieceFloorScan "8bb8????????85ff74??8b90";
+asm EntityPlayer_UseActiveItem_DeliriousUse "68fe0100008d8e";
 
 // EntityManager
 asm EntityList_destructor_RemoveEntityMainEL "8b0c??8b01ff50??463b77??72??33f6";

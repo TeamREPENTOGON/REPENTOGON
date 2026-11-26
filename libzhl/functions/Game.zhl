@@ -379,6 +379,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	int _frameCount : 0x25a70;
 	Vector _screenShakeOffset : 0x25a84;
 	bool  _triggerWindowResize : 0x25aac;
+	int _hallucinationTimer : 0x25ab0;
 	unsigned int _debugFlags : 0x25abc;
 	uint64_t _gameStateFlags : 0x25ac0;
 	int _lastDevilRoomStage : 0x25acc;

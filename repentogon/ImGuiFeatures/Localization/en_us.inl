@@ -493,6 +493,7 @@ VF(WheelOfFortuneCraneGame, "1.9.7.11", u8"Wheel of Fortune can spawn a Crane Ga
 VF(PunchingBagBlockShots, "1.9.7.11", u8"Punching Bag blocks shots", u8"Punching Bag blocks enemy shots. In Repentance, shots passed through it.")
 VF(TaintedLostPoolNoHourglassShadows, "1.9.7.11", u8"Glowing Hourglass and Book of Shadows are removed from Tainted Lost's pool", u8"Tainted Lost can't find Glowing Hourglass or Book of Shadows. In Repentance, both could appear for Tainted Lost.")
 VF(MeatCleaverAngelKeyPiece, "1.9.7.11", u8"Meat Cleaver on an Angel awards only one Key Piece", u8"Splitting Uriel or Gabriel with Meat Cleaver only awards a Key Piece once, and angels don't award a Key Piece that is already lying in the room. In Repentance, each half dropped its own Key Piece.")
+VF(DeliriousBossRework, "1.9.7.11", u8"Delirious bosses have fixed health and wither away", u8"Delirious bosses have fixed health, take 1 damage per hit (5 from explosions), ignore spikes, fires and red poop, and slowly wither to 1 health. They also follow you between rooms, replace your previous Delirious bosses, and come from a slightly different boss pool. In Repentance, they had their normal health and damage and stayed in the room they were summoned in.")
 
 #ifdef VF_DEFAULT_DEFINED
 #undef VF
