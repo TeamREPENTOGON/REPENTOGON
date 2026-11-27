@@ -931,7 +931,9 @@ static void AbyssUse(Entity_Player* player) {
 		return;
 	}
 
-	Manager::PlaySound(834, 1.0f, 2, false, 1.0f);
+	if (repentogonOptions.vfNewSoundEffects) {
+		Manager::PlaySound(834, 1.0f, 2, false, 1.0f);
+	}
 
 	if (room->_roomType == 11 || room->_roomType == 17) { // ROOM_CHALLENGE, ROOM_BOSSRUSH
 		g_Game->GetAmbush()->StartChallenge();

@@ -993,6 +993,98 @@ static void vf_lazarus_revive_anemic()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// KILL THE 1.9.7.11 SOUNDS WITH FIRE (but keep them available for mods)
+static void vf_new_sound_effects()
+{
+	struct SoundSite {
+		const char* definition;
+		const char* name;
+		unsigned int copyLength;
+		int resumeOffset;
+		unsigned char stackFixup;
+		unsigned int keepLength; 
+		unsigned char vanillaSound;
+	};
+	const SoundSite sites[] = {
+		{ &AsmDefinitions::EntityPlayer_UseActiveItem_AbyssSound, "Abyss", 0x5, 0xA, 0x10, 0 },
+		{ &AsmDefinitions::EntityPlayer_UseActiveItem_CrookedPennySound, "Crooked Penny", 0x5, 0xA, 0x10, 0 },
+		{ &AsmDefinitions::EntityPlayer_UseActiveItem_DataminerSound, "Dataminer", 0x5, 0xA, 0x10, 0 },
+		{ &AsmDefinitions::EntityPlayer_UseActiveItem_FlipSound, "Flip", 0x5, 0xA, 0x10, 0 },
+		{ &AsmDefinitions::EntityPlayer_UseActiveItem_MomsBottleOfPillsSound, "Mom's Bottle of Pills", 0x5, 0xA, 0x10, 0 },
+		{ &AsmDefinitions::EntityPlayer_UseActiveItem_GlowingHourglassActivateSound, "Glowing Hourglass activate", 0x5, 0x18, 0x10, 0 },
+		{ &AsmDefinitions::EntityPlayer_UseActiveItem_BoxOfFriendsSound, "Box of Friends", 0x5, 0, 0x10, 0 },
+		{ &AsmDefinitions::EntityPlayer_UseActiveItem_BrownNuggetSound, "Brown Nugget", 0x5, 0, 0x10, 0 },
+		{ &AsmDefinitions::EntityPlayer_UseActiveItem_ConverterSound, "Converter", 0x5, 0, 0x10, 0 },
+		{ &AsmDefinitions::EntityPlayer_UseActiveItem_GlowingHourglassFizzleSound, "Glowing Hourglass fizzle", 0x5, 0, 0x10, 0 },
+		{ &AsmDefinitions::EntityEffect_Init_MegaBeanSound, "Mega Bean", 0x5, 0xA, 0x10, 0 },
+		{ &AsmDefinitions::EntityEffect_Update_DoctorsRemoteWarningSound, "Doctor's Remote warning", 0x5, 0x18, 0x10, 0 },
+		{ &AsmDefinitions::EntityEffect_Update_GlitterBombSound, "Glitter Bombs explosion", 0x5, 0x18, 0x10, 0 },
+		{ &AsmDefinitions::EntityEffect_Update_BoomerangLoopSound, "Boomerang loop", 0x5, 0x18, 0x10, 0 },
+		{ &AsmDefinitions::EntityEffect_Update_BoomerangCatchSound, "Boomerang catch", 0x5, 0x18, 0x10, 0 },
+		{ &AsmDefinitions::EntityEffect_Update_BoomerangHitSound1, "Boomerang hit 1", 0x5, 0x18, 0x10, 0 },
+		{ &AsmDefinitions::EntityEffect_Update_BoomerangHitSound2, "Boomerang hit 2", 0x5, 0x18, 0x10, 0 },
+		{ &AsmDefinitions::EntityEffect_Update_BoomerangHitSound3, "Boomerang hit 3", 0x5, 0x18, 0x10, 0 },
+		{ &AsmDefinitions::EntityEffect_Update_PortalLoopSound, "Card Reading portal loop", 0x5, 0x18, 0x10, 0 },
+		{ &AsmDefinitions::EntityEffect_Update_PortalEnterSound, "Card Reading portal enter", 0x5, 0x18, 0x10, 0 },
+		{ &AsmDefinitions::EntityPlayer_GnawedLeafSound, "Gnawed Leaf", 0x5, 0xA, 0x10, 0 },
+		{ &AsmDefinitions::EntityPlayer_UpdateEffects_LingerBeanSound, "Linger Bean", 0x5, 0xA, 0x10, 0 },
+		{ &AsmDefinitions::EntityPlayer_IBSGurgleSound, "IBS gurgle", 0x5, 0x11, 0x10, 0x7 },
+		{ &AsmDefinitions::EntityPlayer_BoomerangThrowSound, "Boomerang throw", 0x5, 0xA, 0x10, 0 },
+		{ &AsmDefinitions::EntityTear_EraserHitSound, "Eraser hit", 0x5, 0xA, 0x14, 0, 237 },
+		{ &AsmDefinitions::EntityEffect_Init_BoomerangLoopSound, "Boomerang loop start", 0xA, 0x3E, 0, 0 },
+		{ &AsmDefinitions::EntityFamiliar_ai_chubby_BigChubbyAttackSound, "Big Chubby attack", 0x7, 0x38, 0, 0 },
+		{ &AsmDefinitions::EntityFamiliar_ai_chubby_LittleChubbyAttackSound, "Little Chubby attack", 0x7, 0x38, 0, 0 },
+		{ &AsmDefinitions::EntityFamiliar_Init_BumboSound, "Bumbo level 1", 0xA, 0x3E, 0, 0 },
+		{ &AsmDefinitions::EntityFamiliar_ai_bumbo_LevelUpSound2, "Bumbo level 2", 0x7, 0x38, 0, 0 },
+		{ &AsmDefinitions::EntityFamiliar_ai_bumbo_LevelUpSound3, "Bumbo level 3", 0x7, 0x38, 0, 0 },
+		{ &AsmDefinitions::EntityFamiliar_ai_bumbo_LevelUpSound4, "Bumbo level 4", 0xA, 0x3B, 0, 0 },
+		{ &AsmDefinitions::EntityFamiliar_ai_cube_baby_KickSound, "Cube Baby kick", 0x8, 0x3C, 0, 0 },
+		{ &AsmDefinitions::EntityFamiliar_CubeBabyKickSound, "Cube Baby kick 2", 0x7, 0x38, 0, 0 },
+		{ &AsmDefinitions::EntityFamiliar_ai_bumfriend_DarkBumPayoutSound, "Dark Bum payout", 0x7, 0x38, 0, 0 },
+		{ &AsmDefinitions::EntityFamiliar_LilHaunt_ChaseSound, "Lil Haunt chase", 0x8, 0x3A, 0, 0 },
+		{ &AsmDefinitions::EntityTear_Init_LittleHornSound, "Little Horn tear", 0x8, 0x3A, 0, 0 },
+		{ &AsmDefinitions::EntityProjectile_HandleCollision_InfamyDeflectSound, "Infamy deflect", 0x8, 0x3A, 0, 0 },
+		{ &AsmDefinitions::EntityPlayer_ThrowHeldEntity_IBSPoopThrowSound, "IBS poop throw", 0x8, 0x3A, 0, 0 },
+		{ &AsmDefinitions::EntityPlayer_CrackedOrbSound, "Cracked Orb", 0x7, 0x38, 0, 0 },
+		{ &AsmDefinitions::EntityPlayer_GlitterBombFuseSound, "Glitter Bombs fuse", 0x8, 0x3A, 0, 0 },
+	};
+
+	ByteBuffer optionAddress;
+	bool* option = &repentogonOptions.vfNewSoundEffects;
+	optionAddress.AddAny(&option, sizeof(option));
+
+	for (const SoundSite& site : sites) {
+		char* addr = (char*)sASMDefinitionHolder->GetDefinition(site.definition);
+		ZHL::Log("[REPENTOGON] Patching %s sound at %p\n", site.name, addr);
+
+		char* resume = addr + site.resumeOffset;
+		if (site.resumeOffset == 0) {
+			char* jump = addr + site.copyLength;
+			char* tail = (uint8_t)jump[0] == 0xEB ? jump + 2 + *(int8_t*)(jump + 1) : jump + 5 + *(int32_t*)(jump + 1);
+			resume = tail + 0x13;
+		}
+
+		ASMPatch patch;
+		patch.AddBytes(ByteBuffer().AddAny(addr, site.copyLength))
+			.AddBytes("\x80\x3D").AddBytes(optionAddress).AddZeroes(1)
+			.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, addr + site.copyLength);
+		if (site.vanillaSound) {
+			patch.AddBytes("\xC7\x04\x24").AddBytes(ByteBuffer().AddAny((char*)&site.vanillaSound, 1)).AddZeroes(3)
+				.AddRelativeJump(addr + site.copyLength);
+			sASMPatcher.PatchAt(addr, &patch);
+			continue;
+		}
+		if (site.stackFixup) {
+			patch.AddBytes("\x83\xC4").AddBytes(ByteBuffer().AddAny((char*)&site.stackFixup, 1));
+		}
+		if (site.keepLength) {
+			patch.AddBytes(ByteBuffer().AddAny(addr + site.copyLength, site.keepLength));
+		}
+		patch.AddRelativeJump(resume);
+		sASMPatcher.PatchAt(addr, &patch);
+	}
+}
+
 void ASMVanillaFeatures()
 {
 	// 1.9.7.11
@@ -1017,4 +1109,5 @@ void ASMVanillaFeatures()
 	vf_ludovico_shot_speed();
 	vf_clicker_removal_roll();
 	vf_lazarus_revive_anemic();
+	vf_new_sound_effects();
 }
