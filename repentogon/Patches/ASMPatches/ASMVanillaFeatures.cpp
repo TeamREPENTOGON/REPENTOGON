@@ -865,6 +865,59 @@ static void vf_enemy_spawn_indicators()
 	}
 }
 
+static bool __stdcall asm_slot_player_has_golden_pickup(Entity_Player* player, bool bomb)
+{
+	if (!repentogonOptions.vfGoldenKeyBombBeggarPayment) {
+		return false;
+	}
+
+	return bomb ? player->_hasGoldenBomb : player->_hasGoldenKey;
+}
+
+// 1.9.7.11 lets a Golden Key pay the Key Master and a Golden Bomb pay the Bomb Bum, using it up for a guaranteed item.
+// In 1.7.9b both only took regular keys/bombs and always rolled their prize, so when off the golden checks read false.
+static void vf_golden_key_bomb_beggar_payment()
+{
+	struct GoldenCheckSite { const char* definition; const char* name; bool bomb; };
+	const GoldenCheckSite sites[] = {
+		{ &AsmDefinitions::EntitySlot_HandleCollision_KeyMasterGoldenKeyPay, "Key Master payment", false },
+		{ &AsmDefinitions::EntitySlot_HandleCollision_BombBumGoldenBombPay, "Bomb Bum payment", true },
+		{ &AsmDefinitions::EntitySlot_HandleCollision_KeyMasterGoldenKeyPrize, "Key Master prize", false },
+		{ &AsmDefinitions::EntitySlot_HandleCollision_BombBumGoldenBombPrize, "Bomb Bum prize", true },
+	};
+	for (const GoldenCheckSite& site : sites) {
+		char* addr = (char*)sASMDefinitionHolder->GetDefinition(site.definition);
+		ZHL::Log("[REPENTOGON] Patching Entity_Slot::HandleCollision %s golden check at %p\n", site.name, addr);
+
+		// cmp byte ptr [ebx + 0x1360/0x1361], 0 ; jcc target (near 0F 8x rel32 or short 7x rel8)
+		ASMPatcher::CondJumps cond;
+		char* target;
+		char* resume;
+		if ((unsigned char)addr[0x7] == 0x0F) {
+			cond = (unsigned char)addr[0x8] == 0x85 ? ASMPatcher::CondJumps::JNZ : ASMPatcher::CondJumps::JZ;
+			resume = addr + 0xd;
+			target = resume + *(int32_t*)(addr + 0x9);
+		}
+		else {
+			cond = (unsigned char)addr[0x7] == 0x75 ? ASMPatcher::CondJumps::JNZ : ASMPatcher::CondJumps::JZ;
+			resume = addr + 0x9;
+			target = resume + *(int8_t*)(addr + 0x8);
+		}
+
+		ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+		ASMPatch patch;
+		patch.PreserveRegisters(savedRegisters)
+			.Push((int32_t)site.bomb)
+			.Push(ASMPatch::Registers::EBX) // player
+			.AddInternalCall(asm_slot_player_has_golden_pickup)
+			.AddBytes("\x84\xC0") // test al, al
+			.RestoreRegisters(savedRegisters)
+			.AddConditionalRelativeJump(cond, target)
+			.AddRelativeJump(resume);
+		sASMPatcher.PatchAt(addr, &patch);
+	}
+}
+
 void ASMVanillaFeatures()
 {
 	// 1.9.7.11
@@ -885,4 +938,5 @@ void ASMVanillaFeatures()
 	vf_star_of_bethlehem_hallowed_ground_boost();
 	vf_bean_wisps_expire();
 	vf_enemy_spawn_indicators();
+	vf_golden_key_bomb_beggar_payment();
 }

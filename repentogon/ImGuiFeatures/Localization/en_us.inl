@@ -503,6 +503,7 @@ VF(GlitchedCrownPauseCycle, "1.9.7.11", u8"Pausing doesn't stop Glitched Crown's
 VF(StarOfBethlehemHallowedGroundBoost, "1.9.7.11", u8"Star of Bethlehem nerf", u8"Star of Bethlehem's aura gives the same boost as Hallowed Ground's aura. In Repentance, it also multiplied damage by 1.5.")
 VF(BeanWispsExpire, "1.9.7.11", u8"The Bean and Kidney Bean wisps expire when changing rooms", u8"Wisps spawned by The Bean and Kidney Bean disappear when you leave the room. In Repentance, they stayed until destroyed.")
 VF(EnemySpawnIndicators, "1.9.7.11", u8"Enemy spawn indicators", u8"Enemies in Boss Rush, Challenge Rooms, Great Gideon's waves and Greed Mode appear after a spawn indicator marks their position. In Repentance, they appeared instantly.")
+VF(GoldenKeyBombBeggarPayment, "1.9.7.11", u8"Golden Keys and Golden Bombs pay the Key Master and Bomb Bum", u8"A Golden Key can be given to the Key Master and a Golden Bomb to the Bomb Bum, using it up for a guaranteed item. In Repentance, they only took regular keys and bombs.")
 
 #ifdef VF_DEFAULT_DEFINED
 #undef VF
