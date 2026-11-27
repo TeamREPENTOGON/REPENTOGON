@@ -507,6 +507,8 @@ VF(GoldenKeyBombBeggarPayment, "1.9.7.11", u8"Golden Keys and Golden Bombs pay t
 VF(BossThematicDrops, "1.9.7.11", u8"Bosses can drop a thematic item", u8"Most bosses have a 1% chance to drop a themed item or trinket. A themed item is offered as a choice next to the boss item, while a themed trinket can be taken along with it. In Repentance, bosses only dropped their normal item.")
 VF(LudovicoShotSpeed, "1.9.7.11", u8"The Ludovico Technique grants +0.2 shot speed", u8"The Ludovico Technique increases shot speed by 0.2. In Repentance, it didn't change shot speed.")
 VF(GreedShopD20Rarity, "1.9.7.11", u8"The D20 is rarer in the Greed Mode shop", u8"The D20 is 10 times less likely to appear in the Greed Mode shop. In Repentance, it was as common as most other shop items.")
+VF(ProtectedStartingItems, "1.9.7.11", u8"Starting items are protected from rerolls", u8"Rerolling all your items or using The Stars? never removes a character's starting passives. In Repentance, they could be rerolled or taken like any other item.")
+VF(ClickerStartingItems, "1.9.7.11", u8"Clicker swaps characters' starting passives", u8"Changing characters with Clicker gives the new character's starting passive items, which are lost when changing again, and it only removes your most recent item half of the time. In Repentance, starting passives were normal items that you kept when changing characters, and Clicker always removed your most recent item.")
 
 #ifdef VF_DEFAULT_DEFINED
 #undef VF

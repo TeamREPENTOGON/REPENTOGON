@@ -1045,3 +1045,69 @@ HOOK_METHOD_PRIORITY(Room, GetBossThematicItem, -1000, (int* retCollectibleType,
 
 	return super(retCollectibleType, retTrinketType, seed);
 }
+
+// 1.9.7.11 makes it so starting items can't be rerolled by D4 and friends.
+HOOK_METHOD(Entity_Player, CanRerollCollectible, (int id, bool ignoreStartingItems) -> bool) {
+	return super(id, ignoreStartingItems || !repentogonOptions.vfProtectedStartingItems);
+}
+
+// 1.9.7.11 makes the starting passives of Cain, Eve, Samson, Lazarus, Lilith and Bethany innate.
+static constexpr int ACHIEVEMENT_LAZARUS_ANEMIC = 331;
+
+static bool IsVanillaInnateCollectible(int playerType, int collectible) {
+	return (playerType == PLAYER_LILITH && collectible == COLLECTIBLE_INCUBUS) ||
+		(playerType == PLAYER_THELOST && collectible == COLLECTIBLE_HOLY_MANTLE);
+}
+
+HOOK_METHOD(Entity_Player, HasInnateCollectible, (int collectibleType, int unused) -> bool) {
+	if (!repentogonOptions.vfClickerStartingItems && !IsVanillaInnateCollectible(this->GetPlayerType(), collectibleType)) {
+		return false;
+	}
+	return super(collectibleType, unused);
+}
+
+static std::vector<int> VanillaStartingItems(int playerType) {
+	switch (playerType) {
+	case PLAYER_CAIN:
+		return { COLLECTIBLE_LUCKY_FOOT };
+	case PLAYER_EVE:
+		return { COLLECTIBLE_WHORE_OF_BABYLON, COLLECTIBLE_DEAD_BIRD };
+	case PLAYER_SAMSON:
+		return { COLLECTIBLE_BLOODY_LUST };
+	case PLAYER_LAZARUS:
+		if (g_Game->GetChallenge() == 0 && g_Manager->GetPersistentGameData()->Unlocked(ACHIEVEMENT_LAZARUS_ANEMIC)) {
+			return { COLLECTIBLE_ANEMIC };
+		}
+		return {};
+	case PLAYER_LAZARUS2:
+		return { COLLECTIBLE_ANEMIC };
+	case PLAYER_LILITH:
+		return { COLLECTIBLE_CAMBION_CONCEPTION };
+	case PLAYER_BETHANY:
+		return { COLLECTIBLE_BOOK_OF_VIRTUES };
+	default:
+		return {};
+	}
+}
+
+// InitPostLevelInitStats copies the player config's collectibles into its starting item list, so lend it
+// the 1.7.9b items for the call. Items a mod's players.xml already lists aren't added twice.
+HOOK_METHOD(Entity_Player, InitPostLevelInitStats, () -> void) {
+	EntityConfig_Player* config = repentogonOptions.vfClickerStartingItems ? nullptr : g_Manager->GetEntityConfig()->GetPlayer(this->GetPlayerType());
+	if (!config) {
+		super();
+		return;
+	}
+
+	std::vector<int>& collectibles = config->_collectibles;
+	const size_t originalSize = collectibles.size();
+	for (const int item : VanillaStartingItems(this->GetPlayerType())) {
+		if (std::find(collectibles.begin(), collectibles.end(), item) == collectibles.end()) {
+			collectibles.push_back(item);
+		}
+	}
+
+	super();
+
+	collectibles.resize(originalSize);
+}

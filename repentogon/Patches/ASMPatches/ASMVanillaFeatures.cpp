@@ -941,6 +941,58 @@ static void vf_ludovico_shot_speed()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static bool __stdcall asm_clicker_removal_roll()
+{
+	return repentogonOptions.vfClickerStartingItems;
+}
+
+// 1.9.7.11 gives Clicker a 50% chance to skip removing the most recent item.
+static void vf_clicker_removal_roll()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_UseActiveItem_ClickerRemovalRoll);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::UseActiveItem Clicker removal roll at %p\n", addr);
+
+	// push 2 ; push COLLECTIBLE_CLICKER ; lea ecx, [edi + 0x1760] ; call GetCollectibleRNG ; mov ecx, eax ;
+	// call RandomInt ; test eax, eax ; jnz skipRemoval ; add esi, -1 // removal
+	char* removal = addr + 0x21;
+
+	ASMPatch patch;
+	patch.Push(ASMPatch::Registers::ECX)
+		.Push(ASMPatch::Registers::EDX)
+		.AddInternalCall(asm_clicker_removal_roll)
+		.Pop(ASMPatch::Registers::EDX)
+		.Pop(ASMPatch::Registers::ECX)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, removal)
+		.AddBytes(ByteBuffer().AddAny(addr, 0xD)) // push 2 ; push COLLECTIBLE_CLICKER ; lea ecx, [edi + 0x1760]
+		.AddRelativeJump(addr + 0xD); // call GetCollectibleRNG
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+static void __stdcall asm_lazarus_revive_anemic(Entity_Player* player)
+{
+	if (!repentogonOptions.vfClickerStartingItems && player->_collectibleCounts[COLLECTIBLE_ANEMIC] <= 0) {
+		player->AddCollectible(COLLECTIBLE_ANEMIC, 0, true, 0, 0, 0);
+	}
+}
+
+// 1.7.9b gave Lazarus a real Anemic right after reviving as Lazarus Risen.
+static void vf_lazarus_revive_anemic()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_ReviveFromCollectible_LazarusAnemic);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::ReviveFromCollectible Lazarus Anemic at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EBX) // player
+		.AddInternalCall(asm_lazarus_revive_anemic)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes(ByteBuffer().AddAny(addr, 0x6)) // mov ecx, dword ptr [eax + 0x2a24c]
+		.AddRelativeJump(addr + 0x6);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMVanillaFeatures()
 {
 	// 1.9.7.11
@@ -963,4 +1015,6 @@ void ASMVanillaFeatures()
 	vf_enemy_spawn_indicators();
 	vf_golden_key_bomb_beggar_payment();
 	vf_ludovico_shot_speed();
+	vf_clicker_removal_roll();
+	vf_lazarus_revive_anemic();
 }
