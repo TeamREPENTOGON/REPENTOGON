@@ -506,6 +506,7 @@ VF(EnemySpawnIndicators, "1.9.7.11", u8"Enemy spawn indicators", u8"Enemies in B
 VF(GoldenKeyBombBeggarPayment, "1.9.7.11", u8"Golden Keys and Golden Bombs pay the Key Master and Bomb Bum", u8"A Golden Key can be given to the Key Master and a Golden Bomb to the Bomb Bum, using it up for a guaranteed item. In Repentance, they only took regular keys and bombs.")
 VF(BossThematicDrops, "1.9.7.11", u8"Bosses can drop a thematic item", u8"Most bosses have a 1% chance to drop a themed item or trinket. A themed item is offered as a choice next to the boss item, while a themed trinket can be taken along with it. In Repentance, bosses only dropped their normal item.")
 VF(LudovicoShotSpeed, "1.9.7.11", u8"The Ludovico Technique grants +0.2 shot speed", u8"The Ludovico Technique increases shot speed by 0.2. In Repentance, it didn't change shot speed.")
+VF(GreedShopD20Rarity, "1.9.7.11", u8"The D20 is rarer in the Greed Mode shop", u8"The D20 is 10 times less likely to appear in the Greed Mode shop. In Repentance, it was as common as most other shop items.")
 
 #ifdef VF_DEFAULT_DEFINED
 #undef VF

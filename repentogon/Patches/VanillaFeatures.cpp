@@ -108,6 +108,62 @@ void ApplyVanillaItemMetadata() {
 	});
 }
 
+// ----- ITEM POOL WEIGHT OVERRIDE SYSTEM -----
+struct PoolWeights {
+	float weight;
+	float decreaseBy;
+	float removeOn;
+
+	bool Matches(const PoolItem& item) const {
+		return item._initialWeight == weight && item._decreaseBy == decreaseBy && item._removeOn == removeOn;
+	}
+};
+
+struct ItemPoolOverride {
+	bool REPENTOGONOptions::* toggle; // Rep+ values while true, Rep values while false
+	int pool;
+	int id;
+	PoolWeights repPlus;
+	PoolWeights vanilla;
+};
+
+static const ItemPoolOverride itemPoolOverrides[] = {
+	// 1.9.7.11 makes the D20 rarer in the Greed Mode shop.
+	{ &REPENTOGONOptions::vfGreedShopD20Rarity, POOL_GREED_SHOP, COLLECTIBLE_D20, { 0.1f, 0.1f, 0.01f }, { 1.0f, 1.0f, 0.1f } },
+};
+
+static void ApplyPoolWeights() {
+	for (const ItemPoolOverride& entry : itemPoolOverrides) {
+		const bool repPlus = repentogonOptions.*entry.toggle;
+		const PoolWeights& from = repPlus ? entry.vanilla : entry.repPlus;
+		const PoolWeights& to = repPlus ? entry.repPlus : entry.vanilla;
+
+		ItemPool_Item& pool = g_Game->_itemPool._pools[entry.pool];
+		for (PoolItem& item : pool._poolList) {
+			if (item._itemID != (uint32_t)entry.id || !from.Matches(item)) {
+				continue;
+			}
+
+			item._weight *= to.weight / from.weight;
+			item._initialWeight = to.weight;
+			item._decreaseBy = to.decreaseBy;
+			item._removeOn = to.removeOn;
+			pool._totalWeight += to.weight - from.weight;
+		}
+	}
+}
+
+void ApplyVanillaPoolWeights() {
+	if (Isaac::IsInGame()) {
+		ApplyPoolWeights();
+	}
+}
+
+HOOK_METHOD(ItemPool, shuffle_pools, () -> void) {
+	ApplyPoolWeights();
+	super();
+}
+
 void RefreshVanillaFeatureStats(const bool* toggle) {
 	int cacheFlags = 0;
 	if (toggle == &repentogonOptions.vfLudovicoShotSpeed) {

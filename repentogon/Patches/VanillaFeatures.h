@@ -1,6 +1,7 @@
 #pragma once
 
 void ApplyVanillaItemMetadata();
+void ApplyVanillaPoolWeights();
 void RefreshVanillaFeatureStats(const bool* toggle);
 struct Entity;
 struct Entity_Familiar;

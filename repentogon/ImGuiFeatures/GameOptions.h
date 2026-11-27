@@ -115,6 +115,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
         AddResetButton(id, enabled, true);
         if (enabled != wasEnabled) {
             ApplyVanillaItemMetadata();
+            ApplyVanillaPoolWeights();
             RefreshVanillaFeatureStats(&enabled);
         }
     }
