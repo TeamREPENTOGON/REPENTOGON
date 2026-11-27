@@ -962,3 +962,14 @@ HOOK_STATIC(Entity_Effect, SpawnEnemyIndicator, (unsigned int type, unsigned int
 	}
 	return entity;
 }
+
+// 1.9.7.11 gives most bosses a 1% chance to drop a thematic item or trinket.
+HOOK_METHOD_PRIORITY(Room, GetBossThematicItem, -1000, (int* retCollectibleType, int* retTrinketType, unsigned int* seed) -> bool) {
+	if (!repentogonOptions.vfBossThematicDrops) {
+		*retCollectibleType = 0;
+		*retTrinketType = 0;
+		return false;
+	}
+
+	return super(retCollectibleType, retTrinketType, seed);
+}

@@ -504,6 +504,7 @@ VF(StarOfBethlehemHallowedGroundBoost, "1.9.7.11", u8"Star of Bethlehem nerf", u
 VF(BeanWispsExpire, "1.9.7.11", u8"The Bean and Kidney Bean wisps expire when changing rooms", u8"Wisps spawned by The Bean and Kidney Bean disappear when you leave the room. In Repentance, they stayed until destroyed.")
 VF(EnemySpawnIndicators, "1.9.7.11", u8"Enemy spawn indicators", u8"Enemies in Boss Rush, Challenge Rooms, Great Gideon's waves and Greed Mode appear after a spawn indicator marks their position. In Repentance, they appeared instantly.")
 VF(GoldenKeyBombBeggarPayment, "1.9.7.11", u8"Golden Keys and Golden Bombs pay the Key Master and Bomb Bum", u8"A Golden Key can be given to the Key Master and a Golden Bomb to the Bomb Bum, using it up for a guaranteed item. In Repentance, they only took regular keys and bombs.")
+VF(BossThematicDrops, "1.9.7.11", u8"Bosses can drop a thematic item", u8"Most bosses have a 1% chance to drop a themed item or trinket. A themed item is offered as a choice next to the boss item, while a themed trinket can be taken along with it. In Repentance, bosses only dropped their normal item.")
 
 #ifdef VF_DEFAULT_DEFINED
 #undef VF
