@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 #include "../REPENTOGONOptions.h"
+#include "VanillaTweaks.h"
 #include "Log.h"
 #include "imgui.h"
 
@@ -184,3 +185,30 @@ HOOK_METHOD(Manager, Render, (void)->void) {
 };
 
 // eco mode stuff end
+
+// When Nicalis implemented spawn wave indicators they forgot to account for the Greed Mode waves, so they're all a second shorter now :(
+// Pause the timer while indicators are spawned in.
+static bool greedWaveIndicatorsPending = false;
+
+static bool HasSpawnIndicators(Room* room) {
+	EntityList_EL* entities = room->GetEntityList()->GetUpdateEL();
+	for (unsigned int i = 0; i < entities->_size; ++i) {
+		Entity* entity = entities->_data[i];
+		if (entity->_exists && entity->_type == ENTITY_EFFECT && entity->_variant == 203) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool IsGreedWaveTimerHeld() {
+	return repentogonOptions.greedWaveTimerParity && greedWaveIndicatorsPending && g_Game->_room->_greedWaveTimer > 0;
+}
+
+HOOK_METHOD(Room, UpdateGreedMode, () -> void) {
+	if (repentogonOptions.greedWaveTimerParity && greedWaveIndicatorsPending && this->_greedWaveTimer > 0) {
+		++this->_greedWaveTimer;
+	}
+	super();
+	greedWaveIndicatorsPending = g_Game->IsGreedMode() && HasSpawnIndicators(this);
+}

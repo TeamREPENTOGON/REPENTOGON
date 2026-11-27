@@ -20,4 +20,5 @@ namespace ASMPatches {
 
 	void ReEnableGameLanguageSettings();
 	void ASMPatchSkipSoundPreload();
+	void PatchGreedWaveTimerHeldFlicker();
 }

@@ -409,4 +409,5 @@ void PerformASMPatches() {
 	ASMPatches::PatchOptionsSetMusicBound();
 	
 	ASMPatches::ReEnableGameLanguageSettings();
+	ASMPatches::PatchGreedWaveTimerHeldFlicker();
 }

@@ -46,6 +46,7 @@ struct REPENTOGONOptions {
 			ini["VanillaTweaks"]["HushLaserSpeedFix"] = "1";
 			ini["VanillaTweaks"]["QuickRoomClear"] = "0";
 			ini["VanillaTweaks"]["StatHUDPlanetarium"] = "1";
+			ini["VanillaTweaks"]["GreedWaveTimerParity"] = "1";
 			ini["VanillaTweaks"]["SkipIntro"] = "0";
 			ini["VanillaTweaks"]["PreventModUpdates"] = "0";
 			ini["VanillaTweaks"]["FastLasers"] = "0";
@@ -85,6 +86,7 @@ struct REPENTOGONOptions {
 		quickRoomClear = defstoi(ini["VanillaTweaks"]["QuickRoomClear"], 0);
 		consoleAutofillLimit = defstoi(ini["VanillaTweaks"]["ConsoleAutofillLimit"], 10);
 		statHUDPlanetarium = defstoi(ini["VanillaTweaks"]["StatHUDPlanetarium"], 1);
+		greedWaveTimerParity = defstoi(ini["VanillaTweaks"]["GreedWaveTimerParity"], 1);
 		skipIntro = defstoi(ini["VanillaTweaks"]["SkipIntro"], 0);
 		preventModUpdates = defstoi(ini["VanillaTweaks"]["PreventModUpdates"], 0);
 //		fastLasers = defstoi(ini["VanillaTweaks"]["FastLasers"], 0);
@@ -166,6 +168,7 @@ struct REPENTOGONOptions {
 		Write("VanillaTweaks", "QuickRoomClear",	   quickRoomClear);
 		Write("VanillaTweaks", "PreventModUpdates",	   preventModUpdates);
 		Write("VanillaTweaks", "StatHUDPlanetarium",   statHUDPlanetarium);
+		Write("VanillaTweaks", "GreedWaveTimerParity", greedWaveTimerParity);
 		Write("VanillaTweaks", "SkipIntro", skipIntro);
 //		Write("VanillaTweaks", "FastLasers", fastLasers);
 		Write("VanillaTweaks", "InterpolV2", interpolV2);
@@ -211,6 +214,7 @@ struct REPENTOGONOptions {
 	int fontSize;
 	int fontSelectedPredefined;
 	bool statHUDPlanetarium;
+	bool greedWaveTimerParity;
 	//int unifontRenderMode;
 	bool fastLasers;
 	int lastSaveFile;

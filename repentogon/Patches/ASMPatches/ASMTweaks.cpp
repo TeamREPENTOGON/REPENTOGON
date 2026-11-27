@@ -5,6 +5,7 @@
 #include "IsaacRepentance.h"
 #include "SigScan.h"
 #include "../../REPENTOGONOptions.h"
+#include "../VanillaTweaks.h"
 
 namespace ASMPatches {
 	static void __stdcall __TearDetonatorPatch(EntityList_EL*);
@@ -537,4 +538,31 @@ namespace ASMPatches {
 		 */
 
 	 }
+
+	static bool __stdcall __GreedTimerFlicker(int minutes, int seconds)
+	{
+		return (minutes <= 0 && seconds <= 0) || IsGreedWaveTimerHeld();
+	}
+
+	// This patch allows arbitrary control over the Greed timer flicker effect, so we can flicker it while indicators are spawned.
+	void PatchGreedWaveTimerHeldFlicker()
+	{
+		char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::GridEntity_PressurePlate_Render_GreedTimerZeroCheck);
+		ZHL::Log("[REPENTOGON] Patching GridEntity_PressurePlate::Render Greed timer flicker at %p\n", addr);
+
+		char* drawColor = addr + 0x4 + addr[0x3]; // jg target: pick the color from the timer value
+		char pushSeconds[] = { '\xFF', '\x75', addr[0x6] }; // push dword ptr [ebp + x]
+
+		ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+		ASMPatch patch;
+		patch.PreserveRegisters(savedRegisters)
+			.AddBytes(ByteBuffer().AddAny(pushSeconds, sizeof(pushSeconds)))
+			.Push(ASMPatch::Registers::ESI)
+			.AddInternalCall(__GreedTimerFlicker)
+			.AddBytes("\x84\xC0") // test al, al
+			.RestoreRegisters(savedRegisters)
+			.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, addr + 0xa)
+			.AddRelativeJump(drawColor);
+		sASMPatcher.PatchAt(addr, &patch);
+	}
 }

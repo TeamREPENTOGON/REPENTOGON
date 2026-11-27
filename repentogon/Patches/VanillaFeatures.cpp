@@ -943,3 +943,22 @@ HOOK_METHOD_PRIORITY(Entity_Familiar, CanCharm, 1000, () -> bool) {
 	
 	return super();
 }
+
+// 1.9.7.11 spawns enemies in Boss Rush, Challenge Rooms, Great Gideon and Greed Mode waves through a spawn
+// indicator effect. Repentance spawned them directly.
+HOOK_STATIC(Entity_Effect, SpawnEnemyIndicator, (unsigned int type, unsigned int variant, const Vector* position, void* unused1, Entity* spawner, unsigned int subtype, unsigned int seed, void* unused2, int spawnGridIdx) -> Entity*, __stdcall) {
+	if (repentogonOptions.vfEnemySpawnIndicators) {
+		return super(type, variant, position, unused1, spawner, subtype, seed, unused2, spawnGridIdx);
+	}
+
+	Entity* entity = g_Game->Spawn(type, variant, *position, Vector(0, 0), spawner, subtype, seed, 0);
+
+	if (spawnGridIdx != -1) {
+		entity->_spawnGridIdx = spawnGridIdx;
+	}
+
+	if (spawner && spawner->_type == ENTITY_GIDEON) {
+		entity->Update();
+	}
+	return entity;
+}

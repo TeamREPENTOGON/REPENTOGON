@@ -818,6 +818,53 @@ static void vf_bean_wisps_expire()
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+static bool __stdcall asm_enemy_spawn_indicators_enabled()
+{
+	return repentogonOptions.vfEnemySpawnIndicators;
+}
+
+static void vf_enemy_spawn_indicators()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_SpawnGreedModeWave_EnemyIndicatorField);
+	ZHL::Log("[REPENTOGON] Patching Room::SpawnGreedModeWave spawn indicator field at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.AddInternalCall(asm_enemy_spawn_indicators_enabled)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, addr + 0xa) // mov edx, [ebp-0x4c]
+		.AddBytes(ByteBuffer().AddAny(addr, 0xa)) // mov dword ptr [ecx + 0x354], 0x3e9
+		.AddRelativeJump(addr + 0xa);
+	sASMPatcher.PatchAt(addr, &patch);
+
+	struct WaveSoundSite { const char* definition; const char* name; bool skipFartCheck; };
+	const WaveSoundSite waveSoundSites[] = {
+		{ &AsmDefinitions::Ambush_SpawnWave_EnemySpawnSound, "Ambush::SpawnWave", false },
+		{ &AsmDefinitions::Ambush_SpawnBossrushWave_EnemySpawnSound, "Ambush::SpawnBossrushWave", false },
+		{ &AsmDefinitions::Room_SpawnGreedModeWave_EnemySpawnSound, "Room::SpawnGreedModeWave", true },
+		{ &AsmDefinitions::EntityNPC_Gideon_SpawnNextWave_EnemySpawnSound, "Entity_NPC_Gideon::SpawnNextWave", false },
+	};
+	for (const WaveSoundSite& site : waveSoundSites) {
+		char* soundAddr = (char*)sASMDefinitionHolder->GetDefinition(site.definition);
+		ZHL::Log("[REPENTOGON] Patching %s spawn sound at %p\n", site.name, soundAddr);
+
+		char oldSound[] = { '\xC7', '\x45', soundAddr[2], '\x09', '\x01', '\x00', '\x00' }; // mov dword ptr [ebp + x], 265
+		ASMPatch::SavedRegisters soundRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+		ASMPatch soundPatch;
+		soundPatch.AddBytes(ByteBuffer().AddAny(soundAddr, 0x7)) // mov dword ptr [ebp + x], 0x367
+			.PreserveRegisters(soundRegisters)
+			.AddInternalCall(asm_enemy_spawn_indicators_enabled)
+			.AddBytes("\x84\xC0") // test al, al
+			.RestoreRegisters(soundRegisters)
+			.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, soundAddr + 0x7) // call Manager::ProcessFartSoundsSeed
+			.AddBytes(ByteBuffer().AddAny(oldSound, sizeof(oldSound)))
+			.AddRelativeJump(soundAddr + (site.skipFartCheck ? 0xc : 0x7));
+		sASMPatcher.PatchAt(soundAddr, &soundPatch);
+	}
+}
+
 void ASMVanillaFeatures()
 {
 	// 1.9.7.11
@@ -837,4 +884,5 @@ void ASMVanillaFeatures()
 	vf_abyss_rework();
 	vf_star_of_bethlehem_hallowed_ground_boost();
 	vf_bean_wisps_expire();
+	vf_enemy_spawn_indicators();
 }

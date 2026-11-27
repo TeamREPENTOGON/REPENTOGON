@@ -269,6 +269,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr, ColorMod, E
     Vector _knockbackDirection : 0x308;
 	int _pauseTimer : 0x31c;
 	int _spawnFrame : 0x328;
+	int _spawnGridIdx : 0x32c;
 	EntityConfig_Entity* _entityConfig : 0x330;
 	Vector _targetPos : 0x334;
     Vector _pos : 0x33c;

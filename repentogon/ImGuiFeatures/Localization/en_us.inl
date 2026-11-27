@@ -472,6 +472,8 @@ I(OPT_REPENTOGON_DISABLE_EXIT_PROMPT_MARK, u8"Disables the exit prompt when you 
 
 I(OPT_REPENTOGON_BLOCK_UNKNOWN_DEVICES, u8"Block \"Unknown Device\" Controllers (Requires Reconnect/Restart)")
 I(OPT_REPENTOGON_BLOCK_UNKNOWN_DEVICES_MARK, u8"Prevents controllers from being used by the game if they cannot be properly identified. Can help prevent issues where a controller or other device creates one or more ghost \"Unknown Devices\" that cause controls to get messed up.")
+I(OPT_REPENTOGON_GREED_WAVE_TIMER_PARITY, u8"Greed Mode Wave Timer Parity")
+I(OPT_REPENTOGON_GREED_WAVE_TIMER_PARITY_MARK, u8"While enemy spawn indicators are enabled, the Greed Mode wave timer pauses until the indicators have spawned their enemies, so waves last as long as they did in Repentance.")
 
 I(OPT_VANILLA_FEATURES, u8"Vanilla Features")
 I(OPT_VANILLA_FEATURES_INFO, u8"Gameplay changes made in Repentance+. Untick a change to restore its Repentance behavior.")
@@ -500,6 +502,7 @@ VF(JarOfWispsRework, "1.9.7.11", u8"Jar of Wisps gives two wisps on its first us
 VF(GlitchedCrownPauseCycle, "1.9.7.11", u8"Pausing doesn't stop Glitched Crown's item cycle", u8"While the game is paused, Glitched Crown items keep cycling, faster than normal. In Repentance, pausing froze the cycle.")
 VF(StarOfBethlehemHallowedGroundBoost, "1.9.7.11", u8"Star of Bethlehem nerf", u8"Star of Bethlehem's aura gives the same boost as Hallowed Ground's aura. In Repentance, it also multiplied damage by 1.5.")
 VF(BeanWispsExpire, "1.9.7.11", u8"The Bean and Kidney Bean wisps expire when changing rooms", u8"Wisps spawned by The Bean and Kidney Bean disappear when you leave the room. In Repentance, they stayed until destroyed.")
+VF(EnemySpawnIndicators, "1.9.7.11", u8"Enemy spawn indicators", u8"Enemies in Boss Rush, Challenge Rooms, Great Gideon's waves and Greed Mode appear after a spawn indicator marks their position. In Repentance, they appeared instantly.")
 
 #ifdef VF_DEFAULT_DEFINED
 #undef VF
