@@ -918,6 +918,29 @@ static void vf_golden_key_bomb_beggar_payment()
 	}
 }
 
+static int __stdcall asm_ludovico_shot_speed_count(int count)
+{
+	return repentogonOptions.vfLudovicoShotSpeed ? count : 0;
+}
+
+// 1.9.7.11 adds 0.2 shot speed per copy of The Ludovico Technique.
+static void vf_ludovico_shot_speed()
+{
+	char* addr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_EvaluateItems_LudovicoShotSpeed);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::EvaluateItems Ludovico shot speed at %p\n", addr);
+
+	ASMPatch patch;
+	patch.Push(ASMPatch::Registers::ECX)
+		.Push(ASMPatch::Registers::EDX)
+		.Push(ASMPatch::Registers::EAX) // Ludovico count
+		.AddInternalCall(asm_ludovico_shot_speed_count)
+		.Pop(ASMPatch::Registers::EDX)
+		.Pop(ASMPatch::Registers::ECX)
+		.AddBytes(ByteBuffer().AddAny(addr, 0x7)) // movd xmm3, eax ; cvtdq2ps xmm3, xmm3
+		.AddRelativeJump(addr + 0x7); // movss xmm2, dword ptr [0.2]
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMVanillaFeatures()
 {
 	// 1.9.7.11
@@ -939,4 +962,5 @@ void ASMVanillaFeatures()
 	vf_bean_wisps_expire();
 	vf_enemy_spawn_indicators();
 	vf_golden_key_bomb_beggar_payment();
+	vf_ludovico_shot_speed();
 }

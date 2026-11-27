@@ -108,6 +108,22 @@ void ApplyVanillaItemMetadata() {
 	});
 }
 
+void RefreshVanillaFeatureStats(const bool* toggle) {
+	int cacheFlags = 0;
+	if (toggle == &repentogonOptions.vfLudovicoShotSpeed) {
+		cacheFlags |= CACHE_SHOTSPEED;
+	}
+
+	if (cacheFlags == 0 || !Isaac::IsInGame()) {
+		return;
+	}
+
+	for (Entity_Player* player : g_Game->GetPlayerManager()->_playerList) {
+		player->AddCacheFlags(cacheFlags);
+		player->EvaluateItems();
+	}
+}
+
 HOOK_METHOD(ItemConfig, LoadMetadata, (char* xmlpath, ModEntry* modentry) -> void) {
 	const bool fromMod = IsModXmlPath(xmlpath);
 

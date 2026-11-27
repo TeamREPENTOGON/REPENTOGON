@@ -1,6 +1,7 @@
 #pragma once
 
 void ApplyVanillaItemMetadata();
+void RefreshVanillaFeatureStats(const bool* toggle);
 struct Entity;
 struct Entity_Familiar;
 struct Entity_Player;
